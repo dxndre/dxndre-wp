@@ -55,6 +55,10 @@ $green: #198754;
 $teal: #20c997;
 $cyan: #0dcaf0;
 
+// Custom Colors
+$dxndre-red: #C42020;
+$dxndre-black: #131313;
+
 // Fonts
 $font-family-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
 	'Liberation Sans', sans-serif;
@@ -116,6 +120,13 @@ $link-decoration: none;
  */
 
 body {
+	font-family: "Outfit", sans-serif;
+	background: black;
+
+	h1, h2, h3, h4, h5, h6 {
+		font-family: "Space Grotesk", sans-serif;
+	}
+
 	&.page-template-page-full {
 		#main {
 			max-width: 100%;
@@ -170,14 +181,131 @@ img {
 /* Header */
 
 #header {
+	background: transparent;
+	padding: 40px 0;
+
 	.search-form {
 		min-width: 250px;
+	}
+
+	.dxndre-nav-left {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.header-search {
+			background: transparent;
+			border: none;
+			background-image: none;
+			outline: none;
+			box-shadow: none;
+		}
+
+		.search-box {
+			border: none;
+			border-radius: 0;
+			border-bottom: 1px solid white;
+			color: white;
+			background-color: transparent;
+
+			&::placeholder {
+				color: rgba(255, 255, 255, 0.5);
+			}
+		}
+	}
+
+	.dxndre-nav-right {
+		display: relative;
+		z-index: 1;
+
+		.navbar-toggler {
+			display: flex;
+			gap: 12px;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			border: none;
+
+			&:focus,
+			&:focus-visible,
+			&:focus-within {
+				outline: none;
+				box-shadow: none;
+			}
+		
+			.navbar-toggler-line {
+				display: block;
+				width: 40px;
+				height: 1px;
+				background-color: white;
+				transition: 0.7s all ease;
+			}
+
+			&[aria-expanded="true"] {
+				.navbar-toggler-line {
+					// background-color: $dxndre-red;
+					transition: 0.3s all ease;
+
+					&:nth-of-type(1) {
+						transform: rotate(45deg) translate(7px, 7px);
+					}
+					&:nth-of-type(2) {
+						opacity: 0;
+					}
+					&:nth-of-type(3) {
+						transform: rotate(-45deg) translate(12px, -12px);
+					}
+				}
+			}
+		}
+	}
+
+	#navbar {
+		&.navbar-collapse {
+			position: fixed;
+			width: 500px;
+			height: 100vh;
+			background: transparent;
+			backdrop-filter: blur(25px);
+			top: 0;
+			right: -500px;
+			padding: 3em;
+			display: flex;
+			justify-content: center;
+			text-align: center;
+			transition: 0.7s all ease;
+
+			.menu-content {
+				display: flex;
+				flex-direction: column;
+				gap: 24px;
+
+				ul {
+					li {
+						a {
+							color: white;
+							font-size: 20px;
+						}
+					}
+				}
+			}
+
+			&.show {
+				right: 0;
+				background: rgba(0, 0, 0, 0.5);
+				transition: 0.3s all ease;
+			}
+		}
 	}
 }
 
 .navbar-brand {
+	margin: 0;
+
 	img {
 		height: 40px;
+		max-width: 200px;
+		object-fit: contain;
 	}
 }
 
@@ -188,7 +316,34 @@ img {
 /* Main */
 
 #main {
-	margin-top: $spacer;
+	// margin-top: $spacer;
+
+	.hero {
+		.cover-content {
+			width: 100%;
+			max-width: 600px;
+
+			pre {
+				&.headline {
+					font-family: "Outfit", sans-serif;
+					text-transform: uppercase;
+					font-weight: lighter;
+					color: rgba(255, 255, 255, 0.8);
+				}
+			}
+
+			h2 {
+				font-size: 60px;
+				margin-bottom: 16px;
+			}
+
+			p {
+				font-size: 20px;
+				font-weight: 300;
+				margin-bottom: 24px;
+			}
+		}
+	}
 }
 
 /* Footer */
@@ -307,31 +462,62 @@ img {
 
 // Buttons
 
-.wp-block-button {
-	&.is-style-outline {
+.wp-block-buttons {
+	gap: 16px;
+
+	.wp-block-button {
+		&.is-style-outline {
+			.wp-block-button__link {
+				@extend .btn;
+				@extend .btn-outline-primary;		
+			}
+		}
+
+		&.btn-lg {
+			.wp-block-button__link {
+				@extend .btn-lg;
+			}
+		}
+		&.btn-sm {
+			.wp-block-button__link {
+				@extend .btn-sm;
+			}
+		}
+
 		.wp-block-button__link {
 			@extend .btn;
-			@extend .btn-outline-primary;
+			@extend .btn-primary;
+			text-decoration: none;
+			border-radius: 0;
+			min-width: 250px;
+			height: 60px;
+			color: white;
 		}
-	}
 
-	&.btn-lg {
-		.wp-block-button__link {
-			@extend .btn-lg;
+		&.primary {
+			.wp-block-button__link {
+				background-color: $dxndre-red;
+				background-image: none;
+				border-color: transparent;
+				outline: none;
+				box-shadow: none;
+			}
 		}
-	}
-	&.btn-sm {
-		.wp-block-button__link {
-			@extend .btn-sm;
-		}
-	}
 
-	.wp-block-button__link {
-		@extend .btn;
-		@extend .btn-primary;
-		text-decoration: none;
+		&.secondary {
+			.wp-block-button__link {
+				background-color: transparent;
+				background-image: none;
+				border: 1px solid white;
+				outline: none;
+				color: white;
+				box-shadow: none;
+			}
+		}
 	}
 }
+
+
 
 // Table
 

@@ -562,3 +562,25 @@ function dxndre_scripts_loader() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'dxndre_scripts_loader' );
+
+
+/**
+ * Enqueue Google Fonts.
+ *
+ * @since v1.0
+ */
+function dxndre_enqueue_google_fonts() {
+
+	$google_fonts_url = 'https://fonts.googleapis.com/css2'
+		. '?family=Space+Grotesk:wght@300;400;500;600;700'
+		. '&family=Outfit:wght@300;400;500;600;700'
+		. '&display=swap';
+
+	wp_enqueue_style(
+		'dxndre-google-fonts',
+		$google_fonts_url,
+		array(),
+		null
+	);
+}
+add_action( 'wp_enqueue_scripts', 'dxndre_enqueue_google_fonts' );
