@@ -563,7 +563,6 @@ function dxndre_scripts_loader() {
 }
 add_action( 'wp_enqueue_scripts', 'dxndre_scripts_loader' );
 
-
 /**
  * Enqueue Google Fonts.
  *

@@ -22,4 +22,21 @@ import * as bootstrap from 'bootstrap';
 			trigger: 'focus',
 		});
 	});
+
+	// Toggle `.scrolled` on `.navbar` when user scrolls more than 10px
+	function updateNavbarScrolled() {
+		var nav = document.querySelector('.navbar');
+		if (!nav) return;
+		if (window.scrollY > 10) {
+			nav.classList.add('scrolled');
+		} else {
+			nav.classList.remove('scrolled');
+		}
+	}
+
+	// Listen for scroll (passive for better performance) and run once on load
+	document.addEventListener('scroll', updateNavbarScrolled, { passive: true });
+	updateNavbarScrolled();
 })();
+
+

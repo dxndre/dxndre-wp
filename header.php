@@ -66,7 +66,11 @@
 				</div>
 
 				<div id="navbar" class="navbar-collapse">
+					
 					<div class="menu-content">
+						<span class="headline">Navigation</span>
+						<h3>Menu</h3>
+
 						<?php
 						// Loading WordPress Custom Menu (theme_location).
 						wp_nav_menu(

@@ -127,6 +127,10 @@ body {
 		font-family: "Space Grotesk", sans-serif;
 	}
 
+	p {
+		line-height: 32px;
+	}
+
 	&.page-template-page-full {
 		#main {
 			max-width: 100%;
@@ -184,6 +188,30 @@ img {
 	background: transparent;
 	padding: 40px 0;
 
+	&::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: linear-gradient(0deg, rgba(0, 0, 0, 0), #000000);
+		opacity: 1;
+		z-index: -1;
+		pointer-events: none;
+		opacity: 0;
+		transition: .3s all ease;
+	}
+
+	&.scrolled {
+		&::after {
+			opacity: 1;
+			transition: .3s all ease;
+		}
+	}
+
+	
+
 	.search-form {
 		min-width: 250px;
 	}
@@ -199,6 +227,10 @@ img {
 			background-image: none;
 			outline: none;
 			box-shadow: none;
+
+			&:hover {
+				transform: scale(1.01);
+			}
 		}
 
 		.search-box {
@@ -207,9 +239,18 @@ img {
 			border-bottom: 1px solid white;
 			color: white;
 			background-color: transparent;
+			font-size: 20px;
+			padding-left: 0;
 
 			&::placeholder {
 				color: rgba(255, 255, 255, 0.5);
+			}
+
+			&:focus,
+			&:focus-visible,
+			&:focus-within {
+				outline: none;
+				box-shadow: none;
 			}
 		}
 	}
@@ -232,6 +273,20 @@ img {
 				outline: none;
 				box-shadow: none;
 			}
+
+			&[aria-expanded="false"] {
+				&:hover {
+					.navbar-toggler-line {
+						&:nth-of-type(2) {
+							width: 30px;
+						}
+						&:nth-of-type(3) {
+							width: 20px;
+						}
+					}
+				}
+			}
+			
 		
 			.navbar-toggler-line {
 				display: block;
@@ -266,25 +321,47 @@ img {
 			width: 500px;
 			height: 100vh;
 			background: transparent;
-			backdrop-filter: blur(25px);
+			backdrop-filter: blur(125px);
 			top: 0;
 			right: -500px;
 			padding: 3em;
 			display: flex;
 			justify-content: center;
 			text-align: center;
+			box-shadow: 0px 0px 50px -20px transparent;
 			transition: 0.7s all ease;
 
 			.menu-content {
 				display: flex;
 				flex-direction: column;
-				gap: 24px;
+				gap: 12px;
+
+				h3 {
+					font-size: 2em;
+					color: white;
+				}
+
+				.headline {
+					font-size: 12px;
+					text-transform: uppercase;
+					color: rgba(255, 255, 255, 0.5);
+					letter-spacing: 1px;
+				}
 
 				ul {
+					margin-top: 3em;
+					gap: 12px;
+
 					li {
 						a {
 							color: white;
 							font-size: 20px;
+							transition: 0.7s all ease;
+
+							&:hover {
+								color: $dxndre-red;
+								transition: 0.3s all ease;
+							}
 						}
 					}
 				}
@@ -292,7 +369,8 @@ img {
 
 			&.show {
 				right: 0;
-				background: rgba(0, 0, 0, 0.5);
+				// background: rgba(0, 0, 0, 0.5);
+				box-shadow: 0px 0px 50px -20px black;
 				transition: 0.3s all ease;
 			}
 		}
@@ -318,19 +396,76 @@ img {
 #main {
 	// margin-top: $spacer;
 
+	@keyframes brightness-up {
+		0% {
+			filter: brightness(0);
+		}
+
+		100% {
+			filter: brightness(2.5);
+		}
+	}
+
+	@keyframes colour-up {
+		0% {
+			filter: saturate(0);
+		}
+
+		100% {
+			filter: saturate(1);
+		}
+	}
+
+	pre {
+		&.headline {
+			font-family: "Outfit", sans-serif;
+			text-transform: uppercase;
+			font-weight: lighter;
+			color: rgba(255, 255, 255, 0.6666);
+			letter-spacing: 1px;
+		}
+	}
+
+	figure {
+		&.enlarge {
+			img, video {
+				transform: scale(1.5);
+			}
+		}
+	}
+
+	.wp-block-cover {
+		padding: 0;
+		will-change: filter;
+
+		&.hero-background {
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			flex-direction: column;
+			gap: 24px;
+
+			&.brighten {
+				& > img {
+					animation: brightness-up 5s ease-out forwards;
+				}
+			}
+		}
+
+		&.hero-foreground {
+			img {
+				animation: colour-up 2.5s ease-out forwards;
+			}
+		}
+	}
+
 	.hero {
 		.cover-content {
 			width: 100%;
 			max-width: 600px;
-
-			pre {
-				&.headline {
-					font-family: "Outfit", sans-serif;
-					text-transform: uppercase;
-					font-weight: lighter;
-					color: rgba(255, 255, 255, 0.8);
-				}
-			}
+			text-align: left;
 
 			h2 {
 				font-size: 60px;
@@ -341,6 +476,71 @@ img {
 				font-size: 20px;
 				font-weight: 300;
 				margin-bottom: 24px;
+			}
+		}
+	}
+
+	.cover-content {
+		text-align: left;
+	}
+
+	.footline {
+		font-size: 12px;
+		padding: 20px;
+		font-family: "Outfit", sans-serif;
+		text-transform: uppercase;
+		font-weight: lighter;
+		color: rgba(255, 255, 255, 0.8);
+		text-align: center;
+		margin: 0;
+	}
+
+	section {
+		&.text-image {
+			color: white;
+
+			.section-content {
+				color: white;
+				text-align: left;
+			}
+		}
+
+		&.portfolio {
+			.section-content {
+				width: 100%;
+				max-width: 600px;
+				text-align: left;
+			}
+
+			.featured-projects {
+				margin-top: 100px;
+
+				h3 {
+					color: white;
+					text-align: left;
+				}
+
+				.meta-section {
+					text-transform: uppercase;
+					font-weight: 300;
+					letter-spacing: 1px;
+					text-align: left;
+
+					a {
+						color: rgba(255, 255, 255, 0.6666);
+					}
+				}
+
+				.project-button {
+					width: 250px;
+					background: white;
+					color: $dxndre-black;
+					height: 60px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					margin-top: 1.5em;
+				}
 			}
 		}
 	}
@@ -463,6 +663,7 @@ img {
 // Buttons
 
 .wp-block-buttons {
+	margin-top: 2.5em;
 	gap: 16px;
 
 	.wp-block-button {
@@ -501,6 +702,10 @@ img {
 				border-color: transparent;
 				outline: none;
 				box-shadow: none;
+
+				&:hover {
+					background-color: darken($dxndre-red, 10%);
+				}
 			}
 		}
 
@@ -512,6 +717,37 @@ img {
 				outline: none;
 				color: white;
 				box-shadow: none;
+			}
+		}
+
+		&.tertiary {
+			.wp-block-button__link {
+				background-color: $dxndre-black;
+				background-image: none;
+				border-color: transparent;
+				outline: none;
+				box-shadow: none;
+
+				&:hover {
+					background-color: white;
+					color: $dxndre-black;
+				}
+			}
+		}
+
+		&.quaternary {
+			.wp-block-button__link {
+				background-color: white;
+				color: $dxndre-black;
+				background-image: none;
+				border-color: transparent;
+				outline: none;
+				box-shadow: none;
+
+				&:hover {
+					background-color: $dxndre-red;
+					color: white;
+				}
 			}
 		}
 	}
