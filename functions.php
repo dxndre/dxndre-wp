@@ -583,3 +583,12 @@ function dxndre_enqueue_google_fonts() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'dxndre_enqueue_google_fonts' );
+
+// Registering Footer Navigation Menus
+
+register_nav_menus([
+  'footer_work'      => __('Footer – Work', 'dxndre'),
+  'footer_services'  => __('Footer – Services', 'dxndre'),
+  'footer_personal'  => __('Footer – Personal', 'dxndre'),
+  'footer_contact'   => __('Footer – Get In Touch', 'dxndre'),
+]);

@@ -37,6 +37,20 @@ import * as bootstrap from 'bootstrap';
 	// Listen for scroll (passive for better performance) and run once on load
 	document.addEventListener('scroll', updateNavbarScrolled, { passive: true });
 	updateNavbarScrolled();
+
+	// Add 'Navigation Open' class to body when navbar is expanded
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const navbar = document.getElementById('navbar');
+
+		navbar.addEventListener('shown.bs.collapse', () => {
+			document.body.classList.add('nav-open');
+		});
+
+		navbar.addEventListener('hidden.bs.collapse', () => {
+			document.body.classList.remove('nav-open');
+		});
+	});
 })();
 
 

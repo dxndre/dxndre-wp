@@ -13,51 +13,120 @@
 				endif;
 			?>
 		</main><!-- /#main -->
-		<footer id="footer">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-6">
-						<p><?php printf( esc_html__( '&copy; %1$s %2$s. All rights reserved.', 'dxndre' ), wp_date( 'Y' ), get_bloginfo( 'name', 'display' ) ); ?></p>
+		<footer class="site-footer" role="contentinfo">
+			<div class="site-footer__inner">
+
+				<!-- Brand -->
+				<div class="site-footer__brand">
+				<span class="site-footer__logo">
+					<?php echo esc_html( get_bloginfo('name') ); ?>
+				</span>
+				</div>
+
+				<!-- Footer Columns -->
+				<div class="site-footer__columns">
+
+				<!-- Work -->
+				<nav class="site-footer__column" aria-label="Work">
+					<h4 class="site-footer__heading">Work</h4>
+					<?php
+					wp_nav_menu([
+						'theme_location' => 'footer_work',
+						'container'      => false,
+						'menu_class'     => 'site-footer__list',
+						'fallback_cb'    => false,
+					]);
+					?>
+				</nav>
+
+				<!-- Services -->
+				<nav class="site-footer__column" aria-label="Services">
+					<h4 class="site-footer__heading">Services</h4>
+					<?php
+					wp_nav_menu([
+						'theme_location' => 'footer_services',
+						'container'      => false,
+						'menu_class'     => 'site-footer__list',
+						'fallback_cb'    => false,
+					]);
+					?>
+				</nav>
+
+				<!-- Personal -->
+				<nav class="site-footer__column" aria-label="Personal">
+					<h4 class="site-footer__heading">Personal</h4>
+					<?php
+					wp_nav_menu([
+						'theme_location' => 'footer_personal',
+						'container'      => false,
+						'menu_class'     => 'site-footer__list',
+						'fallback_cb'    => false,
+					]);
+					?>
+				</nav>
+
+				<!-- Get In Touch -->
+				<nav class="site-footer__column" aria-label="Get in Touch">
+				<h4 class="site-footer__heading">Get In Touch</h4>
+				<?php
+				wp_nav_menu([
+					'theme_location' => 'footer_contact',
+					'container'      => false,
+					'menu_class'     => 'site-footer__list',
+						'fallback_cb'    => false,
+					]);
+					?>
+				</nav>
+
+				<!-- Client Portal -->
+				<div class="site-footer__column site-footer__column--portal">
+					<h4 class="site-footer__heading">Existing Client?</h4>
+					<p class="site-footer__text">
+					Manage your support tickets here.
+					</p>
+
+					<a href="<?php echo esc_url( site_url('/client-portal/') ); ?>"
+					class="site-footer__button">
+					Client Portal
+					</a>
+
+					<div class="site-footer__contact">
+					<h5 class="site-footer__subheading">Email</h5>
+					<a href="mailto:hello@dxndre.co.uk">
+						hello@dxndre.co.uk
+					</a>
 					</div>
+				</div>
 
-					<?php
-						if ( has_nav_menu( 'footer-menu' ) ) : // See function register_nav_menus() in functions.php
-							/*
-								Loading WordPress Custom Menu (theme_location) ... remove <div> <ul> containers and show only <li> items!!!
-								Menu name taken from functions.php!!! ... register_nav_menu( 'footer-menu', 'Footer Menu' );
-								!!! IMPORTANT: After adding all pages to the menu, don't forget to assign this menu to the Footer menu of "Theme locations" /wp-admin/nav-menus.php (on left side) ... Otherwise the themes will not know, which menu to use!!!
-							*/
-							wp_nav_menu(
-								array(
-									'container'       => 'nav',
-									'container_class' => 'col-md-6',
-									//'fallback_cb'     => 'WP_Bootstrap4_Navwalker_Footer::fallback',
-									'walker'          => new WP_Bootstrap4_Navwalker_Footer(),
-									'theme_location'  => 'footer-menu',
-									'items_wrap'      => '<ul class="menu nav justify-content-end">%3$s</ul>',
-								)
-							);
-						endif;
+				</div>
 
-						if ( is_active_sidebar( 'third_widget_area' ) ) :
-					?>
-						<div class="col-md-12">
-							<?php
-								dynamic_sidebar( 'third_widget_area' );
+				<!-- Footer Bottom -->
+				<div class="site-footer__bottom">
 
-								if ( current_user_can( 'manage_options' ) ) :
-							?>
-								<span class="edit-link"><a href="<?php echo esc_url( admin_url( 'widgets.php' ) ); ?>" class="badge bg-secondary"><?php esc_html_e( 'Edit', 'dxndre' ); ?></a></span><!-- Show Edit Widget link -->
-							<?php
-								endif;
-							?>
-						</div>
-					<?php
-						endif;
-					?>
-				</div><!-- /.row -->
-			</div><!-- /.container -->
-		</footer><!-- /#footer -->
+				<div class="site-footer__legal">
+					<a href="<?php echo esc_url( site_url('/privacy-policy/') ); ?>">
+					Privacy Policy
+					</a>
+					<a href="<?php echo esc_url( site_url('/terms-of-service/') ); ?>">
+					Terms of Service
+					</a>
+				</div>
+
+				<div class="site-footer__copyright">
+					© <?php echo date('Y'); ?>
+					<?php echo esc_html( get_bloginfo('name') ); ?>.
+					All Rights Reserved.
+				</div>
+
+				<div class="site-footer__social" aria-label="Social links">
+					<a href="#" aria-label="Instagram">Instagram</a>
+					<a href="#" aria-label="GitHub">GitHub</a>
+					<a href="#" aria-label="X">X</a>
+					<a href="#" aria-label="LinkedIn">LinkedIn</a>
+				</div>
+			</div>
+		</div>
+	</footer>
 	</div><!-- /#wrapper -->
 	<?php
 		wp_footer();
