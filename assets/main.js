@@ -51,6 +51,29 @@ import * as bootstrap from 'bootstrap';
 			document.body.classList.remove('nav-open');
 		});
 	});
+
+	// Add 'Viewport-Active' class to sections when in viewport
+	document.addEventListener('DOMContentLoaded', () => {
+	const sections = document.querySelectorAll('section');
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('viewport-active');
+				console.log('Section in viewport:', entry.target);
+			} else {
+				entry.target.classList.remove('viewport-active');
+			}
+		});
+		},
+		{
+		threshold: 0.35 // 35% of section visible
+		}
+	);
+
+	sections.forEach(section => observer.observe(section));
+});
 })();
 
 

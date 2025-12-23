@@ -566,6 +566,35 @@ img {
 	}
 
 	section {
+		opacity: 0;
+		transform: translateY(40px);
+		transition: opacity 0.8s ease, transform 0.8s ease;
+
+		@keyframes brightness-pulse {
+			0% {
+				filter: brightness(1);
+			}
+
+			50% {
+				filter: brightness(2);
+			}
+
+			100% {
+				filter: brightness(1);
+			}
+		}
+
+		&.viewport-active {
+			opacity: 1;
+			transform: translateY(0);
+
+			.hero-background {
+				& > img {
+					animation: brightness-pulse 10s ease-out infinite;
+				}
+			}
+		}
+
 		&.centered {
 			align-items: center;
 
