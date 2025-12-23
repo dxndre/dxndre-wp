@@ -496,6 +496,18 @@ img {
 	}
 
 	section {
+		&.centered {
+			align-items: center;
+
+			.section-content {
+				margin: 0 auto;
+				text-align: center;
+
+				.headline {
+					text-align: center;
+				}
+			}
+		}
 		&.text-image {
 			color: white;
 
@@ -525,9 +537,11 @@ img {
 					font-weight: 300;
 					letter-spacing: 1px;
 					text-align: left;
+					font-size: 14px;
+					margin-bottom: 4px;
 
 					a {
-						color: rgba(255, 255, 255, 0.6666);
+						color: rgba(255, 255, 255, 0.5);
 					}
 				}
 
@@ -541,6 +555,60 @@ img {
 					justify-content: center;
 					margin-top: 1.5em;
 				}
+			}
+		}
+
+		&.what-i-do {
+			.section-content {
+				width: 100%;
+				max-width: 600px;
+				text-align: left;
+			}
+
+			.service-boxes {
+				margin-top: 6em;
+
+				.wp-block-columns {
+					gap: 12px;
+					margin-bottom: 12px;
+				}
+
+				.service-box {
+					border: 1px solid rgba(255, 255, 255, 0.25);
+					align-content: end;
+					padding: 2em;
+					flex-wrap: wrap;
+					transition: 0.7s all ease;
+
+					p {
+						line-height: normal;
+						margin: 0;
+					}
+
+					img {
+						transform: scale(1);
+						transition: 0.7s all ease;
+					}
+
+					&:hover {
+						border-color: rgba(255, 255, 255, 0.6666);
+						transition: 0.3s all ease;
+
+						img {
+							transform: scale(1.1);
+							transition: 0.3s all ease;
+						}
+					}
+				}
+			}
+		}
+
+		&.pricing,
+		&.start-something {
+			.section-content {
+				width: 100%;
+				max-width: 600px;
+				text-align: left;
 			}
 		}
 	}
@@ -717,6 +785,11 @@ img {
 				outline: none;
 				color: white;
 				box-shadow: none;
+
+				&:hover {
+					background-color: white;
+					color: $dxndre-red;
+				}
 			}
 		}
 
