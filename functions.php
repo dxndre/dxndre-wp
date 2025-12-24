@@ -573,6 +573,7 @@ function dxndre_enqueue_google_fonts() {
 	$google_fonts_url = 'https://fonts.googleapis.com/css2'
 		. '?family=Space+Grotesk:wght@300;400;500;600;700'
 		. '&family=Outfit:wght@300;400;500;600;700'
+		. '&family=Handlee'
 		. '&display=swap';
 
 	wp_enqueue_style(
