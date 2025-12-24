@@ -656,6 +656,14 @@ img {
 		}
 
 		&.portfolio {
+			&.neg-margin {
+				margin-top: -30vh;
+
+				ul {
+					gap: 5em 1em;
+				}
+			}
+
 			.section-content {
 				width: 100%;
 				max-width: 600px;
@@ -669,7 +677,7 @@ img {
 					width: calc(100% - 12px);
 				}
 
-				h3 {
+				h3, p {
 					color: white;
 					text-align: left;
 				}
@@ -871,6 +879,68 @@ img {
 						// margin-left: 25vw;
 					}
 
+				}
+			}
+		}
+
+		&.persona {
+			.persona-boxes {
+				width: 100%;
+				// max-width: 900px;
+				text-align: left;
+				margin: 0 auto;
+				margin-top: 6em;
+
+				.wp-block-columns {
+					gap: 12px;
+					margin-bottom: 12px;
+				}
+
+				.persona-box {
+					border: 1px solid rgba(255, 255, 255, 0.25);
+					align-content: end;
+					padding: 2em;
+					flex-wrap: wrap;
+					transition: 0.7s all ease;
+
+					p {
+						line-height: normal;
+						margin: 0;
+					}
+
+					img {
+						transform: scale(1);
+						transition: 0.7s all ease;
+					}
+
+					&:hover {
+						border-color: rgba(255, 255, 255, 0.6666);
+						transition: 0.3s all ease;
+
+						img {
+							transform: scale(1.1);
+							transition: 0.3s all ease;
+						}
+					}
+				}
+			}
+		}
+
+		&.gallery {
+			color: white;
+			margin: 100px 0;
+
+			.section-content {
+				width: 100%;
+				max-width: 600px;
+				text-align: left;
+			}
+			
+			.wp-block-gallery {
+				margin-top: 7.5em;
+
+				figure {
+					height: 37.5vh;
 				}
 			}
 		}
