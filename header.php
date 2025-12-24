@@ -118,7 +118,10 @@
 	<main id="main" class=""<?php if ( isset( $navbar_position ) && 'fixed_top' === $navbar_position ) : echo ''; elseif ( isset( $navbar_position ) && 'fixed_bottom' === $navbar_position ) : echo ' style="padding-bottom: 100px;"'; endif; ?>>
 		<?php
 			// If Single or Archive (Category, Tag, Author or a Date based page).
-			if ( is_single() || is_archive() ) :
+			if (
+				is_single() && get_post_type() === 'post'
+				|| is_archive() && ! is_post_type_archive()
+			) :
 		?>
 			<div class="row">
 				<div class="col-md-8 col-sm-12">

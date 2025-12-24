@@ -1,6 +1,9 @@
 			<?php
 				// If Single or Archive (Category, Tag, Author or a Date based page).
-				if ( is_single() || is_archive() ) :
+				if (
+					is_single() && get_post_type() === 'post'
+					|| is_archive() && ! is_post_type_archive()
+				) :
 			?>
 					</div><!-- /.col -->
 

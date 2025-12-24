@@ -39,6 +39,7 @@ import * as bootstrap from 'bootstrap';
 	updateNavbarScrolled();
 
 	document.addEventListener('DOMContentLoaded', () => {
+
 		/* ==========================
 		   NAVBAR OPEN STATE
 		========================== */
@@ -117,5 +118,42 @@ import * as bootstrap from 'bootstrap';
 		);
 
 		counters.forEach(counter => counterObserver.observe(counter));
+
+		/* ==========================
+		   BODY STATE: CLIENT JOURNEY
+		========================== */
+		const body = document.body;
+		const journeySection = document.querySelector('.client-journey');
+		const techStackSection = document.querySelector('.tech-stack');
+
+		if (journeySection) {
+			const journeyObserver = new IntersectionObserver(
+				([entry]) => {
+					if (entry.isIntersecting) {
+						body.classList.add('client-journey-section');
+					} else {
+						body.classList.remove('client-journey-section');
+					}
+				},
+				{ threshold: 0.35 }
+			);
+
+			journeyObserver.observe(journeySection);
+		}
+
+		if (techStackSection) {
+			const techStackObserver = new IntersectionObserver(
+				([entry]) => {
+					if (entry.isIntersecting) {
+						body.classList.add('tech-stack-section');
+					} else {
+						body.classList.remove('tech-stack-section');
+					}
+				},
+				{ threshold: 0.35 }
+			);
+
+			techStackObserver.observe(techStackSection);
+		}
 	});
 })();

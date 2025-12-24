@@ -137,6 +137,71 @@ body {
 		}
 	}
 
+	&.single-project {
+		&.client-journey-section {
+			&::before {
+				opacity: 0;
+			}
+			&::after {
+				opacity: 1;
+			}
+		}
+
+		&.tech-stack-section {
+			&::before {
+				opacity: 0;
+			}
+			&::after {
+				opacity: 0;
+			}
+		}
+
+		#main {
+			padding-top: 0;
+
+			.entry-header {
+				display: flex;
+				align-items: end;
+				height: 400px;
+
+				.header-content {
+					h1 {
+						font-size: 48px;
+						color: white;
+					}
+				}
+			}
+		}
+
+		&::before,
+		&::after {
+			content: '';
+			background-color: #000000;
+			background-size: cover;
+			background-attachment: fixed;
+			background-position: center;
+			opacity: 1;
+			height: 100vh;
+			width: 100%;
+			left: 0;
+			top: 0;
+			position: fixed;
+			opacity: 1;
+			z-index: -1;
+			transition: 0.7s all ease;
+		}
+
+		&::before {
+			background-image: url(./img/single.png);
+			opacity: 1;
+		}
+
+		&::after {
+			background-image: url(./img/clientjourney.png);
+			opacity: 0;
+		}
+	}
+
 	/* If WP-Adminbar is visible */
 	&.admin-bar {
 		#header.fixed-top {
@@ -944,6 +1009,153 @@ img {
 				}
 			}
 		}
+
+		&.client-journey {
+
+			.client-journey {
+				position: relative;
+				padding: 8rem 0;
+
+				&__timeline {
+					position: relative;
+					max-width: 1200px;
+					margin: 0 auto;
+
+					// Vertical spine
+					&::before {
+						content: "";
+						position: absolute;
+						top: 0;
+						bottom: 0;
+						left: 50%;
+						width: 1px;
+						background: rgba(255, 255, 255, 0.2);
+						transform: translateX(-50%);
+					}
+				}
+			}
+
+			.journey-item {
+				color: white;
+				position: relative;
+				width: 45%;
+				margin-bottom: 6rem;
+
+				// Initial animation state
+				// opacity: 0;
+				transform: translateY(16px);
+				transition: opacity 0.8s ease, transform 0.8s ease;
+
+				&--left {
+					margin-right: auto;
+
+					.wp-block-group__inner-container {
+						h3 {
+							&::after {
+								content: "";
+								display: inline-block;
+								width: 30px;
+								height: 1px;
+								background: rgba(255, 255, 255, 0.2);
+								position: absolute;
+								right: -60px;
+								top: 15px;
+							}
+						}
+					}
+				}
+
+				&--right {
+					margin-left: auto;
+					text-align: left;
+
+					.wp-block-group__inner-container {
+						h3 {
+							&::before {
+								content: "";
+								display: inline-block;
+								width: 30px;
+								height: 1px;
+								background: rgba(255, 255, 255, 0.2);
+								position: absolute;
+								left: -60px;
+								top: 15px;
+							}
+						}
+					}
+					
+				}
+			}
+		}
+
+		&.tech-stack {
+			margin: 5em 0;
+
+			.section-content {
+				width: 100%;
+				max-width: 750px;
+				color: white;
+
+				.stack-list {
+					gap: 16px;
+					padding: 0;
+					margin-top: 3em;
+					display: inline-flex;
+					flex-wrap: wrap;
+					justify-content: center;
+
+					li {
+						list-style: none;
+						padding: 12px;
+						width: 175px;
+						background: white;
+						color: black;
+
+						&.html {
+							background: #4057EE;
+							background: linear-gradient(90deg, rgba(64, 87, 238, 1) 0%, rgba(100, 198, 255, 1) 100%);
+							color: white;
+						}
+
+						&.css {
+							background: #EE9740;
+							background: linear-gradient(90deg, rgba(238, 151, 64, 1) 0%, rgba(255, 100, 100, 1) 100%);
+							color: white;
+						}
+
+						&.php {
+							background: #437846;
+							background: linear-gradient(90deg, rgba(67, 120, 70, 1) 0%, rgba(54, 154, 104, 1) 100%);
+							color: white;
+						}
+
+						&.js {
+							background: #EE40E5;
+							background: linear-gradient(90deg, rgba(238, 64, 229, 1) 0%, rgba(255, 100, 100, 1) 100%);
+							color: white;
+						}
+
+						&.shopify {
+							background: #438c60;
+							background: linear-gradient(90deg, rgba(67, 140, 96, 1) 0%, rgba(122, 173, 255, 1) 100%);
+							color: white;
+						}
+
+						&.wordpress {
+							background: #CB0000;
+							background: linear-gradient(90deg, rgba(203, 0, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
+							color: white;
+						}
+
+						&.npm {
+							background: #9440EE;
+							background: linear-gradient(90deg, rgba(148, 64, 238, 1) 0%, rgba(59, 0, 255, 1) 100%);
+							color: white;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -1178,7 +1390,7 @@ footer {
 	.entry-content,
 	.post-navigation,
 	#comments-title {
-		margin: $grid-gutter-width 0;
+		// margin: $grid-gutter-width 0;
 	}
 }
 
