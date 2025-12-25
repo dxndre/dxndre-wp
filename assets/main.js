@@ -156,4 +156,44 @@ import * as bootstrap from 'bootstrap';
 			techStackObserver.observe(techStackSection);
 		}
 	});
+
+	/* ==========================
+	PROCESS STEP CYCLER (DEBUG MODE)
+	========================== */
+
+	const processSteps = document.querySelectorAll('.process-step');
+
+	if (processSteps.length) {
+		let currentIndex = 0;
+
+		// Clear any existing state
+		processSteps.forEach(step => step.classList.remove('is-active'));
+
+		// Activate first step
+		processSteps[0].classList.add('is-active');
+
+		setInterval(() => {
+			// Remove active from current
+			processSteps[currentIndex].classList.remove('is-active');
+
+			// Move to next
+			currentIndex = (currentIndex + 1) % processSteps.length;
+
+			// Add active to next
+			processSteps[currentIndex].classList.add('is-active');
+		}, 5000);
+	}
+
+	const processTrack = document.querySelector('.process-area > .wp-block-group__inner-container');
+
+	if (processTrack && processSteps.length) {
+		const stepDistance = 400 + 160; // 400px step + ~10em gap
+		let currentOffset = 0;
+
+		setInterval(() => {
+			currentOffset = (currentOffset + 1) % processSteps.length;
+
+			processTrack.style.transform = `translateX(-${currentOffset * stepDistance}px)`;
+		}, 5000);
+	}
 })();
