@@ -640,3 +640,134 @@ add_filter('body_class', function ($classes) {
 	}
 	return $classes;
 });
+
+
+// Client User Type
+
+add_action('init', function () {
+    if (!get_role('client')) {
+        add_role(
+            'client',
+            'Client',
+            [
+                'read' => true,
+                'edit_posts' => false,
+                'delete_posts' => false,
+                'upload_files' => false,
+            ]
+        );
+    }
+});
+
+// Prevent Clients from accessing wp-admin
+
+add_action('admin_init', function () {
+    if (
+        is_user_logged_in() &&
+        current_user_can('client') &&
+        !wp_doing_ajax()
+    ) {
+        wp_redirect(home_url('/dashboard'));
+        exit;
+    }
+});
+
+// Clients to use custom login screen 
+
+add_action('template_redirect', function () {
+    if (
+        is_page('login') &&
+        $_SERVER['REQUEST_METHOD'] === 'POST'
+    ) {
+        if (
+            !isset($_POST['dx_login_nonce']) ||
+            !wp_verify_nonce($_POST['dx_login_nonce'], 'dx_login')
+        ) {
+            wp_die('Security check failed');
+        }
+
+        $creds = [
+            'user_login'    => sanitize_text_field($_POST['username']),
+            'user_password' => $_POST['password'],
+            'remember'      => true
+        ];
+
+        $user = wp_signon($creds, false);
+
+        if (is_wp_error($user)) {
+            wp_redirect(add_query_arg('login', 'failed', wp_get_referer()));
+            exit;
+        }
+
+        wp_redirect(home_url('/dashboard'));
+        exit;
+    }
+});
+
+// Signup logic
+
+add_action('template_redirect', function () {
+    if (
+        is_page('signup') &&
+        $_SERVER['REQUEST_METHOD'] === 'POST'
+    ) {
+        if (
+            !isset($_POST['dx_signup_nonce']) ||
+            !wp_verify_nonce($_POST['dx_signup_nonce'], 'dx_signup')
+        ) {
+            wp_die('Security check failed');
+        }
+
+        $email = sanitize_email($_POST['email']);
+        $password = $_POST['password'];
+
+        if (email_exists($email)) {
+            wp_die('Email already registered');
+        }
+
+        $user_id = wp_create_user($email, $password, $email);
+
+        if (is_wp_error($user_id)) {
+            wp_die('Could not create user');
+        }
+
+        wp_update_user([
+            'ID' => $user_id,
+            'display_name' => sanitize_text_field($_POST['name']),
+            'role' => 'client'
+        ]);
+
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id);
+
+        wp_redirect(home_url('/dashboard'));
+        exit;
+    }
+});
+
+// Forgot Password Logic
+
+add_action('template_redirect', function () {
+    if (
+        is_page('forgot-password') &&
+        $_SERVER['REQUEST_METHOD'] === 'POST'
+    ) {
+        if (
+            !isset($_POST['dx_forgot_nonce']) ||
+            !wp_verify_nonce($_POST['dx_forgot_nonce'], 'dx_forgot')
+        ) {
+            wp_die('Security check failed');
+        }
+
+        $user = get_user_by('email', sanitize_email($_POST['email']));
+
+        if (!$user) {
+            wp_die('No user found');
+        }
+
+        retrieve_password($user->user_login);
+
+        wp_redirect(home_url('/login?reset=sent'));
+        exit;
+    }
+});
