@@ -593,3 +593,50 @@ register_nav_menus([
   'footer_personal'  => __('Footer – Personal', 'dxndre'),
   'footer_contact'   => __('Footer – Get In Touch', 'dxndre'),
 ]);
+
+/**
+ * Add page slug as a body class.
+ *
+ * @since v1.0
+ *
+ * @param array $classes Body classes.
+ *
+ * @return array
+ */
+function dxndre_add_page_slug_to_body_class( $classes ) {
+	if ( is_page() ) {
+		$page_slug = get_post_field( 'post_name', get_the_ID() );
+		$classes[] = 'page-' . $page_slug;
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'dxndre_add_page_slug_to_body_class' );
+
+// Build process
+
+$asset = include get_theme_file_path('build/index.asset.php');
+
+wp_enqueue_script(
+    'dxndre-theme',
+    get_theme_file_uri('build/index.js'),
+    $asset['dependencies'],
+    $asset['version'],
+    true
+);
+
+wp_enqueue_style(
+    'dxndre-theme',
+    get_theme_file_uri('build/index.css'),
+    [],
+    $asset['version']
+);
+
+// Frontend body class
+
+add_filter('body_class', function ($classes) {
+	if (!is_admin()) {
+		$classes[] = 'is-frontend';
+	}
+	return $classes;
+});

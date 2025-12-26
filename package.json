@@ -10,20 +10,25 @@
 		"url": "git://github.com/them-es/themes-starter.git"
 	},
 	"scripts": {
-		"watch": "webpack serve && wp-scripts start",
-		"build": "wp-scripts build"
+		"start": "wp-scripts start --webpack-src-dir=assets",
+		"build": "wp-scripts build --webpack-src-dir=assets"
 	},
 	"browserslist": [
 		"last 2 versions"
 	],
 	"dependencies": {
-		"bootstrap": "^5.3.1",
 		"@popperjs/core": "^2.11.8",
+		"bootstrap": "^5.3.8",
 		"jquery": "^3.7.0"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^27.7.0",
 		"path": "^0.12.7",
 		"webpack-remove-empty-scripts": "^1.0.4"
+	},
+	"main": "webpack.config.js",
+	"keywords": [],
+	"bugs": {
+		"url": "https://github.com/them-es/themes-starter/issues"
 	}
 }
