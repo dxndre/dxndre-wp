@@ -14360,13 +14360,15 @@ img {
   gap: 12px;
 }
 #header #navbar.navbar-collapse .menu-content ul li a {
-  color: white;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 20px;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
 #header #navbar.navbar-collapse .menu-content ul li a:hover {
-  color: #C42020;
+  color: white;
+  -webkit-transform: scale(1.25);
+          transform: scale(1.25);
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
@@ -15322,6 +15324,36 @@ img {
 }
 #main section.contact form .ff-el-group {
   margin-bottom: 0;
+}
+#main section.contact-card {
+  margin-top: 7.5vh;
+}
+#main section.contact-card .contact-card-single {
+  color: white;
+  padding: 2em 2.5em;
+  background: black;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+#main section.contact-card .contact-card-single.colourful {
+  background: #7B3F7D;
+  background: -webkit-gradient(linear, right top, left top, from(rgb(123, 63, 125)), to(rgb(225, 99, 74)));
+  background: linear-gradient(-90deg, rgb(123, 63, 125) 0%, rgb(225, 99, 74) 100%);
+}
+#main section.contact-card .contact-card-single .wp-block-columns {
+  margin: 0;
+}
+#main section.contact-card .contact-card-single .wp-block-columns .wp-block-buttons {
+  margin: 0;
+}
+#main section.contact-card .contact-card-single h4, #main section.contact-card .contact-card-single .h4 {
+  margin: 0;
+}
+#main section.contact-card .contact-card-single p {
+  margin: 0;
+}
+#main section.contact-card .contact-card-single p a {
+  color: white;
+  border-bottom: 1px solid white;
 }
 
 /* Footer */

@@ -449,12 +449,13 @@ img {
 
 					li {
 						a {
-							color: white;
+							color: rgba(255,255,255,0.5);
 							font-size: 20px;
 							transition: 0.7s all ease;
 
 							&:hover {
-								color: $dxndre-red;
+								color: white;
+								transform: scale(1.25);
 								transition: 0.3s all ease;
 							}
 						}
@@ -1424,6 +1425,43 @@ img {
 
 				.ff-el-group {
 					margin-bottom: 0;
+				}
+			}
+		}
+
+		&.contact-card {
+			margin-top: 7.5vh;
+
+			.contact-card-single {
+				color: white;
+				padding: 2em 2.5em;
+				background: black;
+				border: 1px solid rgba(255,255,255,0.125);
+
+				&.colourful {
+					background: #7B3F7D;
+					background: linear-gradient(90deg, rgba(123, 63, 125, 1) 0%, rgba(225, 99, 74, 1) 100%);
+				}
+
+				.wp-block-columns {
+					margin: 0;
+
+					.wp-block-buttons {
+						margin: 0;
+					}
+				}
+
+				h4 {
+					margin: 0;
+				}
+
+				p {
+					margin: 0;
+
+					a {
+						color: white;
+						border-bottom: 1px solid white;
+					}
 				}
 			}
 		}
