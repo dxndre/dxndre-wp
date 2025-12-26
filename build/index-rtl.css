@@ -14134,7 +14134,7 @@ body.is-frontend.page-pricing-calculator {
   background-position: center;
   background-attachment: fixed;
 }
-body.is-frontend.page-template-page-login {
+body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-forgot-password, body.is-frontend.page-template-page-signup {
   background-image: url(images/useraccount.fae622e5.png);
   background-size: cover;
   background-position: bottom;
@@ -15361,7 +15361,7 @@ img {
   color: white;
   border-bottom: 1px solid white;
 }
-#main section.auth-login {
+#main section.auth-login, #main section.auth-signup, #main section.auth-forgot {
   min-height: 75VH;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -15370,11 +15370,11 @@ img {
       -ms-flex-align: center;
           align-items: center;
 }
-#main section.auth-login h1, #main section.auth-login .h1 {
+#main section.auth-login h1, #main section.auth-login .h1, #main section.auth-signup h1, #main section.auth-signup .h1, #main section.auth-forgot h1, #main section.auth-forgot .h1 {
   font-size: 48px;
   color: white;
 }
-#main section.auth-login form {
+#main section.auth-login form, #main section.auth-signup form, #main section.auth-forgot form {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -15384,8 +15384,9 @@ img {
           flex-direction: column;
   gap: 12px;
   margin-top: 4em;
+  color: white;
 }
-#main section.auth-login form input[type=text], #main section.auth-login form input[type=password] {
+#main section.auth-login form input[type=text], #main section.auth-login form input[type=email], #main section.auth-login form input[type=password], #main section.auth-signup form input[type=text], #main section.auth-signup form input[type=email], #main section.auth-signup form input[type=password], #main section.auth-forgot form input[type=text], #main section.auth-forgot form input[type=email], #main section.auth-forgot form input[type=password] {
   color: white;
   width: 400px;
   background: transparent;
@@ -15395,27 +15396,27 @@ img {
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
-#main section.auth-login form input[type=text]::-webkit-input-placeholder, #main section.auth-login form input[type=password]::-webkit-input-placeholder {
+#main section.auth-login form input[type=text]::-webkit-input-placeholder, #main section.auth-login form input[type=email]::-webkit-input-placeholder, #main section.auth-login form input[type=password]::-webkit-input-placeholder, #main section.auth-signup form input[type=text]::-webkit-input-placeholder, #main section.auth-signup form input[type=email]::-webkit-input-placeholder, #main section.auth-signup form input[type=password]::-webkit-input-placeholder, #main section.auth-forgot form input[type=text]::-webkit-input-placeholder, #main section.auth-forgot form input[type=email]::-webkit-input-placeholder, #main section.auth-forgot form input[type=password]::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
-#main section.auth-login form input[type=text]::-moz-placeholder, #main section.auth-login form input[type=password]::-moz-placeholder {
+#main section.auth-login form input[type=text]::-moz-placeholder, #main section.auth-login form input[type=email]::-moz-placeholder, #main section.auth-login form input[type=password]::-moz-placeholder, #main section.auth-signup form input[type=text]::-moz-placeholder, #main section.auth-signup form input[type=email]::-moz-placeholder, #main section.auth-signup form input[type=password]::-moz-placeholder, #main section.auth-forgot form input[type=text]::-moz-placeholder, #main section.auth-forgot form input[type=email]::-moz-placeholder, #main section.auth-forgot form input[type=password]::-moz-placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
-#main section.auth-login form input[type=text]:-ms-input-placeholder, #main section.auth-login form input[type=password]:-ms-input-placeholder {
+#main section.auth-login form input[type=text]:-ms-input-placeholder, #main section.auth-login form input[type=email]:-ms-input-placeholder, #main section.auth-login form input[type=password]:-ms-input-placeholder, #main section.auth-signup form input[type=text]:-ms-input-placeholder, #main section.auth-signup form input[type=email]:-ms-input-placeholder, #main section.auth-signup form input[type=password]:-ms-input-placeholder, #main section.auth-forgot form input[type=text]:-ms-input-placeholder, #main section.auth-forgot form input[type=email]:-ms-input-placeholder, #main section.auth-forgot form input[type=password]:-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
-#main section.auth-login form input[type=text]::-ms-input-placeholder, #main section.auth-login form input[type=password]::-ms-input-placeholder {
+#main section.auth-login form input[type=text]::-ms-input-placeholder, #main section.auth-login form input[type=email]::-ms-input-placeholder, #main section.auth-login form input[type=password]::-ms-input-placeholder, #main section.auth-signup form input[type=text]::-ms-input-placeholder, #main section.auth-signup form input[type=email]::-ms-input-placeholder, #main section.auth-signup form input[type=password]::-ms-input-placeholder, #main section.auth-forgot form input[type=text]::-ms-input-placeholder, #main section.auth-forgot form input[type=email]::-ms-input-placeholder, #main section.auth-forgot form input[type=password]::-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
-#main section.auth-login form input[type=text]::placeholder, #main section.auth-login form input[type=password]::placeholder {
+#main section.auth-login form input[type=text]::placeholder, #main section.auth-login form input[type=email]::placeholder, #main section.auth-login form input[type=password]::placeholder, #main section.auth-signup form input[type=text]::placeholder, #main section.auth-signup form input[type=email]::placeholder, #main section.auth-signup form input[type=password]::placeholder, #main section.auth-forgot form input[type=text]::placeholder, #main section.auth-forgot form input[type=email]::placeholder, #main section.auth-forgot form input[type=password]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
-#main section.auth-login form input[type=text]:hover, #main section.auth-login form input[type=password]:hover {
+#main section.auth-login form input[type=text]:hover, #main section.auth-login form input[type=email]:hover, #main section.auth-login form input[type=password]:hover, #main section.auth-signup form input[type=text]:hover, #main section.auth-signup form input[type=email]:hover, #main section.auth-signup form input[type=password]:hover, #main section.auth-forgot form input[type=text]:hover, #main section.auth-forgot form input[type=email]:hover, #main section.auth-forgot form input[type=password]:hover {
   border-bottom: 1px solid rgba(255, 255, 255, 0.875);
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
-#main section.auth-login form input[type=text]:active, #main section.auth-login form input[type=text]:focus, #main section.auth-login form input[type=text]:focus-within, #main section.auth-login form input[type=password]:active, #main section.auth-login form input[type=password]:focus, #main section.auth-login form input[type=password]:focus-within {
+#main section.auth-login form input[type=text]:active, #main section.auth-login form input[type=text]:focus, #main section.auth-login form input[type=text]:focus-within, #main section.auth-login form input[type=email]:active, #main section.auth-login form input[type=email]:focus, #main section.auth-login form input[type=email]:focus-within, #main section.auth-login form input[type=password]:active, #main section.auth-login form input[type=password]:focus, #main section.auth-login form input[type=password]:focus-within, #main section.auth-signup form input[type=text]:active, #main section.auth-signup form input[type=text]:focus, #main section.auth-signup form input[type=text]:focus-within, #main section.auth-signup form input[type=email]:active, #main section.auth-signup form input[type=email]:focus, #main section.auth-signup form input[type=email]:focus-within, #main section.auth-signup form input[type=password]:active, #main section.auth-signup form input[type=password]:focus, #main section.auth-signup form input[type=password]:focus-within, #main section.auth-forgot form input[type=text]:active, #main section.auth-forgot form input[type=text]:focus, #main section.auth-forgot form input[type=text]:focus-within, #main section.auth-forgot form input[type=email]:active, #main section.auth-forgot form input[type=email]:focus, #main section.auth-forgot form input[type=email]:focus-within, #main section.auth-forgot form input[type=password]:active, #main section.auth-forgot form input[type=password]:focus, #main section.auth-forgot form input[type=password]:focus-within {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -15423,7 +15424,7 @@ img {
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
-#main section.auth-login form button.login {
+#main section.auth-login form button.login, #main section.auth-signup form button.login, #main section.auth-forgot form button.login {
   border: 1px solid white;
   background: white;
   color: black;
@@ -15442,11 +15443,40 @@ img {
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
-#main section.auth-login form button.login:hover {
+#main section.auth-login form button.login:hover, #main section.auth-signup form button.login:hover, #main section.auth-forgot form button.login:hover {
   background-color: transparent;
   color: white;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
+}
+#main section.auth-signup .terms-checkbox {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  gap: 12px;
+  margin: 1.5rem 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+#main section.auth-signup .terms-checkbox input {
+  margin-top: 12px;
+  margin-left: 12px;
+  margin-right: 8px;
+  -webkit-transform: scale(2.5);
+          transform: scale(2.5);
+}
+#main section.auth-signup .terms-checkbox span {
+  color: white;
+}
+#main section.auth-signup .terms-checkbox span a {
+  color: white;
+  border-bottom: 1px solid white;
+}
+#main section.auth-forgot .login-content p {
+  color: white;
 }
 #main section.auth-actions {
   color: white;
@@ -15514,6 +15544,9 @@ img {
   background: #7B3F7D;
   background: -webkit-gradient(linear, right top, left top, from(rgb(123, 63, 125)), to(rgb(225, 99, 74)));
   background: linear-gradient(-90deg, rgb(123, 63, 125) 0%, rgb(225, 99, 74) 100%);
+}
+#main section.auth-actions .auth-action.auth-action--login {
+  width: 50%;
 }
 
 /* Footer */

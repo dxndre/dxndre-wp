@@ -224,7 +224,9 @@ body.is-frontend {
 		background-attachment: fixed;
 	}
 
-	&.page-template-page-login {
+	&.page-template-page-login,
+	&.page-template-page-forgot-password,
+	&.page-template-page-signup {
 		background-image: url(img/useraccount.png);
 		background-size: cover;
 		background-position: bottom;
@@ -1473,7 +1475,9 @@ img {
 			}
 		}
 
-		&.auth-login {
+		&.auth-login,
+		&.auth-signup,
+		&.auth-forgot {
 			min-height: 75VH;
 			display: flex;
 			align-items: center;
@@ -1488,9 +1492,11 @@ img {
 				flex-direction: column;
 				gap: 12px;
 				margin-top: 4em;
+				color: white;
 
 				input {
 					&[type="text"],
+					&[type="email"],
 					&[type="password"] {
 						color: white;
 						width: 400px;
@@ -1544,6 +1550,41 @@ img {
 			}
 		}
 
+		&.auth-signup {
+			.terms-checkbox {
+				display: flex;
+				align-items: flex-start;
+				gap: 12px;
+				margin: 1.5rem 0;
+				font-size: 14px;
+				color: rgba(255,255,255,0.85);
+
+				input {
+					margin-top: 12px;
+					margin-right: 12px;
+					margin-left: 8px;
+					transform: scale(2.5);
+				}
+
+				span {
+					color: white;
+
+					a {
+						color: white;
+						border-bottom: 1px solid white;
+					}
+				}
+			}
+		}
+
+		&.auth-forgot {
+			.login-content {
+				p {
+					color: white;
+				}
+			}
+		}
+
 		&.auth-actions {
 			color: white;
 			display: flex;
@@ -1591,6 +1632,10 @@ img {
 				&.colourful {
 					background: #7B3F7D;
 					background: linear-gradient(90deg, rgba(123, 63, 125, 1) 0%, rgba(225, 99, 74, 1) 100%);
+				}
+
+				&.auth-action--login {
+					width: 50%;
 				}
 			}
 		}

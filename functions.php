@@ -771,3 +771,61 @@ add_action('template_redirect', function () {
         exit;
     }
 });
+
+// Handling Signups and saving ACF data to user profile
+
+add_action('template_redirect', function () {
+
+	if (!isset($_POST['dx_register_nonce'])) {
+		return;
+	}
+
+	if (!wp_verify_nonce($_POST['dx_register_nonce'], 'dx_register')) {
+		return;
+	}
+
+	$username   = sanitize_user($_POST['username']);
+	$email      = sanitize_email($_POST['email']);
+	$password   = $_POST['password'];
+	$password_2 = $_POST['password_repeat'];
+
+	$company    = sanitize_text_field($_POST['company'] ?? '');
+	$projectref = sanitize_text_field($_POST['projectref'] ?? '');
+
+	// Terms must be accepted
+	if (empty($_POST['terms'])) {
+		wp_die('You must accept the Terms of Service.');
+	}
+
+	// Password match
+	if ($password !== $password_2) {
+		wp_die('Passwords do not match.');
+	}
+
+	// Existing user checks
+	if (username_exists($username) || email_exists($email)) {
+		wp_die('User already exists.');
+	}
+
+	$user_id = wp_create_user($username, $password, $email);
+
+	if (is_wp_error($user_id)) {
+		wp_die($user_id->get_error_message());
+	}
+
+	// Assign role
+	wp_update_user([
+		'ID'   => $user_id,
+		'role' => 'subscriber' // or "client" if you create a custom role
+	]);
+
+	// ✅ Save ACF fields
+	if (function_exists('update_field')) {
+		update_field('company', $company, 'user_' . $user_id);
+		update_field('client_reference', $projectref, 'user_' . $user_id);
+	}
+
+	// Redirect on success
+	wp_redirect(add_query_arg('register', 'success', wp_get_referer()));
+	exit;
+});
