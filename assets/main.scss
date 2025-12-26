@@ -224,6 +224,13 @@ body.is-frontend {
 		background-attachment: fixed;
 	}
 
+	&.page-template-page-login {
+		background-image: url(img/useraccount.png);
+		background-size: cover;
+		background-position: bottom;
+		overflow-x: hidden;
+	}
+
 	/* If WP-Adminbar is visible */
 	&.admin-bar {
 		#header.fixed-top {
@@ -1462,6 +1469,128 @@ img {
 						color: white;
 						border-bottom: 1px solid white;
 					}
+				}
+			}
+		}
+
+		&.auth-login {
+			min-height: 75VH;
+			display: flex;
+			align-items: center;
+
+			h1 {
+				font-size: 48px;
+				color: white;
+			}
+
+			form {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				margin-top: 4em;
+
+				input {
+					&[type="text"],
+					&[type="password"] {
+						color: white;
+						width: 400px;
+						background: transparent;
+						border: none;
+						padding: 12px 0;
+						border-bottom: 1px solid rgba(255,255,255,0.5);
+						transition: 0.7s all ease;
+
+						&::placeholder {
+							color: rgba(255,255,255,0.5);
+						}
+
+						&:hover {
+							border-bottom: 1px solid rgba(255,255,255,0.875);
+							transition: 0.3s all ease;
+						}
+
+						&:active,
+						&:focus,
+						&:focus-within {
+							outline: none;
+							box-shadow: none;
+							border-bottom: 1px solid white;
+							transition: 0.3s all ease;
+						}
+						
+					}
+				}
+
+				button {
+					&.login {
+						border: 1px solid white;
+						background: white;
+						color: black;
+						width: 250px;
+						height: 60px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						margin-top: 2em;
+						transition: 0.7s all ease;
+
+						&:hover {
+							background-color: transparent;
+							color: white;
+							transition: 0.3s all ease;
+						}
+					}
+				}
+			}
+		}
+
+		&.auth-actions {
+			color: white;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 5em;
+
+			.auth-action {
+				display: flex;
+				background: black;
+				padding: 2em 2.5em;
+				width: 100%;
+				color: white;
+				background: black;
+				border: 1px solid rgba(255,255,255,0.125);
+				font-weight: lighter;
+				justify-content: space-between;
+				align-items: center;
+
+				.btn {
+					border: 1px solid white;
+					border-radius: 0;
+					height: 60px;
+					width: 200px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background-image: none;
+					background-color: transparent;
+					color: white;
+					transition: 0.7s all ease;
+
+					&:hover {
+						background-color: white;
+						color: black;
+						transition: 0.3s all ease;
+					}
+				}
+
+				h3, p {
+					margin: 0;
+				}
+
+				&.colourful {
+					background: #7B3F7D;
+					background: linear-gradient(90deg, rgba(123, 63, 125, 1) 0%, rgba(225, 99, 74, 1) 100%);
 				}
 			}
 		}
