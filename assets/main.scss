@@ -287,7 +287,11 @@ img {
 
 #header {
 	background: transparent;
-	padding: 40px 0;
+	padding: 20px 0;
+
+	@include media-breakpoint-up(md) {
+		padding: 40px 0;
+	}
 
 	&::after {
 		content: "";
@@ -327,6 +331,11 @@ img {
 			background-image: none;
 			outline: none;
 			box-shadow: none;
+			transform: scale(0.75);
+
+			@include media-breakpoint-up(sm) {
+				transform: scale(1);
+			}
 
 			&:hover {
 				transform: scale(1.01);
@@ -366,6 +375,11 @@ img {
 			justify-content: center;
 			align-items: center;
 			border: none;
+			transform: scale(0.75);
+
+			@include media-breakpoint-up(sm) {
+				transform: scale(1);
+			}
 
 			&:focus,
 			&:focus-visible,
@@ -490,8 +504,12 @@ img {
 
 	img {
 		height: 40px;
-		max-width: 200px;
+		max-width: 140px;
 		object-fit: contain;
+
+		@include media-breakpoint-up(md) {
+			max-width: 200px;
+		}
 	}
 }
 
@@ -579,16 +597,37 @@ img {
 			width: 100%;
 			max-width: 600px;
 			text-align: left;
+			padding: 0 1em;
+
+			@include media-breakpoint-up(md) {
+				padding: 0;
+			}
 
 			h2 {
-				font-size: 60px;
+				font-size: 32px !important;
 				margin-bottom: 16px;
+
+				@include media-breakpoint-up(md) {
+					font-size: 48px !important;
+				}
+
+				@include media-breakpoint-up(lg) {
+					font-size: 60px !important;
+				}
 			}
 
 			p {
-				font-size: 20px;
+				font-size: 16px;
 				font-weight: 300;
 				margin-bottom: 24px;
+
+				@include media-breakpoint-up(md) {
+					font-size: 18px;
+				}
+
+				@include media-breakpoint-up(lg) {
+					font-size: 20px;
+				}
 			}
 		}
 	}
@@ -716,6 +755,11 @@ img {
 			.section-content {
 				color: white;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.tools {
@@ -755,10 +799,20 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.featured-projects {
 				margin-top: 100px;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 
 				.project-info {
 					width: calc(100% - 12px);
@@ -834,6 +888,11 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.service-boxes {
@@ -881,6 +940,11 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 		}
 
@@ -937,14 +1001,23 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.quotes-area {
 				.quote-grid {
 					display: grid;
-					grid-template-columns: repeat(3, 1fr);
+					grid-template-columns: repeat(1, 1fr);
 					gap: 3rem;
 					margin: 5em 0;
+
+					@include media-breakpoint-up(md) {
+						grid-template-columns: repeat(3, 1fr);
+					}
 				}
 
 				.quote {
@@ -956,6 +1029,12 @@ img {
 					// transform: translateY(12px);
 					border-left: none;
 					transition: opacity 0.8s ease, transform 0.8s ease;
+					padding-left: 0;
+
+					@include media-breakpoint-up(md) {
+						grid-template-columns: repeat(3, 1fr);
+						padding-left: 1em;
+					}
 
 					p {
 						font-size: 20px;
@@ -1022,6 +1101,11 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 			
 			.wp-block-gallery {
@@ -1118,6 +1202,11 @@ img {
 				width: 100%;
 				max-width: 750px;
 				color: white;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 
 				.stack-list {
 					gap: 16px;
@@ -1193,6 +1282,11 @@ img {
 				width: 100%;
 				max-width: 600px;
 				text-align: left;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.featured-projects {
@@ -1229,6 +1323,11 @@ img {
 				max-width: 600px;
 				text-align: left;
 				font-weight: 300;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 			}
 
 			.process-area {

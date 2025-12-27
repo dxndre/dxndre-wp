@@ -77,7 +77,8 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     }, {
-      threshold: 0.35
+      threshold: 0.1,
+      rootMargin: '-20% 0px -20% 0px'
     });
     sections.forEach(function (section) {
       return sectionObserver.observe(section);

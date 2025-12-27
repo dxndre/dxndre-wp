@@ -14184,7 +14184,12 @@ img {
 /* Header */
 #header {
   background: transparent;
-  padding: 40px 0;
+  padding: 20px 0;
+}
+@media (min-width: 768px) {
+  #header {
+    padding: 40px 0;
+  }
 }
 #header::after {
   content: "";
@@ -14229,6 +14234,14 @@ img {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
+  -webkit-transform: scale(0.75);
+          transform: scale(0.75);
+}
+@media (min-width: 576px) {
+  #header .dxndre-nav-left .header-search {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
 }
 #header .dxndre-nav-left .header-search:hover {
   -webkit-transform: scale(1.01);
@@ -14283,6 +14296,14 @@ img {
       -ms-flex-align: center;
           align-items: center;
   border: none;
+  -webkit-transform: scale(0.75);
+          transform: scale(0.75);
+}
+@media (min-width: 576px) {
+  #header .dxndre-nav-right .navbar-toggler {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
 }
 #header .dxndre-nav-right .navbar-toggler:focus, #header .dxndre-nav-right .navbar-toggler:focus-visible, #header .dxndre-nav-right .navbar-toggler:focus-within {
   outline: none;
@@ -14393,9 +14414,14 @@ img {
 }
 .navbar-brand img {
   height: 40px;
-  max-width: 200px;
+  max-width: 140px;
   -o-object-fit: contain;
      object-fit: contain;
+}
+@media (min-width: 768px) {
+  .navbar-brand img {
+    max-width: 200px;
+  }
 }
 
 .navbar-static-top {
@@ -14492,15 +14518,41 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main .hero .cover-content {
+    padding: 0;
+  }
 }
 #main .hero .cover-content h2, #main .hero .cover-content .h2 {
-  font-size: 60px;
+  font-size: 32px !important;
   margin-bottom: 16px;
 }
+@media (min-width: 768px) {
+  #main .hero .cover-content h2, #main .hero .cover-content .h2 {
+    font-size: 48px !important;
+  }
+}
+@media (min-width: 992px) {
+  #main .hero .cover-content h2, #main .hero .cover-content .h2 {
+    font-size: 60px !important;
+  }
+}
 #main .hero .cover-content p {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 300;
   margin-bottom: 24px;
+}
+@media (min-width: 768px) {
+  #main .hero .cover-content p {
+    font-size: 18px;
+  }
+}
+@media (min-width: 992px) {
+  #main .hero .cover-content p {
+    font-size: 20px;
+  }
 }
 #main .cover-content {
   text-align: right;
@@ -14668,6 +14720,12 @@ img {
 #main section.text-image .section-content {
   color: white;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content {
+    padding: 0;
+  }
 }
 #main section.text-image .tools > .wp-block-group__inner-container {
   display: -webkit-box;
@@ -14701,9 +14759,21 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.portfolio .section-content {
+    padding: 0;
+  }
 }
 #main section.portfolio .featured-projects {
   margin-top: 100px;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.portfolio .featured-projects {
+    padding: 0;
+  }
 }
 #main section.portfolio .featured-projects .project-info {
   width: calc(100% - 12px);
@@ -14770,6 +14840,12 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.what-i-do .section-content {
+    padding: 0;
+  }
 }
 #main section.what-i-do .service-boxes {
   margin-top: 6em;
@@ -14814,6 +14890,12 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.pricing .section-content, #main section.start-something .section-content {
+    padding: 0;
+  }
 }
 #main section.stats .stats-table {
   width: 100%;
@@ -14850,14 +14932,26 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.what-i-believe .section-content {
+    padding: 0;
+  }
 }
 #main section.what-i-believe .quotes-area .quote-grid {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: (1fr)[3];
-  grid-template-columns: repeat(3, 1fr);
+  -ms-grid-columns: (1fr)[1];
+  grid-template-columns: repeat(1, 1fr);
   gap: 3rem;
   margin: 5em 0;
+}
+@media (min-width: 768px) {
+  #main section.what-i-believe .quotes-area .quote-grid {
+    -ms-grid-columns: (1fr)[3];
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 #main section.what-i-believe .quotes-area .quote {
   font-family: "Handlee", cursive;
@@ -14869,6 +14963,14 @@ img {
   transition: opacity 0.8s ease, -webkit-transform 0.8s ease;
   transition: opacity 0.8s ease, transform 0.8s ease;
   transition: opacity 0.8s ease, transform 0.8s ease, -webkit-transform 0.8s ease;
+  padding-right: 0;
+}
+@media (min-width: 768px) {
+  #main section.what-i-believe .quotes-area .quote {
+    -ms-grid-columns: (1fr)[3];
+    grid-template-columns: repeat(3, 1fr);
+    padding-right: 1em;
+  }
 }
 #main section.what-i-believe .quotes-area .quote p {
   font-size: 20px;
@@ -14926,6 +15028,12 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.gallery .section-content {
+    padding: 0;
+  }
 }
 #main section.gallery .wp-block-gallery {
   margin-top: 7.5em;
@@ -14999,6 +15107,12 @@ img {
   width: 100%;
   max-width: 750px;
   color: white;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.tech-stack .section-content {
+    padding: 0;
+  }
 }
 #main section.tech-stack .section-content .stack-list {
   gap: 16px;
@@ -15072,6 +15186,12 @@ img {
   width: 100%;
   max-width: 600px;
   text-align: right;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.services .section-content {
+    padding: 0;
+  }
 }
 #main section.services .featured-projects {
   margin-top: 100px;
@@ -15098,6 +15218,12 @@ img {
   max-width: 600px;
   text-align: right;
   font-weight: 300;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.process .section-content {
+    padding: 0;
+  }
 }
 #main section.process .process-area {
   display: -webkit-box;

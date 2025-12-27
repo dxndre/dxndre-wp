@@ -70,7 +70,10 @@ import * as bootstrap from 'bootstrap';
 					}
 				});
 			},
-			{ threshold: 0.35 }
+			{ 
+				threshold: 0.1,
+  				rootMargin: '-20% 0px -20% 0px'
+			}
 		);
 
 		sections.forEach(section => sectionObserver.observe(section));
