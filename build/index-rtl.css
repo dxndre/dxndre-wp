@@ -14140,6 +14140,14 @@ body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-f
   background-position: bottom;
   overflow-x: hidden;
 }
+body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
+  margin-top: 15vh;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
+    margin-top: 0;
+  }
+}
 body.is-frontend {
   /* If WP-Adminbar is visible */
 }
@@ -14727,6 +14735,35 @@ img {
     padding: 0;
   }
 }
+#main section.text-image .section-content h2, #main section.text-image .section-content .h2 {
+  font-size: 28px !important;
+  margin-bottom: 16px;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content h2, #main section.text-image .section-content .h2 {
+    font-size: 36px !important;
+  }
+}
+@media (min-width: 992px) {
+  #main section.text-image .section-content h2, #main section.text-image .section-content .h2 {
+    font-size: 48px !important;
+  }
+}
+#main section.text-image .section-content p {
+  font-size: 16px;
+  font-weight: 300;
+  margin-bottom: 24px;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content p {
+    font-size: 18px;
+  }
+}
+@media (min-width: 992px) {
+  #main section.text-image .section-content p {
+    font-size: 20px;
+  }
+}
 #main section.text-image .tools > .wp-block-group__inner-container {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -14915,6 +14952,14 @@ img {
 }
 #main section.about {
   margin: 100px auto;
+}
+#main section.about .section-content {
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.about .section-content {
+    padding: 0;
+  }
 }
 #main section.about .wp-block-media-text {
   margin: 7.5em 0;
@@ -15195,6 +15240,12 @@ img {
 }
 #main section.services .featured-projects {
   margin-top: 100px;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.services .featured-projects {
+    padding: 0;
+  }
 }
 #main section.services .featured-projects .project-info {
   width: calc(100% - 12px);
@@ -15297,6 +15348,14 @@ img {
 #main section.process .process-area .process-step .step-heading {
   position: relative;
 }
+#main section.calculator {
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.calculator {
+    padding: 0;
+  }
+}
 #main section.calculator.neg-margin {
   margin-top: -20vh;
 }
@@ -15322,12 +15381,26 @@ img {
   transition: 0.3s all ease;
 }
 #main section.contact form .contact-form-inner-container {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: stretch;
       -ms-flex-align: stretch;
           align-items: stretch;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.contact form .contact-form-inner-container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    padding: 0;
+  }
 }
 #main section.contact form .contact-form-inner-container .ff-t-column-1 {
   gap: 12px 0;
@@ -15356,6 +15429,12 @@ img {
 }
 #main section.contact form .bottom-container {
   margin-top: 3em;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  #main section.contact form .bottom-container {
+    padding: 0;
+  }
 }
 #main section.contact form .bottom-container .ff-el-form-check-input {
   -webkit-transform: scale(2.5);
@@ -15455,7 +15534,14 @@ img {
   padding: 12px;
 }
 #main section.contact form .ff-el-group {
+  margin-top: 12px;
   margin-bottom: 0;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  #main section.contact form .ff-el-group {
+    margin-top: 0;
+  }
 }
 #main section.contact-card {
   margin-top: 7.5vh;

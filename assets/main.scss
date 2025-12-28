@@ -233,6 +233,23 @@ body.is-frontend {
 		overflow-x: hidden;
 	}
 
+	&.page-about,
+	&.page-contact {
+		#main {
+			section {
+				&.text-image {
+					.section-content {
+						margin-top: 15vh;
+
+						@include media-breakpoint-up(md) {
+							margin-top: 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/* If WP-Adminbar is visible */
 	&.admin-bar {
 		#header.fixed-top {
@@ -760,6 +777,33 @@ img {
 				@include media-breakpoint-up(md) {
 					padding: 0;
 				}
+
+				h2 {
+					font-size: 28px !important;
+					margin-bottom: 16px;
+
+					@include media-breakpoint-up(md) {
+						font-size: 36px !important;
+					}
+
+					@include media-breakpoint-up(lg) {
+						font-size: 48px !important;
+					}
+				}
+
+				p {
+					font-size: 16px;
+					font-weight: 300;
+					margin-bottom: 24px;
+
+					@include media-breakpoint-up(md) {
+						font-size: 18px;
+					}
+
+					@include media-breakpoint-up(lg) {
+						font-size: 20px;
+					}
+				}
 			}
 
 			.tools {
@@ -974,6 +1018,14 @@ img {
 
 		&.about {
 			margin: 100px auto;
+
+			.section-content {
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
+			}
 
 			.wp-block-media-text {
 				margin: 7.5em 0;
@@ -1291,6 +1343,11 @@ img {
 
 			.featured-projects {
 				margin-top: 100px;
+				padding: 0 1em;
+
+				@include media-breakpoint-up(md) {
+					padding: 0;
+				}
 
 				.project-info {
 					width: calc(100% - 12px);
@@ -1390,6 +1447,12 @@ img {
 		}
 
 		&.calculator {
+			padding: 0 1em;
+
+			@include media-breakpoint-up(md) {
+				padding: 0;
+			}
+
 			&.neg-margin {
 				margin-top: -20vh;
 			}
@@ -1421,8 +1484,15 @@ img {
 				}
 
 				.contact-form-inner-container {
+					flex-direction: column;
 					display: flex;
 					align-items: stretch;
+					padding: 0 1em;
+
+					@include media-breakpoint-up(md) {
+						flex-direction: row;
+						padding: 0;
+					}
 
 					.ff-t-column-1 {
 						gap: 12px 0;
@@ -1448,6 +1518,11 @@ img {
 
 				.bottom-container {
 					margin-top: 3em;
+					padding: 0 1em;
+
+					@include media-breakpoint-up(md) {
+						padding: 0;
+					}
 
 					.ff-el-form-check-input {
 						transform: scale(2.5);
@@ -1532,7 +1607,13 @@ img {
 				}
 
 				.ff-el-group {
+					margin-top: 12px;
 					margin-bottom: 0;
+					width: 100%;
+
+					@include media-breakpoint-up(md) {
+						margin-top: 0;
+					}
 				}
 			}
 		}
