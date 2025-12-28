@@ -14692,6 +14692,7 @@ img {
   opacity: 0;
   -webkit-transform: translateY(40px);
           transform: translateY(40px);
+  border: none !important;
   -webkit-transition: opacity 0.8s ease, -webkit-transform 0.8s ease;
   transition: opacity 0.8s ease, -webkit-transform 0.8s ease;
   transition: opacity 0.8s ease, transform 0.8s ease;

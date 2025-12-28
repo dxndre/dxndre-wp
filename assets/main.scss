@@ -742,6 +742,7 @@ img {
 	section {
 		opacity: 0;
 		transform: translateY(40px);
+		border: none !important;
 		transition: opacity 0.8s ease, transform 0.8s ease;
 
 		@keyframes brightness-pulse {
