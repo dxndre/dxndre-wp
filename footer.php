@@ -98,7 +98,7 @@
 					Manage your support tickets here.
 					</p>
 
-					<a href="<?php echo esc_url( site_url('/client-portal/') ); ?>"
+					<a href="<?php echo esc_url( site_url('/dashboard/') ); ?>"
 					class="site-footer-button">
 					Client Portal
 					</a>

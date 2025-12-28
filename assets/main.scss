@@ -231,6 +231,10 @@ body.is-frontend {
 		background-size: cover;
 		background-position: bottom;
 		overflow-x: hidden;
+
+		#main {
+			overflow-x: hidden;
+		}
 	}
 
 	&.page-about,
@@ -551,10 +555,12 @@ img {
 
 	@keyframes colour-up {
 		0% {
+			transform: translateY(-10vh);
 			filter: saturate(0);
 		}
 
 		100% {
+			transform: translateY(0);
 			filter: saturate(1);
 		}
 	}
@@ -604,7 +610,7 @@ img {
 
 		&.hero-foreground {
 			img {
-				animation: colour-up 2.5s ease-out forwards;
+				animation: colour-up 2.5s ease-in-out forwards;
 			}
 		}
 	}
@@ -655,13 +661,18 @@ img {
 
 	.footline {
 		font-size: 12px;
+		letter-spacing: 1px;
 		padding: 20px;
 		font-family: "Outfit", sans-serif;
 		text-transform: uppercase;
 		font-weight: lighter;
-		color: rgba(255, 255, 255, 0.8);
+		color: rgba(255, 255, 255, 0.5);
 		text-align: center;
 		margin: 0;
+
+		@include media-breakpoint-up(md) {
+			font-size: 16px;
+		}
 	}
 
 	.identity-scale {
@@ -1029,6 +1040,11 @@ img {
 
 			.wp-block-media-text {
 				margin: 7.5em 0;
+				gap: 2em;
+
+				@include media-breakpoint-up(md) {
+					gap: 0;
+				}
 
 				&.has-media-on-the-right {
 					.wp-block-media-text__content {
@@ -1658,9 +1674,17 @@ img {
 		&.auth-login,
 		&.auth-signup,
 		&.auth-forgot {
-			min-height: 75VH;
+			min-height: 50vh;
 			display: flex;
 			align-items: center;
+			flex-direction: column;
+			margin-top: 15vh;
+
+			@include media-breakpoint-up(md) {
+				flex-direction: row;
+				margin-top: 0;
+				min-height: 75vh;
+			}
 
 			h1 {
 				font-size: 48px;
@@ -1768,10 +1792,14 @@ img {
 		&.auth-actions {
 			color: white;
 			display: flex;
-			flex-direction: row;
 			justify-content: space-between;
 			gap: 12px;
 			margin-bottom: 5em;
+			flex-direction: column;
+
+			@include media-breakpoint-up(md) {
+				flex-direction: row;
+			}
 
 			.auth-action {
 				display: flex;

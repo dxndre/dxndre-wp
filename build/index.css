@@ -14166,6 +14166,9 @@ body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-f
   background-position: bottom;
   overflow-x: hidden;
 }
+body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main {
+  overflow-x: hidden;
+}
 body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
   margin-top: 15vh;
 }
@@ -14485,20 +14488,28 @@ img {
 }
 @-webkit-keyframes colour-up {
   0% {
+    -webkit-transform: translateY(-10vh);
+            transform: translateY(-10vh);
     -webkit-filter: saturate(0);
             filter: saturate(0);
   }
   100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
     -webkit-filter: saturate(1);
             filter: saturate(1);
   }
 }
 @keyframes colour-up {
   0% {
+    -webkit-transform: translateY(-10vh);
+            transform: translateY(-10vh);
     -webkit-filter: saturate(0);
             filter: saturate(0);
   }
   100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
     -webkit-filter: saturate(1);
             filter: saturate(1);
   }
@@ -14545,8 +14556,8 @@ img {
           animation: brightness-up 5s ease-out forwards;
 }
 #main .wp-block-cover.hero-foreground img {
-  -webkit-animation: colour-up 2.5s ease-out forwards;
-          animation: colour-up 2.5s ease-out forwards;
+  -webkit-animation: colour-up 2.5s ease-in-out forwards;
+          animation: colour-up 2.5s ease-in-out forwards;
 }
 #main .hero .cover-content {
   width: 100%;
@@ -14593,13 +14604,19 @@ img {
 }
 #main .footline {
   font-size: 12px;
+  letter-spacing: 1px;
   padding: 20px;
   font-family: "Outfit", sans-serif;
   text-transform: uppercase;
   font-weight: lighter;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.5);
   text-align: center;
   margin: 0;
+}
+@media (min-width: 768px) {
+  #main .footline {
+    font-size: 16px;
+  }
 }
 #main .identity-scale {
   display: -webkit-box;
@@ -14989,6 +15006,12 @@ img {
 }
 #main section.about .wp-block-media-text {
   margin: 7.5em 0;
+  gap: 2em;
+}
+@media (min-width: 768px) {
+  #main section.about .wp-block-media-text {
+    gap: 0;
+  }
 }
 #main section.about .wp-block-media-text.has-media-on-the-right .wp-block-media-text__content {
   padding-left: 0;
@@ -15600,13 +15623,28 @@ img {
   border-bottom: 1px solid white;
 }
 #main section.auth-login, #main section.auth-signup, #main section.auth-forgot {
-  min-height: 75VH;
+  min-height: 50vh;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-top: 15vh;
+}
+@media (min-width: 768px) {
+  #main section.auth-login, #main section.auth-signup, #main section.auth-forgot {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    margin-top: 0;
+    min-height: 75vh;
+  }
 }
 #main section.auth-login h1, #main section.auth-login .h1, #main section.auth-signup h1, #main section.auth-signup .h1, #main section.auth-forgot h1, #main section.auth-forgot .h1 {
   font-size: 48px;
@@ -15721,15 +15759,23 @@ img {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
   gap: 12px;
   margin-bottom: 5em;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+@media (min-width: 768px) {
+  #main section.auth-actions {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
 }
 #main section.auth-actions .auth-action {
   display: -webkit-box;
