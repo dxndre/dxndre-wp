@@ -218,7 +218,8 @@ body.is-frontend {
 	}
 
 	&.page-pricing-calculator {
-		background-image: url(./img/calcbg.png);
+		background-image: url(./img/calcbg2.jpg);
+		background-color: #180a2c;
 		background-size: cover;
 		background-position: center;
 		background-attachment: fixed;
@@ -686,10 +687,13 @@ img {
 		letter-spacing: 1px;
 		font-weight: 300;
 		font-size: 14px;
-
-		// Prevent accidental selection
+		margin-top: 5em;
 		user-select: none;
 		pointer-events: none;
+
+		@include media-breakpoint-up(md) {
+			margin-top: 0;
+		}
 
 		@keyframes float-up {
 			0%, 100% {
@@ -701,9 +705,9 @@ img {
 				transform: translateY(-4px);
 				opacity: 1;
 			}
-			}
+		}
 
-			@keyframes float-down {
+		@keyframes float-down {
 			0%, 100% {
 				transform: translateY(0);
 				opacity: 0.6;
@@ -760,7 +764,7 @@ img {
 
 			.hero-background {
 				& > img {
-					animation: brightness-pulse 20s ease-out infinite;
+					animation: brightness-pulse 40s ease-out infinite;
 				}
 			}
 		}
@@ -826,16 +830,21 @@ img {
 
 				.tool {
 					p {
+						font-size: 16px;
 						font-weight: 300;
 					}
 
 					hr {
-						margin-bottom: 0;
-						background: #ffffff;
-						background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 71%, rgba(255, 255, 255, 0) 100%);
-						height: 3px;
-						color: transparent;
-						opacity: 0.33;
+						margin: 0;
+						height: 0;              // important
+						border: 0;
+						border-top: 1px solid;
+						border-image: linear-gradient(
+							90deg,
+							rgba(255, 255, 255, 0.8) 0%,
+							rgba(255, 255, 255, 0) 70%
+						) 1;
+						opacity: 0.6;
 					}
 				}
 			}
@@ -931,6 +940,13 @@ img {
 						a {
 							color: white;
 							border: 1px solid white;
+							transition: 0.7s all ease;
+
+							&:hover {
+								color: black;
+								background-color: white;
+								transition: 0.3s all ease;
+							}
 						}
 						
 					}
@@ -963,7 +979,16 @@ img {
 					align-content: end;
 					padding: 2em;
 					flex-wrap: wrap;
+					min-height: 200px !important;
 					transition: 0.7s all ease;
+
+					@include media-breakpoint-up(md) {
+						min-height: 400px !important;
+					}
+
+					@include media-breakpoint-up(lg) {
+						min-height: 630px !important;
+					}
 
 					p {
 						line-height: normal;
@@ -1030,6 +1055,12 @@ img {
 		&.about {
 			margin: 100px auto;
 
+			.wp-block-group__inner-container {
+				> .wp-block-group {
+					padding: 0;
+				}
+			}
+
 			.section-content {
 				padding: 0 1em;
 
@@ -1048,13 +1079,21 @@ img {
 
 				&.has-media-on-the-right {
 					.wp-block-media-text__content {
-						padding-left: 0;
+						padding: 0 1em;
+
+						@include media-breakpoint-up(md) {
+							padding-left: 0;
+						}
 					}
 				}
 
 				&:not(.has-media-on-the-right) {
 					.wp-block-media-text__content {
-						padding-right: 0;
+						padding: 0 1em;
+
+						@include media-breakpoint-up(md) {
+							padding-right: 0;
+						}
 					}
 				}
 				
@@ -1082,9 +1121,11 @@ img {
 					grid-template-columns: repeat(1, 1fr);
 					gap: 3rem;
 					margin: 5em 0;
+					padding: 0 1em;
 
 					@include media-breakpoint-up(md) {
 						grid-template-columns: repeat(3, 1fr);
+						padding: 0;
 					}
 				}
 
@@ -1136,7 +1177,18 @@ img {
 					align-content: end;
 					padding: 2em;
 					flex-wrap: wrap;
+					min-height: 275px !important;
 					transition: 0.7s all ease;
+
+					@include media-breakpoint-up(md) {
+						grid-template-columns: repeat(3, 1fr);
+						min-height: 400px !important;
+						padding-left: 1em;
+					}
+
+					@include media-breakpoint-up(lg) {
+						min-height: 630px !important;
+					}
 
 					p {
 						line-height: normal;
