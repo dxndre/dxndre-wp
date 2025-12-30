@@ -192,6 +192,30 @@ __webpack_require__.r(__webpack_exports__);
       processTrack.style.transform = "translateX(-".concat(currentOffset * stepDistance, "px)");
     }, 5000);
   }
+
+  // Duplicate Footnotes at runtime 
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var track = document.querySelector('.footline-track');
+    var item = track === null || track === void 0 ? void 0 : track.querySelector('.footline');
+    if (!track || !item) return;
+    var DUPLICATES = 2;
+    for (var i = 0; i < DUPLICATES; i++) {
+      track.appendChild(item.cloneNode(true));
+    }
+  });
+
+  // Remove 'collapsing' class from navbar 
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    navbar.addEventListener('show.bs.collapse', function () {
+      requestAnimationFrame(function () {
+        navbar.classList.remove('collapsing');
+      });
+    });
+  });
 })();
 
 /***/ }),

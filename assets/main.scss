@@ -207,7 +207,8 @@ body.is-frontend {
 		}
 
 		&::before {
-			background-image: url(./img/single.png);
+			// background-image: url(./img/single.png);
+			background-image: linear-gradient(110.6deg, rgba(4, 20, 51, 1) 11.3%, rgb(50 48 76) 91.7%);
 			opacity: 1;
 		}
 
@@ -454,22 +455,33 @@ img {
 	#navbar {
 		&.navbar-collapse {
 			position: fixed;
-			// width: 500px;
 			width: 100%;
 			height: 100vh;
 			background: transparent;
 			backdrop-filter: blur(125px);
 			top: 0;
 			left: 0;
-			// right: -500px;
 			opacity: 0;
 			padding: 3em;
 			display: flex;
 			justify-content: center;
 			text-align: center;
-			box-shadow: 0px 0px 50px -20px transparent;
 			pointer-events: none;
 			transition: 0.7s all ease;
+
+			&.collapsing {
+				height: 100vh !important;
+				// transition: none !important;
+				opacity: 1;
+				pointer-events: none;
+			}
+
+			&.show {
+				opacity: 1;
+				pointer-events: auto;
+				box-shadow: 0px 0px 50px -20px black;
+				transition: 0.3s all ease;
+			}
 
 			.menu-content {
 				display: flex;
@@ -506,15 +518,6 @@ img {
 						}
 					}
 				}
-			}
-
-			&.show {
-				// right: 0;
-				opacity: 1;
-				pointer-events: auto;
-				// background: rgba(0, 0, 0, 0.5);
-				box-shadow: 0px 0px 50px -20px black;
-				transition: 0.3s all ease;
 			}
 		}
 	}
@@ -660,21 +663,50 @@ img {
 		text-align: left;
 	}
 
-	.footline {
-		font-size: 12px;
-		letter-spacing: 1px;
-		padding: 20px;
-		font-family: "Outfit", sans-serif;
-		text-transform: uppercase;
-		font-weight: lighter;
-		color: rgba(255, 255, 255, 0.5);
-		text-align: center;
-		margin: 0;
+	@keyframes footline-scroll {
+		from { transform: translateX(0); }
+		to { transform: translateX(-50%); }
+	}
 
-		@include media-breakpoint-up(md) {
-			font-size: 16px;
+	.footline-ticker {
+		overflow: hidden;
+		width: 100%;
+
+		.footline-track {
+			display: flex;
+			width: max-content;
+			animation: footline-scroll 30s linear infinite;
+			padding: 20px 0;
+
+			&:hover {
+				animation-play-state: paused;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.footline-track {
+					animation: none;
+				}
+			}
+
+			.footline {
+				font-size: 12px;
+				letter-spacing: 1px;
+				font-family: "Outfit", sans-serif;
+				text-transform: uppercase;
+				font-weight: lighter;
+				color: rgba(255, 255, 255, 0.5);
+				text-align: center;
+				margin: 0;
+				white-space: nowrap;
+				padding-right: 5px;
+
+				@include media-breakpoint-up(md) {
+					font-size: 16px;
+				}
+			}
 		}
 	}
+	
 
 	.identity-scale {
 		display: flex;
@@ -984,11 +1016,11 @@ img {
 					transition: 0.7s all ease;
 
 					@include media-breakpoint-up(md) {
-						min-height: 400px !important;
+						min-height: 250px !important;
 					}
 
 					@include media-breakpoint-up(lg) {
-						min-height: 630px !important;
+						min-height: 315px !important;
 					}
 
 					p {
@@ -1083,6 +1115,7 @@ img {
 						padding: 0 1em;
 
 						@include media-breakpoint-up(md) {
+							padding: 0 4em;
 							padding-left: 0;
 						}
 					}
@@ -1093,6 +1126,7 @@ img {
 						padding: 0 1em;
 
 						@include media-breakpoint-up(md) {
+							padding: 0 4em;
 							padding-right: 0;
 						}
 					}
@@ -1431,7 +1465,15 @@ img {
 					margin-bottom: 2em;
 
 					img {
-						height: 440px;
+						height: 200px;
+
+						@include media-breakpoint-up(md) {
+							height: 240px;
+						}
+
+						@include media-breakpoint-up(xl) {
+							height: 440px;
+						}
 					}
 				}
 

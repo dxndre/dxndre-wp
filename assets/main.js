@@ -199,4 +199,32 @@ import * as bootstrap from 'bootstrap';
 			processTrack.style.transform = `translateX(-${currentOffset * stepDistance}px)`;
 		}, 5000);
 	}
+
+	// Duplicate Footnotes at runtime 
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const track = document.querySelector('.footline-track');
+		const item = track?.querySelector('.footline');
+
+		if (!track || !item) return;
+
+		const DUPLICATES = 2;
+
+		for (let i = 0; i < DUPLICATES; i++) {
+			track.appendChild(item.cloneNode(true));
+		}
+	});
+
+	// Remove 'collapsing' class from navbar 
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const navbar = document.getElementById('navbar');
+		if (!navbar) return;
+
+		navbar.addEventListener('show.bs.collapse', () => {
+			requestAnimationFrame(() => {
+				navbar.classList.remove('collapsing');
+			});
+		});
+	});
 })();
