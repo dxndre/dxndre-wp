@@ -227,4 +227,38 @@ import * as bootstrap from 'bootstrap';
 			});
 		});
 	});
+
+	// Client Dashboard Loading Test
+
+	document.addEventListener('DOMContentLoaded', () => {
+		if (!document.body.classList.contains('page-dashboard')) return;
+
+		// Dashboard-specific JS here
+		console.log('Client dashboard loaded');
+	});
+
+	// Client Dashboard Request Update
+
+	document.addEventListener('DOMContentLoaded', () => {
+		if (!document.body.classList.contains('page-dashboard')) return;
+
+		// UX: if modal fails / Bootstrap not present, send them to fallback page
+		const newTicketBtn = document.querySelector('[data-bs-target="#newTicketModal"]');
+		if (newTicketBtn && typeof window.bootstrap === 'undefined') {
+			newTicketBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				window.location.href = '/submit-ticket/';
+			});
+		}
+
+		// Request update button UX-only (you can wire AJAX later)
+		const requestBtn = document.querySelector('.request-update');
+		if (requestBtn) {
+			requestBtn.addEventListener('click', () => {
+				requestBtn.textContent = 'Request Sent ✓';
+				requestBtn.disabled = true;
+				requestBtn.classList.add('is-disabled');
+			});
+		}
+	});
 })();

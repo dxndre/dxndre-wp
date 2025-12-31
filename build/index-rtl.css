@@ -14135,13 +14135,13 @@ body.is-frontend.page-pricing-calculator {
   background-position: center;
   background-attachment: fixed;
 }
-body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-forgot-password, body.is-frontend.page-template-page-signup {
+body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-forgot-password, body.is-frontend.page-template-page-signup, body.is-frontend.page-template-page-submit-ticket, body.is-frontend.page-template-page-dashboard {
   background-image: url(images/useraccount.fae622e5.png);
   background-size: cover;
   background-position: bottom;
   overflow-x: hidden;
 }
-body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main {
+body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main, body.is-frontend.page-template-page-submit-ticket #main, body.is-frontend.page-template-page-dashboard #main {
   overflow-x: hidden;
 }
 body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
@@ -14150,6 +14150,499 @@ body.is-frontend.page-about #main section.text-image .section-content, body.is-f
 @media (min-width: 768px) {
   body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
     margin-top: 0;
+  }
+}
+body.is-frontend {
+  /* ==========================
+  CLIENT DASHBOARD
+  ========================== */
+}
+body.is-frontend.page-dashboard .modal.show {
+  backdrop-filter: blur(25px);
+}
+body.is-frontend.page-dashboard .modal-backdrop {
+  background: rgba(0, 0, 0, 0.875);
+}
+body.is-frontend.page-dashboard .modal-dialog {
+  max-width: 100%;
+  padding: 0 1em;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-dashboard .modal-dialog {
+    max-width: 720px;
+    padding: 0 1.5em;
+  }
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-dashboard .modal-dialog {
+    max-width: 760px;
+  }
+}
+body.is-frontend.page-dashboard .modal-content {
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  -webkit-box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 0;
+}
+body.is-frontend.page-dashboard .modal-header,
+body.is-frontend.page-dashboard .modal-body,
+body.is-frontend.page-dashboard .modal-footer {
+  padding: 1.25em;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-dashboard .modal-header,
+  body.is-frontend.page-dashboard .modal-body,
+  body.is-frontend.page-dashboard .modal-footer {
+    padding: 2em;
+  }
+}
+body.is-frontend.page-dashboard .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.0625);
+}
+body.is-frontend.page-dashboard .modal-header .modal-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-dashboard .modal-header .modal-title {
+    font-size: 20px;
+  }
+}
+body.is-frontend.page-dashboard .modal-header .btn-close {
+  -webkit-filter: invert(1);
+          filter: invert(1);
+  opacity: 0.6;
+  -webkit-transition: 0.2s ease;
+  transition: 0.2s ease;
+}
+body.is-frontend.page-dashboard .modal-header .btn-close:hover {
+  opacity: 1;
+}
+body.is-frontend.page-dashboard .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+body.is-frontend.page-dashboard .modal.fade .modal-dialog {
+  -webkit-transform: translateY(30px);
+          transform: translateY(30px);
+  -webkit-transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition: transform 0.35s ease, opacity 0.35s ease, -webkit-transform 0.35s ease;
+}
+body.is-frontend.page-dashboard .modal.show .modal-dialog {
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+body.is-frontend.page-dashboard .modal .ticket-form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text],
+body.is-frontend.page-dashboard .modal .ticket-form textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  padding: 16px 18px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-webkit-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-moz-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]:-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::placeholder,
+body.is-frontend.page-dashboard .modal .ticket-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]:focus,
+body.is-frontend.page-dashboard .modal .ticket-form textarea:focus {
+  outline: none;
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+body.is-frontend.page-dashboard .modal .ticket-form textarea {
+  min-height: 180px;
+  line-height: 1.6;
+}
+body.is-frontend.page-dashboard .modal .ticket-form button {
+  height: 56px;
+  margin-top: 1em;
+  border: 1px solid white;
+  background: white;
+  color: black;
+  font-weight: 500;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-dashboard .modal .ticket-form button:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend.page-dashboard .modal-fallback {
+  font-size: 12px;
+  opacity: 0.65;
+}
+body.is-frontend.page-dashboard .dashboard-hero {
+  padding: 12vh 0 4vh;
+  color: white;
+}
+body.is-frontend.page-dashboard .dashboard-hero h1, body.is-frontend.page-dashboard .dashboard-hero .h1 {
+  font-size: 42px;
+  margin-top: 12px;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-dashboard .dashboard-hero h1, body.is-frontend.page-dashboard .dashboard-hero .h1 {
+    font-size: 48px;
+  }
+}
+body.is-frontend.page-dashboard .dashboard-hero p {
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 300;
+  max-width: 600px;
+}
+body.is-frontend.page-dashboard .dashboard-actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 16px;
+  margin: 3em 0;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-btn {
+  height: 60px;
+  padding: 0 2em;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 16px;
+  border: 1px solid white;
+  color: black;
+  background: white;
+  font-weight: 500;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-btn.primary:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-btn.outline {
+  background: transparent;
+  color: white;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-btn.outline:hover {
+  background: white;
+  color: black;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-stat {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0 2em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 12px;
+  color: white;
+  font-weight: 300;
+}
+body.is-frontend.page-dashboard .dashboard-actions .dashboard-stat strong {
+  font-size: 24px;
+  font-weight: 500;
+}
+body.is-frontend.page-dashboard .dashboard-content {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr;
+  grid-template-columns: 1fr;
+  gap: 3em;
+  margin-bottom: 5em;
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-dashboard .dashboard-content {
+    -ms-grid-columns: 1fr 420px;
+    grid-template-columns: 1fr 420px;
+  }
+}
+body.is-frontend.page-dashboard .dashboard-tickets h2, body.is-frontend.page-dashboard .dashboard-tickets .h2 {
+  color: white;
+  margin-bottom: 1em;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket-list {
+  list-style: none;
+  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 12px;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket-link {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 1.5em;
+  color: white;
+  text-decoration: none;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 1.5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: white;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+  background: rgba(0, 0, 0, 0.4);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-info {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 4px;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-info .ticket-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-info .ticket-date {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.in-progress {
+  opacity: 0.85;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.acknowledged {
+  opacity: 0.6;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.resolved {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket.is-active {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+body.is-frontend.page-dashboard .dashboard-panel {
+  background: black;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 2.5em;
+  color: white;
+}
+body.is-frontend.page-dashboard .dashboard-panel h3, body.is-frontend.page-dashboard .dashboard-panel .h3 {
+  margin-bottom: 1.5em;
+}
+body.is-frontend.page-dashboard .dashboard-panel .ticket-meta {
+  list-style: none;
+  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 16px;
+  font-weight: 300;
+}
+body.is-frontend.page-dashboard .dashboard-panel .ticket-meta li {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 8px;
+}
+body.is-frontend.page-dashboard .dashboard-panel .ticket-meta li span {
+  opacity: 0.65;
+}
+body.is-frontend.page-dashboard .dashboard-panel .request-update {
+  margin-top: 2em;
+  width: 100%;
+  height: 56px;
+  border: 1px solid white;
+  background: white;
+  color: black;
+  font-weight: 500;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-dashboard .dashboard-panel .request-update.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+body.is-frontend.page-dashboard .dashboard-panel .request-update:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend.page-dashboard .dashboard-empty {
+  padding: 3em;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 300;
+  text-align: center;
+}
+body.is-frontend {
+  /* ==========================
+  SUBMIT TICKET PAGE
+  ========================== */
+}
+body.is-frontend.page-submit-ticket .submit-ticket {
+  min-height: 100vh;
+  padding: 14vh 0 6vh;
+  color: white;
+  max-width: 720px;
+  margin: 0 auto;
+}
+body.is-frontend.page-submit-ticket .submit-ticket h1, body.is-frontend.page-submit-ticket .submit-ticket .h1 {
+  font-size: 42px;
+  margin-bottom: 1.5em;
+}
+body.is-frontend.page-submit-ticket .ticket-form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text],
+body.is-frontend.page-submit-ticket .ticket-form textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  padding: 16px 18px;
+  font-size: 16px;
+  font-family: inherit;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+  resize: vertical;
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]::-webkit-input-placeholder, body.is-frontend.page-submit-ticket .ticket-form textarea::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]::-moz-placeholder, body.is-frontend.page-submit-ticket .ticket-form textarea::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]:-ms-input-placeholder, body.is-frontend.page-submit-ticket .ticket-form textarea:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]::-ms-input-placeholder, body.is-frontend.page-submit-ticket .ticket-form textarea::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]::placeholder,
+body.is-frontend.page-submit-ticket .ticket-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-submit-ticket .ticket-form input[type=text]:focus,
+body.is-frontend.page-submit-ticket .ticket-form textarea:focus {
+  outline: none;
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+body.is-frontend.page-submit-ticket .ticket-form textarea {
+  min-height: 180px;
+  line-height: 1.6;
+}
+body.is-frontend.page-submit-ticket .ticket-form button {
+  margin-top: 1em;
+  height: 56px;
+  background: white;
+  color: black;
+  border: 1px solid white;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-submit-ticket .ticket-form button:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend.page-submit-ticket {
+  /* ===== OPTIONAL HELP TEXT ===== */
+}
+body.is-frontend.page-submit-ticket .ticket-helper {
+  margin-top: 1.5em;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+}
+body.is-frontend.page-submit-ticket {
+  /* ===== MOBILE ===== */
+}
+@media (max-width: 768px) {
+  body.is-frontend.page-submit-ticket .submit-ticket {
+    padding: 12vh 1.5em 4vh;
+  }
+  body.is-frontend.page-submit-ticket .submit-ticket h1, body.is-frontend.page-submit-ticket .submit-ticket .h1 {
+    font-size: 34px;
   }
 }
 body.is-frontend {

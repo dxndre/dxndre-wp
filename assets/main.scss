@@ -228,7 +228,9 @@ body.is-frontend {
 
 	&.page-template-page-login,
 	&.page-template-page-forgot-password,
-	&.page-template-page-signup {
+	&.page-template-page-signup,
+	&.page-template-page-submit-ticket,
+	&.page-template-page-dashboard {
 		background-image: url(img/useraccount.png);
 		background-size: cover;
 		background-position: bottom;
@@ -251,6 +253,459 @@ body.is-frontend {
 							margin-top: 0;
 						}
 					}
+				}
+			}
+		}
+	}
+
+	/* ==========================
+	CLIENT DASHBOARD
+	========================== */
+
+	&.page-dashboard {
+
+		.modal {
+			&.show {
+				backdrop-filter: blur(25px);
+			}
+		}
+
+		.modal-backdrop {
+			background: rgba(0, 0, 0, 0.875);
+		}
+
+		.modal-dialog {
+			max-width: 100%;
+			padding: 0 1em;
+
+			@include media-breakpoint-up(md) {
+				max-width: 720px;
+				padding: 0 1.5em;
+			}
+
+			@include media-breakpoint-up(lg) {
+				max-width: 760px;
+			}
+		}
+
+		.modal-content {
+			background: rgba(0, 0, 0, 0.85);
+			// border: 1px solid rgba(255, 255, 255, 0.25);
+			// border: 1px solid rgba(255,255,255,0.125);
+			color: white;
+			box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
+			backdrop-filter: blur(12px);
+			border-radius: 0;
+		}
+
+		.modal-header,
+		.modal-body,
+		.modal-footer {
+			padding: 1.25em;
+
+			@include media-breakpoint-up(md) {
+				padding: 2em;
+			}
+		}
+
+		.modal-header {
+			border-bottom: 1px solid rgba(255,255,255,0.0625);
+
+			.modal-title {
+				font-size: 18px;
+				font-weight: 500;
+
+				@include media-breakpoint-up(md) {
+					font-size: 20px;
+				}
+			}
+
+			.btn-close {
+				filter: invert(1);
+				opacity: 0.6;
+				transition: 0.2s ease;
+
+				&:hover {
+					opacity: 1;
+				}
+			}
+		}
+
+		.modal-footer {
+			border-top: 1px solid rgba(255,255,255,0.15);
+		}
+
+		.modal.fade .modal-dialog {
+			transform: translateY(30px);
+			transition: transform 0.35s ease, opacity 0.35s ease;
+		}
+
+		.modal.show .modal-dialog {
+			transform: translateY(0);
+		}
+
+		.modal .ticket-form {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+
+			input[type="text"],
+			textarea {
+				width: 100%;
+				background: rgba(0,0,0,0.6);
+				border: 1px solid rgba(255,255,255,0.35);
+				color: white;
+				padding: 16px 18px;
+				font-size: 15px;
+				font-family: inherit;
+				resize: vertical;
+				transition: 0.3s ease;
+
+				&::placeholder {
+					color: rgba(255,255,255,0.45);
+				}
+
+				&:focus {
+					outline: none;
+					border-color: white;
+					background: rgba(255,255,255,0.05);
+				}
+			}
+
+			textarea {
+				min-height: 180px;
+				line-height: 1.6;
+			}
+
+			button {
+				height: 56px;
+				margin-top: 1em;
+				border: 1px solid white;
+				background: white;
+				color: black;
+				font-weight: 500;
+				transition: 0.3s ease;
+
+				&:hover {
+					background: transparent;
+					color: white;
+				}
+			}
+		}
+
+		.modal-fallback {
+			font-size: 12px;
+			opacity: 0.65;
+		}
+
+		.dashboard-hero {
+			padding: 12vh 0 4vh;
+			color: white;
+
+			h1 {
+				font-size: 42px;
+				margin-top: 12px;
+
+				@include media-breakpoint-up(md) {
+					font-size: 48px;
+				}
+			}
+
+			p {
+				color: rgba(255,255,255,0.65);
+				font-weight: 300;
+				max-width: 600px;
+			}
+		}
+
+		.dashboard-actions {
+			display: flex;
+			gap: 16px;
+			margin: 3em 0;
+			flex-wrap: wrap;
+
+			.dashboard-btn {
+				height: 60px;
+				padding: 0 2em;
+				display: inline-flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				border: 1px solid white;
+				color: black;
+				background: white;
+				font-weight: 500;
+				transition: 0.3s ease;
+
+				&.primary:hover {
+					background: transparent;
+					color: white;
+				}
+
+				&.outline {
+					background: transparent;
+					color: white;
+
+					&:hover {
+						background: white;
+						color: black;
+					}
+				}
+			}
+
+			.dashboard-stat {
+				border: 1px solid rgba(255,255,255,0.4);
+				padding: 0 2em;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				color: white;
+				font-weight: 300;
+
+				strong {
+					font-size: 24px;
+					font-weight: 500;
+				}
+			}
+		}
+
+		.dashboard-content {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 3em;
+			margin-bottom: 5em;
+
+			@include media-breakpoint-up(lg) {
+				grid-template-columns: 1fr 420px;
+			}
+		}
+
+		.dashboard-tickets {
+
+			h2 {
+				color: white;
+				margin-bottom: 1em;
+			}
+
+			.ticket-list {
+				list-style: none;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+			}
+
+			.ticket-link {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1.5em;
+				color: white;
+				text-decoration: none;
+			}
+
+			.ticket {
+				border: 1px solid rgba(255,255,255,0.25);
+				padding: 1.5em;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				color: white;
+				transition: 0.3s ease;
+				background: rgba(0,0,0,0.4);
+
+				&:hover {
+					border-color: rgba(255,255,255,0.6);
+					transform: translateY(-2px);
+				}
+
+				.ticket-info {
+					display: flex;
+					flex-direction: column;
+					gap: 4px;
+
+					.ticket-title {
+						font-size: 18px;
+						font-weight: 500;
+					}
+
+					.ticket-date {
+						font-size: 12px;
+						text-transform: uppercase;
+						letter-spacing: 1px;
+						color: rgba(255,255,255,0.5);
+					}
+				}
+
+				.ticket-status {
+					font-size: 12px;
+					text-transform: uppercase;
+					letter-spacing: 1px;
+
+					&.in-progress { opacity: 0.85; }
+					&.acknowledged { opacity: 0.6; }
+					&.resolved {
+						opacity: 0.4;
+						text-decoration: line-through;
+					}
+				}
+
+				&.is-active {
+					border-color: white;
+					background: rgba(255,255,255,0.05);
+				}
+			}
+		}
+
+		.dashboard-panel {
+			background: black;
+			border: 1px solid rgba(255,255,255,0.25);
+			padding: 2.5em;
+			color: white;
+
+			h3 {
+				margin-bottom: 1.5em;
+			}
+
+			.ticket-meta {
+				list-style: none;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+				font-weight: 300;
+
+				li {
+					display: flex;
+					justify-content: space-between;
+					border-bottom: 1px solid rgba(255,255,255,0.15);
+					padding-bottom: 8px;
+
+					span {
+						opacity: 0.65;
+					}
+				}
+			}
+
+			.request-update {
+				margin-top: 2em;
+				width: 100%;
+				height: 56px;
+				border: 1px solid white;
+				background: white;
+				color: black;
+				font-weight: 500;
+				transition: 0.3s ease;
+
+				&.is-disabled {
+					opacity: 0.5;
+					pointer-events: none;
+				}
+
+				&:hover {
+					background: transparent;
+					color: white;
+				}
+			}
+		}
+
+		.dashboard-empty {
+			padding: 3em;
+			border: 1px dashed rgba(255,255,255,0.25);
+			color: rgba(255,255,255,0.65);
+			font-weight: 300;
+			text-align: center;
+		}
+	}
+
+	/* ==========================
+	SUBMIT TICKET PAGE
+	========================== */
+
+	&.page-submit-ticket {
+
+		.submit-ticket {
+			min-height: 100vh;
+			padding: 14vh 0 6vh;
+			color: white;
+			max-width: 720px;
+			margin: 0 auto;
+
+			h1 {
+				font-size: 42px;
+				margin-bottom: 1.5em;
+			}
+		}
+
+		.ticket-form {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+
+			input[type="text"],
+			textarea {
+				width: 100%;
+				background: transparent;
+				border: 1px solid rgba(255,255,255,0.35);
+				color: white;
+				padding: 16px 18px;
+				font-size: 16px;
+				font-family: inherit;
+				transition: 0.3s ease;
+				resize: vertical;
+
+				&::placeholder {
+					color: rgba(255,255,255,0.45);
+				}
+
+				&:focus {
+					outline: none;
+					border-color: white;
+					background: rgba(255,255,255,0.05);
+				}
+			}
+
+			textarea {
+				min-height: 180px;
+				line-height: 1.6;
+			}
+
+			button {
+				margin-top: 1em;
+				height: 56px;
+				background: white;
+				color: black;
+				border: 1px solid white;
+				font-weight: 500;
+				font-size: 15px;
+				cursor: pointer;
+				transition: 0.3s ease;
+
+				&:hover {
+					background: transparent;
+					color: white;
+				}
+			}
+		}
+
+		/* ===== OPTIONAL HELP TEXT ===== */
+
+		.ticket-helper {
+			margin-top: 1.5em;
+			font-size: 14px;
+			color: rgba(255,255,255,0.55);
+			line-height: 1.6;
+		}
+
+		/* ===== MOBILE ===== */
+
+		@media (max-width: 768px) {
+
+			.submit-ticket {
+				padding: 12vh 1.5em 4vh;
+
+				h1 {
+					font-size: 34px;
 				}
 			}
 		}

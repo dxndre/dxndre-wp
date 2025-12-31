@@ -651,7 +651,7 @@ add_action('init', function () {
             'Client',
             [
                 'read' => true,
-                'edit_posts' => false,
+                'edit_posts' => true,
                 'delete_posts' => false,
                 'upload_files' => false,
             ]
@@ -829,3 +829,70 @@ add_action('template_redirect', function () {
 	wp_redirect(add_query_arg('register', 'success', wp_get_referer()));
 	exit;
 });
+
+// Including Client Portal Files
+
+require_once get_template_directory() . '/inc/portal/redirects.php';
+require_once get_template_directory() . '/inc/portal/tickets.php';
+
+// Client Portal Submission Handler
+
+add_action('admin_post_dx_submit_ticket', 'dx_handle_ticket_submission');
+add_action('admin_post_nopriv_dx_submit_ticket', 'dx_handle_ticket_submission');
+
+function dx_handle_ticket_submission() {
+
+	if (!isset($_POST['dx_ticket_nonce']) || !wp_verify_nonce($_POST['dx_ticket_nonce'], 'dx_submit_ticket')) {
+		wp_die('Invalid request');
+	}
+
+	if (!is_user_logged_in()) {
+		wp_safe_redirect(wp_login_url());
+		exit;
+	}
+
+	$user_id = get_current_user_id();
+
+	$title   = isset($_POST['ticket_title']) ? sanitize_text_field(wp_unslash($_POST['ticket_title'])) : '';
+	$message = isset($_POST['ticket_message']) ? sanitize_textarea_field(wp_unslash($_POST['ticket_message'])) : '';
+
+	if ($title === '' || $message === '') {
+		wp_safe_redirect(add_query_arg('ticket_error', 'missing', wp_get_referer() ?: home_url('/dashboard')));
+		exit;
+	}
+
+	$ticket_id = wp_insert_post([
+		'post_type'    => 'ticket',
+		'post_title'   => $title,
+		'post_content' => $message,
+		'post_status'  => 'publish', // consider 'private' if you don't want them public
+		'post_author'  => $user_id,
+	], true);
+
+	if (is_wp_error($ticket_id) || !$ticket_id) {
+		wp_die('Could not create ticket');
+	}
+
+	// ACF present? update_field will exist. If not, use post meta.
+	if (function_exists('update_field')) {
+		update_field('ticket_status', 'new', $ticket_id);
+		update_field('ticket_client', $user_id, $ticket_id);
+		update_field('ticket_assignee', 1, $ticket_id); // you
+		update_field('ticket_last_updated', current_time('mysql'), $ticket_id);
+	} else {
+		update_post_meta($ticket_id, 'ticket_status', 'new');
+		update_post_meta($ticket_id, 'ticket_client', $user_id);
+		update_post_meta($ticket_id, 'ticket_assignee', 1);
+		update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
+	}
+
+	wp_safe_redirect(add_query_arg(
+		[
+			'ticket'     => 'created',
+			'created_id' => (int) $ticket_id,
+			'ticket_id'  => (int) $ticket_id,
+		],
+		home_url('/dashboard/')
+	));
+	exit;
+}
