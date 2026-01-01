@@ -662,12 +662,21 @@ add_action('init', function () {
 // Prevent Clients from accessing wp-admin
 
 add_action('admin_init', function () {
+
+    // Always allow admin-post.php
+    if (
+        isset($_SERVER['SCRIPT_NAME']) &&
+        str_contains($_SERVER['SCRIPT_NAME'], 'admin-post.php')
+    ) {
+        return;
+    }
+
     if (
         is_user_logged_in() &&
         current_user_can('client') &&
         !wp_doing_ajax()
     ) {
-        wp_redirect(home_url('/dashboard'));
+        wp_safe_redirect(home_url('/dashboard'));
         exit;
     }
 });
@@ -833,9 +842,14 @@ add_action('template_redirect', function () {
 // Including Client Portal Files
 
 require_once get_template_directory() . '/inc/portal/redirects.php';
+
+error_log('ABOUT TO LOAD TICKETS FILE');
 require_once get_template_directory() . '/inc/portal/tickets.php';
+error_log('TICKETS FILE REQUIRED');
 
 // Client Portal Submission Handler
+
+error_log('DX HANDLER LOADED');
 
 add_action('admin_post_dx_submit_ticket', 'dx_handle_ticket_submission');
 add_action('admin_post_nopriv_dx_submit_ticket', 'dx_handle_ticket_submission');
@@ -845,6 +859,8 @@ function dx_handle_ticket_submission() {
 	if (!isset($_POST['dx_ticket_nonce']) || !wp_verify_nonce($_POST['dx_ticket_nonce'], 'dx_submit_ticket')) {
 		wp_die('Invalid request');
 	}
+
+	error_log('ADMIN_INIT FIRED: ' . ($_SERVER['PHP_SELF'] ?? 'no path'));
 
 	if (!is_user_logged_in()) {
 		wp_safe_redirect(wp_login_url());
@@ -868,6 +884,8 @@ function dx_handle_ticket_submission() {
 		'post_status'  => 'publish', // consider 'private' if you don't want them public
 		'post_author'  => $user_id,
 	], true);
+
+	error_log('Ticket created ID: ' . print_r($ticket_id, true));
 
 	if (is_wp_error($ticket_id) || !$ticket_id) {
 		wp_die('Could not create ticket');
