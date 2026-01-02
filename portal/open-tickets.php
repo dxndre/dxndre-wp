@@ -16,7 +16,10 @@ $selected_id = (int) get_query_var('dx_portal_selected_id', 0);
 				$is_open = ($status !== 'resolved');
 				if (!$is_open) continue;
 
-				$url = add_query_arg(['ticket_id' => $ticket_id], home_url('/dashboard/'));
+				$url = add_query_arg(
+                    ['ticket_id' => $ticket_id],
+                    home_url('/ticket/')
+                );
 				$is_active = ($ticket_id === $selected_id);
 			?>
 				<li class="ticket <?php echo $is_active ? 'is-active' : ''; ?>">

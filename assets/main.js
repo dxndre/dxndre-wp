@@ -261,4 +261,28 @@ import * as bootstrap from 'bootstrap';
 			});
 		}
 	});
+
+	// AJAX Message posting for Client Portal status update agent
+
+	const form = document.querySelector('.ticket-reply-form');
+
+	if (form) {
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+
+			const data = new FormData(form);
+
+			const res = await fetch(form.action, {
+				method: 'POST',
+				body: data
+			});
+
+			const html = await res.text();
+
+			document.querySelector('.ticket-thread')
+				.insertAdjacentHTML('beforeend', html);
+
+			form.reset();
+		});
+	}
 })();

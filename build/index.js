@@ -9,8 +9,13 @@
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+
+
 
 // Webpack Imports
 
@@ -31,7 +36,7 @@ __webpack_require__.r(__webpack_exports__);
   // Initialize Popovers
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_1__.Popover(popoverTriggerEl, {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_3__.Popover(popoverTriggerEl, {
       trigger: 'focus'
     });
   });
@@ -129,7 +134,7 @@ __webpack_require__.r(__webpack_exports__);
     var techStackSection = document.querySelector('.tech-stack');
     if (journeySection) {
       var journeyObserver = new IntersectionObserver(function (_ref) {
-        var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_ref, 1),
+        var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref, 1),
           entry = _ref2[0];
         if (entry.isIntersecting) {
           body.classList.add('client-journey-section');
@@ -143,7 +148,7 @@ __webpack_require__.r(__webpack_exports__);
     }
     if (techStackSection) {
       var techStackObserver = new IntersectionObserver(function (_ref3) {
-        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_ref3, 1),
+        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref3, 1),
           entry = _ref4[0];
         if (entry.isIntersecting) {
           body.classList.add('tech-stack-section');
@@ -250,6 +255,43 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   });
+
+  // AJAX Message posting for Client Portal status update agent
+
+  var form = document.querySelector('.ticket-reply-form');
+  if (form) {
+    form.addEventListener('submit', /*#__PURE__*/function () {
+      var _ref5 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().mark(function _callee(e) {
+        var data, res, html;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              e.preventDefault();
+              data = new FormData(form);
+              _context.next = 1;
+              return fetch(form.action, {
+                method: 'POST',
+                body: data
+              });
+            case 1:
+              res = _context.sent;
+              _context.next = 2;
+              return res.text();
+            case 2:
+              html = _context.sent;
+              document.querySelector('.ticket-thread').insertAdjacentHTML('beforeend', html);
+              form.reset();
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee);
+      }));
+      return function (_x) {
+        return _ref5.apply(this, arguments);
+      };
+    }());
+  }
 })();
 
 /***/ }),
@@ -297,6 +339,45 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function _arrayWithHoles(r) {
   if (Array.isArray(r)) return r;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _asyncToGenerator; }
+/* harmony export */ });
+function asyncGeneratorStep(n, t, e, r, o, a, c) {
+  try {
+    var i = n[a](c),
+      u = i.value;
+  } catch (n) {
+    return void e(n);
+  }
+  i.done ? t(u) : Promise.resolve(u).then(r, o);
+}
+function _asyncToGenerator(n) {
+  return function () {
+    var t = this,
+      e = arguments;
+    return new Promise(function (r, o) {
+      var a = n.apply(t, e);
+      function _next(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "next", n);
+      }
+      function _throw(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "throw", n);
+      }
+      _next(void 0);
+    });
+  };
 }
 
 
@@ -7810,6 +7891,16 @@ defineJQueryPlugin(Toast);
 //# sourceMappingURL=bootstrap.esm.js.map
 
 
+/***/ }),
+
+/***/ "@babel/runtime/regenerator":
+/*!*************************************!*\
+  !*** external "regeneratorRuntime" ***!
+  \*************************************/
+/***/ (function(module) {
+
+module.exports = window["regeneratorRuntime"];
+
 /***/ })
 
 /******/ 	});
@@ -7845,6 +7936,18 @@ defineJQueryPlugin(Toast);
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	!function() {
 /******/ 		// define getter functions for harmony exports

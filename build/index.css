@@ -14672,6 +14672,165 @@ body.is-frontend.page-submit-ticket {
   }
 }
 body.is-frontend {
+  /* ==========================
+  TICKET VIEW PAGE
+  ========================== */
+}
+body.is-frontend.page-template-page-ticket .ticket-view {
+  padding: 12vh 0 6vh;
+  color: white;
+  margin: 0 auto;
+}
+body.is-frontend.page-template-page-ticket h1, body.is-frontend.page-template-page-ticket .h1 {
+  font-size: 42px;
+  margin-bottom: 0.5em;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-template-page-ticket h1, body.is-frontend.page-template-page-ticket .h1 {
+    font-size: 48px;
+  }
+}
+body.is-frontend.page-template-page-ticket .ticket-meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 3em;
+}
+body.is-frontend.page-template-page-ticket {
+  /* ===== CHAT THREAD ===== */
+}
+body.is-frontend.page-template-page-ticket .ticket-thread {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
+  margin-bottom: 4em;
+}
+body.is-frontend.page-template-page-ticket .ticket-message {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+body.is-frontend.page-template-page-ticket .ticket-message.client {
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+body.is-frontend.page-template-page-ticket .ticket-message.client .bubble {
+  background: white;
+  color: black;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+body.is-frontend.page-template-page-ticket .ticket-message.agent {
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+}
+body.is-frontend.page-template-page-ticket .ticket-message.agent .bubble {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+}
+body.is-frontend.page-template-page-ticket .ticket-message .bubble {
+  max-width: 70%;
+  padding: 1.25em 1.5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 12px;
+  -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+body.is-frontend.page-template-page-ticket .ticket-message p {
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 300;
+}
+body.is-frontend.page-template-page-ticket .ticket-message .meta {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+body.is-frontend.page-template-page-ticket {
+  /* ===== REPLY FORM ===== */
+}
+body.is-frontend.page-template-page-ticket .ticket-reply {
+  background: black;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 2.5em;
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 20px;
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  padding: 16px 18px;
+  min-height: 160px;
+  font-family: inherit;
+  resize: vertical;
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form textarea:focus {
+  outline: none;
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form button {
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  height: 56px;
+  min-width: 200px;
+  border: 1px solid white;
+  background: white;
+  color: black;
+  font-weight: 500;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend.page-template-page-ticket .ticket-reply-form button:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend {
   /* If WP-Adminbar is visible */
 }
 body.is-frontend.admin-bar #header.fixed-top {

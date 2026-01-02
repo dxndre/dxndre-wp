@@ -904,13 +904,84 @@ function dx_handle_ticket_submission() {
 		update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
 	}
 
-	wp_safe_redirect(add_query_arg(
-		[
-			'ticket'     => 'created',
-			'created_id' => (int) $ticket_id,
-			'ticket_id'  => (int) $ticket_id,
-		],
-		home_url('/dashboard/')
-	));
+	wp_safe_redirect(
+		add_query_arg(
+			['ticket_id' => $ticket_id],
+			home_url('/ticket/')
+		)
+	);
 	exit;
 }
+
+// Client Ticket update logging
+
+add_action('admin_post_dx_update_ticket', 'dx_handle_ticket_update');
+
+function dx_handle_ticket_update() {
+
+	if (
+		!isset($_POST['dx_update_ticket_nonce']) ||
+		!wp_verify_nonce($_POST['dx_update_ticket_nonce'], 'dx_update_ticket')
+	) {
+		wp_die('Invalid request');
+	}
+
+	if (!is_user_logged_in()) {
+		wp_die('Not logged in');
+	}
+
+	$ticket_id = intval($_POST['ticket_id']);
+	$message   = sanitize_textarea_field($_POST['update_message']);
+	$user_id   = get_current_user_id();
+
+	if (!$ticket_id || !$message) {
+		wp_die('Invalid update');
+	}
+
+	// Store updates as comments (best approach)
+	wp_insert_comment([
+		'comment_post_ID' => $ticket_id,
+		'comment_content' => $message,
+		'user_id'         => $user_id,
+		'comment_approved'=> 1,
+	]);
+
+	update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
+
+	// Email notifications
+	$client = get_user_by('id', get_post_field('post_author', $ticket_id));
+
+	wp_mail(
+		get_option('admin_email'),
+		'Ticket Updated #' . $ticket_id,
+		$message
+	);
+
+	if ($client) {
+		wp_mail(
+			$client->user_email,
+			'Your ticket has been updated',
+			$message
+		);
+	}
+
+	wp_safe_redirect(home_url('/dashboard/ticket/' . $ticket_id));
+	exit;
+}
+
+// Rewrite rule after ticket submission - client gets redirected to see the ticket they've created
+
+// Ticket single view routing
+add_action('init', function () {
+	add_rewrite_rule(
+		'^dashboard/ticket/([0-9]+)/?$',
+		'index.php?pagename=dashboard/ticket&ticket_id=$matches[1]',
+		'top'
+	);
+});
+
+// Allow ticket_id as query var
+add_filter('query_vars', function ($vars) {
+	$vars[] = 'ticket_id';
+	return $vars;
+});
