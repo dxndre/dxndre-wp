@@ -18,6 +18,29 @@ $eta = get_post_meta($selected_id, 'ticket_eta', true); // optional
 $eta = $eta ? (string) $eta : '—';
 ?>
 
+<?php for ($i = 1; $i <= 10; $i++) :
+	$image_id = get_field("ticket_image_$i", $ticket_id);
+	if (!$image_id) continue;
+?>
+	<div class="ticket-image">
+		<?php echo wp_get_attachment_image($image_id, 'large'); ?>
+	</div>
+<?php endfor; ?>
+
+<?php
+$file = get_field('ticket_file', $ticket_id);
+
+if ($file) :
+	$url  = wp_get_attachment_url($file);
+	$name = get_the_title($file);
+?>
+	<div class="ticket-attachment">
+		<a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
+			📎 Download attachment (<?php echo esc_html($name); ?>)
+		</a>
+	</div>
+<?php endif; ?>
+
 <section class="portal-panel ticket-detail">
 	<ul class="ticket-meta">
 		<li><span>Ticket</span><strong>#<?php echo (int) $selected_id; ?></strong></li>

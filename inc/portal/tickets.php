@@ -81,3 +81,21 @@ function dx_portal_count_updates(array $tickets): int {
 	}
 	return $count;
 }
+
+/**
+ * Returns CSS class for ticket status badge
+ */
+function dx_ticket_status_badge_class($status) {
+    switch ($status) {
+        case 'acknowledged':
+            return 'badge-ack';
+        case 'in_progress':
+            return 'badge-progress';
+        case 'resolved':
+            return 'badge-resolved';
+        case 'cancelled':
+            return 'badge-cancelled';
+        default:
+            return 'badge-default';
+    }
+}

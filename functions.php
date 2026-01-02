@@ -856,59 +856,90 @@ add_action('admin_post_nopriv_dx_submit_ticket', 'dx_handle_ticket_submission');
 
 function dx_handle_ticket_submission() {
 
-	if (!isset($_POST['dx_ticket_nonce']) || !wp_verify_nonce($_POST['dx_ticket_nonce'], 'dx_submit_ticket')) {
+	if (!isset($_POST['dx_ticket_nonce']) ||
+		!wp_verify_nonce($_POST['dx_ticket_nonce'], 'dx_submit_ticket')) {
 		wp_die('Invalid request');
 	}
 
-	error_log('ADMIN_INIT FIRED: ' . ($_SERVER['PHP_SELF'] ?? 'no path'));
-
 	if (!is_user_logged_in()) {
-		wp_safe_redirect(wp_login_url());
-		exit;
+		wp_die('Not allowed');
+	}
+
+	if (empty($_POST['ticket_confirm'])) {
+		wp_die('You must confirm ticket details');
 	}
 
 	$user_id = get_current_user_id();
 
-	$title   = isset($_POST['ticket_title']) ? sanitize_text_field(wp_unslash($_POST['ticket_title'])) : '';
-	$message = isset($_POST['ticket_message']) ? sanitize_textarea_field(wp_unslash($_POST['ticket_message'])) : '';
-
-	if ($title === '' || $message === '') {
-		wp_safe_redirect(add_query_arg('ticket_error', 'missing', wp_get_referer() ?: home_url('/dashboard')));
-		exit;
-	}
-
 	$ticket_id = wp_insert_post([
 		'post_type'    => 'ticket',
-		'post_title'   => $title,
-		'post_content' => $message,
-		'post_status'  => 'publish', // consider 'private' if you don't want them public
+		'post_title'   => sanitize_text_field($_POST['ticket_title']),
+		'post_content' => sanitize_textarea_field($_POST['ticket_message']),
+		'post_status'  => 'publish',
 		'post_author'  => $user_id,
-	], true);
+	]);
 
-	error_log('Ticket created ID: ' . print_r($ticket_id, true));
-
-	if (is_wp_error($ticket_id) || !$ticket_id) {
-		wp_die('Could not create ticket');
+	if (is_wp_error($ticket_id)) {
+		wp_die('Ticket creation failed');
 	}
 
-	// ACF present? update_field will exist. If not, use post meta.
-	if (function_exists('update_field')) {
-		update_field('ticket_status', 'new', $ticket_id);
-		update_field('ticket_client', $user_id, $ticket_id);
-		update_field('ticket_assignee', 1, $ticket_id); // you
-		update_field('ticket_last_updated', current_time('mysql'), $ticket_id);
-	} else {
-		update_post_meta($ticket_id, 'ticket_status', 'new');
-		update_post_meta($ticket_id, 'ticket_client', $user_id);
-		update_post_meta($ticket_id, 'ticket_assignee', 1);
-		update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
+	// Save extra fields
+	update_post_meta($ticket_id, 'project_name',
+		sanitize_text_field($_POST['project_name'] ?? '')
+	);
+
+	update_post_meta($ticket_id, 'project_url',
+		esc_url_raw($_POST['project_url'] ?? '')
+	);
+
+	update_post_meta($ticket_id, 'ticket_status', 'open');
+
+	// Handle image uploads
+
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	for ($i = 1; $i <= 10; $i++) {
+
+		$key = 'ticket_image_' . $i;
+
+		if (
+			empty($_FILES[$key]['name']) ||
+			$_FILES[$key]['error'] !== UPLOAD_ERR_OK
+		) {
+			continue;
+		}
+
+		$attachment_id = media_handle_upload($key, $ticket_id);
+
+		if (!is_wp_error($attachment_id)) {
+			if (function_exists('update_field')) {
+				update_field($key, $attachment_id, $ticket_id);
+			} else {
+				update_post_meta($ticket_id, $key, $attachment_id);
+			}
+		}
 	}
 
+	if (
+		!empty($_FILES['ticket_file']['name']) &&
+		$_FILES['ticket_file']['error'] === UPLOAD_ERR_OK
+	) {
+		$file_id = media_handle_upload('ticket_file', $ticket_id);
+
+		if (!is_wp_error($file_id)) {
+			if (function_exists('update_field')) {
+				update_field('ticket_file', $file_id, $ticket_id);
+			} else {
+				update_post_meta($ticket_id, 'ticket_file', $file_id);
+			}
+		}
+	}
+
+	// Redirect to ticket view
 	wp_safe_redirect(
-		add_query_arg(
-			['ticket_id' => $ticket_id],
-			home_url('/ticket/')
-		)
+		home_url('/dashboard/ticket/' . $ticket_id)
 	);
 	exit;
 }
@@ -984,4 +1015,77 @@ add_action('init', function () {
 add_filter('query_vars', function ($vars) {
 	$vars[] = 'ticket_id';
 	return $vars;
+});
+
+// AJAX Handler for the tab switching for the Client Ticket Portal
+
+add_action('wp_ajax_dx_load_ticket_panel', 'dx_load_ticket_panel');
+
+function dx_load_ticket_panel() {
+
+	if (!is_user_logged_in()) {
+		wp_send_json_error('Not authorised');
+	}
+
+	check_ajax_referer('dx_dashboard', 'nonce');
+
+	$ticket_id = isset($_POST['ticket_id']) ? (int) $_POST['ticket_id'] : 0;
+
+	if (!$ticket_id) {
+		wp_send_json_error('Invalid ticket');
+	}
+
+	$ticket = get_post($ticket_id);
+
+	if (
+		!$ticket ||
+		$ticket->post_type !== 'ticket' ||
+		(int) $ticket->post_author !== get_current_user_id()
+	) {
+		wp_send_json_error('Unauthorized');
+	}
+
+	// 🔑 Make $ticket available to the partial
+	ob_start();
+	require get_template_directory() . '/portal/dashboard-ticket-panel.php';
+	$html = ob_get_clean();
+
+	wp_send_json_success([
+		'html' => $html
+	]);
+}
+
+// Client Ticket Cancellation
+
+add_action('admin_post_dx_cancel_ticket', function () {
+	if (!isset($_POST['dx_cancel_ticket_nonce']) ||
+		!wp_verify_nonce($_POST['dx_cancel_ticket_nonce'], 'dx_cancel_ticket')) {
+		wp_die('Security check failed');
+	}
+
+	$ticket_id = (int) $_POST['ticket_id'];
+	$ticket = get_post($ticket_id);
+
+	if (
+		!$ticket ||
+		(int) $ticket->post_author !== (int) get_current_user_id()
+	) {
+		wp_die('Unauthorized');
+	}
+
+	update_post_meta($ticket_id, 'ticket_status', 'cancelled');
+
+	wp_safe_redirect(home_url('/dashboard'));
+	exit;
+});
+
+// Expose AjaxURL to frontend 
+
+add_action('wp_enqueue_scripts', function () {
+
+	wp_localize_script('mainjs', 'DX_DASHBOARD', [
+		'ajax_url' => admin_url('admin-ajax.php'),
+		'nonce'    => wp_create_nonce('dx_dashboard'),
+	]);
+
 });

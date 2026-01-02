@@ -237,6 +237,8 @@ import * as bootstrap from 'bootstrap';
 		console.log('Client dashboard loaded');
 	});
 
+	console.log('DX DASHBOARD JS LOADED');
+
 	// Client Dashboard Request Update
 
 	document.addEventListener('DOMContentLoaded', () => {
@@ -285,4 +287,148 @@ import * as bootstrap from 'bootstrap';
 			form.reset();
 		});
 	}
+
+	// Add image button for client portal support ticket form 
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const addBtn = document.querySelector('.add-image-btn');
+		const fields = document.querySelectorAll('.ticket-image-field');
+
+		if (!addBtn || !fields.length) return;
+
+		let visibleCount = 1;
+
+		addBtn.addEventListener('click', () => {
+			if (visibleCount < fields.length) {
+				fields[visibleCount].classList.remove('is-hidden');
+				visibleCount++;
+			}
+
+			if (visibleCount >= fields.length) {
+				addBtn.disabled = true;
+				addBtn.textContent = 'Maximum images added';
+			}
+		});
+	});
+
+	// AJAX Tab Switching
+
+	document.addEventListener('click', (e) => {
+		const link = e.target.closest('.js-ticket-link');
+		if (!link) return;
+
+		e.preventDefault();
+
+		console.log('Ticket clicked', link.dataset.ticketId);
+
+		const ticketId = link.dataset.ticketId;
+		const panel = document.querySelector('.dashboard-panel');
+
+		console.log('Sending AJAX for ticket', ticketId);
+
+		panel.classList.add('is-loading');
+
+		const formData = new FormData();
+		formData.append('action', 'dx_load_ticket_panel');
+		formData.append('ticket_id', ticketId);
+		formData.append('nonce', DX_DASHBOARD.nonce);
+
+		fetch(DX_DASHBOARD.ajax_url, {
+			method: 'POST',
+			credentials: 'same-origin',
+			body: formData
+		})
+		.then(res => res.json())
+		.then(res => {
+			if (!res.success || !res.data.html) {
+				panel.innerHTML = '<p>Unable to load ticket.</p>';
+				return;
+			}
+
+			panel.innerHTML = res.data.html;
+			panel.classList.remove('is-loading');
+
+			document.querySelectorAll('.ticket')
+				.forEach(t => t.classList.remove('is-active'));
+
+			link.closest('.ticket').classList.add('is-active');
+		})
+		.catch(err => {
+			console.error('FETCH FAILED', err);
+			panel.classList.remove('is-loading');
+		});
+	});
+
+	// Tab JS for Client Portal
+
+	document.addEventListener('click', e => {
+		const tab = e.target.closest('.dashboard-tab[data-status]');
+		if (!tab) return;
+
+		const status = tab.dataset.status;
+
+		document.querySelectorAll('.dashboard-tab')
+			.forEach(t => t.classList.remove('is-active'));
+		tab.classList.add('is-active');
+
+		document.querySelectorAll('.ticket').forEach(ticket => {
+			const ticketStatus = ticket.dataset.status;
+
+			if (status === 'open') {
+				ticket.style.display =
+					(ticketStatus !== 'resolved' && ticketStatus !== 'cancelled')
+						? ''
+						: 'none';
+			} else {
+				ticket.style.display =
+					ticketStatus === status ? '' : 'none';
+			}
+		});
+	});
+
+	// Cancel Ticket 
+
+	document.addEventListener('click', (e) => {
+		const btn = e.target.closest('.js-cancel-ticket');
+		if (!btn) return;
+
+		const ticketId = btn.dataset.ticketId;
+		const input = document.getElementById('cancel-ticket-id');
+
+		if (input) {
+			input.value = ticketId;
+		}
+	});
+
+	// Tab Switching using keyboard
+
+	document.addEventListener('keydown', e => {
+		if (!document.body.classList.contains('page-dashboard')) return;
+
+		const tickets = [...document.querySelectorAll('.ticket')];
+		const active = document.querySelector('.ticket.is-active');
+		if (!active) return;
+
+		let index = tickets.indexOf(active);
+
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			index = Math.min(index + 1, tickets.length - 1);
+			tickets[index].querySelector('.js-ticket-link').click();
+		}
+
+		if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			index = Math.max(index - 1, 0);
+			tickets[index].querySelector('.js-ticket-link').click();
+		}
+	});
+
+	// Make the panel load once
+	document.addEventListener('DOMContentLoaded', () => {
+		const first = document.querySelector('.js-ticket-link');
+		if (first) {
+			first.click();
+		}
+	});
 })();

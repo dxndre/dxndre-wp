@@ -22,8 +22,8 @@ $selected_id = (int) get_query_var('dx_portal_selected_id', 0);
                 );
 				$is_active = ($ticket_id === $selected_id);
 			?>
-				<li class="ticket <?php echo $is_active ? 'is-active' : ''; ?>">
-					<a class="ticket-link" href="<?php echo esc_url($url); ?>">
+				<li class="ticket <?php echo $is_active ? 'is-active' : ''; ?>" data-status="<?php echo esc_attr($status); ?>">
+					<a class="ticket-link js-ticket-link" href="<?php echo esc_url($url); ?>">
 						<span class="ticket-title"><?php echo esc_html(get_the_title($ticket_id)); ?></span>
 						<em class="status <?php echo esc_attr(dx_portal_ticket_status_class($status)); ?>">
 							<?php echo esc_html(dx_portal_ticket_status_label($status)); ?>

@@ -14077,6 +14077,8 @@ textarea.form-control-lg {
 body.is-frontend {
   font-family: "Outfit", sans-serif;
   background-color: black;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 body.is-frontend h1, body.is-frontend .h1, body.is-frontend h2, body.is-frontend .h2, body.is-frontend h3, body.is-frontend .h3, body.is-frontend h4, body.is-frontend .h4, body.is-frontend h5, body.is-frontend .h5, body.is-frontend h6, body.is-frontend .h6 {
   font-family: "Space Grotesk", sans-serif;
@@ -14161,13 +14163,23 @@ body.is-frontend.page-pricing-calculator {
   background-position: center;
   background-attachment: fixed;
 }
-body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-forgot-password, body.is-frontend.page-template-page-signup, body.is-frontend.page-template-page-submit-ticket, body.is-frontend.page-template-page-dashboard {
+body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-forgot-password, body.is-frontend.page-template-page-signup, body.is-frontend.page-template-page-submit-ticket {
   background-image: url(images/useraccount.fae622e5.png);
   background-size: cover;
   background-position: bottom;
   overflow-x: hidden;
 }
-body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main, body.is-frontend.page-template-page-submit-ticket #main, body.is-frontend.page-template-page-dashboard #main {
+body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main, body.is-frontend.page-template-page-submit-ticket #main {
+  overflow-x: hidden;
+}
+body.is-frontend.page-template-page-dashboard, body.is-frontend.page-template-page-ticket {
+  background-image: url(images/dashboardbg2.9f0bd9d1.png);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  overflow-x: hidden;
+}
+body.is-frontend.page-template-page-dashboard #main, body.is-frontend.page-template-page-ticket #main {
   overflow-x: hidden;
 }
 body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
@@ -14246,8 +14258,52 @@ body.is-frontend.page-dashboard .modal-header .btn-close {
 body.is-frontend.page-dashboard .modal-header .btn-close:hover {
   opacity: 1;
 }
+body.is-frontend.page-dashboard .modal-body .ticket-image-field.is-hidden {
+  display: none;
+}
+body.is-frontend.page-dashboard .modal-body p {
+  margin-bottom: 0;
+  font-weight: lighter;
+}
 body.is-frontend.page-dashboard .modal-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.0625);
+}
+body.is-frontend.page-dashboard .modal-footer .buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  gap: 12px;
+}
+body.is-frontend.page-dashboard .modal-footer .buttons form {
+  width: 100%;
+}
+body.is-frontend.page-dashboard .modal-footer button {
+  height: 60px;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 2em;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.page-dashboard .modal-footer button:hover {
+  background: white;
+  color: black;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 body.is-frontend.page-dashboard .modal.fade .modal-dialog {
   -webkit-transform: translateY(30px);
@@ -14272,6 +14328,7 @@ body.is-frontend.page-dashboard .modal .ticket-form {
   gap: 20px;
 }
 body.is-frontend.page-dashboard .modal .ticket-form input[type=text],
+body.is-frontend.page-dashboard .modal .ticket-form input[type=url],
 body.is-frontend.page-dashboard .modal .ticket-form textarea {
   width: 100%;
   background: rgba(0, 0, 0, 0.6);
@@ -14284,23 +14341,25 @@ body.is-frontend.page-dashboard .modal .ticket-form textarea {
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
 }
-body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-webkit-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-webkit-input-placeholder {
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-webkit-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form input[type=url]::-webkit-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
-body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-moz-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-moz-placeholder {
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-moz-placeholder, body.is-frontend.page-dashboard .modal .ticket-form input[type=url]::-moz-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-moz-placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
-body.is-frontend.page-dashboard .modal .ticket-form input[type=text]:-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea:-ms-input-placeholder {
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]:-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form input[type=url]:-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea:-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
-body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-ms-input-placeholder {
+body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form input[type=url]::-ms-input-placeholder, body.is-frontend.page-dashboard .modal .ticket-form textarea::-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
 body.is-frontend.page-dashboard .modal .ticket-form input[type=text]::placeholder,
+body.is-frontend.page-dashboard .modal .ticket-form input[type=url]::placeholder,
 body.is-frontend.page-dashboard .modal .ticket-form textarea::placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
 body.is-frontend.page-dashboard .modal .ticket-form input[type=text]:focus,
+body.is-frontend.page-dashboard .modal .ticket-form input[type=url]:focus,
 body.is-frontend.page-dashboard .modal .ticket-form textarea:focus {
   outline: none;
   border-color: white;
@@ -14319,6 +14378,12 @@ body.is-frontend.page-dashboard .modal .ticket-form button {
   font-weight: 500;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
+  min-width: 250px;
+}
+body.is-frontend.page-dashboard .modal .ticket-form button i {
+  margin-left: 1em;
+  -webkit-transform: scale(1.75);
+          transform: scale(1.75);
 }
 body.is-frontend.page-dashboard .modal .ticket-form button:hover {
   background: transparent;
@@ -14444,16 +14509,13 @@ body.is-frontend.page-dashboard .dashboard-tickets .ticket-link {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  padding: 1.5em;
   color: white;
   text-decoration: none;
 }
 body.is-frontend.page-dashboard .dashboard-tickets .ticket {
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 1.5em;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  display: list-item;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
@@ -14469,6 +14531,12 @@ body.is-frontend.page-dashboard .dashboard-tickets .ticket:hover {
   border-color: rgba(255, 255, 255, 0.6);
   -webkit-transform: translateY(-2px);
           transform: translateY(-2px);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket:focus {
+  outline: none;
+  border-color: white;
+  -webkit-box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
 }
 body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-info {
   display: -webkit-box;
@@ -14491,8 +14559,10 @@ body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-info .ticket-
   color: rgba(255, 255, 255, 0.5);
 }
 body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status {
-  font-size: 12px;
   text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
   letter-spacing: 1px;
 }
 body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.in-progress {
@@ -14505,15 +14575,55 @@ body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.resolv
   opacity: 0.4;
   text-decoration: line-through;
 }
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.badge-ack {
+  background: rgba(255, 255, 255, 0.15);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.badge-progress {
+  background: rgba(255, 200, 0, 0.25);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.badge-resolved {
+  background: rgba(0, 255, 120, 0.25);
+}
+body.is-frontend.page-dashboard .dashboard-tickets .ticket .ticket-status.badge-cancelled {
+  background: rgba(255, 80, 80, 0.25);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
 body.is-frontend.page-dashboard .dashboard-tickets .ticket.is-active {
   border-color: white;
   background: rgba(255, 255, 255, 0.05);
 }
 body.is-frontend.page-dashboard .dashboard-panel {
+  position: relative;
+  overflow: hidden;
   background: black;
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 2.5em;
   color: white;
+  -webkit-transition: opacity 0.2s ease, -webkit-transform 0.2s ease;
+  transition: opacity 0.2s ease, -webkit-transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease, -webkit-transform 0.2s ease;
+}
+body.is-frontend.page-dashboard .dashboard-panel.is-loading {
+  pointer-events: none;
+  opacity: 0;
+  -webkit-transform: translateY(6px);
+          transform: translateY(6px);
+}
+body.is-frontend.page-dashboard .dashboard-panel .panel-inner {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  -webkit-transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease, -webkit-transform 0.35s ease;
+}
+body.is-frontend.page-dashboard .dashboard-panel.is-swapping .panel-inner {
+  opacity: 0;
+  -webkit-transform: translateY(8px);
+          transform: translateY(8px);
 }
 body.is-frontend.page-dashboard .dashboard-panel h3, body.is-frontend.page-dashboard .dashboard-panel .h3 {
   margin-bottom: 1.5em;
@@ -14542,7 +14652,12 @@ body.is-frontend.page-dashboard .dashboard-panel .ticket-meta li {
   padding-bottom: 8px;
 }
 body.is-frontend.page-dashboard .dashboard-panel .ticket-meta li span {
+  width: 50%;
   opacity: 0.65;
+}
+body.is-frontend.page-dashboard .dashboard-panel .ticket-meta li strong {
+  width: 50%;
+  text-align: right;
 }
 body.is-frontend.page-dashboard .dashboard-panel .request-update {
   margin-top: 2em;
@@ -14562,6 +14677,96 @@ body.is-frontend.page-dashboard .dashboard-panel .request-update.is-disabled {
 body.is-frontend.page-dashboard .dashboard-panel .request-update:hover {
   background: transparent;
   color: white;
+}
+body.is-frontend.page-dashboard .dashboard-panel .buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 12px;
+  margin-top: 2em;
+}
+body.is-frontend.page-dashboard .dashboard-panel .dashboard-btn {
+  height: 60px;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 2em;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.page-dashboard .dashboard-panel .dashboard-btn:hover {
+  background: white;
+  color: black;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+body.is-frontend.page-dashboard .dashboard-tabs {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 2ft 2fr;
+  grid-template-columns: 2ft 2fr;
+  gap: 12px;
+  margin: 3em 0;
+  width: 100%;
+}
+body.is-frontend.page-dashboard .dashboard-tabs .dashboard-tab {
+  height: 60px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 0 2em;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  -webkit-transition: 0.25s ease;
+  transition: 0.25s ease;
+}
+body.is-frontend.page-dashboard .dashboard-tabs .dashboard-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+body.is-frontend.page-dashboard .dashboard-tabs .dashboard-tab.is-active {
+  background: white;
+  color: black;
+  border-color: white;
+}
+body.is-frontend.page-dashboard .dashboard-tabs .tab-primary {
+  background: white;
+  color: black;
+  border-color: white;
+}
+body.is-frontend.page-dashboard .dashboard-tabs .tab-primary:hover {
+  background: transparent;
+  color: white;
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-dashboard .dashboard-tabs {
+    -ms-grid-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 }
 body.is-frontend.page-dashboard .dashboard-empty {
   padding: 3em;

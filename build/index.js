@@ -9,11 +9,13 @@
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+
 
 
 
@@ -36,7 +38,7 @@ __webpack_require__.r(__webpack_exports__);
   // Initialize Popovers
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_3__.Popover(popoverTriggerEl, {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Popover(popoverTriggerEl, {
       trigger: 'focus'
     });
   });
@@ -134,7 +136,7 @@ __webpack_require__.r(__webpack_exports__);
     var techStackSection = document.querySelector('.tech-stack');
     if (journeySection) {
       var journeyObserver = new IntersectionObserver(function (_ref) {
-        var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref, 1),
+        var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref, 1),
           entry = _ref2[0];
         if (entry.isIntersecting) {
           body.classList.add('client-journey-section');
@@ -148,7 +150,7 @@ __webpack_require__.r(__webpack_exports__);
     }
     if (techStackSection) {
       var techStackObserver = new IntersectionObserver(function (_ref3) {
-        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref3, 1),
+        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref3, 1),
           entry = _ref4[0];
         if (entry.isIntersecting) {
           body.classList.add('tech-stack-section');
@@ -230,6 +232,7 @@ __webpack_require__.r(__webpack_exports__);
     // Dashboard-specific JS here
     console.log('Client dashboard loaded');
   });
+  console.log('DX DASHBOARD JS LOADED');
 
   // Client Dashboard Request Update
 
@@ -261,9 +264,9 @@ __webpack_require__.r(__webpack_exports__);
   var form = document.querySelector('.ticket-reply-form');
   if (form) {
     form.addEventListener('submit', /*#__PURE__*/function () {
-      var _ref5 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().mark(function _callee(e) {
+      var _ref5 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(e) {
         var data, res, html;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().wrap(function (_context) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               e.preventDefault();
@@ -292,6 +295,123 @@ __webpack_require__.r(__webpack_exports__);
       };
     }());
   }
+
+  // Add image button for client portal support ticket form 
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var addBtn = document.querySelector('.add-image-btn');
+    var fields = document.querySelectorAll('.ticket-image-field');
+    if (!addBtn || !fields.length) return;
+    var visibleCount = 1;
+    addBtn.addEventListener('click', function () {
+      if (visibleCount < fields.length) {
+        fields[visibleCount].classList.remove('is-hidden');
+        visibleCount++;
+      }
+      if (visibleCount >= fields.length) {
+        addBtn.disabled = true;
+        addBtn.textContent = 'Maximum images added';
+      }
+    });
+  });
+
+  // AJAX Tab Switching
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('.js-ticket-link');
+    if (!link) return;
+    e.preventDefault();
+    console.log('Ticket clicked', link.dataset.ticketId);
+    var ticketId = link.dataset.ticketId;
+    var panel = document.querySelector('.dashboard-panel');
+    console.log('Sending AJAX for ticket', ticketId);
+    panel.classList.add('is-loading');
+    var formData = new FormData();
+    formData.append('action', 'dx_load_ticket_panel');
+    formData.append('ticket_id', ticketId);
+    formData.append('nonce', DX_DASHBOARD.nonce);
+    fetch(DX_DASHBOARD.ajax_url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (res) {
+      if (!res.success || !res.data.html) {
+        panel.innerHTML = '<p>Unable to load ticket.</p>';
+        return;
+      }
+      panel.innerHTML = res.data.html;
+      panel.classList.remove('is-loading');
+      document.querySelectorAll('.ticket').forEach(function (t) {
+        return t.classList.remove('is-active');
+      });
+      link.closest('.ticket').classList.add('is-active');
+    }).catch(function (err) {
+      console.error('FETCH FAILED', err);
+      panel.classList.remove('is-loading');
+    });
+  });
+
+  // Tab JS for Client Portal
+
+  document.addEventListener('click', function (e) {
+    var tab = e.target.closest('.dashboard-tab[data-status]');
+    if (!tab) return;
+    var status = tab.dataset.status;
+    document.querySelectorAll('.dashboard-tab').forEach(function (t) {
+      return t.classList.remove('is-active');
+    });
+    tab.classList.add('is-active');
+    document.querySelectorAll('.ticket').forEach(function (ticket) {
+      var ticketStatus = ticket.dataset.status;
+      if (status === 'open') {
+        ticket.style.display = ticketStatus !== 'resolved' && ticketStatus !== 'cancelled' ? '' : 'none';
+      } else {
+        ticket.style.display = ticketStatus === status ? '' : 'none';
+      }
+    });
+  });
+
+  // Cancel Ticket 
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-cancel-ticket');
+    if (!btn) return;
+    var ticketId = btn.dataset.ticketId;
+    var input = document.getElementById('cancel-ticket-id');
+    if (input) {
+      input.value = ticketId;
+    }
+  });
+
+  // Tab Switching using keyboard
+
+  document.addEventListener('keydown', function (e) {
+    if (!document.body.classList.contains('page-dashboard')) return;
+    var tickets = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.ticket'));
+    var active = document.querySelector('.ticket.is-active');
+    if (!active) return;
+    var index = tickets.indexOf(active);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      index = Math.min(index + 1, tickets.length - 1);
+      tickets[index].querySelector('.js-ticket-link').click();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      index = Math.max(index - 1, 0);
+      tickets[index].querySelector('.js-ticket-link').click();
+    }
+  });
+
+  // Make the panel load once
+  document.addEventListener('DOMContentLoaded', function () {
+    var first = document.querySelector('.js-ticket-link');
+    if (first) {
+      first.click();
+    }
+  });
 })();
 
 /***/ }),
@@ -344,6 +464,25 @@ function _arrayWithHoles(r) {
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _arrayWithoutHoles; }
+/* harmony export */ });
+/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
+
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r);
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js":
 /*!*********************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
@@ -378,6 +517,23 @@ function _asyncToGenerator(n) {
       _next(void 0);
     });
   };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _iterableToArray; }
+/* harmony export */ });
+function _iterableToArray(r) {
+  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
 }
 
 
@@ -441,6 +597,23 @@ function _nonIterableRest() {
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _nonIterableSpread; }
+/* harmony export */ });
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js":
 /*!******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
@@ -461,6 +634,31 @@ __webpack_require__.r(__webpack_exports__);
 
 function _slicedToArray(r, e) {
   return (0,_arrayWithHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r) || (0,_iterableToArrayLimit_js__WEBPACK_IMPORTED_MODULE_1__["default"])(r, e) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(r, e) || (0,_nonIterableRest_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _toConsumableArray; }
+/* harmony export */ });
+/* harmony import */ var _arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithoutHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js");
+/* harmony import */ var _iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js");
+/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
+/* harmony import */ var _nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableSpread.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js");
+
+
+
+
+function _toConsumableArray(r) {
+  return (0,_arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r) || (0,_iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__["default"])(r) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(r) || (0,_nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
 }
 
 
