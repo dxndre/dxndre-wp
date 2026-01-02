@@ -120,7 +120,7 @@ if ($hour < 12) {
                 class="dashboard-tab tab-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#submitTicketModal">
-                    Submit new ticket +
+                    Submit New Ticket <span>+</span>
                 </a>
 
                 <a href="<?php echo esc_url(add_query_arg('view', 'open')); ?>"
