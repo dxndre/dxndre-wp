@@ -14156,7 +14156,8 @@ body.is-frontend.single-project::before {
   opacity: 1;
 }
 body.is-frontend.single-project::after {
-  background-image: url(images/clientjourney.6d9093e9.png);
+  background-image: -webkit-gradient(linear, right top, left top, color-stop(11.3%, rgb(4, 43, 51)), color-stop(91.7%, rgb(34, 28, 62)));
+  background-image: linear-gradient(270deg, rgb(4, 43, 51) 11.3%, rgb(34, 28, 62) 91.7%);
   opacity: 0;
 }
 body.is-frontend.page-pricing-calculator {
@@ -16191,10 +16192,13 @@ img {
 }
 #main section.tech-stack .section-content .stack-list li {
   list-style: none;
-  padding: 12px;
+  padding: 6px 12px;
   width: 175px;
   background: white;
   color: black;
+  border-radius: 50px;
+  font-weight: 300;
+  font-size: 14px;
 }
 #main section.tech-stack .section-content .stack-list li.html {
   background: #4057EE;
