@@ -132,6 +132,10 @@ body.is-frontend {
 		line-height: 32px;
 	}
 
+	#wpadminbar {
+		background: black;
+	}
+
 	&.page-template-page-full {
 		#main {
 			max-width: 100%;
@@ -302,9 +306,7 @@ body.is-frontend {
 		}
 
 		.modal-content {
-			background: rgba(0, 0, 0, 0.85);
-			// border: 1px solid rgba(255, 255, 255, 0.25);
-			// border: 1px solid rgba(255,255,255,0.125);
+			background: rgba(0, 0, 0, 0.625);
 			color: white;
 			box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
 			backdrop-filter: blur(12px);
@@ -408,10 +410,13 @@ body.is-frontend {
 			input[type="url"],
 			textarea {
 				width: 100%;
-				background: rgba(0,0,0,0.6);
-				border: 1px solid rgba(255,255,255,0.35);
+				// background: rgba(0,0,0,0.6);
+				background-color: transparent;
+				border: none;
+				border-bottom: 1px solid rgba(255,255,255,0.35);
 				color: white;
 				padding: 16px 18px;
+				padding-left: 0;
 				font-size: 15px;
 				font-family: inherit;
 				resize: vertical;
@@ -429,8 +434,10 @@ body.is-frontend {
 			}
 
 			textarea {
+				border: 1px solid rgba(255,255,255,0.35);
 				min-height: 180px;
 				line-height: 1.6;
+				padding: 16px 18px;
 			}
 
 			button {
@@ -439,7 +446,7 @@ body.is-frontend {
 				border: 1px solid white;
 				background: white;
 				color: black;
-				font-weight: 500;
+				font-weight: 300;
 				transition: 0.3s ease;
 				min-width: 250px;
 
@@ -1280,6 +1287,7 @@ img {
 
 					li {
 						a {
+							font-weight: 300;
 							color: rgba(255,255,255,0.5);
 							font-size: 20px;
 							transition: 0.7s all ease;
@@ -1289,6 +1297,11 @@ img {
 								transform: scale(1.25);
 								transition: 0.3s all ease;
 							}
+						}
+
+						&.menu-item-client {
+							padding: 8px 0;
+							display: block;
 						}
 					}
 				}
@@ -1618,13 +1631,13 @@ img {
 					font-weight: 300;
 					margin-bottom: 24px;
 
-					@include media-breakpoint-up(md) {
-						font-size: 18px;
-					}
+					// @include media-breakpoint-up(md) {
+					// 	font-size: 18px;
+					// }
 
-					@include media-breakpoint-up(lg) {
-						font-size: 20px;
-					}
+					// @include media-breakpoint-up(lg) {
+					// 	font-size: 20px;
+					// }
 				}
 			}
 

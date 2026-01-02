@@ -94,7 +94,7 @@
 					<?php
 						endif;
 					?>
-					</div>
+
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
 				<script>

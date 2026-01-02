@@ -1087,5 +1087,38 @@ add_action('wp_enqueue_scripts', function () {
 		'ajax_url' => admin_url('admin-ajax.php'),
 		'nonce'    => wp_create_nonce('dx_dashboard'),
 	]);
-
 });
+
+// Login/Logout Menu Item
+
+add_filter('wp_nav_menu_items', 'dxndre_client_login_logout_menu', 10, 2);
+function dxndre_client_login_logout_menu($items, $args) {
+
+	// Only affect your main menu
+	if ($args->theme_location !== 'main-menu') {
+		return $items;
+	}
+
+	if (is_user_logged_in()) {
+		$user = wp_get_current_user();
+
+		// Logout URL (redirect back to homepage or dashboard)
+		$logout_url = wp_logout_url(home_url('/'));
+
+		$items .= '
+			<li class="menu-item menu-item-client">
+				<a href="' . esc_url($logout_url) . '">
+					Log out
+				</a>
+			</li>';
+	} else {
+		$items .= '
+			<li class="menu-item menu-item-client">
+				<a href="' . esc_url(home_url('/login')) . '">
+					Client Login
+				</a>
+			</li>';
+	}
+
+	return $items;
+}

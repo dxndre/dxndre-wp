@@ -14086,6 +14086,9 @@ body.is-frontend h1, body.is-frontend .h1, body.is-frontend h2, body.is-frontend
 body.is-frontend p {
   line-height: 32px;
 }
+body.is-frontend #wpadminbar {
+  background: black;
+}
 body.is-frontend.page-template-page-full #main {
   max-width: 100%;
 }
@@ -14217,7 +14220,7 @@ body.is-frontend.page-dashboard .modal-dialog {
   }
 }
 body.is-frontend.page-dashboard .modal-content {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.625);
   color: white;
   -webkit-box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
           box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
@@ -14331,10 +14334,12 @@ body.is-frontend.page-dashboard .modal .ticket-form input[type=text],
 body.is-frontend.page-dashboard .modal .ticket-form input[type=url],
 body.is-frontend.page-dashboard .modal .ticket-form textarea {
   width: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
   color: white;
   padding: 16px 18px;
+  padding-left: 0;
   font-size: 15px;
   font-family: inherit;
   resize: vertical;
@@ -14366,8 +14371,10 @@ body.is-frontend.page-dashboard .modal .ticket-form textarea:focus {
   background: rgba(255, 255, 255, 0.05);
 }
 body.is-frontend.page-dashboard .modal .ticket-form textarea {
+  border: 1px solid rgba(255, 255, 255, 0.35);
   min-height: 180px;
   line-height: 1.6;
+  padding: 16px 18px;
 }
 body.is-frontend.page-dashboard .modal .ticket-form button {
   height: 56px;
@@ -14375,7 +14382,7 @@ body.is-frontend.page-dashboard .modal .ticket-form button {
   border: 1px solid white;
   background: white;
   color: black;
-  font-weight: 500;
+  font-weight: 300;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   min-width: 250px;
@@ -15293,6 +15300,7 @@ img {
   gap: 12px;
 }
 #header #navbar.navbar-collapse .menu-content ul li a {
+  font-weight: 300;
   color: rgba(255, 255, 255, 0.5);
   font-size: 20px;
   -webkit-transition: 0.7s all ease;
@@ -15304,6 +15312,10 @@ img {
           transform: scale(1.25);
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
+}
+#header #navbar.navbar-collapse .menu-content ul li.menu-item-client {
+  padding: 8px 0;
+  display: block;
 }
 
 .navbar-brand {
@@ -15710,16 +15722,6 @@ img {
   font-size: 16px;
   font-weight: 300;
   margin-bottom: 24px;
-}
-@media (min-width: 768px) {
-  #main section.text-image .section-content p {
-    font-size: 18px;
-  }
-}
-@media (min-width: 992px) {
-  #main section.text-image .section-content p {
-    font-size: 20px;
-  }
 }
 #main section.text-image .tools > .wp-block-group__inner-container {
   display: -webkit-box;
