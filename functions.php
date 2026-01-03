@@ -1122,3 +1122,24 @@ function dxndre_client_login_logout_menu($items, $args) {
 
 	return $items;
 }
+
+// Enqueue Lenis Script (for scooth scrolling)
+
+function dx_enqueue_scripts() {
+	wp_enqueue_script(
+		'dx-main',
+		get_template_directory_uri() . '/assets/js/main.js',
+		[],
+		null,
+		true
+	);
+
+	// Force module type
+	add_filter('script_loader_tag', function ($tag, $handle) {
+		if ($handle === 'dx-main') {
+			return str_replace('<script ', '<script type="module" ', $tag);
+		}
+		return $tag;
+	}, 10, 2);
+}
+add_action('wp_enqueue_scripts', 'dx_enqueue_scripts');

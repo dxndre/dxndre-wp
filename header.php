@@ -66,34 +66,41 @@
 				</div>
 
 				<div id="navbar" class="navbar-collapse">
-					
-					<div class="menu-content">
-						<span class="headline">Navigation</span>
-						<h3>Menu</h3>
+					<div class="container">
+						<div class="menu-content-wrapper">
+							<div class="menu-content">
+								<span class="headline">Navigation</span>
+								<h3>Menu</h3>
 
-						<?php
-						// Loading WordPress Custom Menu (theme_location).
-						wp_nav_menu(
-							array(
-								'menu_class'     => 'navbar-nav me-auto',
-								'container'      => '',
-								'fallback_cb'    => 'WP_Bootstrap_Navwalker::fallback',
-								'walker'         => new WP_Bootstrap_Navwalker(),
-								'theme_location' => 'main-menu',
-							)
-						);
+								<?php
+								// Loading WordPress Custom Menu (theme_location).
+								wp_nav_menu(
+									array(
+										'menu_class'     => 'navbar-nav me-auto',
+										'container'      => '',
+										'fallback_cb'    => 'WP_Bootstrap_Navwalker::fallback',
+										'walker'         => new WP_Bootstrap_Navwalker(),
+										'theme_location' => 'main-menu',
+									)
+								);
 
-						if ( '1' === $search_enabled ) :
-					?>
-							<!-- <form class="search-form my-2 my-lg-0" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-								<div class="input-group">
-									<input type="text" name="s" class="form-control" placeholder="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" title="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" />
-									<button type="submit" name="submit" class="btn btn-outline-secondary"><?php esc_html_e( 'Search', 'dxndre' ); ?></button>
-								</div>
-							</form> -->
-					<?php
-						endif;
-					?>
+								if ( '1' === $search_enabled ) :
+								?>
+										<!-- <form class="search-form my-2 my-lg-0" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+											<div class="input-group">
+												<input type="text" name="s" class="form-control" placeholder="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" title="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" />
+												<button type="submit" name="submit" class="btn btn-outline-secondary"><?php esc_html_e( 'Search', 'dxndre' ); ?></button>
+											</div>
+										</form> -->
+								<?php
+									endif;
+								?>
+							</div>
+							<div class="graphic-side">
+								<img src="<?php echo get_template_directory_uri(); ?>/assets/img/bus.png" alt="Bus graphic">
+							</div>
+						</div>
+					</div>
 
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->

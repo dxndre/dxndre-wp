@@ -8,6 +8,7 @@
 	<div class="container">
 		<header class="entry-header">
 			<div class="header-content">
+				<a class="back" href="/portfolio/"><i class="fa-solid fa-arrow-left"></i> All Projects</a>
 				<pre class="headline">Case Study</pre>
 				<h1 class="entry-title"><?php the_title(); ?></h1>
 			</div>
