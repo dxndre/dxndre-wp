@@ -431,4 +431,64 @@ import * as bootstrap from 'bootstrap';
 			first.click();
 		}
 	});
+
+	// Converting Gallery into carousel
+	document.querySelectorAll('.wp-block-group.gallery').forEach(gallery => {
+		const track = gallery.querySelector('.wp-block-gallery');
+		if (!track) return;
+
+		// Prevent double-init
+		if (track.dataset.cloned) return;
+		track.dataset.cloned = 'true';
+
+		const slides = [...track.children];
+
+		slides.forEach(slide => {
+			track.appendChild(slide.cloneNode(true));
+		});
+	});
+
+	// Duplicating Gallery Carousel 
+
+	document.querySelectorAll('.wp-block-group.gallery').forEach(gallery => {
+		const track = gallery.querySelector('.wp-block-gallery');
+		if (!track) return;
+
+		// Prevent double backdrop creation
+		if (gallery.querySelector('.gallery-backdrop')) return;
+
+		// Clone the gallery
+		const backdrop = track.cloneNode(true);
+
+		// Mark + style hook
+		backdrop.classList.add('gallery-backdrop');
+		backdrop.setAttribute('aria-hidden', 'true');
+
+		// Insert backdrop before the original
+		track.parentNode.insertBefore(backdrop, track);
+
+		// Ensure stacking context
+		gallery.style.position = 'relative';
+	});
+
+	// Adding glowing backgrounds to all images via duplication and class additions
+	document.querySelectorAll('#main section.about figure').forEach(figure => {
+		const img = figure.querySelector('img');
+		if (!img) return;
+
+		// Prevent double cloning
+		if (figure.dataset.backdrop === 'true') return;
+		figure.dataset.backdrop = 'true';
+
+		// Ensure positioning context
+		figure.style.position = 'relative';
+
+		// Clone image
+		const backdrop = img.cloneNode(true);
+		backdrop.classList.add('image-backdrop');
+		backdrop.setAttribute('aria-hidden', 'true');
+
+		// Insert behind original
+		figure.insertBefore(backdrop, img);
+	});
 })();
