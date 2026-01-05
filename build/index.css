@@ -16412,9 +16412,9 @@ img {
 #main section.what-i-do .services-mobile .accordion-item {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
   margin-bottom: 1rem;
   overflow: hidden;
+  border-radius: 0;
 }
 #main section.what-i-do .services-mobile .accordion-button {
   background: rgba(255, 255, 255, 0.02);
@@ -16426,17 +16426,55 @@ img {
   -webkit-box-shadow: none;
           box-shadow: none;
 }
+#main section.what-i-do .services-mobile .accordion-button::after {
+  -webkit-filter: grayscale(1) brightness(5);
+          filter: grayscale(1) brightness(5);
+}
+#main section.what-i-do .services-mobile .cta {
+  margin-top: 1em;
+  min-width: 250px;
+  color: white;
+  padding: 12px 20px;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 0;
+  background: transparent;
+}
+#main section.what-i-do .services-mobile .cta:hover {
+  background: white;
+  color: black;
+}
 #main section.what-i-do .services-mobile .accordion-body {
-  padding: 1.5rem;
+  padding: 0;
 }
 #main section.what-i-do .services-mobile .accordion-body .service-image {
-  border-radius: 12px;
-  margin-bottom: 1rem;
+  max-width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 #main section.what-i-do .services-mobile .accordion-body p {
   color: white;
   opacity: 0.85;
   line-height: 1.6;
+  margin: 0;
+}
+#main section.what-i-do .services-mobile .accordion-body .text-container {
+  padding: 2em 3em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 1em;
 }
 #main section.pricing .section-content, #main section.start-something .section-content {
   color: white;

@@ -2274,9 +2274,9 @@ img {
 				.accordion-item {
 					background: transparent;
 					border: 1px solid rgba(255,255,255,0.15);
-					border-radius: 16px;
 					margin-bottom: 1rem;
 					overflow: hidden;
+					border-radius: 0;
 				}
 
 				.accordion-button {
@@ -2288,20 +2288,49 @@ img {
 					&:focus {
 						box-shadow: none;
 					}
+
+					&::after {
+						filter: grayscale(1) brightness(5);
+					}
+				}
+
+				.cta {
+					margin-top: 1em;
+					min-width: 250px;
+					color: white;
+					padding: 12px 20px;
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+					border-radius: 0;
+					background: transparent;
+
+					&:hover {
+						background: white;
+						color: black;
+					}
 				}
 
 				.accordion-body {
-					padding: 1.5rem;
+					padding: 0;
 
 					.service-image {
-						border-radius: 12px;
-						margin-bottom: 1rem;
+						max-width: 100%;
+						object-fit: cover;
 					}
 
 					p {
 						color: white;
 						opacity: 0.85;
 						line-height: 1.6;
+						margin: 0;
+					}
+
+					.text-container {
+						padding: 2em 3em;
+						display: flex;
+						flex-direction: column;
+						gap: 1em;
 					}
 				}
 			}

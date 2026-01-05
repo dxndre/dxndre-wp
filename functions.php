@@ -1216,12 +1216,13 @@ add_shortcode('services_tabs', function () {
 						<?= get_the_post_thumbnail($service, 'large', ['class' => 'service-image']); ?>
 						<?php endif; ?>
 
-						<p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
+						<div class="text-container">
+							<p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
 
-						<a href="<?= get_permalink($service); ?>" class="btn btn-outline-light">
-						View service
-						</a>
-
+							<a href="<?= get_permalink($service); ?>" class="btn btn-outline-light cta">
+							View service
+							</a>
+						</div>
 					</div>
 				</div>
 
