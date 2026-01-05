@@ -1143,3 +1143,94 @@ function dx_enqueue_scripts() {
 	}, 10, 2);
 }
 add_action('wp_enqueue_scripts', 'dx_enqueue_scripts');
+
+// Services Tabs Block shortcode
+
+add_shortcode('services_tabs', function () {
+
+  $services = get_posts([
+    'post_type'      => 'service',
+    'posts_per_page' => -1,
+    'orderby'        => 'menu_order',
+    'order'          => 'ASC',
+  ]);
+
+  if (!$services) return '';
+
+  ob_start();
+  ?>
+  <section class="services-tabs d-none d-lg-block">
+    <div class="row">
+      <div class="col-lg-4">
+        <ul class="nav nav-pills flex-column services-nav">
+          <?php foreach ($services as $i => $service): ?>
+            <button
+              class="nav-link <?= $i === 0 ? 'active' : '' ?>"
+              data-bs-toggle="pill"
+              data-bs-target="#service-<?= $service->ID ?>"
+            >
+              <?= esc_html(
+                get_field('service_title_override', $service->ID)
+                ?: $service->post_title
+              ); ?>
+				<span class="label"></span>
+				<span class="tab-progress"></span>
+            </button>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+
+      <div class="col-lg-8 tab-content">
+        <?php foreach ($services as $i => $service): ?>
+          <div class="tab-pane fade <?= $i === 0 ? 'show active' : '' ?>"id="service-<?= $service->ID ?>"style=" --service-bg: url('<?= esc_url(get_the_post_thumbnail_url($service, 'full')); ?>');">
+            <h3><?= esc_html($service->post_title); ?></h3>
+            <p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
+            <a href="<?= get_permalink($service); ?>" class="btn btn-outline-light">
+              View service
+            </a>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+
+  <div class="services-mobile d-lg-none">
+		<div class="accordion" id="servicesAccordion">
+
+		<?php foreach ($services as $i => $service): ?>
+			<div class="accordion-item">
+
+				<h2 class="accordion-header">
+				<button class="accordion-button <?= $i !== 0 ? 'collapsed' : '' ?>" data-bs-toggle="collapse" data-bs-target="#service-collapse-<?= $service->ID ?>">
+					<?= esc_html(
+					get_field('service_title_override', $service->ID)
+					?: $service->post_title
+					); ?>
+				</button>
+				</h2>
+
+				<div id="service-collapse-<?= $service->ID ?>" class="accordion-collapse collapse <?= $i === 0 ? 'show' : '' ?>" >
+					<div class="accordion-body">
+
+						<?php if (has_post_thumbnail($service)): ?>
+						<?= get_the_post_thumbnail($service, 'large', ['class' => 'service-image']); ?>
+						<?php endif; ?>
+
+						<p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
+
+						<a href="<?= get_permalink($service); ?>" class="btn btn-outline-light">
+						View service
+						</a>
+
+					</div>
+				</div>
+
+			</div>
+		<?php endforeach; ?>
+
+		</div>
+	</div>
+  <?php
+
+  return ob_get_clean();
+});

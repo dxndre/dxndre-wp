@@ -16259,37 +16259,184 @@ img {
   gap: 12px;
   margin-bottom: 12px;
 }
-#main section.what-i-do .service-boxes .service-box {
+#main section.what-i-do .service-boxes .services-tabs {
+  --accent: #8b2323;
+  --duration: 5s;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link {
   position: relative;
-}
-#main section.what-i-do .service-boxes .service-box p {
-  margin: 0;
-}
-#main section.what-i-do .service-boxes .service-box p a {
-  color: white;
-  text-decoration: none;
+  background: transparent;
+  border: 0;
+  padding: 1rem 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   font-weight: 500;
-  position: static;
-  padding: 2em;
+  cursor: pointer;
+  text-align: left;
+  -webkit-transition: color 0.35s ease;
+  transition: color 0.35s ease;
 }
-#main section.what-i-do .service-boxes .service-box p a:hover {
-  text-decoration: underline;
-}
-#main section.what-i-do .service-boxes .service-box {
-  /* Stretched link overlay */
-}
-#main section.what-i-do .service-boxes .service-box .wp-block-cover__inner-container a::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-}
-#main section.what-i-do .service-boxes .service-box {
-  /* Ensure text sits above overlay */
-}
-#main section.what-i-do .service-boxes .service-box .wp-block-cover__inner-container {
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link .label {
   position: relative;
-  z-index: 4;
+  z-index: 2;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link .tab-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background: white;
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  opacity: 0;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link.active {
+  color: #fff;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link.active .tab-progress {
+  opacity: 1;
+  -webkit-animation: tabProgress var(--duration) linear forwards;
+          animation: tabProgress var(--duration) linear forwards;
+}
+#main section.what-i-do .service-boxes .services-tabs .services-nav .nav-link:hover {
+  color: #fff;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  text-align: left;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane {
+  -webkit-animation: fadeSlide 0.6s ease both;
+          animation: fadeSlide 0.6s ease both;
+  max-width: 600px;
+  margin: 0 auto;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane h3, #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane .h3 {
+  margin-bottom: 1em;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane p {
+  font-weight: lighter;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.btn, #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-buttons .wp-block-button #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.wp-block-button__link {
+  margin-top: 1em;
+  min-width: 250px;
+  color: white;
+  padding: 12px 20px;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 0;
+  background: transparent;
+}
+#main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.btn:hover, #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane .wp-block-buttons .wp-block-button a.wp-block-button__link:hover, .wp-block-buttons .wp-block-button #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.wp-block-button__link:hover {
+  background: white;
+  color: black;
+}
+#main section.what-i-do .service-boxes {
+  /* Animations */
+}
+@-webkit-keyframes tabProgress {
+  from {
+    opacity: 0;
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+  }
+}
+@keyframes tabProgress {
+  from {
+    opacity: 0;
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+  }
+}
+@-webkit-keyframes fadeSlide {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+            transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+}
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+            transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+}
+#main section.what-i-do .services-mobile {
+  padding: 3rem 1rem;
+}
+#main section.what-i-do .services-mobile .accordion-item {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+#main section.what-i-do .services-mobile .accordion-button {
+  background: rgba(255, 255, 255, 0.02);
+  color: white;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+#main section.what-i-do .services-mobile .accordion-button:focus {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+#main section.what-i-do .services-mobile .accordion-body {
+  padding: 1.5rem;
+}
+#main section.what-i-do .services-mobile .accordion-body .service-image {
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+#main section.what-i-do .services-mobile .accordion-body p {
+  color: white;
+  opacity: 0.85;
+  line-height: 1.6;
 }
 #main section.pricing .section-content, #main section.start-something .section-content {
   color: white;

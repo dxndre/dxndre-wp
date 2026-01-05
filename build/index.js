@@ -496,6 +496,52 @@ __webpack_require__.r(__webpack_exports__);
       }, 200);
     });
   });
+
+  // Auto-rotation of services tabs
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tabs = document.querySelectorAll('.services-nav .nav-link');
+    if (!tabs.length) return;
+    var index = 0;
+    var interval = null;
+    var ROTATION_DELAY = 5000; // 5s feels premium
+
+    var activateTab = function activateTab(i) {
+      tabs[i].click();
+    };
+    var startRotation = function startRotation() {
+      interval = setInterval(function () {
+        index = (index + 1) % tabs.length;
+        activateTab(index);
+      }, ROTATION_DELAY);
+    };
+    var stopRotation = function stopRotation() {
+      clearInterval(interval);
+      interval = null;
+    };
+
+    // Start rotation
+    startRotation();
+
+    // Pause on hover / interaction
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('mouseenter', stopRotation);
+      tab.addEventListener('focus', stopRotation);
+      tab.addEventListener('mouseleave', function () {
+        index = i;
+        startRotation();
+      });
+      tab.addEventListener('click', function () {
+        index = i;
+      });
+    });
+
+    // const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+    // if (!isTouch) {
+    // startRotation();
+    // }
+  });
 })();
 
 /***/ }),

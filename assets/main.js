@@ -516,4 +516,55 @@ import * as bootstrap from 'bootstrap';
 			setTimeout(() => recruiterModal.show(), 200);
 		});
 	});
+
+	// Auto-rotation of services tabs
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const tabs = document.querySelectorAll('.services-nav .nav-link');
+		if (!tabs.length) return;
+
+		let index = 0;
+		let interval = null;
+		const ROTATION_DELAY = 5000; // 5s feels premium
+
+		const activateTab = (i) => {
+			tabs[i].click();
+		};
+
+		const startRotation = () => {
+			interval = setInterval(() => {
+			index = (index + 1) % tabs.length;
+			activateTab(index);
+			}, ROTATION_DELAY);
+		};
+
+		const stopRotation = () => {
+			clearInterval(interval);
+			interval = null;
+		};
+
+		// Start rotation
+		startRotation();
+
+		// Pause on hover / interaction
+		tabs.forEach((tab, i) => {
+			tab.addEventListener('mouseenter', stopRotation);
+			tab.addEventListener('focus', stopRotation);
+
+			tab.addEventListener('mouseleave', () => {
+			index = i;
+			startRotation();
+			});
+
+			tab.addEventListener('click', () => {
+			index = i;
+			});
+		});
+
+		// const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+		// if (!isTouch) {
+		// startRotation();
+		// }
+	});
 })();
