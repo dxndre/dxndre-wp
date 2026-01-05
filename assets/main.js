@@ -491,4 +491,29 @@ import * as bootstrap from 'bootstrap';
 		// Insert behind original
 		figure.insertBefore(backdrop, img);
 	});
+
+	// Homepage Bootstrap Modal (for identifying client) 
+	document.addEventListener('DOMContentLoaded', () => {
+		const hireBtn = document.querySelector('.js-hire-me');
+		if (!hireBtn) return;
+
+		const hireModal      = new bootstrap.Modal('#hireMeModal');
+		const clientModal    = new bootstrap.Modal('#clientModal');
+		const recruiterModal = new bootstrap.Modal('#recruiterModal');
+
+		hireBtn.addEventListener('click', e => {
+			e.preventDefault();
+			hireModal.show();
+		});
+
+		document.querySelector('.js-client-path')?.addEventListener('click', () => {
+			hireModal.hide();
+			setTimeout(() => clientModal.show(), 200);
+		});
+
+		document.querySelector('.js-recruiter-path')?.addEventListener('click', () => {
+			hireModal.hide();
+			setTimeout(() => recruiterModal.show(), 200);
+		});
+	});
 })();

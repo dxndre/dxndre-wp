@@ -470,6 +470,32 @@ __webpack_require__.r(__webpack_exports__);
     // Insert behind original
     figure.insertBefore(backdrop, img);
   });
+
+  // Homepage Bootstrap Modal (for identifying client) 
+  document.addEventListener('DOMContentLoaded', function () {
+    var _document$querySelect, _document$querySelect2;
+    var hireBtn = document.querySelector('.js-hire-me');
+    if (!hireBtn) return;
+    var hireModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#hireMeModal');
+    var clientModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#clientModal');
+    var recruiterModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#recruiterModal');
+    hireBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      hireModal.show();
+    });
+    (_document$querySelect = document.querySelector('.js-client-path')) === null || _document$querySelect === void 0 || _document$querySelect.addEventListener('click', function () {
+      hireModal.hide();
+      setTimeout(function () {
+        return clientModal.show();
+      }, 200);
+    });
+    (_document$querySelect2 = document.querySelector('.js-recruiter-path')) === null || _document$querySelect2 === void 0 || _document$querySelect2.addEventListener('click', function () {
+      hireModal.hide();
+      setTimeout(function () {
+        return recruiterModal.show();
+      }, 200);
+    });
+  });
 })();
 
 /***/ }),

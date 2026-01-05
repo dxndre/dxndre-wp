@@ -14077,6 +14077,7 @@ textarea.form-control-lg {
 body.is-frontend {
   font-family: "Outfit", sans-serif;
   background-color: black;
+  overflow-x: hidden;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
@@ -14091,6 +14092,140 @@ body.is-frontend #wpadminbar {
 }
 body.is-frontend.page-template-page-full #main {
   max-width: 100%;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal,
+body.is-frontend.page-template-page-homepage #clientModal,
+body.is-frontend.page-template-page-homepage #recruiterModal {
+  backdrop-filter: blur(25px);
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
+  max-width: 992px !important;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
+  color: white;
+  padding: 4em;
+  background-color: black;
+  border: 1px solid transparent;
+  border-radius: 0;
+  min-height: 576px;
+  -webkit-box-shadow: 0px 0px 50px -20px black;
+          box-shadow: 0px 0px 50px -20px black;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-header,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-header,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-header {
+  padding: 0;
+  border-bottom: none;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-header h5, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-header .h5,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-header h5,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-header .h5,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-header h5,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-header .h5 {
+  font-size: 2.5em;
+  line-height: 1.25em;
+  margin-bottom: 12px;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-header .btn-close,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-header .btn-close,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-header .btn-close {
+  -webkit-filter: invert(1);
+          filter: invert(1);
+  opacity: 0.6;
+  -webkit-transition: 0.3s all ease-in-out;
+  transition: 0.3s all ease-in-out;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-header .btn-close:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-header .btn-close:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-header .btn-close:hover {
+  opacity: 1;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-body,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-body,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-body {
+  padding: 0;
+  -webkit-box-flex: 0;
+      -ms-flex: none;
+          flex: none;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .modal-body p.question,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .modal-body p.question,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .modal-body p.question {
+  font-size: 1.5em;
+  font-weight: lighter;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .button-container,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .button-container,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .button-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  margin-top: 3em;
+  gap: 1em;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-button__link,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .btn,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-button__link,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .btn,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-button__link {
+  border-radius: 0;
+  background-image: none;
+  min-height: 60px;
+  background: white;
+  color: black;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border: 1px solid white;
+  min-width: 250px;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .btn:hover, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-button__link:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .btn:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-button__link:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .btn:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-button__link:hover {
+  background: transparent;
+  color: white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .btn i, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link i, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content .wp-block-button__link i,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .btn i,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link i,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content .wp-block-button__link i,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .btn i,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-buttons .wp-block-button .wp-block-button__link i,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content .wp-block-button__link i {
+  -webkit-transform: scale(1.5);
+          transform: scale(1.5);
+  margin-left: 0.75em;
+  display: block;
 }
 body.is-frontend.single-project::after {
   content: "";
@@ -15552,8 +15687,13 @@ img {
 @media (min-width: 992px) {
   #header #navbar.navbar-collapse .menu-content ul li a {
     text-align: left;
-    font-size: 2.5em;
+    font-size: 1.5em;
     padding: 0;
+  }
+}
+@media screen and (min-height: 800px) {
+  #header #navbar.navbar-collapse .menu-content ul li a {
+    font-size: 2.5em;
   }
 }
 #header #navbar.navbar-collapse .menu-content ul li a:hover {
@@ -16113,53 +16253,43 @@ img {
   }
 }
 #main section.what-i-do .service-boxes {
-  margin-top: 6em;
+  margin-top: 6rem;
 }
 #main section.what-i-do .service-boxes .wp-block-columns {
   gap: 12px;
   margin-bottom: 12px;
 }
 #main section.what-i-do .service-boxes .service-box {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  -ms-flex-line-pack: end;
-      align-content: end;
-  padding: 2em;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  min-height: 200px !important;
-  -webkit-transition: 0.7s all ease;
-  transition: 0.7s all ease;
-}
-@media (min-width: 768px) {
-  #main section.what-i-do .service-boxes .service-box {
-    min-height: 250px !important;
-  }
-}
-@media (min-width: 992px) {
-  #main section.what-i-do .service-boxes .service-box {
-    min-height: 315px !important;
-  }
+  position: relative;
 }
 #main section.what-i-do .service-boxes .service-box p {
-  line-height: normal;
   margin: 0;
 }
-#main section.what-i-do .service-boxes .service-box img {
-  -webkit-transform: scale(1);
-          transform: scale(1);
-  -webkit-transition: 0.7s all ease;
-  transition: 0.7s all ease;
+#main section.what-i-do .service-boxes .service-box p a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  position: static;
+  padding: 2em;
 }
-#main section.what-i-do .service-boxes .service-box:hover {
-  border-color: rgba(255, 255, 255, 0.6666);
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s all ease;
+#main section.what-i-do .service-boxes .service-box p a:hover {
+  text-decoration: underline;
 }
-#main section.what-i-do .service-boxes .service-box:hover img {
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s all ease;
+#main section.what-i-do .service-boxes .service-box {
+  /* Stretched link overlay */
+}
+#main section.what-i-do .service-boxes .service-box .wp-block-cover__inner-container a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+#main section.what-i-do .service-boxes .service-box {
+  /* Ensure text sits above overlay */
+}
+#main section.what-i-do .service-boxes .service-box .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 4;
 }
 #main section.pricing .section-content, #main section.start-something .section-content {
   color: white;
@@ -16220,11 +16350,11 @@ img {
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
-  -webkit-filter: blur(50px) saturate(1.6);
-          filter: blur(50px) saturate(1.6);
+  -webkit-filter: blur(75px) saturate(3);
+          filter: blur(75px) saturate(3);
   opacity: 0.6;
-  -webkit-transform: scale(1.05);
-          transform: scale(1.05);
+  -webkit-transform: scale(1.75);
+          transform: scale(1.75);
   pointer-events: none;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -16357,6 +16487,7 @@ img {
 #main section.persona .persona-boxes .persona-box p {
   line-height: normal;
   margin: 0;
+  padding-left: 1em;
 }
 #main section.persona .persona-boxes .persona-box img {
   -webkit-transform: scale(1);
