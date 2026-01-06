@@ -2866,9 +2866,52 @@ img {
 			
 			.wp-block-gallery {
 				margin-top: 7.5em;
+				display: -webkit-inline-box;
+				width: max-content;
 
 				figure {
 					height: 37.5vh;
+					max-width: 600px;
+				}
+
+				&.gallery-backdrop {
+					position: absolute;
+					inset: 0;
+					z-index: 0;
+					filter: blur(200px) saturate(5);
+					opacity: 0.6;
+					pointer-events: none;
+					transform: scale(1.1); // prevents edge clipping
+				}
+
+				/* Gallery marquee motion only */
+
+				.gallery-marquee {
+					overflow: hidden;
+					position: relative;
+				}
+
+				.gallery-track {
+					display: flex;
+					flex-wrap: nowrap;
+					will-change: transform;
+					transform: translate3d(0, 0, 0);
+				}
+
+				/* Ensure galleries never shrink (critical for seamless looping) */
+				.gallery-track > .wp-block-gallery {
+					flex-shrink: 0;
+				}
+
+				/* Backdrop layer: slower, softer motion */
+				.gallery-backdrop {
+					position: absolute;
+					inset: 0;
+					opacity: 0.2;
+					filter: blur(3px);
+					pointer-events: none;
+					transform: translate3d(0, 0, 0);
+					will-change: transform;
 				}
 			}
 		}

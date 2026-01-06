@@ -17073,9 +17073,63 @@ img {
 }
 #main section.gallery .wp-block-gallery {
   margin-top: 7.5em;
+  display: -webkit-inline-box;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
 }
 #main section.gallery .wp-block-gallery figure {
   height: 37.5vh;
+  max-width: 600px;
+}
+#main section.gallery .wp-block-gallery.gallery-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  -webkit-filter: blur(200px) saturate(5);
+          filter: blur(200px) saturate(5);
+  opacity: 0.6;
+  pointer-events: none;
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+}
+#main section.gallery .wp-block-gallery {
+  /* Gallery marquee motion only */
+}
+#main section.gallery .wp-block-gallery .gallery-marquee {
+  overflow: hidden;
+  position: relative;
+}
+#main section.gallery .wp-block-gallery .gallery-track {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  will-change: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+}
+#main section.gallery .wp-block-gallery {
+  /* Ensure galleries never shrink (critical for seamless looping) */
+}
+#main section.gallery .wp-block-gallery .gallery-track > .wp-block-gallery {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+}
+#main section.gallery .wp-block-gallery {
+  /* Backdrop layer: slower, softer motion */
+}
+#main section.gallery .wp-block-gallery .gallery-backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  -webkit-filter: blur(3px);
+          filter: blur(3px);
+  pointer-events: none;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 #main section.client-journey .client-journey {
   position: relative;

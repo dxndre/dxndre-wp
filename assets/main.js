@@ -732,6 +732,50 @@ import * as bootstrap from 'bootstrap';
 			});
 
 		});
+
+		// Gallery marquee for Portfolio page
+
+		document.querySelectorAll('.gallery-marquee').forEach(marquee => {
+			const track = marquee.querySelector('.gallery-track');
+			if (!track) return;
+
+			const galleries = track.querySelectorAll('.wp-block-gallery');
+			if (galleries.length < 2) return;
+
+			let position = 0;
+			let speed = 0.5; // gallery pace (slower than projects)
+			let paused = false;
+
+			const galleryWidth = galleries[0].offsetWidth;
+
+			function animate() {
+				if (!paused) {
+					position -= speed;
+
+					// seamless loop
+					if (Math.abs(position) >= galleryWidth) {
+						position += galleryWidth;
+					}
+
+					track.style.transform = `translate3d(${position}px, 0, 0)`;
+				}
+
+				requestAnimationFrame(animate);
+			}
+
+			// Pause on hover
+			marquee.addEventListener('mouseenter', () => paused = true);
+			marquee.addEventListener('mouseleave', () => paused = false);
+
+			// Pause when off-screen
+			const observer = new IntersectionObserver(entries => {
+				paused = !entries[0].isIntersecting;
+			}, { threshold: 0.15 });
+
+			observer.observe(marquee);
+
+			animate();
+		});
 	})
 ();
 

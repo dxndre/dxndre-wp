@@ -682,6 +682,48 @@ __webpack_require__.r(__webpack_exports__);
       });
     });
   });
+
+  // Gallery marquee for Portfolio page
+
+  document.querySelectorAll('.gallery-marquee').forEach(function (marquee) {
+    var track = marquee.querySelector('.gallery-track');
+    if (!track) return;
+    var galleries = track.querySelectorAll('.wp-block-gallery');
+    if (galleries.length < 2) return;
+    var position = 0;
+    var speed = 0.5; // gallery pace (slower than projects)
+    var paused = false;
+    var galleryWidth = galleries[0].offsetWidth;
+    function animate() {
+      if (!paused) {
+        position -= speed;
+
+        // seamless loop
+        if (Math.abs(position) >= galleryWidth) {
+          position += galleryWidth;
+        }
+        track.style.transform = "translate3d(".concat(position, "px, 0, 0)");
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Pause on hover
+    marquee.addEventListener('mouseenter', function () {
+      return paused = true;
+    });
+    marquee.addEventListener('mouseleave', function () {
+      return paused = false;
+    });
+
+    // Pause when off-screen
+    var observer = new IntersectionObserver(function (entries) {
+      paused = !entries[0].isIntersecting;
+    }, {
+      threshold: 0.15
+    });
+    observer.observe(marquee);
+    animate();
+  });
 })();
 
 /***/ }),
