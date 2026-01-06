@@ -152,82 +152,159 @@ body.is-frontend {
 			.modal-dialog {
 				max-width: 992px !important;
 
-				.modal-content {
-					color: white;
-					padding: 4em;
-					background-color: black;
-					border: 1px solid transparent;
-					border-radius: 0;
-					min-height: 576px;
-					box-shadow: 0px 0px 50px -20px black;
+				.modal-shell {
 					display: flex;
+				}
+
+				.modal-content {
+					display: flex;
+					flex-direction: column; // 📱 mobile-first
+					align-items: stretch;
+					background-color: black;
+					border-radius: 0;
+					border: none;
+					box-shadow: 0 0 50px -20px black;
+					min-height: 576px;
+					padding: 0;
+
+					// always visible
+					opacity: 1;
+				}
+
+				.modal-content-inner {
+					flex: 1;
+					padding: 3em;
+					color: white;
+					display: flex;
+					flex-direction: column;
 					justify-content: center;
+					gap: 12px;
 
-					.modal-header {
-						padding: 0;
-						border-bottom: none;
+					opacity: 1;
+					transform: translateY(0);
+					transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
 
-						h5 {
-							font-size: 2.5em;
-							line-height: 1.25em;
-							margin-bottom: 12px;
-						}
-
-						.btn-close {
-							filter: invert(1);
-							opacity: 0.6;
-							transition: 0.3s all ease-in-out;
-
-							&:hover {
-								opacity: 1;
-							}
-						}
+					.headline {
+						margin-bottom: 0;
 					}
+				}
 
-					.modal-body {
-						padding: 0;
-						flex: none;
+				.modal-image {
+					width: 100%;
+					height: 220px;
+					flex-shrink: 0;
+					position: relative;
+					overflow: hidden;
 
-						p {
-							&.question {
-								font-size: 1.5em;
-								font-weight: lighter;
-							}
-						}
+					opacity: 1;
+					transform: translateY(0);
+					transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
+
+					img {
+						width: 100%;
+						height: 100%;
+						object-fit: cover;
+						display: block;
 					}
+				}
 
-					.button-container {
-						display: flex;
+				/* =========================
+				DESKTOP LAYOUT
+				========================= */
+
+				@include media-breakpoint-up(lg) {
+
+					.modal-content {
 						flex-direction: row;
-						margin-top: 3em;
-						gap: 1em;
+						align-items: stretch;
 					}
 
-					.btn {
-						border-radius: 0;
-						background-image: none;
-						min-height: 60px;
-						background: white;
-						color: black;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						border: 1px solid white;
-						min-width: 250px;
-						transition: 0.7s all ease;
+					.modal-content-inner {
+						padding: 4em;
+					}
+
+					.modal-image {
+						width: 300px;
+						height: auto;
+					}
+				}
+
+				/* =========================
+				YOUR EXISTING STYLES
+				========================= */
+
+				.modal-header {
+					padding: 0;
+					border-bottom: none;
+
+					h5 {
+						font-size: 2em;
+						line-height: 1.25;
+						margin-bottom: 12px;
+					}
+
+					.btn-close {
+						opacity: 0.6;
+						position: absolute;
+						top: 3em;
+						right: 3em;
+						z-index: 1;
+						transform: scale(1.5);
+						transition: 0.3s ease;
 
 						&:hover {
-							background: transparent;
-							color: white;
-							transition: 0.3s all ease;
-						}
-
-						i {
-							transform: scale(1.5);
-							margin-left: 0.75em;
-							display: block;
+							opacity: 1;
 						}
 					}
+				}
+
+				.modal-body {
+					padding: 0;
+					flex: initial;
+					margin-top: 3em;
+
+					.question {
+						font-size: 1.5em;
+						font-weight: lighter;
+					}
+				}
+
+				.button-container {
+					display: flex;
+					gap: 1em;
+					flex-wrap: wrap;
+				}
+
+				.btn {
+					border-radius: 0;
+					min-height: 60px;
+					min-width: 250px;
+					background: white;
+					color: black;
+					border: 1px solid white;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					transition: 0.4s ease;
+
+					&:hover {
+						background: transparent;
+						color: white;
+					}
+				}
+			}
+
+			/* =========================
+			REDUCED MOTION
+			========================= */
+
+			@media (prefers-reduced-motion: reduce) {
+
+				.modal-content,
+				.modal-content-inner,
+				.modal-image {
+					transition: none !important;
+					transform: none !important;
 				}
 			}
 		}
@@ -2322,16 +2399,31 @@ img {
 									object-fit: cover;
 									margin-bottom: 2em;
 									box-shadow: 0px 0px 30px -15px #000000;
+									position: relative;
+									z-index: 1;
 								}
+
 								&.background {
 									position: absolute;
 									inset: 50% auto auto 50%;
-									transform: translate(-50%, -50%) scale(1.5);
+									transform: translate(-50%, -50%) scale(1.25);
 									z-index: -1;
 									filter: blur(100px) saturate(1.4);
 									opacity: 0.55;
 									pointer-events: none;
-									mix-blend-mode: screen; // 🔥 try "screen" or "plus-lighter"
+									mix-blend-mode: screen;
+
+									// 👇 base motion definition (ALWAYS here)
+									transition: transform 1.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.2s ease;
+								}
+							}
+
+							/* Active state — delay only on entry */
+							&.active {
+								img.background {
+									transition-delay: 1.25s; // ← intentional pause
+									transform: translate(-50%, -50%) scale(1.5);
+									opacity: 0.7;
 								}
 							}
 						}
