@@ -14187,6 +14187,7 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
   body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
     padding: 4em;
+    width: 692px;
   }
   body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
@@ -14217,9 +14218,9 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   line-height: 1.25;
   margin-bottom: 12px;
 }
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header .btn-close,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .btn-close,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .btn-close {
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn-close,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn-close,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn-close {
   opacity: 0.6;
   position: absolute;
   top: 3em;
@@ -14230,9 +14231,9 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
 }
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header .btn-close:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .btn-close:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .btn-close:hover {
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn-close:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn-close:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn-close:hover {
   opacity: 1;
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body,
@@ -14242,13 +14243,104 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   -webkit-box-flex: initial;
       -ms-flex: initial;
           flex: initial;
-  margin-top: 3em;
+  margin-top: 2em;
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .question,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .question,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .question {
   font-size: 1.5em;
   font-weight: lighter;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 10px;
+  padding: 4px 20px;
+  margin-bottom: 2em;
+  border-radius: 25px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  -webkit-box-shadow: 0px 0px 25px -5px;
+          box-shadow: 0px 0px 25px -5px;
+  color: white;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge .dot,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge .dot,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  -webkit-box-shadow: 0 0 8px currentColor;
+          box-shadow: 0 0 8px currentColor;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-available,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-available,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-available {
+  color: #4dff9f;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-backlog,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog {
+  color: #ffd479;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog .dot {
+  -webkit-box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
+          box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-casual,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-casual,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-casual {
+  color: #ffd479;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-unavailable,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-unavailable,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-unavailable {
+  color: #888;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p {
+  font-size: 1.125em;
+  font-weight: lighter;
+  line-height: 1.75;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p:last-of-type,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p:last-of-type,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p:last-of-type {
+  margin-bottom: 2em;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .modal-back,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .modal-back,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .modal-back {
+  margin-top: 2.5em;
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .modal-back:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .modal-back:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .modal-back:hover {
+  color: white;
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .button-container,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .button-container,
@@ -14282,8 +14374,28 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-b
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  gap: 0.5em;
   -webkit-transition: 0.4s ease;
   transition: 0.4s ease;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn i, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-button__link i,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn i,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-button__link i,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn i,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-button__link i {
+  -webkit-transform: scale(1.25);
+          transform: scale(1.25);
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.social, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .social.wp-block-button__link,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.social,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .social.wp-block-button__link,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.social,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .social.wp-block-button__link {
+  min-width: 80px;
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn:hover, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-button__link:hover,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn:hover,
@@ -14294,6 +14406,27 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-b
 .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-button__link:hover {
   background: transparent;
   color: white;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.alternative, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .alternative.wp-block-button__link,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.alternative,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .alternative.wp-block-button__link,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.alternative,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .alternative.wp-block-button__link {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+}
+body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.alternative:hover, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .alternative.wp-block-button__link:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.alternative:hover,
+body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .alternative.wp-block-button__link:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.alternative:hover,
+body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .alternative.wp-block-button__link:hover {
+  background: white;
+  color: black;
 }
 body.is-frontend.page-template-page-homepage #hireMeModal,
 body.is-frontend.page-template-page-homepage #clientModal,

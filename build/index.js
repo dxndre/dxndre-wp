@@ -592,6 +592,96 @@ __webpack_require__.r(__webpack_exports__);
     });
     animate();
   })();
+
+  // Previous modal back button functionality
+
+  document.addEventListener('click', function (e) {
+    var backBtn = e.target.closest('.modal-back');
+    if (!backBtn) return;
+    var targetModal = backBtn.dataset.backTo;
+    var currentModal = backBtn.closest('.modal');
+    if (!targetModal || !currentModal) return;
+    var currentInstance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(currentModal);
+    currentInstance.hide();
+    var nextModalEl = document.querySelector(targetModal);
+    var nextInstance = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal(nextModalEl);
+    nextInstance.show();
+  });
+
+  // Make sure only mone modal is open at a time
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var _document$querySelect3, _document$querySelect4;
+    // -----------------------------
+    // Modal controller
+    // -----------------------------
+    function showModalSafely(targetSelector) {
+      var openModals = document.querySelectorAll('.modal.show');
+      if (openModals.length) {
+        var remaining = openModals.length;
+        openModals.forEach(function (modal) {
+          var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(modal);
+          if (!instance) {
+            remaining--;
+            return;
+          }
+          modal.addEventListener('hidden.bs.modal', function () {
+            remaining--;
+            if (remaining === 0) {
+              openTargetModal(targetSelector);
+            }
+          }, {
+            once: true
+          });
+          instance.hide();
+        });
+      } else {
+        openTargetModal(targetSelector);
+      }
+    }
+    function openTargetModal(targetSelector) {
+      var modalEl = document.querySelector(targetSelector);
+      if (!modalEl) return;
+      var modal = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getOrCreateInstance(modalEl, {
+        backdrop: 'static',
+        focus: true
+      });
+      modal.show();
+    }
+
+    // -----------------------------
+    // Step 2: Navigation bindings
+    // -----------------------------
+
+    // Client path
+    (_document$querySelect3 = document.querySelector('.js-client-path')) === null || _document$querySelect3 === void 0 || _document$querySelect3.addEventListener('click', function () {
+      showModalSafely('#clientModal');
+    });
+
+    // Recruiter path
+    (_document$querySelect4 = document.querySelector('.js-recruiter-path')) === null || _document$querySelect4 === void 0 || _document$querySelect4.addEventListener('click', function () {
+      showModalSafely('#recruiterModal');
+    });
+
+    // Back buttons (delegated)
+    document.addEventListener('click', function (e) {
+      var backBtn = e.target.closest('.modal-back');
+      if (!backBtn) return;
+      var target = backBtn.dataset.backTo;
+      if (!target) return;
+      showModalSafely(target);
+    });
+
+    // -----------------------------
+    // Step 3: Cleanup safety net
+    // -----------------------------
+    document.addEventListener('hidden.bs.modal', function () {
+      document.body.classList.remove('modal-open');
+      document.querySelectorAll('.modal-backdrop').forEach(function (b) {
+        return b.remove();
+      });
+    });
+  });
 })();
 
 /***/ }),

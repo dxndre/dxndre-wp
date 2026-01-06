@@ -627,6 +627,111 @@ import * as bootstrap from 'bootstrap';
 
 			animate();
 		})();
+
+
+		// Previous modal back button functionality
+
+		document.addEventListener('click', (e) => {
+			const backBtn = e.target.closest('.modal-back');
+			if (!backBtn) return;
+
+			const targetModal = backBtn.dataset.backTo;
+			const currentModal = backBtn.closest('.modal');
+
+			if (!targetModal || !currentModal) return;
+
+			const currentInstance = bootstrap.Modal.getInstance(currentModal);
+			currentInstance.hide();
+
+			const nextModalEl = document.querySelector(targetModal);
+			const nextInstance = new bootstrap.Modal(nextModalEl);
+			nextInstance.show();
+		});
+
+		// Make sure only mone modal is open at a time
+
+		document.addEventListener('DOMContentLoaded', () => {
+
+			// -----------------------------
+			// Modal controller
+			// -----------------------------
+			function showModalSafely(targetSelector) {
+				const openModals = document.querySelectorAll('.modal.show');
+
+				if (openModals.length) {
+					let remaining = openModals.length;
+
+					openModals.forEach((modal) => {
+						const instance = bootstrap.Modal.getInstance(modal);
+						if (!instance) {
+							remaining--;
+							return;
+						}
+
+						modal.addEventListener(
+							'hidden.bs.modal',
+							() => {
+								remaining--;
+								if (remaining === 0) {
+									openTargetModal(targetSelector);
+								}
+							},
+							{ once: true }
+						);
+
+						instance.hide();
+					});
+				} else {
+					openTargetModal(targetSelector);
+				}
+			}
+
+			function openTargetModal(targetSelector) {
+				const modalEl = document.querySelector(targetSelector);
+				if (!modalEl) return;
+
+				const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+					backdrop: 'static',
+					focus: true
+				});
+
+				modal.show();
+			}
+
+			// -----------------------------
+			// Step 2: Navigation bindings
+			// -----------------------------
+
+			// Client path
+			document.querySelector('.js-client-path')?.addEventListener('click', () => {
+				showModalSafely('#clientModal');
+			});
+
+			// Recruiter path
+			document.querySelector('.js-recruiter-path')?.addEventListener('click', () => {
+				showModalSafely('#recruiterModal');
+			});
+
+			// Back buttons (delegated)
+			document.addEventListener('click', (e) => {
+				const backBtn = e.target.closest('.modal-back');
+				if (!backBtn) return;
+
+				const target = backBtn.dataset.backTo;
+				if (!target) return;
+
+				showModalSafely(target);
+			});
+
+			// -----------------------------
+			// Step 3: Cleanup safety net
+			// -----------------------------
+			document.addEventListener('hidden.bs.modal', () => {
+				document.body.classList.remove('modal-open');
+				document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+			});
+
+		});
 	})
 ();
 

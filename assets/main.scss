@@ -221,6 +221,7 @@ body.is-frontend {
 
 					.modal-content-inner {
 						padding: 4em;
+						width: 692px;
 					}
 
 					.modal-image {
@@ -242,30 +243,101 @@ body.is-frontend {
 						line-height: 1.25;
 						margin-bottom: 12px;
 					}
+				}
 
-					.btn-close {
-						opacity: 0.6;
-						position: absolute;
-						top: 3em;
-						right: 3em;
-						z-index: 1;
-						transform: scale(1.5);
-						transition: 0.3s ease;
+				.btn-close {
+					opacity: 0.6;
+					position: absolute;
+					top: 3em;
+					right: 3em;
+					z-index: 1;
+					transform: scale(1.5);
+					transition: 0.3s ease;
 
-						&:hover {
-							opacity: 1;
-						}
+					&:hover {
+						opacity: 1;
 					}
 				}
 
 				.modal-body {
 					padding: 0;
 					flex: initial;
-					margin-top: 3em;
+					margin-top: 2em;
 
 					.question {
 						font-size: 1.5em;
 						font-weight: lighter;
+					}
+					.availability-badge {
+						display: inline-flex;
+						align-items: center;
+						gap: 10px;
+						padding: 4px 20px;
+						margin-bottom: 2em;
+						border-radius: 25px;
+						font-size: 0.75rem;
+						letter-spacing: 0.08em;
+						text-transform: uppercase;
+						border: 1px solid rgba(255,255,255,0.25);
+						box-shadow: 0px 0px 25px -5px;
+						color: white;
+						background: rgba(255,255,255,0.02);
+						backdrop-filter: blur(6px);
+						pointer-events: none;
+
+						.dot {
+							width: 8px;
+							height: 8px;
+							border-radius: 50%;
+							background: currentColor;
+							box-shadow: 0 0 8px currentColor;
+						}
+
+						&.is-available {
+							color: #4dff9f;
+						}
+
+						&.is-backlog {
+							color: #ffd479;
+
+							.dot {
+								box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
+							}
+						}
+
+						&.is-casual {
+							color: #ffd479;
+						}
+
+						&.is-unavailable {
+							color: #888;
+						}
+					}
+
+					p {
+						font-size: 1.125em;
+						font-weight: lighter;
+						line-height: 1.75;
+
+						&:last-of-type {
+							margin-bottom: 2em;
+						}
+					}
+
+					.modal-back {
+						margin-top: 2.5em;
+						background: none;
+						border: none;
+						padding: 0;
+						color: rgba(255, 255, 255, 0.5);
+						font-size: 0.9em;
+						letter-spacing: 0.02em;
+						cursor: pointer;
+						transition: color 0.2s ease;
+
+						&:hover {
+							color: white;
+						}
 					}
 				}
 
@@ -285,11 +357,31 @@ body.is-frontend {
 					display: flex;
 					align-items: center;
 					justify-content: center;
+					gap: 0.5em;
 					transition: 0.4s ease;
+
+					i {
+						transform: scale(1.25);
+					}
+
+					&.social {
+						min-width: 80px;
+					}
 
 					&:hover {
 						background: transparent;
 						color: white;
+					}
+
+					&.alternative {
+						background: transparent;
+						color: white;
+						border: 1px solid white;
+
+						&:hover {
+							background: white;
+							color: black;
+						}
 					}
 				}
 			}
