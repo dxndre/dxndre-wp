@@ -11,8 +11,8 @@ $search_enabled = get_theme_mod( 'search_enabled', '1' ); // Get custom meta-val
 ?>
 <div id="post-0" class="content error404 not-found">
 	<div class="container">
-		<section class="auth auth-forgot">
-			<div class="login-content">
+		<section class="error-404">
+			<div class="content-404">
 				<pre class="headline">Error 404</pre>
 				<h1>Yikes, that’s an error.</h1>
 
@@ -23,8 +23,25 @@ $search_enabled = get_theme_mod( 'search_enabled', '1' ); // Get custom meta-val
 				<?php endif; ?>
 
 				<div class="buttons-container">
-					<a>Homepage</a>
-					<a>Back to Previous Page</a>
+					<a
+						href="<?php echo esc_url( home_url( '/' ) ); ?>"
+						class="btn btn-primary"
+					>
+						Back to Homepage
+					</a>
+
+					<a
+						href="<?php echo esc_url(
+							! empty( $_SERVER['HTTP_REFERER'] )
+								? wp_unslash( $_SERVER['HTTP_REFERER'] )
+								: home_url( '/' )
+						); ?>"
+						class="btn btn-primary alternative"
+					>
+						<i class="fa-solid fa-arrow-left"></i>
+						Back to Previous Page
+					</a>
+
 				</div>
 			</div>
 
