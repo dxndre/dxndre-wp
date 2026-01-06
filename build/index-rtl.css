@@ -16985,6 +16985,7 @@ img {
   margin-bottom: 12px;
 }
 #main section.persona .persona-boxes .persona-box {
+  position: relative;
   border: 1px solid rgba(255, 255, 255, 0.25);
   -ms-flex-line-pack: end;
       align-content: end;
@@ -16992,8 +16993,9 @@ img {
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   min-height: 275px !important;
-  -webkit-transition: 0.7s all ease;
-  transition: 0.7s all ease;
+  -webkit-transition: 0.7s ease;
+  transition: 0.7s ease;
+  cursor: pointer;
 }
 @media (min-width: 768px) {
   #main section.persona .persona-boxes .persona-box {
@@ -17008,27 +17010,80 @@ img {
     min-height: 630px !important;
   }
 }
+#main section.persona .persona-boxes .persona-box {
+  /* Ensure inner content layers correctly */
+}
+#main section.persona .persona-boxes .persona-box .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 2;
+}
+#main section.persona .persona-boxes .persona-box .wp-block-cover__image-background,
+#main section.persona .persona-boxes .persona-box .wp-block-cover__background {
+  pointer-events: none;
+}
 #main section.persona .persona-boxes .persona-box p {
   line-height: normal;
   margin: 0;
   padding-right: 1em;
+  position: static;
+}
+#main section.persona .persona-boxes .persona-box {
+  /* Make the entire cover clickable via the inner <a> */
+}
+#main section.persona .persona-boxes .persona-box a {
+  color: white;
+  text-decoration: none;
+}
+#main section.persona .persona-boxes .persona-box a::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  height: 630px;
+  /* background: black; */
+  top: 0;
+  right: 0;
+}
+#main section.persona .persona-boxes .persona-box {
+  /* Image motion */
 }
 #main section.persona .persona-boxes .persona-box img {
   -webkit-transform: scale(1);
           transform: scale(1);
-  -webkit-transition: 0.7s all ease;
-  transition: 0.7s all ease;
+  -webkit-transition: -webkit-transform 0.7s ease;
+  transition: -webkit-transform 0.7s ease;
+  transition: transform 0.7s ease;
+  transition: transform 0.7s ease, -webkit-transform 0.7s ease;
+}
+#main section.persona .persona-boxes .persona-box {
+  /* Subtle luxury overlay */
+}
+#main section.persona .persona-boxes .persona-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  -webkit-transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+#main section.persona .persona-boxes .persona-box {
+  /* Hover state */
 }
 #main section.persona .persona-boxes .persona-box:hover {
   border-color: rgba(255, 255, 255, 0.6666);
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s all ease;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
 }
 #main section.persona .persona-boxes .persona-box:hover img {
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s all ease;
+  -webkit-transform: scale(1.05);
+          transform: scale(1.05);
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+#main section.persona .persona-boxes .persona-box:hover::after {
+  opacity: 1;
 }
 #main section.gallery {
   color: white;
