@@ -10,17 +10,29 @@ get_header();
 $search_enabled = get_theme_mod( 'search_enabled', '1' ); // Get custom meta-value.
 ?>
 <div id="post-0" class="content error404 not-found">
-	<h1 class="entry-title"><?php esc_html_e( 'Not found', 'dxndre' ); ?></h1>
-	<div class="entry-content">
-		<p><?php esc_html_e( 'It looks like nothing was found at this location.', 'dxndre' ); ?></p>
-		<div>
-			<?php
-				if ( '1' === $search_enabled ) :
-					get_search_form();
-				endif;
-			?>
-		</div>
-	</div><!-- /.entry-content -->
+	<div class="container">
+		<section class="auth auth-forgot">
+			<div class="login-content">
+				<pre class="headline">Error 404</pre>
+				<h1>Yikes, that’s an error.</h1>
+
+				<p>The page you were looking for can’t be found.</p>
+
+				<?php if (isset($_GET['reset']) && $_GET['reset'] === 'sent'): ?>
+					<p class="success">If that email exists, a reset link has been sent.</p>
+				<?php endif; ?>
+
+				<div class="buttons-container">
+					<a>Homepage</a>
+					<a>Back to Previous Page</a>
+				</div>
+			</div>
+
+			<div class="graphic-content">
+				<img src="<?php echo get_template_directory_uri(); ?>/assets/img/404.png" alt="Error 404 graphic">
+			</div>
+		</section>
+	</div>
 </div><!-- /#post-0 -->
 <?php
 get_footer();
