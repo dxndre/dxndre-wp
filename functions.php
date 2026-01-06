@@ -1183,6 +1183,9 @@ add_shortcode('services_tabs', function () {
       <div class="col-lg-8 tab-content">
         <?php foreach ($services as $i => $service): ?>
           <div class="tab-pane fade <?= $i === 0 ? 'show active' : '' ?>"id="service-<?= $service->ID ?>"style=" --service-bg: url('<?= esc_url(get_the_post_thumbnail_url($service, 'full')); ?>');">
+			<?php if (has_post_thumbnail($service)): ?>
+				<?= get_the_post_thumbnail($service, 'large', ['class' => 'service-image foreground']); ?>
+			<?php endif; ?>
             <h3><?= esc_html($service->post_title); ?></h3>
             <p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
             <a href="<?= get_permalink($service); ?>" class="btn btn-outline-light">
@@ -1233,5 +1236,134 @@ add_shortcode('services_tabs', function () {
 	</div>
   <?php
 
+  return ob_get_clean();
+});
+
+// Getting Project Meta for the listings
+
+function dx_project_meta_shortcode() {
+  if ( ! is_singular() && ! in_the_loop() ) {
+    return '';
+  }
+
+  $project_type   = get_field('project_type');
+  $employer       = get_field('employer');
+  $client_company = get_field('client_company');
+  $year           = get_the_date('Y');
+
+  if ( ! $project_type ) {
+    return '';
+  }
+
+  // Prefer employer, fallback to client company
+  $organisation = $employer ?: $client_company;
+
+  ob_start();
+  ?>
+  <div class="project-meta">
+    <span class="meta-type">
+      <?php echo esc_html( strtoupper( $project_type ) ); ?>
+    </span>
+
+    <?php if ( $organisation ) : ?>
+      <span class="meta-separator">–</span>
+      <span class="meta-org">
+        <?php echo esc_html( strtoupper( $organisation ) ); ?>
+      </span>
+    <?php endif; ?>
+
+    <?php if ( $year ) : ?>
+      <span class="meta-separator">•</span>
+      <span class="meta-year">
+        <?php echo esc_html( $year ); ?>
+      </span>
+    <?php endif; ?>
+  </div>
+  <?php
+  return ob_get_clean();
+}
+add_shortcode( 'project_meta', 'dx_project_meta_shortcode' );
+
+// Projects Marquee (for Homepage)
+
+// Projects Marquee (Homepage)
+add_shortcode('projects_marquee', function () {
+
+  $projects = get_posts([
+    'post_type'      => 'project',
+    'posts_per_page' => -1,
+    'post_status'    => 'publish',
+    'orderby'        => 'date',
+    'order'          => 'DESC',
+  ]);
+
+  if (empty($projects)) {
+    return '';
+  }
+
+  ob_start(); ?>
+
+  <section class="projects-marquee">
+    <div class="marquee-track">
+
+      <?php foreach ($projects as $project): ?>
+
+        <?php
+          // --- PROJECT TYPE (ACF SAFE HANDLING)
+          $type_field = get_field('project_type', $project->ID);
+
+          if (is_array($type_field)) {
+            $project_type = $type_field['label'] ?? $type_field['value'] ?? '';
+          } else {
+            $project_type = $type_field;
+          }
+
+          $project_type = strtoupper($project_type ?: 'FREELANCE');
+
+          // --- YEAR (fallback-safe)
+          $year = get_the_date('Y', $project->ID);
+        ?>
+
+        <article class="project-card">
+          <a href="<?= esc_url(get_permalink($project)); ?>" class="project-link">
+
+            <figure class="project-media">
+              <?= get_the_post_thumbnail(
+                $project->ID,
+                'large',
+                ['loading' => 'lazy']
+              ); ?>
+            </figure>
+
+            <div class="project-body">
+
+              <span class="project-meta headline">
+                <?= esc_html($project_type); ?> • <?= esc_html($year); ?>
+              </span>
+
+              <h3 class="project-title">
+                <?= esc_html(get_the_title($project)); ?>
+              </h3>
+
+              <p class="project-excerpt">
+                <?= esc_html(get_the_excerpt($project)); ?>
+              </p>
+
+              <span class="project-cta">
+                View Case Study →
+              </span>
+
+            </div>
+          </a>
+        </article>
+
+      <?php endforeach; ?>
+
+    </div>
+
+    <!-- <div class="marquee-progress"></div> -->
+  </section>
+
+  <?php
   return ob_get_clean();
 });

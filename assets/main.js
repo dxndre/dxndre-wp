@@ -525,7 +525,7 @@ import * as bootstrap from 'bootstrap';
 
 		let index = 0;
 		let interval = null;
-		const ROTATION_DELAY = 5000; // 5s feels premium
+		const ROTATION_DELAY = 8000; // 8s feels premium
 
 		const activateTab = (i) => {
 			tabs[i].click();
@@ -566,5 +566,67 @@ import * as bootstrap from 'bootstrap';
 		// if (!isTouch) {
 		// startRotation();
 		// }
-	});
-})();
+
+		// Duplicating Services Tab images for glowing backdrop effect
+
+		document.querySelectorAll('.service-image.foreground').forEach(img => {
+			// Prevent duplicate cloning
+			if (img.dataset.hasBackdrop) return;
+
+			const clone = img.cloneNode(true);
+
+			clone.classList.remove('foreground');
+			clone.classList.add('background');
+			clone.setAttribute('aria-hidden', 'true');
+			clone.loading = 'eager';
+
+			img.dataset.hasBackdrop = 'true';
+
+			img.parentNode.insertBefore(clone, img);
+			});
+		});
+
+		// Projects Marquee
+
+		(() => {
+			const marquee = document.querySelector('.projects-marquee');
+			const track = marquee?.querySelector('.marquee-track');
+			if (!track) return;
+
+			// Duplicate content for seamless loop
+			const items = [...track.children];
+			items.forEach(item => track.appendChild(item.cloneNode(true)));
+
+			let position = 0;
+			let speed = 0.6;          // base speed
+			let targetSpeed = speed;
+
+			function animate() {
+				position -= targetSpeed;
+				const resetPoint = track.scrollWidth / 2;
+
+				if (Math.abs(position) >= resetPoint) {
+				position = 0;
+				}
+
+				track.style.transform = `translate3d(${position}px,0,0)`;
+
+				// Smooth easing toward target speed
+				targetSpeed += (speed - targetSpeed) * 0.08;
+
+				requestAnimationFrame(animate);
+			}
+
+			marquee.addEventListener('mouseenter', () => {
+				speed = 0.05; // slow glide instead of stop
+			});
+
+			marquee.addEventListener('mouseleave', () => {
+				speed = 0.6;
+			});
+
+			animate();
+		})();
+	})
+();
+

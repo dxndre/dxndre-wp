@@ -504,7 +504,7 @@ __webpack_require__.r(__webpack_exports__);
     if (!tabs.length) return;
     var index = 0;
     var interval = null;
-    var ROTATION_DELAY = 5000; // 5s feels premium
+    var ROTATION_DELAY = 8000; // 8s feels premium
 
     var activateTab = function activateTab(i) {
       tabs[i].click();
@@ -541,7 +541,57 @@ __webpack_require__.r(__webpack_exports__);
     // if (!isTouch) {
     // startRotation();
     // }
+
+    // Duplicating Services Tab images for glowing backdrop effect
+
+    document.querySelectorAll('.service-image.foreground').forEach(function (img) {
+      // Prevent duplicate cloning
+      if (img.dataset.hasBackdrop) return;
+      var clone = img.cloneNode(true);
+      clone.classList.remove('foreground');
+      clone.classList.add('background');
+      clone.setAttribute('aria-hidden', 'true');
+      clone.loading = 'eager';
+      img.dataset.hasBackdrop = 'true';
+      img.parentNode.insertBefore(clone, img);
+    });
   });
+
+  // Projects Marquee
+
+  (function () {
+    var marquee = document.querySelector('.projects-marquee');
+    var track = marquee === null || marquee === void 0 ? void 0 : marquee.querySelector('.marquee-track');
+    if (!track) return;
+
+    // Duplicate content for seamless loop
+    var items = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(track.children);
+    items.forEach(function (item) {
+      return track.appendChild(item.cloneNode(true));
+    });
+    var position = 0;
+    var speed = 0.6; // base speed
+    var targetSpeed = speed;
+    function animate() {
+      position -= targetSpeed;
+      var resetPoint = track.scrollWidth / 2;
+      if (Math.abs(position) >= resetPoint) {
+        position = 0;
+      }
+      track.style.transform = "translate3d(".concat(position, "px,0,0)");
+
+      // Smooth easing toward target speed
+      targetSpeed += (speed - targetSpeed) * 0.08;
+      requestAnimationFrame(animate);
+    }
+    marquee.addEventListener('mouseenter', function () {
+      speed = 0.05; // slow glide instead of stop
+    });
+    marquee.addEventListener('mouseleave', function () {
+      speed = 0.6;
+    });
+    animate();
+  })();
 })();
 
 /***/ }),

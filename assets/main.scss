@@ -408,6 +408,25 @@ body.is-frontend {
 						}
 					}
 				}
+
+				.visit.disabled {
+					border: 1px solid rgba(255,255,255,0.5);
+					padding: 12px;
+					width: 200px;
+					margin-top: 2em;
+					color: rgba(255,255,255,0.5);
+					display: block;
+					text-align: center;
+					position: relative;
+					z-index: 1;
+					transition: 0.7s all ease;
+
+					&:hover {
+						color: rgba(255,255,255,0.5);
+						background-color: transparent;
+						transition: 0.3s all ease;
+					}
+				}
 			}
 
 			.wp-block-group.gallery {
@@ -2153,7 +2172,7 @@ img {
 
 				.services-tabs {
 					--accent: #8b2323;
-					--duration: 5s;
+					--duration: 8s;
 
 					.services-nav {
 						display: flex;
@@ -2172,7 +2191,37 @@ img {
 							font-weight: 500;
 							cursor: pointer;
 							text-align: left;
-							transition: color 0.35s ease;
+							transition: 0.7s all ease-in-out;
+
+							&::before {
+								content: "";
+								position: absolute;
+								left: -25px;
+								top: 22px;
+								width: 8px;
+								height: 8px;
+								border-radius: 100%;
+								background: white;
+								opacity: 0.5;
+								display: block;
+								-webkit-transition: opacity 0.35s ease;
+								transition: 0.35s all ease;
+							}
+
+							&::after {
+								content: "";
+								position: absolute;
+								left: -29px;
+    							top: 18px;
+								width: 16px;
+								height: 16px;
+								border-radius: 100%;
+								border: 1px solid white;
+								opacity: 0.5;
+								display: block;
+								-webkit-transition: opacity 0.35s ease;
+								transition: 0.35s all ease;
+							}
 
 							.label {
 								position: relative;
@@ -2191,19 +2240,44 @@ img {
 								opacity: 0;
 							}
 
+							&:hover {
+								color: rgba(255,255,255,0.75);
+								transform: scale(1.0125);
+								transition: 0.3s all ease;
+
+								&::before,
+								&::after {
+									opacity: 0.75;
+									transition: 0.3s all ease;
+								}
+
+								&::before {
+									transform: scale(1.375);
+									transition: 0.3s all ease;
+								}
+							}
+
 							&.active {
 								color: #fff;
+								transform: scale(1.025);
+								transition: 0.5s all ease;
 
 								.tab-progress {
 									opacity: 1;
 									animation: tabProgress var(--duration) linear forwards;
-									}
+								}
+
+								&::before {
+									opacity: 1;
+									transform: scale(1.75);
+									transition: 0.5s all ease;
 								}
 
 								&:hover {
 									color: #fff;
 								}
 							}
+						}
 					}
 
 					.tab-content {
@@ -2238,6 +2312,26 @@ img {
 								&:hover {
 									background: white;
 									color: black;
+								}
+							}
+
+							img {
+								&.foreground {
+									max-width: 100%;
+									max-height: 400px;
+									object-fit: cover;
+									margin-bottom: 2em;
+									box-shadow: 0px 0px 30px -15px #000000;
+								}
+								&.background {
+									position: absolute;
+									inset: 50% auto auto 50%;
+									transform: translate(-50%, -50%) scale(1.5);
+									z-index: -1;
+									filter: blur(100px) saturate(1.4);
+									opacity: 0.55;
+									pointer-events: none;
+									mix-blend-mode: screen; // 🔥 try "screen" or "plus-lighter"
 								}
 							}
 						}
@@ -3130,6 +3224,171 @@ img {
 			}
 		}
 
+		&.projects-marquee {
+			position: relative;
+			padding: clamp(4rem, 8vw, 8rem) 0;
+			overflow: visible;
+
+			// Progress bar (optional but classy)
+			.marquee-progress {
+				position: absolute;
+				bottom: 1.5rem;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 120px;
+				height: 2px;
+				background: rgba(255,255,255,0.15);
+				overflow: hidden;
+
+				&::after {
+					content: '';
+					display: block;
+					width: 40%;
+					height: 100%;
+					background: white;
+					transform: translateX(-100%);
+					animation: progress-loop 8s linear infinite;
+				}
+			}
+
+			@keyframes progress-loop {
+				to { transform: translateX(250%); }
+			}
+
+			.marquee-track {
+				display: flex;
+				gap: clamp(1.5rem, 3vw, 2rem);
+				width: max-content;
+				will-change: transform;
+			}
+
+			.project-card {
+				flex: 0 0 auto;
+				width: clamp(280px, 32vw, 500px);
+				overflow: hidden;
+				transition: 
+					transform 0.6s cubic-bezier(.2,.8,.2,1),
+					box-shadow 0.6s ease,
+					border-color 0.6s ease;
+				will-change: transform;
+
+				a {
+					color: white;
+					text-decoration: none;
+					display: block;
+					height: 100%;
+				}
+
+				&:hover {
+					transform: scale(1.05) translateY(-6px);
+					transition: 0.5s all ease;
+
+					img {
+						box-shadow: 0 40px 120px rgba(0,0,0,0.8);
+					}
+				}
+
+				.project-body {
+					text-align: left;
+					width: 80%;
+
+					.project-meta {
+						font-size: 16px;
+						text-transform: uppercase;
+						color: rgba(255, 255, 255, 0.5);
+						letter-spacing: 1px;
+						margin-bottom: 4px;
+						display: block;
+						font-weight: 300;
+					}
+
+					.project-excerpt {
+						font-weight: 300;
+						margin-bottom: 20px;
+					}
+
+					.project-cta {
+						color: black;
+						background-color: white;
+						background-image: none;
+						border-color: transparent;
+						outline: none;
+						box-shadow: none;
+						display: inline-flex;
+						min-width: 250px;
+						height: 60px;
+						justify-content: center;
+						align-items: center;
+						transition: 0.7s all ease;
+
+						&:hover {
+							background-color: transparent;
+							color: white;
+							border: 1px solid white;
+							transition: 0.3s all ease;
+						}
+					}
+				}
+			}
+
+			.project-media {
+				position: relative;
+				aspect-ratio: 16 / 12;
+				overflow: hidden;
+				margin-bottom: 1.5em;
+
+				img {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					transition: transform 1.2s cubic-bezier(.2,.8,.2,1);
+				}
+
+				.project-card:hover & img {
+					transform: scale(1.08);
+					transition: 0.5s all ease;
+				}
+			}
+
+			.project-content {
+				padding: 1.5rem;
+
+				.project-meta {
+					font-size: 0.7rem;
+					letter-spacing: 0.18em;
+					opacity: 0.6;
+					margin-bottom: 0.75rem;
+					display: block;
+				}
+
+				h3 {
+					font-size: 1.1rem;
+					margin-bottom: 0.5rem;
+				}
+
+				p {
+					font-size: 0.9rem;
+					opacity: 0.75;
+					line-height: 1.5;
+					font-weight: lighter;
+				}
+
+				.project-cta {
+					margin-top: 1rem;
+					display: inline-block;
+					font-size: 0.8rem;
+					opacity: 0.9;
+				}
+			}
+
+			/* Reduced motion = static list */
+			@media (prefers-reduced-motion: reduce) {
+				.marquee-track {
+					transform: none !important;
+				}
+			}
+		}
+
 		&.auth-login,
 		&.auth-signup,
 		&.auth-forgot {
@@ -3306,6 +3565,8 @@ img {
 				}
 			}
 		}
+
+		
 	}
 }
 

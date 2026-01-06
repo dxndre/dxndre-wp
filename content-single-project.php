@@ -32,15 +32,34 @@
 					$services  = get_field('project_type');
 				?>
 
-				<?php if ( $site_link ) : ?>
-					<a
-						class="visit"
-						href="<?php echo esc_url( $site_link ); ?>"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						View Live Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
-					</a>
+				<?php
+					$site_link   = get_field('site_link');
+					$site_status = get_field('site_status'); // live | coming_soon | private
+				?>
+
+				<?php if ( $site_link && $site_status === 'live' ) : ?>
+
+				<a
+					class="visit"
+					href="<?php echo esc_url( $site_link ); ?>"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					View Live Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
+				</a>
+
+				<?php elseif ( $site_status === 'private' ) : ?>
+
+				<span class="visit disabled">
+					Private project <i class="fa-solid fa-lock"></i>
+				</span>
+
+				<?php else : ?>
+
+				<span class="visit disabled">
+					Link coming soon <i class="fa-regular fa-clock"></i>
+				</span>
+
 				<?php endif; ?>
 
 				<?php if ( ! empty( $services ) && is_array( $services ) ) : ?>
