@@ -182,7 +182,7 @@ the_post();
 					<pre class="headline">Recruiters & Employers</pre>
 
 					<div class="modal-header">
-						<h5 class="modal-title">Career opportunities</h5>
+						<h5 class="modal-title">Open to the Right Role</h5>
 					</div>
 
 					<div class="modal-body">
