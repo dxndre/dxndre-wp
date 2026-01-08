@@ -101,7 +101,7 @@ the_post();
 				<div class="modal-image">
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 					<img
-						src="http://dxndre.local/wp-content/themes/dxndre/assets/img/sideshot.jpg"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot.jpg' ); ?>"
 						alt="Hire Me"
 					/>
 				</div>
@@ -161,7 +161,7 @@ the_post();
 				<div class="modal-image">
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 					<img
-						src="http://dxndre.local/wp-content/themes/dxndre/assets/img/sideshot2.jpg"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot2.jpg' ); ?>"
 						alt="Client services"
 					/>
 				</div>
@@ -255,7 +255,7 @@ the_post();
 				<div class="modal-image">
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 					<img
-						src="http://dxndre.local/wp-content/themes/dxndre/assets/img/sideshot3.jpg"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot3.jpg' ); ?>"
 						alt="Recruiter"
 					/>
 				</div>
