@@ -1336,23 +1336,23 @@ add_shortcode('projects_marquee', function () {
             </figure>
 
             <div class="project-body">
+				<div class="project-body-inner">
+					<span class="project-meta headline">
+					<?= esc_html($project_type); ?> • <?= esc_html($year); ?>
+					</span>
 
-              <span class="project-meta headline">
-                <?= esc_html($project_type); ?> • <?= esc_html($year); ?>
-              </span>
+					<h3 class="project-title">
+					<?= esc_html(get_the_title($project)); ?>
+					</h3>
 
-              <h3 class="project-title">
-                <?= esc_html(get_the_title($project)); ?>
-              </h3>
+					<p class="project-excerpt">
+					<?= esc_html(get_the_excerpt($project)); ?>
+					</p>
 
-              <p class="project-excerpt">
-                <?= esc_html(get_the_excerpt($project)); ?>
-              </p>
-
-              <span class="project-cta">
-                View Case Study →
-              </span>
-
+					<span class="project-cta">
+					View Case Study →
+					</span>
+				</div>
             </div>
           </a>
         </article>

@@ -17863,6 +17863,21 @@ img {
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.6s ease, border-color 0.6s ease;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.6s ease, border-color 0.6s ease, -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-box-shadow 0.6s ease;
   will-change: transform;
+  position: relative;
+  width: 420px;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), -webkit-box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: -webkit-transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), -webkit-box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), -webkit-box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (min-width: 1200px) {
+  #main section.projects-marquee .project-card {
+    width: 500px;
+  }
 }
 #main section.projects-marquee .project-card a {
   color: white;
@@ -17875,14 +17890,46 @@ img {
           transform: scale(1.05) translateY(-6px);
   -webkit-transition: 0.5s all ease;
   transition: 0.5s all ease;
+  -webkit-transform: translateY(-4px);
+          transform: translateY(-4px);
+  -webkit-box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
 }
 #main section.projects-marquee .project-card:hover img {
   -webkit-box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
           box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
+  -webkit-transform: scale(1.06);
+          transform: scale(1.06);
+  -webkit-filter: brightness(0.65) contrast(1.1);
+          filter: brightness(0.65) contrast(1.1);
+}
+#main section.projects-marquee .project-card:hover .project-body .project-body-inner {
+  opacity: 1;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 #main section.projects-marquee .project-card .project-body {
   text-align: left;
-  width: 80%;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  z-index: 2;
+  position: relative;
+}
+#main section.projects-marquee .project-card .project-body .project-body-inner {
+  padding: 2em;
+  background-color: black;
+  opacity: 0;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
 }
 #main section.projects-marquee .project-card .project-body .project-meta {
   font-size: 16px;
@@ -17931,6 +17978,9 @@ img {
   aspect-ratio: 16/12;
   overflow: hidden;
   margin-bottom: 1.5em;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 #main section.projects-marquee .project-media img {
   width: 100%;
@@ -17941,6 +17991,17 @@ img {
   transition: -webkit-transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-transform: scale(1);
+          transform: scale(1);
+  -webkit-transition: -webkit-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.6s ease;
+  transition: -webkit-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.6s ease;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease, -webkit-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.6s ease;
+  -webkit-filter: brightness(0.9) contrast(1.05);
+          filter: brightness(0.9) contrast(1.05);
 }
 .project-card:hover #main section.projects-marquee .project-media img {
   -webkit-transform: scale(1.08);
