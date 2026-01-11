@@ -195,7 +195,7 @@ body.is-frontend {
 					flex-shrink: 0;
 					position: relative;
 					overflow: hidden;
-
+					display: none;
 					opacity: 1;
 					transform: translateY(0);
 					transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
@@ -211,6 +211,23 @@ body.is-frontend {
 				/* =========================
 				DESKTOP LAYOUT
 				========================= */
+
+				@include media-breakpoint-up(md) {
+
+					.modal-image {
+						display: block;
+					}
+
+					.modal-content-inner {
+						padding: 4em;
+						width: 392px;
+					}
+
+					.modal-image {
+						width: 150px;
+						height: auto;
+					}
+				}
 
 				@include media-breakpoint-up(lg) {
 
@@ -688,6 +705,235 @@ body.is-frontend {
 		}
 	}
 
+	&.single-service {
+		#main {
+			overflow-x: hidden;
+			padding-top: 0;
+
+			.entry-header {
+				display: flex;
+				align-items: center;
+				height: 550px;
+				background-size: cover;
+
+				&::after {
+					content: "";
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					background-image: linear-gradient(0deg, rgba(0, 0, 0, 0), #000000);
+					opacity: 1;
+					z-index: 1;
+					pointer-events: none;
+					opacity: 0;
+					-webkit-transition: 0.3s all ease;
+					transition: 0.3s all ease;
+				}
+
+				.header-content {
+					h1 {
+						font-size: 48px;
+						color: white;
+					}
+				}
+
+				.project-services {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 0.75rem;
+					margin: 1.5rem 0 2rem;
+					padding: 0;
+					list-style: none;
+					position: relative;
+					z-index: 1;
+
+					li {
+						font-size: 0.85rem;
+						letter-spacing: 0.04em;
+						text-transform: uppercase;
+						color: rgba(255,255,255,0.75);
+						border: 1px solid rgba(255,255,255,0.25);
+						padding: 4px 20px;
+						border-radius: 40px;
+					}
+				}
+
+				p {
+					color: white;
+					font-weight: 300;
+					font-size: 20px;
+					width: 66%;
+				}
+
+				a {
+
+					&.back {
+						display: inline-flex;
+						align-items: center;
+						gap: 0.5rem;
+						font-size: 0.875rem;
+						font-weight: 500;
+						letter-spacing: 0.02em;
+						text-decoration: none;
+						color: rgba(255, 255, 255, 0.65);
+						margin-bottom: 3em;
+						transition: color 0.25s ease;
+
+						i {
+							font-size: 0.9em;
+							transition: transform 0.25s ease;
+						}
+
+						span {
+							position: relative;
+
+							&::after {
+							content: '';
+							position: absolute;
+							left: 0;
+							bottom: -4px;
+							width: 100%;
+							height: 1px;
+							background: currentColor;
+							opacity: 0.4;
+							transform: scaleX(0);
+							transform-origin: left;
+							transition: transform 0.35s ease;
+							}
+						}
+
+						&:hover {
+							color: rgba(255, 255, 255, 0.95);
+
+							i {
+							transform: translateX(-4px);
+							}
+
+							span::after {
+							transform: scaleX(1);
+							}
+						}
+					}
+
+					&.visit {
+						background-color: white;
+						border: 1px solid white;
+						padding: 12px;
+						width: 200px;
+						margin-top: 2em;
+						color: black;
+						display: block;
+						text-align: center;
+						position: relative;
+						z-index: 1;
+						transition: 0.7s all ease;
+
+						&:hover {
+							color: white;
+							background-color: transparent;
+							transition: 0.3s all ease;
+						}
+					}
+				}
+
+				.visit.disabled {
+					border: 1px solid rgba(255,255,255,0.5);
+					padding: 12px;
+					width: 200px;
+					margin-top: 2em;
+					color: rgba(255,255,255,0.5);
+					display: block;
+					text-align: center;
+					position: relative;
+					z-index: 1;
+					transition: 0.7s all ease;
+
+					&:hover {
+						color: rgba(255,255,255,0.5);
+						background-color: transparent;
+						transition: 0.3s all ease;
+					}
+				}
+			}
+
+			.entry-content {
+				padding: 2em 0;
+				color: white;
+				line-height: 2em;
+
+				.inner-content {
+					width: 100%;
+					max-width: 500px;
+				}
+
+				p {
+					font-size: 16px;
+					font-weight: 300;
+				}
+			}
+
+			.wp-block-group.gallery {
+				overflow: visible;
+				width: 100%;
+				margin: 0;
+
+				figure {
+					&.wp-block-image {
+						margin: 0 0.5em !important;
+						box-shadow: 0px 0px 50px -25px #000000;
+						max-width: 775px;
+					}
+				}
+
+				.gallery-backdrop {
+					position: absolute;
+					inset: 0;
+					z-index: 0;
+					filter: blur(200px) saturate(5);
+					opacity: 0.6;
+					pointer-events: none;
+					transform: scale(1.1); // prevents edge clipping
+				}
+			}
+
+			.wp-block-gallery {
+				display: -webkit-inline-box;
+				// gap: clamp(2rem, 4vw, 5rem);
+				width: max-content;
+				padding-block: 2rem;
+				margin-top: 0;
+
+				animation: gallery-scroll 45s linear infinite;
+
+				&:hover {
+					animation-play-state: paused;
+				}
+			}
+
+			.wp-block-image {
+				flex: 0 0 auto;
+				width: 35vw; // <-- 30–40% viewport width
+
+				img {
+					width: 100%;
+					height: auto;
+					object-fit: cover;
+				}
+			}
+
+			@keyframes gallery-scroll {
+				from {
+					transform: translateX(0);
+				}
+				to {
+					transform: translateX(-50%);
+				}
+			}
+		}
+	}
+
 	&.page-pricing-calculator {
 		background-image: url(./img/calcbg2.jpg);
 		background-color: #180a2c;
@@ -726,8 +972,12 @@ body.is-frontend {
 	&.page-about,
 	&.page-contact {
 		#main {
+			overflow-x: hidden;
+
 			section {
 				&.text-image {
+					overflow-y: hidden;
+
 					.section-content {
 						margin-top: 15vh;
 
@@ -1800,7 +2050,12 @@ img {
 			justify-content: center;
 			text-align: center;
 			pointer-events: none;
+			overflow-y: scroll;
 			transition: 0.7s all ease;
+
+			@include media-breakpoint-up(lg) {
+				overflow-y: initial;
+			}
 
 			&.collapsing {
 				height: 100vh !important;
@@ -1841,7 +2096,16 @@ img {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
-				gap: 12px;
+				gap: 4px;
+				margin-top: 20em;
+
+				@media screen and (min-height: 900px) {
+					margin-top: 0;
+				}
+
+				@include media-breakpoint-up(xl) {
+					gap: 12px;
+				}
 
 				h3 {
 					font-size: 2em;
@@ -1889,7 +2153,6 @@ img {
 							font-weight: 500;
 							color: rgba(255,255,255,0.66);
 							font-size: 20px;
-							margin-bottom: 8px;
 							display: inline-block;
 							transition: 0.7s all ease;
 
@@ -1906,12 +2169,9 @@ img {
 							
 							@include media-breakpoint-up(lg) {
 								text-align: left;
-								font-size: 1.5em;
+								font-size: 1.75em;
+								margin-bottom: 8px;
 								padding: 0;
-							}
-
-							@media screen and (min-height: 800px) {
-								font-size: 2.5em;
 							}
 
 							&:hover {
@@ -2001,7 +2261,11 @@ img {
 	figure {
 		&.enlarge {
 			img, video {
-				transform: scale(1.5);
+				transform: scale(1.25);
+
+				@include media-breakpoint-up(md) {
+					transform: scale(1.5);
+				}
 			}
 		}
 		&.rotate {
