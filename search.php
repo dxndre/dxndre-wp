@@ -21,12 +21,21 @@ else :
 ?>
 	<article id="post-0" class="post no-results not-found">
 		<header class="entry-header">
-			<h1 class="entry-title"><?php esc_html_e( 'Nothing Found', 'dxndre' ); ?></h1>
+			<div class="container">
+				<div class="header-content">
+					<pre class="headline">Search Results</pre>
+					<h1 class="page-title"><?php printf( esc_html__( 'Search Results for: %s', 'dxndre' ), get_search_query() ); ?></h1>
+				</div>
+			</div>
 		</header><!-- /.entry-header -->
-		<p><?php esc_html_e( 'Sorry, but nothing matched your search criteria. Please try again with some different keywords.', 'dxndre' ); ?></p>
-		<?php
-			get_search_form();
-		?>
+		<div class="no-returned-results">
+			<div class="container">
+				<p><?php esc_html_e( 'Sorry, but nothing matched your search criteria. Please try again with some different keywords.', 'dxndre' ); ?></p>
+				<?php
+					get_search_form();
+				?>
+			</div>
+		</div>
 	</article><!-- /#post-0 -->
 <?php
 endif;
