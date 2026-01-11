@@ -4,28 +4,33 @@
  */
 ?>
 
-<article id="post-<?php the_ID(); ?>" <?php post_class( 'col-sm-6' ); ?>>
+<article id="post-<?php the_ID(); ?>" <?php post_class( 'col-md-6' ); ?>>
 	<div class="card mb-4">
 		<header class="card-body">
-			<h2 class="card-title">
-				<a href="<?php the_permalink(); ?>" title="<?php printf( esc_attr__( 'Permalink to %s', 'dxndre' ), the_title_attribute( array( 'echo' => false ) ) ); ?>" rel="bookmark"><?php the_title(); ?></a>
-			</h2>
 			<?php
-				if ( 'post' === get_post_type() ) :
+				$post_type      = get_post_type();
+				$post_type_obj  = get_post_type_object( $post_type );
+				$post_type_name = $post_type_obj ? $post_type_obj->labels->singular_name : '';
 			?>
-				<div class="card-text entry-meta">
-					<?php
-						dxndre_article_posted_on();
 
-						$num_comments = get_comments_number();
-						if ( comments_open() && $num_comments >= 1 ) :
-							echo ' <a href="' . esc_url( get_comments_link() ) . '" class="badge badge-pill bg-secondary float-end" title="' . esc_attr( sprintf( _n( '%s Comment', '%s Comments', $num_comments, 'dxndre' ), $num_comments ) ) . '">' . $num_comments . '</a>';
-						endif;
-					?>
-				</div><!-- /.entry-meta -->
-			<?php
-				endif;
-			?>
+			<?php if ( $post_type_name ) : ?>
+				<span class="post-type-pill post-type-<?php echo esc_attr( $post_type ); ?>">
+					<?php echo esc_html( $post_type_name ); ?>
+				</span>
+			<?php endif; ?>
+
+			<h2 class="card-title">
+				<a href="<?php the_permalink(); ?>" rel="bookmark">
+					<?php the_title(); ?>
+				</a>
+			</h2>
+
+			<?php if ( 'post' === get_post_type() ) : ?>
+				<div class="card-text entry-meta">
+					<?php dxndre_article_posted_on(); ?>
+				</div>
+			<?php endif; ?>
+
 		</header>
 		<div class="card-body">
 			<div class="card-text entry-content">

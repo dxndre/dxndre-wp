@@ -14075,7 +14075,14 @@ body.is-frontend.page-template-page-homepage #recruiterModal {
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
-  max-width: 992px !important;
+  max-width: 768px !important;
+}
+@media (min-width: 1200px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
+    max-width: 992px !important;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-shell,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-shell,
@@ -14998,6 +15005,136 @@ body.is-frontend.page-about #main section.text-image .section-content, body.is-f
   body.is-frontend.page-about #main section.text-image .section-content, body.is-frontend.page-contact #main section.text-image .section-content {
     margin-top: 0;
   }
+}
+body.is-frontend.search::after, body.is-frontend.search-results::after {
+  content: "";
+  display: block;
+  clear: both;
+  background-color: #000000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cg fill-rule=%27evenodd%27%3E%3Cg fill=%27%23ececec%27 fill-opacity=%270.1%27%3E%3Cpath opacity=%27.5%27 d=%27M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z%27/%3E%3Cpath d=%27M6 5V0H5v5H0v1h5v94h1V6h94V5H6z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  opacity: 0.5;
+}
+body.is-frontend.search #main, body.is-frontend.search-results #main {
+  overflow-x: hidden;
+  padding-top: 0;
+}
+body.is-frontend.search #main .page-header, body.is-frontend.search-results #main .page-header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 450px;
+}
+body.is-frontend.search #main .page-header .header-content h1, body.is-frontend.search #main .page-header .header-content .h1, body.is-frontend.search-results #main .page-header .header-content h1, body.is-frontend.search-results #main .page-header .header-content .h1 {
+  font-size: 48px;
+  color: white;
+}
+body.is-frontend.search #main .returned-results, body.is-frontend.search-results #main .returned-results {
+  margin-bottom: 3em;
+}
+body.is-frontend.search #main .returned-results .card, body.is-frontend.search-results #main .returned-results .card {
+  border-radius: 0;
+  padding: 2em;
+  background: transparent;
+  color: white;
+  border-color: white;
+}
+body.is-frontend.search #main .returned-results .card .post-type-pill, body.is-frontend.search-results #main .returned-results .card .post-type-pill {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 400;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+}
+body.is-frontend.search #main .returned-results .card .post-type-pill.post-type-project, body.is-frontend.search-results #main .returned-results .card .post-type-pill.post-type-project {
+  border-color: rgba(120, 160, 255, 0.6);
+  color: #9fb4ff;
+}
+body.is-frontend.search #main .returned-results .card .post-type-pill.post-type-service, body.is-frontend.search-results #main .returned-results .card .post-type-pill.post-type-service {
+  border-color: rgba(255, 160, 120, 0.6);
+  color: #ffb49f;
+}
+body.is-frontend.search #main .returned-results .card .post-type-pill.post-type-post, body.is-frontend.search-results #main .returned-results .card .post-type-pill.post-type-post {
+  border-color: rgba(180, 180, 180, 0.4);
+  color: rgba(255, 255, 255, 0.7);
+}
+body.is-frontend.search #main .returned-results .card a, body.is-frontend.search-results #main .returned-results .card a {
+  color: white;
+}
+body.is-frontend.search #main .returned-results .card a.btn, body.is-frontend.search #main .returned-results .card .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.search #main .returned-results .card a.wp-block-button__link, body.is-frontend.search-results #main .returned-results .card a.btn, body.is-frontend.search-results #main .returned-results .card .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.search-results #main .returned-results .card a.wp-block-button__link {
+  color: black;
+  border-radius: 0;
+  border-color: white;
+  width: 100%;
+  max-width: 250px;
+  height: 60px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  text-transform: capitalize;
+}
+body.is-frontend.search #main .returned-results .card img, body.is-frontend.search-results #main .returned-results .card img {
+  max-height: 200px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+body.is-frontend.search #main .returned-results .card footer, body.is-frontend.search-results #main .returned-results .card footer {
+  background-color: transparent;
+}
+body.is-frontend.search #main .returned-results .card footer .btn, body.is-frontend.search #main .returned-results .card footer .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.search #main .returned-results .card footer .wp-block-button__link, body.is-frontend.search-results #main .returned-results .card footer .btn, body.is-frontend.search-results #main .returned-results .card footer .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.search-results #main .returned-results .card footer .wp-block-button__link {
+  color: black;
+  background-color: white;
+}
+body.is-frontend.search #main .returned-results .card footer .btn:hover, body.is-frontend.search #main .returned-results .card footer .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.search #main .returned-results .card footer .wp-block-button__link:hover, body.is-frontend.search-results #main .returned-results .card footer .btn:hover, body.is-frontend.search-results #main .returned-results .card footer .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.search-results #main .returned-results .card footer .wp-block-button__link:hover {
+  color: white;
+  background-color: transparent;
+  border-color: white;
+}
+body.is-frontend.search::before, body.is-frontend.search::after, body.is-frontend.search-results::before, body.is-frontend.search-results::after {
+  content: "";
+  background-color: #000000;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  opacity: 1;
+  height: 100vh;
+  width: 100%;
+  right: 0;
+  top: 0;
+  position: fixed;
+  opacity: 1;
+  z-index: -1;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.search::before, body.is-frontend.search-results::before {
+  background-image: linear-gradient(-110.6deg, rgb(29, 80, 122) 11.3%, rgb(28, 96, 104) 91.7%);
+  opacity: 1;
+}
+body.is-frontend.search::after, body.is-frontend.search-results::after {
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(11.3%, rgb(4, 43, 51)), color-stop(91.7%, rgb(34, 28, 62)));
+  background-image: linear-gradient(-270deg, rgb(4, 43, 51) 11.3%, rgb(34, 28, 62) 91.7%);
+  opacity: 0;
 }
 body.is-frontend {
   /* ==========================
