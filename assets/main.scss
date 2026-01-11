@@ -1021,12 +1021,58 @@ body.is-frontend {
 			.entry-header {
 				display: flex;
 				align-items: center;
-				height: 450px;
+				height: 800px;
 
 				.header-content {
 					h1 {
 						font-size: 48px;
 						color: white;
+					}
+
+					h2 {
+						color: white;
+						max-width: 650px;
+						margin-bottom: 20px;
+						width: 100%;
+						font-size: 2.5em;
+					}
+
+					p {
+						color: white;
+						font-size: 20px;
+						max-width: 450px;
+						font-weight: lighter;
+					}
+
+					.input-group {
+						margin: 2em 0;
+
+						input {
+							border: none;
+							background: transparent;
+							height: 60px;
+							width: 100%;
+							max-width: 500px;
+							border-radius: 0;
+							border: 2px solid white;
+							color: white;
+							font-size: 20px;
+							font-weight: lighter;
+							padding: 1.5em 2em;
+
+							&::placeholder {
+								color: rgba(255,255,255,0.5);
+							}
+						}
+
+						button {
+							border-radius: 0;
+							background-image: none;
+							width: 200px;
+							color: black;
+							background-color: white;
+							border: none;
+						}
 					}
 				}
 			}
@@ -1116,33 +1162,7 @@ body.is-frontend {
 				color: white;
 				margin-bottom: 3em;
 
-				.input-group {
-					input {
-						border: none;
-						background: transparent;
-						height: 60px;
-						width: 100%;
-						max-width: 500px;
-						border-radius: 0;
-						border-bottom: 2px solid white;
-						color: white;
-						font-size: 20px;
-						font-weight: lighter;
-
-						&::placeholder {
-							color: rgba(255,255,255,0.5);
-						}
-					}
-
-					button {
-						border-radius: 0;
-						background-image: none;
-						width: 200px;
-						color: black;
-						background-color: white;
-						border: none;
-					}
-				}
+				
 			}
 		}
 
@@ -1174,6 +1194,20 @@ body.is-frontend {
 			// background-image: url(./img/clientjourney.png);
 			background-image: linear-gradient(270deg, rgb(4 43 51) 11.3%, rgb(34 28 62) 91.7%);
 			opacity: 0;
+		}
+	}
+
+	&.search-results {
+		&::before {
+			// background-image: url(img/searchbg2.png);
+			background-image: linear-gradient(135deg, #a90000 0%, #280081 100%);
+		}
+	}
+
+	&.search-no-results {
+		&::before {
+			// background-image: url(img/searchbg.png);
+			background-image: linear-gradient(298deg, #a90000 0%, #280081 100%);
 		}
 	}
 

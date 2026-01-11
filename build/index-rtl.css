@@ -15034,7 +15034,7 @@ body.is-frontend.search-no-results #main .entry-header {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  height: 450px;
+  height: 800px;
 }
 body.is-frontend.search #main .page-header .header-content h1, body.is-frontend.search #main .page-header .header-content .h1,
 body.is-frontend.search #main .entry-header .header-content h1,
@@ -15045,6 +15045,79 @@ body.is-frontend.search-no-results #main .entry-header .header-content h1,
 body.is-frontend.search-no-results #main .entry-header .header-content .h1 {
   font-size: 48px;
   color: white;
+}
+body.is-frontend.search #main .page-header .header-content h2, body.is-frontend.search #main .page-header .header-content .h2,
+body.is-frontend.search #main .entry-header .header-content h2,
+body.is-frontend.search #main .entry-header .header-content .h2, body.is-frontend.search-results #main .page-header .header-content h2, body.is-frontend.search-results #main .page-header .header-content .h2,
+body.is-frontend.search-results #main .entry-header .header-content h2,
+body.is-frontend.search-results #main .entry-header .header-content .h2, body.is-frontend.search-no-results #main .page-header .header-content h2, body.is-frontend.search-no-results #main .page-header .header-content .h2,
+body.is-frontend.search-no-results #main .entry-header .header-content h2,
+body.is-frontend.search-no-results #main .entry-header .header-content .h2 {
+  color: white;
+  max-width: 650px;
+  margin-bottom: 20px;
+  width: 100%;
+  font-size: 2.5em;
+}
+body.is-frontend.search #main .page-header .header-content p,
+body.is-frontend.search #main .entry-header .header-content p, body.is-frontend.search-results #main .page-header .header-content p,
+body.is-frontend.search-results #main .entry-header .header-content p, body.is-frontend.search-no-results #main .page-header .header-content p,
+body.is-frontend.search-no-results #main .entry-header .header-content p {
+  color: white;
+  font-size: 20px;
+  max-width: 450px;
+  font-weight: lighter;
+}
+body.is-frontend.search #main .page-header .header-content .input-group,
+body.is-frontend.search #main .entry-header .header-content .input-group, body.is-frontend.search-results #main .page-header .header-content .input-group,
+body.is-frontend.search-results #main .entry-header .header-content .input-group, body.is-frontend.search-no-results #main .page-header .header-content .input-group,
+body.is-frontend.search-no-results #main .entry-header .header-content .input-group {
+  margin: 2em 0;
+}
+body.is-frontend.search #main .page-header .header-content .input-group input,
+body.is-frontend.search #main .entry-header .header-content .input-group input, body.is-frontend.search-results #main .page-header .header-content .input-group input,
+body.is-frontend.search-results #main .entry-header .header-content .input-group input, body.is-frontend.search-no-results #main .page-header .header-content .input-group input,
+body.is-frontend.search-no-results #main .entry-header .header-content .input-group input {
+  border: none;
+  background: transparent;
+  height: 60px;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 0;
+  border: 2px solid white;
+  color: white;
+  font-size: 20px;
+  font-weight: lighter;
+  padding: 1.5em 2em;
+}
+body.is-frontend.search #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search #main .entry-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-results #main .entry-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .page-header .header-content .input-group input::-moz-placeholder, body.is-frontend.search #main .entry-header .header-content .input-group input::-moz-placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input::-moz-placeholder, body.is-frontend.search-results #main .entry-header .header-content .input-group input::-moz-placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input::-moz-placeholder, body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .page-header .header-content .input-group input:-ms-input-placeholder, body.is-frontend.search #main .entry-header .header-content .input-group input:-ms-input-placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input:-ms-input-placeholder, body.is-frontend.search-results #main .entry-header .header-content .input-group input:-ms-input-placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input:-ms-input-placeholder, body.is-frontend.search-no-results #main .entry-header .header-content .input-group input:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .page-header .header-content .input-group input::-ms-input-placeholder, body.is-frontend.search #main .entry-header .header-content .input-group input::-ms-input-placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input::-ms-input-placeholder, body.is-frontend.search-results #main .entry-header .header-content .input-group input::-ms-input-placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input::-ms-input-placeholder, body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .page-header .header-content .input-group input::placeholder,
+body.is-frontend.search #main .entry-header .header-content .input-group input::placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input::placeholder,
+body.is-frontend.search-results #main .entry-header .header-content .input-group input::placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input::placeholder,
+body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .page-header .header-content .input-group button,
+body.is-frontend.search #main .entry-header .header-content .input-group button, body.is-frontend.search-results #main .page-header .header-content .input-group button,
+body.is-frontend.search-results #main .entry-header .header-content .input-group button, body.is-frontend.search-no-results #main .page-header .header-content .input-group button,
+body.is-frontend.search-no-results #main .entry-header .header-content .input-group button {
+  border-radius: 0;
+  background-image: none;
+  width: 200px;
+  color: black;
+  background-color: white;
+  border: none;
 }
 body.is-frontend.search #main .returned-results, body.is-frontend.search-results #main .returned-results, body.is-frontend.search-no-results #main .returned-results {
   margin-bottom: 3em;
@@ -15123,41 +15196,6 @@ body.is-frontend.search #main .no-returned-results, body.is-frontend.search-resu
   color: white;
   margin-bottom: 3em;
 }
-body.is-frontend.search #main .no-returned-results .input-group input, body.is-frontend.search-results #main .no-returned-results .input-group input, body.is-frontend.search-no-results #main .no-returned-results .input-group input {
-  border: none;
-  background: transparent;
-  height: 60px;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 0;
-  border-bottom: 2px solid white;
-  color: white;
-  font-size: 20px;
-  font-weight: lighter;
-}
-body.is-frontend.search #main .no-returned-results .input-group input::-webkit-input-placeholder, body.is-frontend.search-results #main .no-returned-results .input-group input::-webkit-input-placeholder, body.is-frontend.search-no-results #main .no-returned-results .input-group input::-webkit-input-placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-body.is-frontend.search #main .no-returned-results .input-group input::-moz-placeholder, body.is-frontend.search-results #main .no-returned-results .input-group input::-moz-placeholder, body.is-frontend.search-no-results #main .no-returned-results .input-group input::-moz-placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-body.is-frontend.search #main .no-returned-results .input-group input:-ms-input-placeholder, body.is-frontend.search-results #main .no-returned-results .input-group input:-ms-input-placeholder, body.is-frontend.search-no-results #main .no-returned-results .input-group input:-ms-input-placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-body.is-frontend.search #main .no-returned-results .input-group input::-ms-input-placeholder, body.is-frontend.search-results #main .no-returned-results .input-group input::-ms-input-placeholder, body.is-frontend.search-no-results #main .no-returned-results .input-group input::-ms-input-placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-body.is-frontend.search #main .no-returned-results .input-group input::placeholder, body.is-frontend.search-results #main .no-returned-results .input-group input::placeholder, body.is-frontend.search-no-results #main .no-returned-results .input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-body.is-frontend.search #main .no-returned-results .input-group button, body.is-frontend.search-results #main .no-returned-results .input-group button, body.is-frontend.search-no-results #main .no-returned-results .input-group button {
-  border-radius: 0;
-  background-image: none;
-  width: 200px;
-  color: black;
-  background-color: white;
-  border: none;
-}
 body.is-frontend.search::before, body.is-frontend.search::after, body.is-frontend.search-results::before, body.is-frontend.search-results::after, body.is-frontend.search-no-results::before, body.is-frontend.search-no-results::after {
   content: "";
   background-color: #000000;
@@ -15183,6 +15221,12 @@ body.is-frontend.search::after, body.is-frontend.search-results::after, body.is-
   background-image: -webkit-gradient(linear, left top, right top, color-stop(11.3%, rgb(4, 43, 51)), color-stop(91.7%, rgb(34, 28, 62)));
   background-image: linear-gradient(-270deg, rgb(4, 43, 51) 11.3%, rgb(34, 28, 62) 91.7%);
   opacity: 0;
+}
+body.is-frontend.search-results::before {
+  background-image: linear-gradient(-135deg, #a90000 0%, #280081 100%);
+}
+body.is-frontend.search-no-results::before {
+  background-image: linear-gradient(-298deg, #a90000 0%, #280081 100%);
 }
 body.is-frontend {
   /* ==========================
