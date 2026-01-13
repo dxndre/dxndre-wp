@@ -724,6 +724,39 @@ __webpack_require__.r(__webpack_exports__);
     observer.observe(marquee);
     animate();
   });
+  function initSmartSearchSuggestions() {
+    var _params$get;
+    var suggestionsEl = document.querySelector('.search-suggestions');
+    if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
+    var searchInput = document.querySelector('input[type="search"]');
+    var params = new URLSearchParams(window.location.search);
+    var query = (searchInput === null || searchInput === void 0 ? void 0 : searchInput.value.trim()) || ((_params$get = params.get('s')) === null || _params$get === void 0 ? void 0 : _params$get.trim());
+    if (!query) return;
+    fetch("/wp-json/wp/v2/search?search=".concat(encodeURIComponent(query))).then(function (res) {
+      return res.json();
+    }).then(function (results) {
+      if (!Array.isArray(results) || !results.length) return;
+      var seen = new Set();
+      var fragment = document.createDocumentFragment();
+      results.slice(0, 6).forEach(function (item, index) {
+        if (!item.title || seen.has(item.title)) return;
+        seen.add(item.title);
+        var li = document.createElement('li');
+        li.style.setProperty('--delay', index);
+        li.innerHTML = "\n\t\t\t\t\t\t\t<a href=\"".concat(item.url, "\" class=\"search-suggestion\">\n\t\t\t\t\t\t\t\t<span class=\"suggestion-type\">\n\t\t\t\t\t\t\t\t\t").concat(item.subtype.replace('-', ' '), "\n\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t<div class=\"suggestion-content\">\n\t\t\t\t\t\t\t\t\t<span class=\"suggestion-label\">").concat(item.title, "</span>\n\t\t\t\t\t\t\t\t\t<span class=\"suggestion-arrow\">\u2192</span>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t");
+        fragment.appendChild(li);
+      });
+      if (!fragment.childNodes.length) return;
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.appendChild(fragment);
+      suggestionsEl.classList.add('is-visible');
+    }).catch(function () {
+      // silent fail
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    initSmartSearchSuggestions();
+  });
 })();
 
 /***/ }),

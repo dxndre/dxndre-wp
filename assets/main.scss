@@ -710,6 +710,12 @@ body.is-frontend {
 	}
 
 	&.single-service {
+		// background-image: url(./img/calcbg2.jpg);
+		background-color: #180a2c;
+		background-size: cover;
+		background-position: center;
+		background-attachment: fixed;
+
 		#main {
 			overflow-x: hidden;
 			padding-top: 0;
@@ -1046,22 +1052,31 @@ body.is-frontend {
 
 					.input-group {
 						margin: 2em 0;
+						flex-wrap: nowrap;
+						max-width: 600px;
 
 						input {
 							border: none;
 							background: transparent;
 							height: 60px;
 							width: 100%;
-							max-width: 500px;
+							// max-width: 500px;
 							border-radius: 0;
 							border: 2px solid white;
 							color: white;
 							font-size: 20px;
 							font-weight: lighter;
-							padding: 1.5em 2em;
+							padding: 1.5em;
+							transition: 0.7s all ease;
 
 							&::placeholder {
 								color: rgba(255,255,255,0.5);
+							}
+
+							&:focus {
+								box-shadow: none;
+								background-color: rgba(255,255,255,0.0625);
+								transition: 0.3s all ease;
 							}
 						}
 
@@ -1074,11 +1089,28 @@ body.is-frontend {
 							border: none;
 						}
 					}
+
+					.searched-for {
+						color: white;
+
+						&__label {
+							text-transform: uppercase;
+							font-size: 12px;
+							font-weight: 300;
+						}
+
+						&__query {
+							border-bottom: 1px dashed white;
+							padding-bottom: 4px;
+							margin-left: 8px;
+						}
+					}
+					
 				}
 			}
 
 			.returned-results {
-				margin-bottom: 3em;
+				margin-bottom: 3em ;
 
 				.card {
 					border-radius: 0;
@@ -1090,18 +1122,18 @@ body.is-frontend {
 					.post-type-pill {
 						display: inline-block;
 						margin-bottom: 0.5rem;
-						padding: 0.35rem 0.75rem;
-
+						padding: 0.35rem 1.75rem;
 						font-size: 11px;
 						letter-spacing: 0.08em;
 						text-transform: uppercase;
 						font-weight: 400;
-
-						border: 1px solid rgba(255,255,255,0.35);
-						color: rgba(255,255,255,0.75);
-						background: rgba(0,0,0,0.25);
-
+						border: 1px solid rgba(255, 255, 255, 0.35);
+						color: rgba(255, 255, 255, 0.75);
+						background: rgba(0, 0, 0, 0.25);
 						backdrop-filter: blur(8px);
+						text-align: center;
+						border-radius: 25px;
+						margin-bottom: 1em;
 
 						&.post-type-project {
 							border-color: rgba(120, 160, 255, 0.6);
@@ -1160,9 +1192,60 @@ body.is-frontend {
 
 			.no-returned-results {
 				color: white;
-				margin-bottom: 3em;
+				margin-bottom: 3em;		
+			}
 
-				
+			.search-suggestions {
+				list-style: none;
+				padding: 0;
+				display: flex;
+
+				li {
+					a {
+						color: white;
+						padding: 12px 0;
+						display: grid;
+						width: 200px;
+						transition: 0.7s all ease;
+						
+						i {
+							opacity: 0.5;
+							transform: scale(1.25);
+							transition: 0.3s all ease;
+						}
+
+						&:hover {
+							transform: 0.3s all ease;
+
+							i {
+								opacity: 1;
+								transform: scale(1.75);
+								transition: 0.7s all ease;
+							}
+						}
+					}
+				}
+
+				.suggestion-type {
+					text-transform: uppercase;
+					font-size: 12px;
+					font-weight: 300;
+					color: rgba(255,255,255,0.5);
+				}
+			}
+
+			.search-cta {
+				a {
+					color: white;
+					border-bottom: 1px solid rgba(255,255,255,0.5);
+					padding-bottom: 4px;
+					transition: 0.7s all ease;
+
+					&:hover {
+						border-bottom: 1px solid white;
+						transition: 0.3s all ease;
+					}
+				}
 			}
 		}
 
@@ -1207,7 +1290,7 @@ body.is-frontend {
 	&.search-no-results {
 		&::before {
 			// background-image: url(img/searchbg.png);
-			background-image: linear-gradient(298deg, #a90000 0%, #280081 100%);
+			background-image: linear-gradient(298deg, #a90000 0%, #621c70 100%);
 		}
 	}
 

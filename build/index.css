@@ -14764,6 +14764,12 @@ body.is-frontend.single-project::after {
   background-image: linear-gradient(270deg, rgb(4, 43, 51) 11.3%, rgb(34, 28, 62) 91.7%);
   opacity: 0;
 }
+body.is-frontend.single-service {
+  background-color: #180a2c;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
 body.is-frontend.single-service #main {
   overflow-x: hidden;
   padding-top: 0;
@@ -15099,6 +15105,9 @@ body.is-frontend.search #main .entry-header .header-content .input-group, body.i
 body.is-frontend.search-results #main .entry-header .header-content .input-group, body.is-frontend.search-no-results #main .page-header .header-content .input-group,
 body.is-frontend.search-no-results #main .entry-header .header-content .input-group {
   margin: 2em 0;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  max-width: 600px;
 }
 body.is-frontend.search #main .page-header .header-content .input-group input,
 body.is-frontend.search #main .entry-header .header-content .input-group input, body.is-frontend.search-results #main .page-header .header-content .input-group input,
@@ -15108,13 +15117,14 @@ body.is-frontend.search-no-results #main .entry-header .header-content .input-gr
   background: transparent;
   height: 60px;
   width: 100%;
-  max-width: 500px;
   border-radius: 0;
   border: 2px solid white;
   color: white;
   font-size: 20px;
   font-weight: lighter;
-  padding: 1.5em 2em;
+  padding: 1.5em;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
 }
 body.is-frontend.search #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search #main .entry-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-results #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-results #main .entry-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-no-results #main .page-header .header-content .input-group input::-webkit-input-placeholder, body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
@@ -15134,6 +15144,16 @@ body.is-frontend.search-results #main .entry-header .header-content .input-group
 body.is-frontend.search-no-results #main .entry-header .header-content .input-group input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
+body.is-frontend.search #main .page-header .header-content .input-group input:focus,
+body.is-frontend.search #main .entry-header .header-content .input-group input:focus, body.is-frontend.search-results #main .page-header .header-content .input-group input:focus,
+body.is-frontend.search-results #main .entry-header .header-content .input-group input:focus, body.is-frontend.search-no-results #main .page-header .header-content .input-group input:focus,
+body.is-frontend.search-no-results #main .entry-header .header-content .input-group input:focus {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.0625);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
 body.is-frontend.search #main .page-header .header-content .input-group button,
 body.is-frontend.search #main .entry-header .header-content .input-group button, body.is-frontend.search-results #main .page-header .header-content .input-group button,
 body.is-frontend.search-results #main .entry-header .header-content .input-group button, body.is-frontend.search-no-results #main .page-header .header-content .input-group button,
@@ -15144,6 +15164,28 @@ body.is-frontend.search-no-results #main .entry-header .header-content .input-gr
   color: black;
   background-color: white;
   border: none;
+}
+body.is-frontend.search #main .page-header .header-content .searched-for,
+body.is-frontend.search #main .entry-header .header-content .searched-for, body.is-frontend.search-results #main .page-header .header-content .searched-for,
+body.is-frontend.search-results #main .entry-header .header-content .searched-for, body.is-frontend.search-no-results #main .page-header .header-content .searched-for,
+body.is-frontend.search-no-results #main .entry-header .header-content .searched-for {
+  color: white;
+}
+body.is-frontend.search #main .page-header .header-content .searched-for__label,
+body.is-frontend.search #main .entry-header .header-content .searched-for__label, body.is-frontend.search-results #main .page-header .header-content .searched-for__label,
+body.is-frontend.search-results #main .entry-header .header-content .searched-for__label, body.is-frontend.search-no-results #main .page-header .header-content .searched-for__label,
+body.is-frontend.search-no-results #main .entry-header .header-content .searched-for__label {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 300;
+}
+body.is-frontend.search #main .page-header .header-content .searched-for__query,
+body.is-frontend.search #main .entry-header .header-content .searched-for__query, body.is-frontend.search-results #main .page-header .header-content .searched-for__query,
+body.is-frontend.search-results #main .entry-header .header-content .searched-for__query, body.is-frontend.search-no-results #main .page-header .header-content .searched-for__query,
+body.is-frontend.search-no-results #main .entry-header .header-content .searched-for__query {
+  border-bottom: 1px dashed white;
+  padding-bottom: 4px;
+  margin-left: 8px;
 }
 body.is-frontend.search #main .returned-results, body.is-frontend.search-results #main .returned-results, body.is-frontend.search-no-results #main .returned-results {
   margin-bottom: 3em;
@@ -15158,7 +15200,7 @@ body.is-frontend.search #main .returned-results .card, body.is-frontend.search-r
 body.is-frontend.search #main .returned-results .card .post-type-pill, body.is-frontend.search-results #main .returned-results .card .post-type-pill, body.is-frontend.search-no-results #main .returned-results .card .post-type-pill {
   display: inline-block;
   margin-bottom: 0.5rem;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 1.75rem;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -15167,6 +15209,9 @@ body.is-frontend.search #main .returned-results .card .post-type-pill, body.is-f
   color: rgba(255, 255, 255, 0.75);
   background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(8px);
+  text-align: center;
+  border-radius: 25px;
+  margin-bottom: 1em;
 }
 body.is-frontend.search #main .returned-results .card .post-type-pill.post-type-project, body.is-frontend.search-results #main .returned-results .card .post-type-pill.post-type-project, body.is-frontend.search-no-results #main .returned-results .card .post-type-pill.post-type-project {
   border-color: rgba(120, 160, 255, 0.6);
@@ -15222,6 +15267,58 @@ body.is-frontend.search #main .no-returned-results, body.is-frontend.search-resu
   color: white;
   margin-bottom: 3em;
 }
+body.is-frontend.search #main .search-suggestions, body.is-frontend.search-results #main .search-suggestions, body.is-frontend.search-no-results #main .search-suggestions {
+  list-style: none;
+  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+body.is-frontend.search #main .search-suggestions li a, body.is-frontend.search-results #main .search-suggestions li a, body.is-frontend.search-no-results #main .search-suggestions li a {
+  color: white;
+  padding: 12px 0;
+  display: -ms-grid;
+  display: grid;
+  width: 200px;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.search #main .search-suggestions li a i, body.is-frontend.search-results #main .search-suggestions li a i, body.is-frontend.search-no-results #main .search-suggestions li a i {
+  opacity: 0.5;
+  -webkit-transform: scale(1.25);
+          transform: scale(1.25);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+body.is-frontend.search #main .search-suggestions li a:hover, body.is-frontend.search-results #main .search-suggestions li a:hover, body.is-frontend.search-no-results #main .search-suggestions li a:hover {
+  -webkit-transform: 0.3s all ease;
+          transform: 0.3s all ease;
+}
+body.is-frontend.search #main .search-suggestions li a:hover i, body.is-frontend.search-results #main .search-suggestions li a:hover i, body.is-frontend.search-no-results #main .search-suggestions li a:hover i {
+  opacity: 1;
+  -webkit-transform: scale(1.75);
+          transform: scale(1.75);
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.search #main .search-suggestions .suggestion-type, body.is-frontend.search-results #main .search-suggestions .suggestion-type, body.is-frontend.search-no-results #main .search-suggestions .suggestion-type {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.search #main .search-cta a, body.is-frontend.search-results #main .search-cta a, body.is-frontend.search-no-results #main .search-cta a {
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 4px;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.search #main .search-cta a:hover, body.is-frontend.search-results #main .search-cta a:hover, body.is-frontend.search-no-results #main .search-cta a:hover {
+  border-bottom: 1px solid white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
 body.is-frontend.search::before, body.is-frontend.search::after, body.is-frontend.search-results::before, body.is-frontend.search-results::after, body.is-frontend.search-no-results::before, body.is-frontend.search-no-results::after {
   content: "";
   background-color: #000000;
@@ -15252,7 +15349,7 @@ body.is-frontend.search-results::before {
   background-image: linear-gradient(135deg, #a90000 0%, #280081 100%);
 }
 body.is-frontend.search-no-results::before {
-  background-image: linear-gradient(298deg, #a90000 0%, #280081 100%);
+  background-image: linear-gradient(298deg, #a90000 0%, #621c70 100%);
 }
 body.is-frontend {
   /* ==========================

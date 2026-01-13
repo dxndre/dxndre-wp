@@ -776,6 +776,64 @@ import * as bootstrap from 'bootstrap';
 
 			animate();
 		});
+
+		function initSmartSearchSuggestions() {
+			const suggestionsEl = document.querySelector('.search-suggestions');
+			if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
+
+			const searchInput = document.querySelector('input[type="search"]');
+
+			const params = new URLSearchParams(window.location.search);
+			const query =
+				searchInput?.value.trim() ||
+				params.get('s')?.trim();
+
+			if (!query) return;
+
+			fetch(`/wp-json/wp/v2/search?search=${encodeURIComponent(query)}`)
+				.then(res => res.json())
+				.then(results => {
+					if (!Array.isArray(results) || !results.length) return;
+
+					const seen = new Set();
+					const fragment = document.createDocumentFragment();
+
+					results.slice(0, 6).forEach((item, index) => {
+						if (!item.title || seen.has(item.title)) return;
+						seen.add(item.title);
+
+						const li = document.createElement('li');
+						li.style.setProperty('--delay', index);
+
+						li.innerHTML = `
+							<a href="${item.url}" class="search-suggestion">
+								<span class="suggestion-type">
+									${item.subtype.replace('-', ' ')}
+								</span>
+								<div class="suggestion-content">
+									<span class="suggestion-label">${item.title}</span>
+									<span class="suggestion-arrow">→</span>
+								</div>
+							</a>
+						`;
+
+						fragment.appendChild(li);
+					});
+
+					if (!fragment.childNodes.length) return;
+
+					suggestionsEl.innerHTML = '';
+					suggestionsEl.appendChild(fragment);
+					suggestionsEl.classList.add('is-visible');
+				})
+				.catch(() => {
+					// silent fail
+				});
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			initSmartSearchSuggestions();
+		});
 	})
 ();
 
