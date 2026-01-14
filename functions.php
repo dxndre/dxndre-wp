@@ -1189,7 +1189,7 @@ add_shortcode('services_tabs', function () {
             <h3><?= esc_html($service->post_title); ?></h3>
             <p><?= esc_html(get_field('short_description', $service->ID)); ?></p>
             <a href="<?= get_permalink($service); ?>" class="btn btn-outline-light">
-              View service
+              View Service
             </a>
           </div>
         <?php endforeach; ?>

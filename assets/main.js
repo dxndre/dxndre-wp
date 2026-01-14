@@ -203,16 +203,19 @@ import * as bootstrap from 'bootstrap';
 	// Duplicate Footnotes at runtime 
 
 	document.addEventListener('DOMContentLoaded', () => {
-		const track = document.querySelector('.footline-track');
-		const item = track?.querySelector('.footline');
-
-		if (!track || !item) return;
+		const tracks = document.querySelectorAll('.footline-track');
+		if (!tracks.length) return;
 
 		const DUPLICATES = 2;
 
-		for (let i = 0; i < DUPLICATES; i++) {
-			track.appendChild(item.cloneNode(true));
-		}
+		tracks.forEach(track => {
+			const item = track.querySelector('.footline');
+			if (!item) return;
+
+			for (let i = 0; i < DUPLICATES; i++) {
+				track.appendChild(item.cloneNode(true));
+			}
+		});
 	});
 
 	// Remove 'collapsing' class from navbar 
@@ -832,7 +835,16 @@ import * as bootstrap from 'bootstrap';
 		}
 
 		document.addEventListener('DOMContentLoaded', () => {
+			// Initialise search suggestions
 			initSmartSearchSuggestions();
+
+			// Visibility listener for Homepage Hero inner content
+			const hero = document.querySelector('.cover-content');
+			if (!hero) return;
+
+			requestAnimationFrame(() => {
+				hero.classList.add('is-revealed');
+			});
 		});
 	})
 ();
