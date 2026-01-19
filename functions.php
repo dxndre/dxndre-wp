@@ -1367,3 +1367,17 @@ add_shortcode('projects_marquee', function () {
   <?php
   return ob_get_clean();
 });
+
+// Enabling Local JSON
+
+// Save ACF field groups as JSON in the theme
+add_filter('acf/settings/save_json', function () {
+    return get_stylesheet_directory() . '/acf-json';
+});
+
+// Load ACF field groups from the theme
+add_filter('acf/settings/load_json', function ($paths) {
+    unset($paths[0]);
+    $paths[] = get_stylesheet_directory() . '/acf-json';
+    return $paths;
+});

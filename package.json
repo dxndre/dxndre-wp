@@ -11,7 +11,11 @@
 	},
 	"scripts": {
 		"start": "wp-scripts start --webpack-src-dir=assets",
-		"build": "wp-scripts build --webpack-src-dir=assets"
+		"build": "wp-scripts build --webpack-src-dir=assets",
+		"deploy": "bash deploy/deploy.sh",
+		"deploy:dry": "bash deploy/deploy.sh --dry-run",
+		"pull": "bash deploy/pull-live.sh",
+		"wp": "bash deploy/menu.sh"
 	},
 	"browserslist": [
 		"last 2 versions"

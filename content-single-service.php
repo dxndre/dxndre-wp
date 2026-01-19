@@ -13,7 +13,7 @@
 			$style = 'style="background-image: url(\'' . esc_url( $hero_image['url'] ) . '\');"';
 		}
 	?>
-	<header class="entry-header hero" <?php echo $style; ?>>
+	<header class="entry-header hero" <?php //echo $style; ?>>
 		<div class="container">
 			<div class="header-content">
 

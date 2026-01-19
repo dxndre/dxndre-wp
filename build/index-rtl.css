@@ -14067,6 +14067,9 @@ body.is-frontend #wpadminbar {
 body.is-frontend.page-template-page-full #main {
   max-width: 100%;
 }
+body.is-frontend.page-template-page-standard #main {
+  overflow-x: hidden;
+}
 body.is-frontend.page-template-page-homepage #hireMeModal,
 body.is-frontend.page-template-page-homepage #clientModal,
 body.is-frontend.page-template-page-homepage #recruiterModal {
@@ -14691,6 +14694,13 @@ body.is-frontend.single-project #main .standalone-text h2, body.is-frontend.sing
 body.is-frontend.single-project #main .standalone-text li {
   line-height: 32px;
 }
+body.is-frontend.single-project #main .standalone-text p {
+  font-size: 20px;
+  line-height: 36px;
+  width: 100%;
+  max-width: 800px;
+  font-weight: lighter;
+}
 body.is-frontend.single-project #main .wp-block-group.gallery {
   overflow: visible;
   width: 100%;
@@ -14702,6 +14712,7 @@ body.is-frontend.single-project #main .wp-block-group.gallery figure.wp-block-im
   -webkit-box-shadow: 0px 0px 50px -25px #000000;
           box-shadow: 0px 0px 50px -25px #000000;
   max-width: 275px;
+  background-color: white;
 }
 @media (min-width: 576px) {
   body.is-frontend.single-project #main .wp-block-group.gallery figure.wp-block-image {
@@ -14835,12 +14846,21 @@ body.is-frontend.single-project::before, body.is-frontend.single-project::after 
   transition: 0.7s all ease;
 }
 body.is-frontend.single-project::before {
-  background-image: linear-gradient(-110.6deg, rgb(4, 20, 51) 11.3%, rgb(50, 48, 76) 91.7%);
+  background-image: url(images/dashboardbg.e208715d.png);
   opacity: 1;
+  -webkit-filter: brightness(0.75);
+          filter: brightness(0.75);
+}
+@media (min-width: 768px) {
+  body.is-frontend.single-project::before {
+    -webkit-filter: brightness(0.875);
+            filter: brightness(0.875);
+  }
 }
 body.is-frontend.single-project::after {
-  background-image: -webkit-gradient(linear, left top, right top, color-stop(11.3%, rgb(4, 43, 51)), color-stop(91.7%, rgb(34, 28, 62)));
-  background-image: linear-gradient(-270deg, rgb(4, 43, 51) 11.3%, rgb(34, 28, 62) 91.7%);
+  background-image: url(images/dashboardbg.e208715d.png);
+  -webkit-filter: contrast(1.5) brightness(0.5) blur(20px);
+          filter: contrast(1.5) brightness(0.5) blur(20px);
   opacity: 0;
 }
 body.is-frontend.single-service {
@@ -15076,6 +15096,41 @@ body.is-frontend.single-service #main .wp-block-image img {
     -webkit-transform: translateX(50%);
             transform: translateX(50%);
   }
+}
+body.is-frontend.single-service::before, body.is-frontend.single-service::after {
+  content: "";
+  background-color: #000000;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  opacity: 1;
+  height: 100vh;
+  width: 100%;
+  right: 0;
+  top: 0;
+  position: fixed;
+  opacity: 1;
+  z-index: -1;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+body.is-frontend.single-service::before {
+  background-image: url(images/servicebg.7213917d.jpg);
+  opacity: 1;
+  -webkit-filter: brightness(0.75) blur(100px);
+          filter: brightness(0.75) blur(100px);
+}
+@media (min-width: 768px) {
+  body.is-frontend.single-service::before {
+    -webkit-filter: brightness(0.875) blur(100px);
+            filter: brightness(0.875) blur(100px);
+  }
+}
+body.is-frontend.single-service::after {
+  background-image: url(images/dashboardbg.e208715d.png);
+  -webkit-filter: contrast(1.5) brightness(0.5) blur(20px);
+          filter: contrast(1.5) brightness(0.5) blur(20px);
+  opacity: 0;
 }
 body.is-frontend.page-pricing-calculator {
   background-image: url(images/calcbg2.1c130f37.jpg);
