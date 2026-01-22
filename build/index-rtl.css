@@ -14093,6 +14093,20 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: column-reverse;
+          flex-direction: column-reverse;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-shell,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-shell,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-shell {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
@@ -14112,9 +14126,35 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   border: none;
   -webkit-box-shadow: 0 0 50px -20px black;
           box-shadow: 0 0 50px -20px black;
-  min-height: 576px;
+  min-height: auto;
   padding: 0;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 90%;
+  margin: 0 auto;
   opacity: 1;
+}
+@media (min-width: 576px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
+    min-height: 576px;
+  }
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
+    width: 100%;
+  }
+}
+@media (min-width: 1200px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
+    max-width: 945px;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
@@ -14122,7 +14162,7 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  padding: 3em;
+  padding: 2em;
   color: white;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -14148,6 +14188,13 @@ body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-c
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner .headline {
   margin-bottom: 0;
 }
+@media (min-width: 576px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
+    padding: 3em;
+  }
+}
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
@@ -14157,7 +14204,6 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
       flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  display: none;
   opacity: 1;
   -webkit-transform: translateY(0);
           transform: translateY(0);
@@ -14183,21 +14229,16 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
   ========================= */
 }
 @media (min-width: 768px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
-    display: block;
-  }
   body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
   body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
     padding: 4em;
-    width: 392px;
+    width: 100%;
   }
   body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
   body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
-    width: 150px;
+    width: 325px;
     height: auto;
   }
 }
@@ -14217,7 +14258,6 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
   body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
     padding: 4em;
-    width: 692px;
   }
   body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
   body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
@@ -14244,9 +14284,18 @@ body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-h
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .h5,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header h5,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .h5 {
-  font-size: 2em;
+  font-size: 1.5em;
   line-height: 1.25;
   margin-bottom: 12px;
+}
+@media (min-width: 576px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header h5, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header .h5,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header h5,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .h5,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header h5,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .h5 {
+    font-size: 2em;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn-close,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn-close,
@@ -14273,13 +14322,27 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
   -webkit-box-flex: initial;
       -ms-flex: initial;
           flex: initial;
-  margin-top: 2em;
+  margin-top: 0em;
+}
+@media (min-width: 576px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body {
+    margin-top: 2em;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .question,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .question,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .question {
-  font-size: 1.5em;
+  font-size: 1.125em;
   font-weight: lighter;
+}
+@media (min-width: 576px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .question,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .question,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .question {
+    font-size: 1.5em;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge,
@@ -14351,7 +14414,14 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p:last-of-type,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p:last-of-type,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p:last-of-type {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
+}
+@media (min-width: 1400px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p:last-of-type,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p:last-of-type,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p:last-of-type {
+    margin-bottom: 2em;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .modal-back,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .modal-back,
@@ -14375,12 +14445,20 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .moda
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .button-container,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .button-container,
 body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .button-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
   gap: 1em;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
+  display: -ms-grid;
+  display: grid;
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .button-container,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .button-container,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .button-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-button__link,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn,
@@ -14405,8 +14483,20 @@ body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-b
       -ms-flex-pack: center;
           justify-content: center;
   gap: 0.5em;
+  width: 100%;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
+}
+@media (min-width: 1200px) {
+  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-button__link,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn,
+  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-button__link,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn,
+  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-button__link {
+    width: auto;
+  }
 }
 body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn i, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i, .wp-block-buttons .wp-block-button body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-button__link i,
 body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn i,
@@ -17043,10 +17133,12 @@ img {
   font-size: 16px;
   font-weight: 300;
   margin-bottom: 24px;
+  line-height: 28px;
 }
 @media (min-width: 768px) {
   #main .hero .cover-content p {
     font-size: 18px;
+    line-height: 32px;
   }
 }
 @media (min-width: 992px) {

@@ -164,6 +164,11 @@ body.is-frontend {
 
 				.modal-shell {
 					display: flex;
+					flex-direction: column-reverse;
+
+					@include media-breakpoint-up(md) {
+						flex-direction: row;
+					}
 				}
 
 				.modal-content {
@@ -174,16 +179,31 @@ body.is-frontend {
 					border-radius: 0;
 					border: none;
 					box-shadow: 0 0 50px -20px black;
-					min-height: 576px;
+					min-height: auto;
 					padding: 0;
+					justify-content: center;
+					width: 90%;
+					margin: 0 auto;
 
 					// always visible
 					opacity: 1;
+
+					@include media-breakpoint-up(sm) {
+						min-height: 576px;
+					}
+
+					@include media-breakpoint-up(md) {
+						width: 100%;
+					}
+
+					@include media-breakpoint-up(xl) {
+						max-width: 945px;
+					}
 				}
 
 				.modal-content-inner {
 					flex: 1;
-					padding: 3em;
+					padding: 2em;
 					color: white;
 					display: flex;
 					flex-direction: column;
@@ -197,6 +217,10 @@ body.is-frontend {
 					.headline {
 						margin-bottom: 0;
 					}
+
+					@include media-breakpoint-up(sm) {
+						padding: 3em;
+					}
 				}
 
 				.modal-image {
@@ -205,7 +229,7 @@ body.is-frontend {
 					flex-shrink: 0;
 					position: relative;
 					overflow: hidden;
-					display: none;
+					// display: none;
 					opacity: 1;
 					transform: translateY(0);
 					transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
@@ -225,16 +249,16 @@ body.is-frontend {
 				@include media-breakpoint-up(md) {
 
 					.modal-image {
-						display: block;
+						// display: block;
 					}
 
 					.modal-content-inner {
 						padding: 4em;
-						width: 392px;
+						width: 100%;
 					}
 
 					.modal-image {
-						width: 150px;
+						width: 325px;
 						height: auto;
 					}
 				}
@@ -248,7 +272,6 @@ body.is-frontend {
 
 					.modal-content-inner {
 						padding: 4em;
-						width: 692px;
 					}
 
 					.modal-image {
@@ -266,9 +289,13 @@ body.is-frontend {
 					border-bottom: none;
 
 					h5 {
-						font-size: 2em;
+						font-size: 1.5em;
 						line-height: 1.25;
 						margin-bottom: 12px;
+
+						@include media-breakpoint-up(sm) {
+							font-size: 2em;
+						}
 					}
 				}
 
@@ -289,11 +316,19 @@ body.is-frontend {
 				.modal-body {
 					padding: 0;
 					flex: initial;
-					margin-top: 2em;
+					margin-top: 0em;
+
+					@include media-breakpoint-up(sm) {
+						margin-top: 2em;
+					}
 
 					.question {
-						font-size: 1.5em;
+						font-size: 1.125em;
 						font-weight: lighter;
+
+						@include media-breakpoint-up(sm) {
+							font-size: 1.5em;
+						}
 					}
 					.availability-badge {
 						display: inline-flex;
@@ -347,7 +382,11 @@ body.is-frontend {
 						line-height: 1.75;
 
 						&:last-of-type {
-							margin-bottom: 2em;
+							margin-bottom: 1em;
+
+							@include media-breakpoint-up(xxl) {
+								margin-bottom: 2em;
+							}
 						}
 					}
 
@@ -369,9 +408,13 @@ body.is-frontend {
 				}
 
 				.button-container {
-					display: flex;
 					gap: 1em;
 					flex-wrap: wrap;
+					display: grid;
+
+					@include media-breakpoint-up(lg) {
+						display: flex;
+					}
 				}
 
 				.btn {
@@ -385,7 +428,12 @@ body.is-frontend {
 					align-items: center;
 					justify-content: center;
 					gap: 0.5em;
+					width: 100%;
 					transition: 0.7s all ease;
+
+					@include media-breakpoint-up(xl) {
+						width: auto;
+					}
 
 					i {
 						transform: scale(1.25);
@@ -2845,9 +2893,11 @@ img {
 				font-size: 16px;
 				font-weight: 300;
 				margin-bottom: 24px;
+				line-height: 28px;
 
 				@include media-breakpoint-up(md) {
 					font-size: 18px;
+					line-height: 32px;
 				}
 
 				@include media-breakpoint-up(lg) {
