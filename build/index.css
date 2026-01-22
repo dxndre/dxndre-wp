@@ -18132,8 +18132,13 @@ img {
 #main section.persona .persona-boxes .persona-box p {
   line-height: normal;
   margin: 0;
-  padding-left: 1em;
+  padding-left: 0.5em;
   position: static;
+}
+@media (min-width: 768px) {
+  #main section.persona .persona-boxes .persona-box p {
+    padding-left: 1em;
+  }
 }
 #main section.persona .persona-boxes .persona-box {
   /* Make the entire cover clickable via the inner <a> */

@@ -3802,8 +3802,12 @@ img {
 					p {
 						line-height: normal;
 						margin: 0;
-						padding-left: 1em;
+						padding-left: 0.5em;
 						position: static; // allows anchor to escape
+
+						@include media-breakpoint-up(md) {
+							padding-left: 1em;
+						}
 					}
 
 					/* Make the entire cover clickable via the inner <a> */
