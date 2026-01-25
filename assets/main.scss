@@ -486,20 +486,8 @@ body.is-frontend {
 	}
 
 	&.single-project {
-		&::after {
-			content: "";
-			display: block;
-			clear: both;
-			background-color: #000000;
-			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ececec' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-			height: 100%;
-			width: 100%;
-			position: fixed;
-			top: 0;
-			left: 0;
-			z-index: -1;
-			opacity: 0.5;
-		}
+		background: #3b00ff;  /* fallback for old browsers */
+		background: linear-gradient(137deg, #3b00ff, #993f1e);
 		
 		&.client-journey-section {
 			&::before {
@@ -832,44 +820,160 @@ body.is-frontend {
 					transform: translateX(-50%);
 				}
 			}
-		}
 
-		&::before,
-		&::after {
-			content: '';
-			background-color: #000000;
-			background-size: cover;
-			background-attachment: fixed;
-			background-position: center;
-			opacity: 1;
-			height: 100vh;
-			width: 100%;
-			left: 0;
-			top: 0;
-			position: fixed;
-			opacity: 1;
-			z-index: -1;
-			transition: 0.7s all ease;
-		}
+			$max-content-width: 1200px;
+			$chapter-text-width: 720px;
 
-		&::before {
-			// background-image: url(./img/single.png);
-			// background-image: linear-gradient(110.6deg, rgba(4, 20, 51, 1) 11.3%, rgb(50 48 76) 91.7%);
-			background-image: url(/assets/img/dashboardbg.png);
-			opacity: 1;
-			filter: brightness(0.75);
+			$space-1: 0.5rem;
+			$space-2: 1rem;
+			$space-3: 1.5rem;
+			$space-4: 2rem;
+			$space-5: 3rem;
+			$space-6: 4rem;
+			$space-7: 6rem;
+			$space-8: 8rem;
 
-			@include media-breakpoint-up(md) {
-				filter: brightness(0.875);
+			$panel-radius: 20px;
+
+			$bp-mobile: 768px;
+
+			.story-section {
+				position: relative;
+				width: 100%;
+				overflow: hidden;
+				color: white;
+
+				.cs-chapter {
+					position: relative;
+					padding: $space-6 0;
+					opacity: 1;
+					transform: none;
+					transition: opacity 0.6s ease, transform 0.6s ease;
+
+					&.viewport-active {
+						opacity: 1;
+						transform: none;
+					}
+
+					> .wp-block-group__inner-container {
+						max-width: 100%;
+						margin-inline: auto;
+						padding-inline: $space-3;
+					}
+
+					.cs-chapter-header {
+						max-width: 100%;
+						margin-bottom: $space-4;
+
+						h2 {
+							margin-bottom: $space-2;
+						}
+
+						p {
+							max-width: 60ch;
+							opacity: 0.85;
+						}
+					}
+
+					.cs-panel-track {
+						display: flex;
+						flex-direction: column;
+						gap: $space-4;
+						overflow: visible;
+						padding-bottom: $space-4;
+
+						.wp-block-group__inner-container {
+							max-width: none !important;
+							padding: 0 !important;
+						}
+
+						.cs-panel {
+							background: rgba(255, 255, 255, 0.06);
+							backdrop-filter: blur(12px);
+							border-radius: $panel-radius;
+							padding: $space-4;
+							min-width: 100%;
+							display: flex;
+							flex-direction: column;
+							gap: $space-2;
+
+							h3 {
+								margin-bottom: $space-1;
+							}
+
+							p {
+								max-width: 60ch;
+								opacity: 0.9;
+							}
+						}
+					}
+				}
 			}
-		}
 
-		&::after {
-			// background-image: url(./img/clientjourney.png);
-			// background-image: linear-gradient(270deg, rgb(4 43 51) 11.3%, rgb(34 28 62) 91.7%);
-			background-image: url(/assets/img/dashboardbg.png);
-			filter: contrast(1.5)brightness(0.5)blur(20px);
-			opacity: 0;
+			@media (min-width: $bp-mobile) {
+				.story-section {
+					.cs-chapter {
+						padding: clamp($space-6, 10vw, $space-8) 0;
+						opacity: 0.4;
+						transform: translateY(40px);
+
+						&.viewport-active {
+							opacity: 1;
+							transform: translateY(0);
+						}
+
+						> .wp-block-group__inner-container {
+							max-width: $max-content-width;
+							padding-inline: $space-4;
+						}
+
+						.cs-chapter-header {
+							max-width: $chapter-text-width;
+							margin-bottom: $space-5;
+						}
+
+						.cs-panel-track {
+							flex-direction: row;
+							flex-wrap: nowrap !important;
+							overflow-x: auto;
+							overflow-y: hidden;
+							scroll-snap-type: x mandatory;
+							-webkit-overflow-scrolling: touch;
+							margin-inline: calc(-1 * $space-4);
+							padding-inline: $space-4;
+
+							scrollbar-width: none;
+
+							&::-webkit-scrollbar {
+								display: none;
+							}
+
+							> .wp-block-group {
+								flex-shrink: 0;
+							}
+
+							.cs-panel {
+								min-width: min(80vw, 900px);
+								scroll-snap-align: start;
+								padding: $space-5;
+
+								@media (hover: hover) {
+									transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+									&:hover {
+										transform: translateY(-4px);
+										box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			.wp-block-heading {
+				scroll-margin-top: 120px;
+			}
 		}
 	}
 
