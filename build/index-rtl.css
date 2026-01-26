@@ -14590,8 +14590,8 @@ body.is-frontend.page-template-page-homepage #recruiterModal {
   }
 }
 body.is-frontend.single-project {
-  background: #3b00ff; /* fallback for old browsers */
-  background: linear-gradient(-137deg, #3b00ff, #993f1e);
+  background-size: cover;
+  background-attachment: fixed;
 }
 body.is-frontend.single-project.client-journey-section::before {
   opacity: 0;
@@ -14629,6 +14629,10 @@ body.is-frontend.single-project #main .entry-header {
     -webkit-box-align: end;
         -ms-flex-align: end;
             align-items: end;
+    gap: 2em;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
   }
 }
 body.is-frontend.single-project #main .entry-header .header-content h1, body.is-frontend.single-project #main .entry-header .header-content .h1 {
@@ -14644,6 +14648,34 @@ body.is-frontend.single-project #main .entry-header .header-content h1, body.is-
   body.is-frontend.single-project #main .entry-header .header-content h1, body.is-frontend.single-project #main .entry-header .header-content .h1 {
     font-size: 48px;
   }
+}
+body.is-frontend.single-project #main .entry-header .project-image {
+  max-width: 500px;
+}
+body.is-frontend.single-project #main .entry-header .project-image img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+body.is-frontend.single-project #main .entry-header .project-image img.foreground {
+  -webkit-transform: scale(1.75) translateX(-100px);
+          transform: scale(1.75) translateX(-100px);
+  -webkit-box-shadow: 0px 0px 50px -20px black;
+          box-shadow: 0px 0px 50px -20px black;
+}
+body.is-frontend.single-project #main .entry-header .project-image img.background {
+  mix-blend-mode: screen;
+  -webkit-filter: blur(10px) saturate(1.4);
+          filter: blur(10px) saturate(1.4);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: -1;
+  -webkit-transform: translate(50%, -50%) scale(2.5);
+          transform: translate(50%, -50%) scale(2.5);
+  -o-object-fit: contain;
+     object-fit: contain;
+  position: fixed;
 }
 body.is-frontend.single-project #main .entry-header .project-services {
   display: -webkit-box;
@@ -14942,6 +14974,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter {
   transition: opacity 0.6s ease, -webkit-transform 0.6s ease;
   transition: opacity 0.6s ease, transform 0.6s ease;
   transition: opacity 0.6s ease, transform 0.6s ease, -webkit-transform 0.6s ease;
+  min-height: 100vh;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter.viewport-active {
   opacity: 1;
@@ -14983,7 +15016,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
-  border-radius: 20px;
+  border-radius: 0px;
   padding: 2rem;
   min-width: 100%;
   display: -webkit-box;
@@ -15005,7 +15038,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
 @media (min-width: 768px) {
   body.is-frontend.single-project #main .story-section .cs-chapter {
     padding: clamp(4rem, 10vw, 8rem) 0;
-    opacity: 0.4;
+    opacity: 1;
     -webkit-transform: translateY(40px);
             transform: translateY(40px);
   }
@@ -15015,8 +15048,8 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
             transform: translateY(0);
   }
   body.is-frontend.single-project #main .story-section .cs-chapter > .wp-block-group__inner-container {
-    max-width: 1200px;
-    padding-inline: 2rem;
+    max-width: none;
+    padding-inline: 0;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-chapter-header {
     max-width: 720px;
@@ -15037,6 +15070,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
     margin-inline: -2rem;
     padding-inline: 2rem;
     scrollbar-width: none;
+    min-width: 100vw;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track::-webkit-scrollbar {
     display: none;
@@ -15046,23 +15080,24 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
         flex-shrink: 0;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
-    min-width: min(80vw, 900px);
+    min-width: 33vw;
     scroll-snap-align: start;
     padding: 3rem;
-  }
-}
-@media (min-width: 768px) and (hover: hover) {
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
-    -webkit-transition: -webkit-transform 0.25s ease, -webkit-box-shadow 0.25s ease;
-    transition: -webkit-transform 0.25s ease, -webkit-box-shadow 0.25s ease;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, -webkit-transform 0.25s ease, -webkit-box-shadow 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    min-height: 20vw;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: end;
+    -webkit-transition: 0.7s all ease;
+    transition: 0.7s all ease;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel:hover {
-    -webkit-transform: translateY(-4px);
-            transform: translateY(-4px);
-    -webkit-box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    -webkit-transition: 0.3s all ease;
+    transition: 0.3s all ease;
   }
 }
 body.is-frontend.single-project #main .wp-block-heading {
@@ -17850,13 +17885,13 @@ img {
   z-index: 1;
 }
 #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane img.background {
-  position: absolute;
+  position: fixed;
   inset: 50% auto auto 50%;
   -webkit-transform: translate(50%, -50%) scale(1.25);
           transform: translate(50%, -50%) scale(1.25);
   z-index: -1;
-  -webkit-filter: blur(100px) saturate(1.4);
-          filter: blur(100px) saturate(1.4);
+  -webkit-filter: blur(100px) saturate(1.5);
+          filter: blur(100px) saturate(1.5);
   opacity: 0.55;
   pointer-events: none;
   mix-blend-mode: screen;

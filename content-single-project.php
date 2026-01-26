@@ -30,9 +30,7 @@
 				<?php
 					$site_link = get_field('site_link');
 					$services  = get_field('project_type');
-				?>
-
-				<?php
+					$header_image = get_field('header_image');
 					$site_link   = get_field('site_link');
 					$site_status = get_field('site_status'); // live | coming_soon | private
 				?>
@@ -71,6 +69,28 @@
 				<?php endif; ?>
 
 			</div>
+			<?php if ( ! empty( $header_image ) ) : ?>
+				<div class="project-image">
+					<?php
+					echo wp_get_attachment_image(
+						$header_image['ID'],
+						'full',
+						false,
+						array(
+							'class' => 'header-image foreground',
+						)
+					);
+					echo wp_get_attachment_image(
+						$header_image['ID'],
+						'full',
+						false,
+						array(
+							'class' => 'header-image background',
+						)
+					);
+					?>
+				</div>
+			<?php endif; ?>
 		</header>
 	</div>
 

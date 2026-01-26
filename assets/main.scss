@@ -486,8 +486,11 @@ body.is-frontend {
 	}
 
 	&.single-project {
-		background: #3b00ff;  /* fallback for old browsers */
-		background: linear-gradient(137deg, #3b00ff, #993f1e);
+		// background: #3b00ff;  /* fallback for old browsers */
+		// background: linear-gradient(137deg, #3b00ff, #993f1e);
+		// background-image: url(./img/gradient_5_clean.png);
+		background-size: cover;
+		background-attachment: fixed;
 		
 		&.client-journey-section {
 			&::before {
@@ -523,6 +526,8 @@ body.is-frontend {
 
 				@include media-breakpoint-up(md) {
 					align-items: end;
+					gap: 2em;
+					justify-content: space-between;
 				}
 
 				.header-content {
@@ -536,6 +541,32 @@ body.is-frontend {
 
 						@include media-breakpoint-up(lg) {
 							font-size: 48px;
+						}
+					}
+				}
+
+				.project-image {
+					max-width: 500px;
+
+					img {
+						width: 100%;
+						height: 100%;
+						object-fit: cover;
+
+						&.foreground {
+							transform: scale(1.75) translateX(100px);
+    						box-shadow: 0px 0px 50px -20px black;
+						}
+						
+						&.background {
+							mix-blend-mode: screen;
+							filter: blur(10px) saturate(1.4);
+							opacity: 0.55;
+							pointer-events: none;
+							z-index: -1;
+							transform: translate(-50%, -50%) scale(2.5);
+							object-fit: contain;
+							position: fixed;
 						}
 					}
 				}
@@ -582,34 +613,6 @@ body.is-frontend {
 				}
 
 				a {
-					// &.back {
-					// 	width: 150px;
-					// 	color: white;
-					// 	padding: 10px 0;
-					// 	border-bottom: 1px solid rgba(255, 255, 255, 0.33);
-					// 	margin-bottom: 2em;
-					// 	display: inline-flex;
-					// 	font-weight: lighter;
-					// 	align-items: center;
-					// 	transition: 0.7s all ease;
-
-					// 	i {
-					// 		margin-right: 12px;
-					// 		transition: 0.7s all ease;
-					// 	}
-
-					// 	&:hover {
-					// 		width: 200px;
-					// 		border-bottom: 1px solid white;
-					// 		transition: 0.3s all ease;
-
-					// 		i {
-					// 			transform: scale(1.25);
-					// 			transition: 0.3s all ease;
-					// 		}
-					// 	}
-					// }
-
 					&.back {
 						display: inline-flex;
 						align-items: center;
@@ -631,17 +634,17 @@ body.is-frontend {
 							position: relative;
 
 							&::after {
-							content: '';
-							position: absolute;
-							left: 0;
-							bottom: -4px;
-							width: 100%;
-							height: 1px;
-							background: currentColor;
-							opacity: 0.4;
-							transform: scaleX(0);
-							transform-origin: left;
-							transition: transform 0.35s ease;
+								content: '';
+								position: absolute;
+								left: 0;
+								bottom: -4px;
+								width: 100%;
+								height: 1px;
+								background: currentColor;
+								opacity: 0.4;
+								transform: scaleX(0);
+								transform-origin: left;
+								transition: transform 0.35s ease;
 							}
 						}
 
@@ -821,7 +824,7 @@ body.is-frontend {
 				}
 			}
 
-			$max-content-width: 1200px;
+			$max-content-width: none;
 			$chapter-text-width: 720px;
 
 			$space-1: 0.5rem;
@@ -833,7 +836,7 @@ body.is-frontend {
 			$space-7: 6rem;
 			$space-8: 8rem;
 
-			$panel-radius: 20px;
+			$panel-radius: 0px;
 
 			$bp-mobile: 768px;
 
@@ -849,6 +852,7 @@ body.is-frontend {
 					opacity: 1;
 					transform: none;
 					transition: opacity 0.6s ease, transform 0.6s ease;
+					min-height: 100vh;
 
 					&.viewport-active {
 						opacity: 1;
@@ -914,7 +918,8 @@ body.is-frontend {
 				.story-section {
 					.cs-chapter {
 						padding: clamp($space-6, 10vw, $space-8) 0;
-						opacity: 0.4;
+						// opacity: 0.4;
+						opacity: 1;
 						transform: translateY(40px);
 
 						&.viewport-active {
@@ -924,7 +929,7 @@ body.is-frontend {
 
 						> .wp-block-group__inner-container {
 							max-width: $max-content-width;
-							padding-inline: $space-4;
+							padding-inline: 0;
 						}
 
 						.cs-chapter-header {
@@ -941,8 +946,8 @@ body.is-frontend {
 							-webkit-overflow-scrolling: touch;
 							margin-inline: calc(-1 * $space-4);
 							padding-inline: $space-4;
-
 							scrollbar-width: none;
+							min-width: 100vw;
 
 							&::-webkit-scrollbar {
 								display: none;
@@ -953,17 +958,18 @@ body.is-frontend {
 							}
 
 							.cs-panel {
-								min-width: min(80vw, 900px);
+								min-width: 33vw;
 								scroll-snap-align: start;
 								padding: $space-5;
+								border: 1px solid rgba(255,255,255,0.25);
+								min-height: 20vw;
+								display: flex;
+								justify-content: end;
+								transition: 0.7s all ease;
 
-								@media (hover: hover) {
-									transition: transform 0.25s ease, box-shadow 0.25s ease;
-
-									&:hover {
-										transform: translateY(-4px);
-										box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-									}
+								&:hover {
+									border: 1px solid rgba(255,255,255,0.5);
+									transition: 0.3s all ease;
 								}
 							}
 						}
@@ -1068,17 +1074,17 @@ body.is-frontend {
 							position: relative;
 
 							&::after {
-							content: '';
-							position: absolute;
-							left: 0;
-							bottom: -4px;
-							width: 100%;
-							height: 1px;
-							background: currentColor;
-							opacity: 0.4;
-							transform: scaleX(0);
-							transform-origin: left;
-							transition: transform 0.35s ease;
+								content: '';
+								position: absolute;
+								left: 0;
+								bottom: -4px;
+								width: 100%;
+								height: 1px;
+								background: currentColor;
+								opacity: 0.4;
+								transform: scaleX(0);
+								transform-origin: left;
+								transition: transform 0.35s ease;
 							}
 						}
 
@@ -1086,11 +1092,11 @@ body.is-frontend {
 							color: rgba(255, 255, 255, 0.95);
 
 							i {
-							transform: translateX(-4px);
+								transform: translateX(-4px);
 							}
 
 							span::after {
-							transform: scaleX(1);
+								transform: scaleX(1);
 							}
 						}
 					}
@@ -3557,11 +3563,11 @@ img {
 								}
 
 								&.background {
-									position: absolute;
+									position: fixed;
 									inset: 50% auto auto 50%;
 									transform: translate(-50%, -50%) scale(1.25);
 									z-index: -1;
-									filter: blur(100px) saturate(1.4);
+									filter: blur(100px) saturate(1.5);
 									opacity: 0.55;
 									pointer-events: none;
 									mix-blend-mode: screen;
