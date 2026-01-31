@@ -7,9 +7,9 @@
 
 <div class="story-backgrounds">
 	<div class="bg is-active" data-bg="chapter-1" style="background-color: black;"></div>
-	<div class="bg" data-bg="chapter-2" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapter_bg_1.png')"></div>
-	<div class="bg" data-bg="chapter-3" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/searchbg.png')"></div>
-	<div class="bg" data-bg="chapter-4" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/servicebg.jpg')"></div>
+	<div class="bg" data-bg="chapter-2" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/calcbg.png')"></div>
+	<div class="bg" data-bg="chapter-3" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg5.jpg')"></div>
+	<div class="bg" data-bg="chapter-4" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg6.jpg')"></div>
 </div>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>

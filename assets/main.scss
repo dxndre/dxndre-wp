@@ -498,6 +498,21 @@ body.is-frontend {
 				pointer-events: auto;
 				transform: translateY(-50%) translateX(0);
 			}
+
+			#main {
+				.story-section {
+					.cs-chapter {
+						> .wp-block-group__inner-container {
+							margin-left: 10em;
+							transition: 0.3s all ease;
+
+							@include media-breakpoint-up(xxl) {
+								margin-left: 5em;
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		&.client-journey-section {
@@ -907,7 +922,7 @@ body.is-frontend {
 					padding: $space-6 0;
 					opacity: 1;
 					transform: none;
-					transition: opacity 0.6s ease, transform 0.6s ease;
+					transition: opacity 0.7s ease, transform 0.7s ease;
 					min-height: 100vh;
 					display: flex;
 					align-items: center;
@@ -934,6 +949,8 @@ body.is-frontend {
 						max-width: 100%;
 						margin-inline: auto;
 						padding-inline: $space-3;
+						margin-left: 0;
+						transition: 0.7s all ease;
 					}
 
 					.cs-chapter-header {
@@ -964,23 +981,25 @@ body.is-frontend {
 						}
 
 						.cs-panel {
-							background: white;
-							color: black;
+							// background: white;
+							// color: black;
 							border-radius: $panel-radius;
 							padding: $space-4;
 							min-width: 100%;
 							display: flex;
 							flex-direction: column;
 							gap: $space-2;
+							border: 1px solid rgba(255,255,255,0.25);
 
 							h3 {
+								font-weight: lighter;
 								margin-bottom: $space-1;
 							}
 
 							p {
-								font-size: 18px;
+								font-size: 16px;
 								font-weight: 300;
-								max-width: 30ch;
+								max-width: 40ch;
 								line-height: 24px;
 								opacity: 0.9;
 
@@ -1026,7 +1045,7 @@ body.is-frontend {
 							margin-inline: calc(-1 * $space-4);
 							padding-inline: $space-4;
 							scrollbar-width: none;
-							min-width: 100vw;
+							min-width: 75vw;
 
 							&::-webkit-scrollbar {
 								display: none;
@@ -1045,7 +1064,7 @@ body.is-frontend {
 								min-height: 20vw;
 								display: flex;
 								justify-content: end;
-								box-shadow: 0px 0px 50px -25px black;
+								// box-shadow: 0px 0px 50px -25px black;
 								transition: 0.7s all ease;
 
 								&:hover {
@@ -1090,7 +1109,7 @@ body.is-frontend {
 				padding: 0;
 				display: flex;
 				flex-direction: column;
-				gap: 1rem;
+				gap: 1.5rem;
 			}
 
 			li {
@@ -1098,6 +1117,7 @@ body.is-frontend {
 				opacity: 0.35;
 				display: flex;
     			gap: 1.5em;
+				align-items: center;
 				transition: opacity 0.3s ease;
 
 				span {
@@ -1128,7 +1148,7 @@ body.is-frontend {
 					height: 24px;
 					// background: rgba(255,255,255,0.2);
 					background-color: transparent;
-					margin-bottom: 0.5rem;
+					// margin-bottom: 0.5rem;
 				}
 			}
 		}
