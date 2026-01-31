@@ -1128,7 +1128,7 @@ function dxndre_client_login_logout_menu($items, $args) {
 function dx_enqueue_scripts() {
 	wp_enqueue_script(
 		'dx-main',
-		get_template_directory_uri() . '/assets/js/main.js',
+		get_template_directory_uri() . '/assets/main.js',
 		[],
 		null,
 		true
