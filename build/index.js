@@ -74,9 +74,14 @@ __webpack_require__.r(__webpack_exports__);
     /* ==========================
        VIEWPORT-ACTIVE SECTIONS
     ========================== */
+
     var sections = document.querySelectorAll('section');
     var sectionObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
+        // The case study page manages these with its own controller
+        if (entry.target.classList.contains('story-section') || entry.target.classList.contains('story-hero')) {
+          return;
+        }
         if (entry.isIntersecting) {
           entry.target.classList.add('viewport-active');
         } else {
@@ -768,6 +773,339 @@ __webpack_require__.r(__webpack_exports__);
       hero.classList.add('is-revealed');
     });
   });
+
+  /* ==========================
+  CASE STUDY: STORY CONTROLLER (FINAL)
+  ========================== */
+
+  (function () {
+    var hero = document.querySelector('.story-hero');
+    var chaptersWrapper = document.querySelector('.chapters-wrapper');
+    var storySections = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.story-section'));
+    var chapterWrap = document.querySelector('.chapter-selector');
+    var chapterNav = chapterWrap === null || chapterWrap === void 0 ? void 0 : chapterWrap.querySelector('ul');
+
+    // Safety exit
+    if (!hero || !chaptersWrapper || !storySections.length || !chapterNav) return;
+
+    /* --------------------------------
+    1. Build chapter selector dynamically
+    -------------------------------- */
+
+    chapterNav.innerHTML = '';
+    var chapters = storySections.map(function (section) {
+      return section.querySelector('.cs-chapter');
+    }).filter(Boolean);
+    chapters.forEach(function (chapter) {
+      var heading = chapter.querySelector('h2.chapter-title');
+      if (!heading || !chapter.id) return;
+      var li = document.createElement('li');
+      li.dataset.target = chapter.id;
+      li.innerHTML = "<span>".concat(heading.textContent.trim(), "</span>");
+      chapterNav.appendChild(li);
+    });
+    var chapterLinks = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(chapterNav.querySelectorAll('li'));
+    if (chapterLinks.length <= 1) {
+      chapterWrap.remove();
+      return;
+    }
+
+    /* --------------------------------
+    Progress indicator element
+    -------------------------------- */
+
+    var progress = document.createElement('div');
+    progress.className = 'chapter-progress';
+    progress.innerHTML = "<span></span>";
+    chapterWrap.appendChild(progress);
+    var progressBar = progress.querySelector('span');
+
+    /* --------------------------------
+    2. State
+    -------------------------------- */
+
+    var activeIndex = 0;
+    var activeSection = null;
+    var isSnapping = false;
+    var isLockedInChapters = false;
+    var hasEnteredStory = false;
+    var vh = function vh() {
+      return window.innerHeight;
+    };
+    var wrapperTop = function wrapperTop() {
+      return chaptersWrapper.getBoundingClientRect().top;
+    };
+    var wrapperBottom = function wrapperBottom() {
+      return chaptersWrapper.getBoundingClientRect().bottom;
+    };
+
+    /* --------------------------------
+    3. Activate section (single source of truth)
+    -------------------------------- */
+
+    var setActiveSection = function setActiveSection(section) {
+      if (!section || activeSection === section) return;
+      storySections.forEach(function (s) {
+        return s.classList.remove('viewport-active');
+      });
+      section.classList.add('viewport-active');
+      activeSection = section;
+      activeIndex = Math.max(0, storySections.indexOf(section));
+      var chapterEl = section.querySelector('.cs-chapter[id]');
+      var id = chapterEl ? chapterEl.id : null;
+      chapterLinks.forEach(function (link) {
+        return link.classList.toggle('is-active', link.dataset.target === id);
+      });
+      if (id && hasEnteredStory && document.body.classList.contains('is-in-story')) {
+        history.replaceState(null, '', "#".concat(id));
+      }
+      setActiveBackground(id);
+
+      // Update progress bar
+      var pct = (activeIndex + 1) / storySections.length * 100;
+      progressBar.style.transform = "scaleY(".concat(pct / 100, ")");
+    };
+
+    /* --------------------------------
+    4. Snap helper
+    -------------------------------- */
+
+    var snapTo = function snapTo(index) {
+      var target = storySections[index];
+      if (!target || isSnapping) return;
+      isSnapping = true;
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+      setTimeout(function () {
+        isSnapping = false;
+      }, 850);
+    };
+
+    /* --------------------------------
+    5. Active section observer (NO story state here)
+    -------------------------------- */
+
+    var visibilityMap = new Map();
+    var storyObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        visibilityMap.set(entry.target, entry.intersectionRatio);
+      });
+      var topSection = null;
+      var topRatio = 0;
+      visibilityMap.forEach(function (ratio, section) {
+        if (ratio > topRatio) {
+          topRatio = ratio;
+          topSection = section;
+        }
+      });
+
+      // Always update active section when one is dominant
+      if (topSection && topRatio > 0.5) {
+        hasEnteredStory = true;
+        setActiveSection(topSection);
+      }
+    }, {
+      threshold: [0, 0.25, 0.5, 0.75, 0.9]
+    });
+    storySections.forEach(function (section) {
+      return storyObserver.observe(section);
+    });
+
+    /* --------------------------------
+    6. Wrapper lock observer
+    -------------------------------- */
+
+    var wrapperObserver = new IntersectionObserver(function (_ref6) {
+      var _ref7 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref6, 1),
+        entry = _ref7[0];
+      isLockedInChapters = entry.intersectionRatio >= 0.9;
+    }, {
+      threshold: [0.9]
+    });
+    wrapperObserver.observe(chaptersWrapper);
+
+    /* ==========================
+    STORY MODE — CONTAINER AWARE
+    ========================== */
+
+    (function () {
+      var scrollContainer = document.querySelector('#main') || document.querySelector('.entry-content');
+      var wrapper = document.querySelector('.chapters-wrapper');
+      if (!scrollContainer || !wrapper) return;
+      var inStory = false;
+      var updateStoryState = function updateStoryState() {
+        var containerRect = scrollContainer.getBoundingClientRect();
+        var wrapperRect = wrapper.getBoundingClientRect();
+
+        // wrapper top relative to container top
+        var wrapperTopInContainer = wrapperRect.top - containerRect.top;
+        var wrapperBottomInContainer = wrapperRect.bottom - containerRect.top;
+        var nowInStory = wrapperTopInContainer <= 0 && wrapperBottomInContainer > 0;
+        if (nowInStory !== inStory) {
+          inStory = nowInStory;
+          document.body.classList.toggle('is-in-story', inStory);
+        }
+      };
+      scrollContainer.addEventListener('scroll', updateStoryState, {
+        passive: true
+      });
+      updateStoryState(); // run once
+    })();
+
+    /* --------------------------------
+    7. Wheel locking logic
+    -------------------------------- */
+
+    window.addEventListener('wheel', function (e) {
+      if (!isLockedInChapters || isSnapping) return;
+      if (Math.abs(e.deltaY) < 40) return;
+      var goingDown = e.deltaY > 0;
+      var goingUp = e.deltaY < 0;
+      var atTopBoundary = wrapperTop() >= -10;
+      var atBottomBoundary = wrapperBottom() <= vh() + 10;
+
+      // Block escape unless boundary reached
+      if (goingUp && !atTopBoundary) {
+        e.preventDefault();
+        snapTo(activeIndex - 1);
+        return;
+      }
+      if (goingDown && !atBottomBoundary) {
+        e.preventDefault();
+        snapTo(activeIndex + 1);
+        return;
+      }
+    }, {
+      passive: false
+    });
+
+    /* --------------------------------
+    8. Keyboard navigation
+    -------------------------------- */
+
+    window.addEventListener('keydown', function (e) {
+      var _document$activeEleme;
+      if (!isLockedInChapters || isSnapping) return;
+
+      // Ignore typing contexts
+      var tag = (_document$activeEleme = document.activeElement) === null || _document$activeEleme === void 0 ? void 0 : _document$activeEleme.tagName;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+      if (['ArrowDown', 'PageDown'].includes(e.key)) {
+        e.preventDefault();
+        if (activeIndex < storySections.length - 1) {
+          snapTo(activeIndex + 1);
+        }
+      }
+      if (['ArrowUp', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        if (activeIndex > 0) {
+          snapTo(activeIndex - 1);
+        }
+      }
+    });
+
+    /* --------------------------------
+    9. Chapter click navigation
+    -------------------------------- */
+
+    chapterLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        hasEnteredStory = true;
+        var target = document.getElementById(link.dataset.target);
+        if (!target) return;
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      });
+    });
+
+    /* --------------------------------
+    10. Chapter selector visibility (STABLE)
+    -------------------------------- */
+
+    var selectorVisible = false;
+    var selectorObserver = new IntersectionObserver(function (entries) {
+      var entry = entries[0];
+
+      // Enter chapters once wrapper is meaningfully in view
+      if (entry.intersectionRatio > 0.3) {
+        if (!selectorVisible) {
+          selectorVisible = true;
+          document.body.classList.add('is-in-chapters');
+        }
+        return;
+      }
+
+      // Fully exit chapters only when wrapper is completely out of view
+      if (entry.intersectionRatio === 0) {
+        selectorVisible = false;
+        document.body.classList.remove('is-in-chapters');
+      }
+    }, {
+      threshold: [0, 0.3]
+    });
+    selectorObserver.observe(chaptersWrapper);
+
+    /* --------------------------------
+    11. Touch swipe navigation (mobile)
+    -------------------------------- */
+
+    var touchStartY = null;
+    window.addEventListener('touchstart', function (e) {
+      if (!isLockedInChapters) return;
+      touchStartY = e.touches[0].clientY;
+    }, {
+      passive: true
+    });
+    window.addEventListener('touchend', function (e) {
+      if (!isLockedInChapters || isSnapping || touchStartY === null) return;
+      var endY = e.changedTouches[0].clientY;
+      var deltaY = touchStartY - endY;
+
+      // Require a meaningful swipe
+      if (Math.abs(deltaY) < 60) return;
+      if (deltaY > 0 && activeIndex < storySections.length - 1) {
+        // swipe up → next
+        snapTo(activeIndex + 1);
+      }
+      if (deltaY < 0 && activeIndex > 0) {
+        // swipe down → previous
+        snapTo(activeIndex - 1);
+      }
+      touchStartY = null;
+    });
+
+    /* --------------------------------
+    BACKGROUND LAYERS (ROBUST)
+    -------------------------------- */
+
+    var getBgLayers = function getBgLayers() {
+      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
+    };
+    var setActiveBackground = function setActiveBackground(chapterId) {
+      if (!chapterId) {
+        // No id → nothing to set
+        return;
+      }
+      var layers = getBgLayers();
+      if (!layers.length) {
+        console.warn('[BG] No background layers found. Expected .story-backgrounds .bg');
+        return;
+      }
+      var matched = false;
+      layers.forEach(function (bg) {
+        var isActive = bg.dataset.bg === chapterId;
+        bg.classList.toggle('is-active', isActive);
+        if (isActive) matched = true;
+      });
+      if (!matched) {
+        console.warn("[BG] No bg matched chapterId \"".concat(chapterId, "\". Check .bg[data-bg=\"...\"] values match your chapter IDs."));
+      }
+    };
+  })();
 })();
 
 /***/ }),
