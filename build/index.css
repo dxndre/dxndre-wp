@@ -14632,8 +14632,11 @@ body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter > .
 }
 @media (min-width: 1400px) {
   body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter > .wp-block-group__inner-container {
-    margin-left: 5em;
+    margin-left: 7.5em;
   }
+}
+body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
+  width: calc(100vw - 200px);
 }
 body.is-frontend.single-project.client-journey-section::before {
   opacity: 0;
@@ -15150,6 +15153,38 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel p:last-of-type {
   margin-bottom: 0;
 }
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel.image {
+  border: none;
+  padding: 0;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .stack-list {
+  gap: 16px;
+  padding: 0;
+  margin-top: 3em;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .stack-list li {
+  list-style: none;
+  padding: 8px 20px;
+  width: auto;
+  background: transparent;
+  color: white;
+  border-radius: 50px;
+  font-weight: 300;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 @media (min-width: 768px) {
   body.is-frontend.single-project #main .story-section .cs-chapter {
     padding: clamp(4rem, 10vw, 8rem) 0;
@@ -15164,7 +15199,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-chapter-header {
     max-width: 720px;
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track {
     -webkit-box-orient: horizontal;
@@ -15181,7 +15216,8 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
     margin-inline: -2rem;
     padding-inline: 2rem;
     scrollbar-width: none;
-    min-width: 75vw;
+    min-width: 50vw;
+    width: 100vw;
   }
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track::-webkit-scrollbar {
     display: none;
@@ -15194,7 +15230,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
     min-width: 20vw;
     backdrop-filter: blur(20px);
     scroll-snap-align: start;
-    padding: 3rem;
+    padding: 2.5rem;
     min-height: 20vw;
     display: -webkit-box;
     display: -ms-flexbox;
