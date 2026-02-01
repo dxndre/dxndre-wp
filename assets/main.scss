@@ -145,7 +145,7 @@ body.is-frontend {
 
 	&.page-template-page-standard {
 		#main {
-			overflow-x: hidden;
+			// overflow-x: hidden;
 		}
 	}
 
@@ -564,11 +564,15 @@ body.is-frontend {
 		}
 
 		#main {
-			overflow-x: hidden;
+			// overflow-x: hidden;
 			padding-top: 0;
 			scroll-snap-type: y proximity;
 			overflow-y: scroll;
 			height: 100vh;
+
+			article {
+				overflow-x: hidden;
+			}
 
 			.story-hero {
 				scroll-snap-align: start;
