@@ -14074,6 +14074,10 @@ textarea.form-control-lg {
 /**
  * General
  */
+html {
+  overflow-x: hidden;
+}
+
 body.is-frontend {
   font-family: "Outfit", sans-serif;
   background-color: black;
@@ -14637,7 +14641,6 @@ body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter > .
   }
 }
 body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
-  width: 100%;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
@@ -15058,6 +15061,7 @@ body.is-frontend.single-project #main .wp-block-image {
 body.is-frontend.single-project #main .wp-block-image img {
   width: 100%;
   height: auto;
+  max-height: 300px;
   -o-object-fit: cover;
      object-fit: cover;
 }
@@ -15197,11 +15201,9 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-chapter-hea
   max-width: 40ch;
   opacity: 0.85;
 }
-@media (min-width: 576px) {
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-chapter-header {
-    max-width: 720px;
-    margin-bottom: 2.5rem;
-  }
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-chapter-header {
+  max-width: 720px;
+  margin-bottom: 2.5rem;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter {
   /* =====================================================
@@ -15212,47 +15214,36 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
   gap: 2rem;
   overflow: visible;
   padding-bottom: 2rem;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-scroll-snap-type: x mandatory;
+      scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  margin-inline: -2rem;
+  padding-inline: 2rem;
+  width: 100vw;
+  min-width: 50vw;
+  scrollbar-width: none;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track::-webkit-scrollbar {
+  display: none;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track > .wp-block-group {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .wp-block-group__inner-container {
   max-width: none !important;
   padding: 0 !important;
-}
-body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track {
-  /* ---------- Desktop horizontal scroll ---------- */
-}
-@media (min-width: 576px) {
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -ms-flex-wrap: nowrap;
-        flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -ms-scroll-snap-type: x mandatory;
-        scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    margin-inline: -2rem;
-    padding-inline: 2rem;
-    width: 100vw;
-    min-width: 50vw;
-    scrollbar-width: none;
-  }
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track::-webkit-scrollbar {
-    display: none;
-  }
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track > .wp-block-group {
-    -ms-flex-negative: 0;
-        flex-shrink: 0;
-  }
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track {
   /* =================================================
@@ -15275,6 +15266,12 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
           justify-content: end;
   gap: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 100%;
+}
+@media (min-width: 768px) {
+  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
+    width: auto;
+  }
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel h3, body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel .h3 {
   font-weight: lighter;
@@ -15305,21 +15302,17 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
   /* ---------- Desktop ---------- */
+  min-width: 20vw;
+  min-height: 20vw;
+  padding: 2.5rem;
+  backdrop-filter: blur(20px);
+  scroll-snap-align: start;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
 }
-@media (min-width: 576px) {
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
-    min-width: 20vw;
-    min-height: 20vw;
-    padding: 2.5rem;
-    backdrop-filter: blur(20px);
-    scroll-snap-align: start;
-    -webkit-transition: 0.7s all ease;
-    transition: 0.7s all ease;
-  }
-  body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel:hover {
-    -webkit-transition: 0.3s all ease;
-    transition: 0.3s all ease;
-  }
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel:hover {
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter {
   /* =====================================================
