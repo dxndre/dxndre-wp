@@ -14637,7 +14637,14 @@ body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter > .
   }
 }
 body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
-  width: 100vw;
+  width: 100%;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
+    width: 100vw;
+  }
 }
 @media (min-width: 768px) {
   body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
@@ -15126,17 +15133,30 @@ body.is-frontend.single-project #main .story-section .cs-chapter.viewport-active
           transform: none;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter h2, body.is-frontend.single-project #main .story-section .cs-chapter .h2 {
-  font-size: 36px;
+  font-size: 28px;
   margin-bottom: 16px;
 }
+@media (min-width: 768px) {
+  body.is-frontend.single-project #main .story-section .cs-chapter h2, body.is-frontend.single-project #main .story-section .cs-chapter .h2 {
+    font-size: 36px;
+  }
+}
 body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 28px;
   font-weight: 300;
   width: 100%;
   max-width: 768px;
-  margin-bottom: 4em;
+  margin-bottom: 2.5em;
 }
 @media (min-width: 768px) {
+  body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
+    margin-bottom: 4em;
+    font-size: 18px;
+    line-height: 32px;
+  }
+}
+@media (min-width: 992px) {
   body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
     font-size: 20px;
     width: 80%;
@@ -15144,7 +15164,6 @@ body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
 }
 body.is-frontend.single-project #main .story-section .cs-chapter > .wp-block-group__inner-container {
   max-width: 100%;
-  margin-inline: auto;
   padding-inline: 1.5rem;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;

@@ -514,7 +514,12 @@ body.is-frontend {
 						}
 
 						.cs-panel-track {
-							width: 100vw;
+							width: 100%;
+							transition: 0.3s all ease;
+
+							@include media-breakpoint-up(sm) {
+								width: 100vw;
+							}
 
 							@include media-breakpoint-up(md) {
 								width: calc(100vw - 200px);
@@ -971,18 +976,29 @@ body.is-frontend {
 					}
 
 					h2 {
-						font-size: 36px;
+						font-size: 28px;
 						margin-bottom: 16px;
+
+						@include media-breakpoint-up(md) {
+							font-size: 36px;
+						}
 					}
 
 					.subtitle {
-						font-size: 18px;
+						font-size: 16px;
+						line-height: 28px;
 						font-weight: 300;
 						width: 100%;
 						max-width: 768px;
-						margin-bottom: 4em;
+						margin-bottom: 2.5em;
 
 						@include media-breakpoint-up(md) {
+							margin-bottom: 4em;
+							font-size: 18px;
+							line-height: 32px;
+						}
+
+						@include media-breakpoint-up(lg) {
 							font-size: 20px;
 							width: 80%;
 						}
@@ -990,7 +1006,7 @@ body.is-frontend {
 
 					> .wp-block-group__inner-container {
 						max-width: 100%;
-						margin-inline: auto;
+						// margin-inline: auto;
 						padding-inline: $space-3;
 						transition: 0.7s all ease;
 					}
