@@ -14651,7 +14651,7 @@ body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs
 }
 @media (min-width: 768px) {
   body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs-panel-track {
-    width: calc(100vw - 200px);
+    width: calc(100vw - 100px);
   }
 }
 @media (min-width: 992px) {
@@ -14662,8 +14662,6 @@ body.is-frontend.single-project.is-in-story #main .story-section .cs-chapter .cs
 body.is-frontend.single-project.is-in-story #main .chapter-selector {
   opacity: 1;
   pointer-events: auto;
-  -webkit-transform: translateY(-50%) translateX(0);
-          transform: translateY(-50%) translateX(0);
 }
 body.is-frontend.single-project.client-journey-section::before {
   opacity: 0;
@@ -14812,13 +14810,18 @@ body.is-frontend.single-project #main .entry-header .project-services {
   z-index: 1;
 }
 body.is-frontend.single-project #main .entry-header .project-services li {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 4px 20px;
   border-radius: 40px;
+}
+@media (min-width: 768px) {
+  body.is-frontend.single-project #main .entry-header .project-services li {
+    font-size: 0.85rem;
+  }
 }
 body.is-frontend.single-project #main .entry-header p {
   color: white;
@@ -15314,6 +15317,9 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel:first-of-type {
+  padding-left: 28px;
+}
 body.is-frontend.single-project #main .story-section .cs-chapter {
   /* =====================================================
   STACK LIST
@@ -15334,7 +15340,7 @@ body.is-frontend.single-project #main .story-section .cs-chapter .stack-list {
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .stack-list li {
   list-style: none;
-  padding: 8px 20px;
+  padding: 4px 16px;
   border-radius: 50px;
   font-weight: 300;
   font-size: 0.75rem;
@@ -15344,6 +15350,11 @@ body.is-frontend.single-project #main .story-section .cs-chapter .stack-list li 
   border: 1px solid rgba(255, 255, 255, 0.15);
   text-align: center;
 }
+@media (min-width: 992px) {
+  body.is-frontend.single-project #main .story-section .cs-chapter .stack-list li {
+    padding: 8px 20px;
+  }
+}
 body.is-frontend.single-project #main {
   /* =========================================================
   CHAPTER SELECTOR
@@ -15352,9 +15363,7 @@ body.is-frontend.single-project #main {
 body.is-frontend.single-project #main .chapter-selector {
   position: fixed;
   bottom: 40px;
-  -webkit-transform: translateY(-50%) translateX(-8px);
-          transform: translateY(-50%) translateX(-8px);
-  z-index: 10;
+  z-index: 0;
   opacity: 0;
   pointer-events: none;
   left: 0;
@@ -15366,10 +15375,39 @@ body.is-frontend.single-project #main .chapter-selector {
   display: -ms-flexbox;
   display: flex;
   text-align: center;
+  bottom: 0;
+  height: 75px;
   -webkit-transition: opacity 0.4s ease, -webkit-transform 0.4s ease;
   transition: opacity 0.4s ease, -webkit-transform 0.4s ease;
   transition: opacity 0.4s ease, transform 0.4s ease;
   transition: opacity 0.4s ease, transform 0.4s ease, -webkit-transform 0.4s ease;
+}
+@media (min-width: 992px) {
+  body.is-frontend.single-project #main .chapter-selector {
+    bottom: auto;
+    -webkit-transform: translateY(-50%) translateX(-8px);
+            transform: translateY(-50%) translateX(-8px);
+  }
+}
+body.is-frontend.single-project #main .chapter-selector::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(#000000));
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0), #000000);
+  opacity: 0.75;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+@media (min-width: 992px) {
+  body.is-frontend.single-project #main .chapter-selector::after {
+    opacity: 0;
+  }
 }
 body.is-frontend.single-project #main .chapter-selector ul {
   list-style: none;
@@ -15402,12 +15440,17 @@ body.is-frontend.single-project #main .chapter-selector li {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  gap: 1.5em;
+  gap: 0;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
   -webkit-transition: opacity 0.3s ease;
   transition: opacity 0.3s ease;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-project #main .chapter-selector li {
+    gap: 1.5em;
+  }
 }
 body.is-frontend.single-project #main .chapter-selector li span {
   font-size: 0.75rem;
@@ -15535,13 +15578,18 @@ body.is-frontend.single-service #main .entry-header .project-services {
   z-index: 1;
 }
 body.is-frontend.single-service #main .entry-header .project-services li {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 4px 20px;
   border-radius: 40px;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-service #main .entry-header .project-services li {
+    font-size: 0.85rem;
+  }
 }
 body.is-frontend.single-service #main .entry-header p {
   color: white;
@@ -19759,6 +19807,8 @@ footer.site-footer {
   padding: 5rem 2rem 2rem;
   font-size: 0.875rem;
   line-height: 1.6;
+  z-index: 2;
+  position: relative;
 }
 footer.site-footer a {
   color: inherit;
