@@ -1234,73 +1234,71 @@ import * as bootstrap from 'bootstrap';
 		// Filtering for the Projects Page
 
 		(() => {
-			const archive = document.querySelector('[data-projects-archive]');
+			const archive   = document.querySelector('[data-projects-archive]');
 			if (!archive) return;
 
-			const cards = [...archive.querySelectorAll('.project-card')];
-			const filterButtons = archive.querySelectorAll('.project-filters button');
-			const searchInput = archive.querySelector('[data-project-search]');
+			const cards     = [...archive.querySelectorAll('.project-card')];
+			const search    = archive.querySelector('[data-project-search]');
+			const buttons   = [...archive.querySelectorAll('.project-filter-buttons button')];
+			const title     = archive.querySelector('[data-projects-state-title]');
+			const empty     = archive.querySelector('[data-projects-empty]');
 
-			let activeFilter = 'all';
+			let activeFilter  = 'all';
 			let activeContext = null;
-			let searchTerm = '';
 
-			const applyFilters = () => {
+			const update = () => {
+				let visibleCount = 0;
+				const query = search.value.toLowerCase();
+
 				cards.forEach(card => {
-					let visible = true;
+					const matchesSearch =
+						!query || card.dataset.search.includes(query);
 
-					// Type filter
-					if (activeFilter !== 'all') {
-						visible = card.dataset.type.includes(activeFilter);
-					}
+					const matchesType =
+						activeFilter === 'all' ||
+						card.dataset.type.includes(activeFilter);
 
-					// Context filter
-					if (visible && activeContext) {
-						visible = card.dataset.context === activeContext;
-					}
+					const matchesContext =
+						!activeContext ||
+						card.dataset.context === activeContext;
 
-					// Search
-					if (visible && searchTerm) {
-						visible = card.dataset.search.includes(searchTerm);
-					}
+					const visible = matchesSearch && matchesType && matchesContext;
+					card.hidden = !visible;
 
-					card.style.display = visible ? '' : 'none';
+					if (visible) visibleCount++;
 				});
+
+				// Update title
+				if (activeFilter !== 'all') {
+					title.textContent = `Showing ${activeFilter.replace('-', ' ')} Projects`;
+				} else if (activeContext) {
+					title.textContent = `Showing ${activeContext} Projects`;
+				} else {
+					title.textContent = 'Showing All Projects';
+				}
+
+				// Empty state
+				empty.hidden = visibleCount !== 0;
 			};
 
 			// Filter buttons
-			filterButtons.forEach(btn => {
+			buttons.forEach(btn => {
 				btn.addEventListener('click', () => {
-					filterButtons.forEach(b => b.classList.remove('is-active'));
+					buttons.forEach(b => b.classList.remove('is-active'));
 					btn.classList.add('is-active');
 
-					activeFilter = btn.dataset.filter || 'all';
+					activeFilter  = btn.dataset.filter || 'all';
 					activeContext = btn.dataset.context || null;
 
-					applyFilters();
+					update();
 				});
 			});
 
-			// Search input
-			if (searchInput) {
-				searchInput.addEventListener('input', e => {
-					searchTerm = e.target.value.trim().toLowerCase();
-					applyFilters();
-				});
-			}
+			// Search
+			search.addEventListener('input', update);
+
+			update();
 		})();
-
-
-		// Filtering Buttons 'Active' classes
-		
-		const filterButtons = document.querySelectorAll('.project-filter-buttons button');
-
-		filterButtons.forEach(button => {
-			button.addEventListener('click', () => {
-				filterButtons.forEach(btn => btn.classList.remove('is-active'));
-				button.classList.add('is-active');
-			});
-		});
 	})
 ();
 
