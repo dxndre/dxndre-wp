@@ -3658,7 +3658,7 @@ img {
 
 		&.portfolio {
 			&.neg-margin {
-				margin-top: -30vh;
+				margin-top: -25vh;
 
 				ul {
 					gap: 5em 1em;
@@ -3760,15 +3760,53 @@ img {
 			}	
 
 			.portfolio-archive {
+				@keyframes underline-grow {
+					from {
+						transform: scaleX(0);
+					}
+					to {
+						transform: scaleX(1);
+					}
+				}
+
 				.projects-state-title {
 					color: white;
+					margin: 1em 0;
+					
+					.label {
+						position: relative;
+						display: inline-block;
+
+						&::after {
+							content: '';
+							position: absolute;
+							left: 0;
+							bottom: -6px;
+							width: 100%;
+							height: 2px;
+							background: currentColor;
+
+							transform-origin: left;
+							transform: scaleX(0);
+						}
+
+						&.is-animated::after {
+							animation: underline-grow 0.45s cubic-bezier(.4,0,.2,1) forwards;
+						}
+					}
+				}
+
+				.projects-empty-state {
+					color: white;
+					border: 1px solid #ffffff30;
+					padding: 2em;
 					margin-top: 2em;
+					width: 100%;
+					max-width: 576px;
 				}
 
 				.filter-inputs {
-					// background-color: rgba(0, 0, 0, 0.75);
-					background-color: black;
-					padding: 2em;
+					padding: 2em 0;
 					display: flex;
 					gap: 2em;
 					flex-direction: row;
@@ -3781,18 +3819,36 @@ img {
 							height: 60px;
 							width: 100%;
 							border: none;
-							border-bottom: 1px solid white;
+							border-bottom: 1px solid rgba(255,255,255,0.5);
 							color: white;
 							background: transparent;
 							font-size: 18px;
 							font-weight: lighter;
 							width: 300px;
+							transition: 0.7s all ease;
+
+							@include media-breakpoint-up(xxl) {
+								width: 400px;
+								transition: 0.3s all ease;
+							}
+
+							&::placeholder {
+								color: rgba(255,255,255,0.5);
+								transition: 0.3s all ease;
+							}
+
+							&:hover {
+								border-bottom: 1px solid rgba(255,255,255,0.75);
+								transition: 0.3s all ease;
+							}
 
 							&:focus,
 							&:focus-within,
 							&:focus-visible {
 								outline: none;
 								box-shadow: none;
+								border-bottom: 1px solid white;
+								transition: 0.3s all ease;
 							}
 						}
 					}
@@ -3817,6 +3873,12 @@ img {
 								background-color: rgba(255,255,255,0.25);
 								transform: scale(1.05);
 								transition: 0.3s all ease;
+							}
+
+							&:active {
+								background-color: $dxndre-red;
+								border-color: $dxndre-red;
+								transition: 0.2s all ease;
 							}
 
 							&.is-active {
@@ -3854,12 +3916,12 @@ img {
 							position: relative;
 							display: block;
 							overflow: hidden;
-							aspect-ratio: 16 / 10; // optional but recommended
+							aspect-ratio: 16 / 10; 
 
 							img {
 								width: 100%;
 								height: 100%;
-								max-height: 325px;
+								// max-height: 325px;
 								object-fit: cover;
 								display: block;
 								transition:
@@ -3875,7 +3937,6 @@ img {
 								pointer-events: none;
 							}
 
-							// Hover + keyboard focus
 							&:hover,
 							&:focus-visible {
 								.project-image--default {
@@ -3891,7 +3952,7 @@ img {
 						}
 
 						.project-title {
-							margin-top: 1em;
+							margin-top: 8px;
 
 							a {
 								color: white;
@@ -3903,9 +3964,10 @@ img {
 							gap: 8px;
 							text-transform: uppercase;
 							flex-direction: row;
-							margin-top: 12px;
+							margin-top: 2em;
 							font-size: 12px;
 							letter-spacing: 1px;
+							color: rgba(255,255,255,0.75);
 						}
 
 						.project-cta {
@@ -3918,6 +3980,28 @@ img {
 							justify-content: center;
 							margin-top: 1.5em;
 							transition: 0.7s all ease;
+
+							&:hover {
+								background-color: $dxndre-red;
+								color: white;
+								transition: 0.3s all ease;
+							}
+						}
+
+						.project-types {
+							display: flex;
+							padding: 0;
+							text-align: center;
+							text-transform: uppercase;
+							letter-spacing: 1px;
+							list-style: none;
+
+							li {
+								font-size: 12px;
+								border: 1px solid rgba(255,255,255,0.25);
+								padding: 4px 12px;
+								border-radius: 25px;
+							}
 						}
 					}
 				}

@@ -1117,8 +1117,27 @@ __webpack_require__.r(__webpack_exports__);
     var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
     var title = archive.querySelector('[data-projects-state-title]');
     var empty = archive.querySelector('[data-projects-empty]');
+    var FILTER_LABELS = {
+      all: 'All',
+      design: 'Design',
+      development: 'WordPress',
+      static: 'Static',
+      shopify: 'Shopify',
+      freelance: 'Freelance',
+      commercial: 'Commercial'
+    };
     var activeFilter = 'all';
     var activeContext = null;
+    var updateTitle = function updateTitle(key) {
+      var labelText = FILTER_LABELS[key] || 'All';
+
+      // Reset animation
+      title.classList.remove('is-animated');
+      void title.offsetWidth; // force reflow
+
+      title.textContent = labelText;
+      title.classList.add('is-animated');
+    };
     var update = function update() {
       var visibleCount = 0;
       var query = search.value.toLowerCase();
@@ -1131,13 +1150,13 @@ __webpack_require__.r(__webpack_exports__);
         if (visible) visibleCount++;
       });
 
-      // Update title
+      // Update title (priority: type → context → all)
       if (activeFilter !== 'all') {
-        title.textContent = "Showing ".concat(activeFilter.replace('-', ' '), " Projects");
+        updateTitle(activeFilter);
       } else if (activeContext) {
-        title.textContent = "Showing ".concat(activeContext, " Projects");
+        updateTitle(activeContext);
       } else {
-        title.textContent = 'Showing All Projects';
+        updateTitle('all');
       }
 
       // Empty state

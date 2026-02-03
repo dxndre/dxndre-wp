@@ -1243,8 +1243,29 @@ import * as bootstrap from 'bootstrap';
 			const title     = archive.querySelector('[data-projects-state-title]');
 			const empty     = archive.querySelector('[data-projects-empty]');
 
+			const FILTER_LABELS = {
+				all: 'All',
+				design: 'Design',
+				development: 'WordPress',
+				static: 'Static',
+				shopify: 'Shopify',
+				freelance: 'Freelance',
+				commercial: 'Commercial'
+			};
+
 			let activeFilter  = 'all';
 			let activeContext = null;
+
+			const updateTitle = (key) => {
+				const labelText = FILTER_LABELS[key] || 'All';
+
+				// Reset animation
+				title.classList.remove('is-animated');
+				void title.offsetWidth; // force reflow
+
+				title.textContent = labelText;
+				title.classList.add('is-animated');
+			};
 
 			const update = () => {
 				let visibleCount = 0;
@@ -1268,13 +1289,13 @@ import * as bootstrap from 'bootstrap';
 					if (visible) visibleCount++;
 				});
 
-				// Update title
+				// Update title (priority: type → context → all)
 				if (activeFilter !== 'all') {
-					title.textContent = `Showing ${activeFilter.replace('-', ' ')} Projects`;
+					updateTitle(activeFilter);
 				} else if (activeContext) {
-					title.textContent = `Showing ${activeContext} Projects`;
+					updateTitle(activeContext);
 				} else {
-					title.textContent = 'Showing All Projects';
+					updateTitle('all');
 				}
 
 				// Empty state

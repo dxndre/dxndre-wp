@@ -18039,7 +18039,7 @@ img {
   opacity: 0.6;
 }
 #main section.portfolio.neg-margin {
-  margin-top: -30vh;
+  margin-top: -25vh;
 }
 #main section.portfolio.neg-margin ul {
   gap: 5em 1em;
@@ -18133,13 +18133,61 @@ img {
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
+@-webkit-keyframes underline-grow {
+  from {
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0);
+  }
+  to {
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+  }
+}
+@keyframes underline-grow {
+  from {
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0);
+  }
+  to {
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+  }
+}
 #main section.portfolio .portfolio-archive .projects-state-title {
   color: white;
+  margin: 1em 0;
+}
+#main section.portfolio .portfolio-archive .projects-state-title .label {
+  position: relative;
+  display: inline-block;
+}
+#main section.portfolio .portfolio-archive .projects-state-title .label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+}
+#main section.portfolio .portfolio-archive .projects-state-title .label.is-animated::after {
+  -webkit-animation: underline-grow 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: underline-grow 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+#main section.portfolio .portfolio-archive .projects-empty-state {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1882352941);
+  padding: 2em;
   margin-top: 2em;
+  width: 100%;
+  max-width: 576px;
 }
 #main section.portfolio .portfolio-archive .filter-inputs {
-  background-color: black;
-  padding: 2em;
+  padding: 2em 0;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -18161,17 +18209,59 @@ img {
   height: 60px;
   width: 100%;
   border: none;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   color: white;
   background: transparent;
   font-size: 18px;
   font-weight: lighter;
   width: 300px;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+@media (min-width: 1400px) {
+  #main section.portfolio .portfolio-archive .filter-inputs .project-search input {
+    width: 400px;
+    -webkit-transition: 0.3s all ease;
+    transition: 0.3s all ease;
+  }
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  -moz-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  -ms-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  -ms-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input:hover {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-search input:focus, #main section.portfolio .portfolio-archive .filter-inputs .project-search input:focus-within, #main section.portfolio .portfolio-archive .filter-inputs .project-search input:focus-visible {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
+  border-bottom: 1px solid white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
   display: -webkit-box;
@@ -18198,6 +18288,12 @@ img {
           transform: scale(1.05);
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button:active {
+  background-color: #C42020;
+  border-color: #C42020;
+  -webkit-transition: 0.2s all ease;
+  transition: 0.2s all ease;
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button.is-active {
   background-color: white;
@@ -18244,7 +18340,6 @@ img {
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-thumb img {
   width: 100%;
   height: 100%;
-  max-height: 325px;
   -o-object-fit: cover;
      object-fit: cover;
   display: block;
@@ -18272,7 +18367,7 @@ img {
           transform: scale(1);
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-title {
-  margin-top: 1em;
+  margin-top: 8px;
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-title a {
   color: white;
@@ -18287,9 +18382,10 @@ img {
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  margin-top: 12px;
+  margin-top: 2em;
   font-size: 12px;
   letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.75);
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-cta {
   width: 250px;
@@ -18308,6 +18404,28 @@ img {
   margin-top: 1.5em;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-cta:hover {
+  background-color: #C42020;
+  color: white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-types {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  list-style: none;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-types li {
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 25px;
 }
 #main section.what-i-do .section-content {
   width: 100%;

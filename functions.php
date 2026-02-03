@@ -1423,13 +1423,13 @@ function dx_projects_archive_shortcode($atts) {
 	</div>
 
 	<!-- Dynamic state title -->
-	<h2 class="projects-state-title" data-projects-state-title>
-		Showing All Projects
+	<h2 class="projects-state-title">
+		Showing <span data-projects-state-title class="label">All</span> Projects
 	</h2>
 
 	<!-- Empty state -->
 	<div class="projects-empty-state" hidden data-projects-empty>
-		<h3>No Results Found</h3>
+		<h3>No Projects Found</h3>
 		<span>Try adjusting your filters or search terms.</span>
 	</div>
 
@@ -1508,9 +1508,11 @@ function dx_projects_archive_shortcode($atts) {
 
 			<div class="project-meta">
 				<span class="project-year"><?= esc_html($year); ?></span>
+				<span class="meta-separator">•</span>
 				<span class="project-context"><?= esc_html($context_label); ?></span>
 
 				<?php if ($site_status) : ?>
+					<span class="meta-separator">•</span>
 					<span class="site-status site-status--<?= esc_attr($site_status); ?>">
 						<?= esc_html(ucwords(str_replace('_', ' ', $site_status))); ?>
 					</span>
@@ -1522,6 +1524,8 @@ function dx_projects_archive_shortcode($atts) {
 					<?= esc_html($display_title); ?>
 				</a>
 			</h3>
+
+			<p class="excerpt"><?php the_excerpt(); ?></p>
 
 			<?php if (!empty($types)) : ?>
 				<ul class="project-types">
