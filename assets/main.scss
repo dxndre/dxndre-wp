@@ -3791,6 +3791,12 @@ img {
 			}	
 
 			.portfolio-archive {
+				padding: 0 1em;
+				
+				@include media-breakpoint-up(sm) {
+					padding: 0;
+				}
+
 				@keyframes underline-grow {
 					from {
 						transform: scaleX(0);
@@ -3854,6 +3860,8 @@ img {
 					}
 
 					.project-search {
+						width: 100%;
+
 						input {
 							height: 60px;
 							width: 100%;
@@ -3863,8 +3871,13 @@ img {
 							background: transparent;
 							font-size: 18px;
 							font-weight: lighter;
-							width: 300px;
+							width: 100%;
 							transition: 0.7s all ease;
+
+							@include media-breakpoint-up(xl) {
+								width: 300px;
+								transition: 0.3s all ease;
+							}
 
 							@include media-breakpoint-up(xxl) {
 								width: 400px;
@@ -3899,13 +3912,17 @@ img {
 						justify-content: center;
 
 						@include media-breakpoint-up(md) {
-							flex-wrap: nowrap;
-							justify-content: initial;
+							// flex-wrap: nowrap;
 							gap: 10px;
 						}
 
 						@include media-breakpoint-up(lg) {
 							gap: 12px;
+						}
+
+						@include media-breakpoint-up(xl) {
+							justify-content: initial;
+							flex-wrap: nowrap;
 						}
 						
 						button {

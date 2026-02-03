@@ -18135,6 +18135,14 @@ img {
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
+#main section.portfolio .portfolio-archive {
+  padding: 0 1em;
+}
+@media (min-width: 576px) {
+  #main section.portfolio .portfolio-archive {
+    padding: 0;
+  }
+}
 @-webkit-keyframes underline-grow {
   from {
     -webkit-transform: scaleX(0);
@@ -18218,6 +18226,9 @@ img {
             flex-direction: row;
   }
 }
+#main section.portfolio .portfolio-archive .filter-inputs .project-search {
+  width: 100%;
+}
 #main section.portfolio .portfolio-archive .filter-inputs .project-search input {
   height: 60px;
   width: 100%;
@@ -18227,9 +18238,16 @@ img {
   background: transparent;
   font-size: 18px;
   font-weight: lighter;
-  width: 300px;
+  width: 100%;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
+}
+@media (min-width: 1200px) {
+  #main section.portfolio .portfolio-archive .filter-inputs .project-search input {
+    width: 300px;
+    -webkit-transition: 0.3s all ease;
+    transition: 0.3s all ease;
+  }
 }
 @media (min-width: 1400px) {
   #main section.portfolio .portfolio-archive .filter-inputs .project-search input {
@@ -18289,17 +18307,21 @@ img {
 }
 @media (min-width: 768px) {
   #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
-    -ms-flex-wrap: nowrap;
-        flex-wrap: nowrap;
-    -webkit-box-pack: initial;
-        -ms-flex-pack: initial;
-            justify-content: initial;
     gap: 10px;
   }
 }
 @media (min-width: 992px) {
   #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
     gap: 12px;
+  }
+}
+@media (min-width: 1200px) {
+  #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
+    -webkit-box-pack: initial;
+        -ms-flex-pack: initial;
+            justify-content: initial;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
   }
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button {
