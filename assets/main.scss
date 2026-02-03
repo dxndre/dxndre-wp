@@ -489,6 +489,37 @@ body.is-frontend {
 		}
 	}
 
+	&.page-portfolio {
+		#main {
+			.hero-background {
+				.section-content {
+					.wp-block-group__inner-container {
+						.text-side {
+							flex-basis: 100% !important;
+
+							@include media-breakpoint-up(md) {
+								flex-basis: 80% !important;
+							}
+
+							@include media-breakpoint-up(lg) {
+								flex-basis: 66% !important;
+							}
+
+							@include media-breakpoint-up(xl) {
+								flex-basis: 60% !important;
+							}
+
+							@include media-breakpoint-up(xxl) {
+								flex-basis: 50% !important;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
 	&.single-project {
 		// background: #3b00ff;  /* fallback for old browsers */
 		// background: linear-gradient(137deg, #3b00ff, #993f1e);
@@ -3772,7 +3803,7 @@ img {
 				.projects-state-title {
 					color: white;
 					margin: 1em 0;
-					
+
 					.label {
 						position: relative;
 						display: inline-block;
@@ -3803,16 +3834,24 @@ img {
 					margin-top: 2em;
 					width: 100%;
 					max-width: 576px;
+
+					span {
+						font-weight: lighter;
+					}
 				}
 
 				.filter-inputs {
 					padding: 2em 0;
 					display: flex;
 					gap: 2em;
-					flex-direction: row;
+					flex-direction: column;
 					align-items: center;
 					justify-content: space-between;
 					box-shadow: 0px 5px 50px -20px black;
+
+					@include media-breakpoint-up(lg) {
+						flex-direction: row;
+					}
 
 					.project-search {
 						input {
@@ -3855,7 +3894,19 @@ img {
 
 					.project-filter-buttons {
 						display: flex;
-						gap: 12px;
+						flex-wrap: wrap;
+						gap: 8px;
+						justify-content: center;
+
+						@include media-breakpoint-up(md) {
+							flex-wrap: nowrap;
+							justify-content: initial;
+							gap: 10px;
+						}
+
+						@include media-breakpoint-up(lg) {
+							gap: 12px;
+						}
 						
 						button {
 							color: white;
@@ -3896,22 +3947,28 @@ img {
 					list-style: none;
 					display: grid;
 					grid-template-columns: 1fr;
-					gap: 2rem;
+					gap: 4rem 2rem;
 					margin-top: 2em;
 
 					@include media-breakpoint-up(md) {
 						grid-template-columns: repeat(2, 1fr);
 					}
 
-					@include media-breakpoint-up(lg) {
+					@include media-breakpoint-up(xl) {
 						grid-template-columns: repeat(3, 1fr);
 					}
 
-					@media screen and (min-width: 2160px) {
-						grid-template-columns: repeat(4, 1fr);
-					}
+					// @media screen and (min-width: 2160px) {
+					// 	grid-template-columns: repeat(4, 1fr);
+					// }
 
 					.project-card {
+						width: 100%;
+						min-width: 0;   // CRITICAL for grid layouts
+						display: flex;
+						flex-direction: column;
+						height: 100%;
+
 						.project-thumb {
 							position: relative;
 							display: block;
@@ -3971,14 +4028,16 @@ img {
 						}
 
 						.project-cta {
-							width: 250px;
+							width: 100%;
+							max-width: 250px;
 							background: white;
 							color: #131313;
 							height: 60px;
 							display: flex;
 							align-items: center;
 							justify-content: center;
-							margin-top: 1.5em;
+							// margin-top: 1.5em;
+							margin-top: auto;
 							transition: 0.7s all ease;
 
 							&:hover {
@@ -3995,6 +4054,9 @@ img {
 							text-transform: uppercase;
 							letter-spacing: 1px;
 							list-style: none;
+							flex-wrap: wrap;
+    						gap: 8px;
+							margin-bottom: 1.5em;
 
 							li {
 								font-size: 12px;

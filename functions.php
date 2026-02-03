@@ -1404,6 +1404,7 @@ function dx_projects_archive_shortcode($atts) {
 	<div class="filter-inputs">
 		<div class="project-search">
 			<input
+				id="search-box"
 				type="search"
 				placeholder="Search projects…"
 				aria-label="Search projects"

@@ -14616,6 +14616,34 @@ body.is-frontend.page-template-page-homepage #recruiterModal {
             transform: none !important;
   }
 }
+body.is-frontend.page-portfolio #main .hero-background .section-content .wp-block-group__inner-container .text-side {
+  -ms-flex-preferred-size: 100% !important;
+      flex-basis: 100% !important;
+}
+@media (min-width: 768px) {
+  body.is-frontend.page-portfolio #main .hero-background .section-content .wp-block-group__inner-container .text-side {
+    -ms-flex-preferred-size: 80% !important;
+        flex-basis: 80% !important;
+  }
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-portfolio #main .hero-background .section-content .wp-block-group__inner-container .text-side {
+    -ms-flex-preferred-size: 66% !important;
+        flex-basis: 66% !important;
+  }
+}
+@media (min-width: 1200px) {
+  body.is-frontend.page-portfolio #main .hero-background .section-content .wp-block-group__inner-container .text-side {
+    -ms-flex-preferred-size: 60% !important;
+        flex-basis: 60% !important;
+  }
+}
+@media (min-width: 1400px) {
+  body.is-frontend.page-portfolio #main .hero-background .section-content .wp-block-group__inner-container .text-side {
+    -ms-flex-preferred-size: 50% !important;
+        flex-basis: 50% !important;
+  }
+}
 body.is-frontend.single-project {
   background-size: cover;
   background-attachment: fixed;
@@ -18186,16 +18214,19 @@ img {
   width: 100%;
   max-width: 576px;
 }
+#main section.portfolio .portfolio-archive .projects-empty-state span {
+  font-weight: lighter;
+}
 #main section.portfolio .portfolio-archive .filter-inputs {
   padding: 2em 0;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   gap: 2em;
-  -webkit-box-orient: horizontal;
+  -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -18204,6 +18235,14 @@ img {
           justify-content: space-between;
   -webkit-box-shadow: 0px 5px 50px -20px black;
           box-shadow: 0px 5px 50px -20px black;
+}
+@media (min-width: 992px) {
+  #main section.portfolio .portfolio-archive .filter-inputs {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-search input {
   height: 60px;
@@ -18267,7 +18306,27 @@ img {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  gap: 12px;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 8px;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+@media (min-width: 768px) {
+  #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-box-pack: initial;
+        -ms-flex-pack: initial;
+            justify-content: initial;
+    gap: 10px;
+  }
+}
+@media (min-width: 992px) {
+  #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
+    gap: 12px;
+  }
 }
 #main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button {
   color: white;
@@ -18310,7 +18369,7 @@ img {
   display: grid;
   -ms-grid-columns: 1fr;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 4rem 2rem;
   margin-top: 2em;
 }
 @media (min-width: 768px) {
@@ -18319,17 +18378,23 @@ img {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   #main section.portfolio .portfolio-archive .projects-grid {
     -ms-grid-columns: (1fr)[3];
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media screen and (min-width: 2160px) {
-  #main section.portfolio .portfolio-archive .projects-grid {
-    -ms-grid-columns: (1fr)[4];
-    grid-template-columns: repeat(4, 1fr);
-  }
+#main section.portfolio .portfolio-archive .projects-grid .project-card {
+  width: 100%;
+  min-width: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 100%;
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-thumb {
   position: relative;
@@ -18388,7 +18453,8 @@ img {
   color: rgba(255, 255, 255, 0.75);
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-cta {
-  width: 250px;
+  width: 100%;
+  max-width: 250px;
   background: white;
   color: #131313;
   height: 60px;
@@ -18401,7 +18467,7 @@ img {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  margin-top: 1.5em;
+  margin-top: auto;
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
@@ -18420,6 +18486,10 @@ img {
   text-transform: uppercase;
   letter-spacing: 1px;
   list-style: none;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5em;
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-types li {
   font-size: 12px;
