@@ -1,3 +1,4 @@
+node_modules/
 node_modules/.package-lock.json
 node_modules/.bin/acorn
 node_modules/.bin/ansi-html
@@ -20066,3 +20067,7 @@ node_modules/.cache/babel-loader/ed6295bdcdd11a7554eb46a754873871a935e5b94805ea8
 node_modules/.cache/babel-loader/f669be796475644294117cc3760fa5456c21900f1573b70389afea24f3fb9dbc.json.gz
 node_modules/.cache/babel-loader/fb86577af95b8329c14744be1e3bde9db7157fecc42e208bd74be19b1a3d9180.json.gz
 node_modules/.cache/babel-loader/fe543d68e41b98d385a4a9ac43761cdf0a44aeb6c3b4c27c5f58dcdcdba26a70.json.gz
+node_modules/.cache/babel-loader/942ff81146f1bbe9f72af4f1a2939f5b55113112787edb8308ae6d3cccf5b66f.json.gz
+node_modules/.cache/babel-loader/42982eac24d710f4f9f78b12b183c5aeb6e1df26e11494cf601eb5db66fef0e1.json.gz
+node_modules/.cache/babel-loader/a8a4c7aae6124d2f3f27c594b7b6e28adbf391d73d9ed222df01c4d6afa4489d.json.gz
+node_modules/.cache/babel-loader/b860707df78d5b1a3b317e3ca588a7fe311cd5753cb7334a958663c21021cb8e.json.gz

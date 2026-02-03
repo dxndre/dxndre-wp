@@ -1379,3 +1379,107 @@ add_filter('acf/settings/load_json', function ($paths) {
     $paths[] = get_stylesheet_directory() . '/acf-json';
     return $paths;
 });
+
+// Projects Listing (and filktering ) for the Portfolio page
+
+add_shortcode('projects_archive', 'dx_projects_archive_shortcode');
+
+function dx_projects_archive_shortcode($atts) {
+	ob_start();
+
+	$args = [
+		'post_type'      => 'project',
+		'posts_per_page' => -1,
+	];
+
+	$query = new WP_Query($args);
+
+	if (!$query->have_posts()) {
+		return '<p>No projects found.</p>';
+	}
+	?>
+
+	<section class="portfolio-archive" data-projects-archive>
+
+		<div class="filter-inputs">
+			<div class="project-search">
+				<input
+					type="search"
+					placeholder="Search projects…"
+					aria-label="Search projects"
+					data-project-search
+				/>
+			</div>
+
+			<div class="project-filter-buttons">
+				<button data-filter="all" class="is-active">All</button>
+				<button data-filter="Design">Design</button>
+				<button data-filter="WordPress">WordPress</button>
+				<button data-filter="Shopify">Shopify</button>
+				<button data-context="freelance">Freelance</button>
+				<button data-context="commercial">Commercial</button>
+			</div>
+		</div>
+
+		<ul class="projects-grid">
+			<?php while ($query->have_posts()) : $query->the_post();
+
+				$types    = get_field('project_types') ?: [];
+				$year     = get_field('project_year');
+				$context  = get_field('project_context');
+				$employer = get_field('project_employer');
+
+				$context_label = $context === 'commercial' && $employer
+					? 'Commercial – ' . esc_html($employer)
+					: ucfirst($context);
+			?>
+				<li
+					class="project-card"
+					data-type="<?= esc_attr(implode(' ', $types)); ?>"
+					data-year="<?= esc_attr($year); ?>"
+					data-context="<?= esc_attr($context); ?>"
+					data-search="<?= esc_attr(
+						strtolower(
+							get_the_title() . ' ' .
+							get_the_excerpt() . ' ' .
+							implode(' ', $types) . ' ' .
+							$context_label . ' ' .
+							$year
+						)
+					); ?>"
+				>
+
+					<a href="<?php the_permalink(); ?>" class="project-thumb">
+						<?php the_post_thumbnail('large'); ?>
+					</a>
+
+					<div class="project-meta">
+						<span class="project-year"><?= esc_html($year); ?></span>
+						<span class="project-context"><?= esc_html($context_label); ?></span>
+					</div>
+
+					<h3 class="project-title">
+						<a href="<?php the_permalink(); ?>">
+							<?php the_title(); ?>
+						</a>
+					</h3>
+
+					<ul class="project-types">
+						<?php foreach ($types as $type) : ?>
+							<li><?= esc_html($type); ?></li>
+						<?php endforeach; ?>
+					</ul>
+
+					<a href="<?php the_permalink(); ?>" class="project-cta">
+						View Case Study →
+					</a>
+
+				</li>
+			<?php endwhile; wp_reset_postdata(); ?>
+		</ul>
+
+	</section>
+
+	<?php
+	return ob_get_clean();
+}

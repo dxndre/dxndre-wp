@@ -1230,6 +1230,77 @@ import * as bootstrap from 'bootstrap';
 			};
 
 		})();
+
+		// Filtering for the Projects Page
+
+		(() => {
+			const archive = document.querySelector('[data-projects-archive]');
+			if (!archive) return;
+
+			const cards = [...archive.querySelectorAll('.project-card')];
+			const filterButtons = archive.querySelectorAll('.project-filters button');
+			const searchInput = archive.querySelector('[data-project-search]');
+
+			let activeFilter = 'all';
+			let activeContext = null;
+			let searchTerm = '';
+
+			const applyFilters = () => {
+				cards.forEach(card => {
+					let visible = true;
+
+					// Type filter
+					if (activeFilter !== 'all') {
+						visible = card.dataset.type.includes(activeFilter);
+					}
+
+					// Context filter
+					if (visible && activeContext) {
+						visible = card.dataset.context === activeContext;
+					}
+
+					// Search
+					if (visible && searchTerm) {
+						visible = card.dataset.search.includes(searchTerm);
+					}
+
+					card.style.display = visible ? '' : 'none';
+				});
+			};
+
+			// Filter buttons
+			filterButtons.forEach(btn => {
+				btn.addEventListener('click', () => {
+					filterButtons.forEach(b => b.classList.remove('is-active'));
+					btn.classList.add('is-active');
+
+					activeFilter = btn.dataset.filter || 'all';
+					activeContext = btn.dataset.context || null;
+
+					applyFilters();
+				});
+			});
+
+			// Search input
+			if (searchInput) {
+				searchInput.addEventListener('input', e => {
+					searchTerm = e.target.value.trim().toLowerCase();
+					applyFilters();
+				});
+			}
+		})();
+
+
+		// Filtering Buttons 'Active' classes
+		
+		const filterButtons = document.querySelectorAll('.project-filter-buttons button');
+
+		filterButtons.forEach(button => {
+			button.addEventListener('click', () => {
+				filterButtons.forEach(btn => btn.classList.remove('is-active'));
+				button.classList.add('is-active');
+			});
+		});
 	})
 ();
 

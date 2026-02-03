@@ -1106,6 +1106,73 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   })();
+
+  // Filtering for the Projects Page
+
+  (function () {
+    var archive = document.querySelector('[data-projects-archive]');
+    if (!archive) return;
+    var cards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.project-card'));
+    var filterButtons = archive.querySelectorAll('.project-filters button');
+    var searchInput = archive.querySelector('[data-project-search]');
+    var activeFilter = 'all';
+    var activeContext = null;
+    var searchTerm = '';
+    var applyFilters = function applyFilters() {
+      cards.forEach(function (card) {
+        var visible = true;
+
+        // Type filter
+        if (activeFilter !== 'all') {
+          visible = card.dataset.type.includes(activeFilter);
+        }
+
+        // Context filter
+        if (visible && activeContext) {
+          visible = card.dataset.context === activeContext;
+        }
+
+        // Search
+        if (visible && searchTerm) {
+          visible = card.dataset.search.includes(searchTerm);
+        }
+        card.style.display = visible ? '' : 'none';
+      });
+    };
+
+    // Filter buttons
+    filterButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        filterButtons.forEach(function (b) {
+          return b.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        activeFilter = btn.dataset.filter || 'all';
+        activeContext = btn.dataset.context || null;
+        applyFilters();
+      });
+    });
+
+    // Search input
+    if (searchInput) {
+      searchInput.addEventListener('input', function (e) {
+        searchTerm = e.target.value.trim().toLowerCase();
+        applyFilters();
+      });
+    }
+  })();
+
+  // Filtering Buttons 'Active' classes
+
+  var filterButtons = document.querySelectorAll('.project-filter-buttons button');
+  filterButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      filterButtons.forEach(function (btn) {
+        return btn.classList.remove('is-active');
+      });
+      button.classList.add('is-active');
+    });
+  });
 })();
 
 /***/ }),

@@ -3757,6 +3757,116 @@ img {
 						
 					}
 				}
+			}	
+
+			.portfolio-archive {
+				.filter-inputs {
+					// background-color: rgba(0, 0, 0, 0.75);
+					background-color: black;
+					padding: 2em;
+					display: flex;
+					gap: 2em;
+					flex-direction: row;
+					align-items: center;
+					justify-content: space-between;
+					box-shadow: 0px 5px 50px -20px black;
+
+					.project-search {
+						input {
+							height: 60px;
+							width: 100%;
+							border: none;
+							border-bottom: 1px solid white;
+							color: white;
+							background: transparent;
+							font-size: 18px;
+							font-weight: lighter;
+							width: 300px;
+						}
+					}
+
+					.project-filter-buttons {
+						display: flex;
+						gap: 12px;
+						
+						button {
+							color: white;
+							border-radius: 25px;
+							text-transform: uppercase;
+							letter-spacing: 1px;
+							font-size: 12px;
+							padding: 4px 20px;
+							text-align: center;
+							background: transparent;
+							border: 1px solid rgba(255,255,255,0.25);
+							transition: 0.7s all ease;
+
+							&:hover {
+								background-color: rgba(255,255,255,0.25);
+								transform: scale(1.05);
+								transition: 0.3s all ease;
+							}
+
+							&.is-active {
+								background-color: white;
+								color: black;
+								border-color: white;
+								transition: 0.3s all ease;
+							}
+						}
+					}
+				}
+				.projects-grid {
+					padding: 0;
+					color: white;
+					list-style: none;
+					display: grid;
+					grid-template-columns: 1fr;
+					gap: 2rem;
+					margin-top: 2em;
+
+					@include media-breakpoint-up(md) {
+						grid-template-columns: repeat(2, 1fr);
+					}
+
+					@include media-breakpoint-up(lg) {
+						grid-template-columns: repeat(3, 1fr);
+					}
+
+					@media screen and (min-width: 2160px) {
+						grid-template-columns: repeat(4, 1fr);
+					}
+
+					.project-card {
+						.project-thumb {
+							img {
+								max-width: 100%;
+								max-height: 300px;
+								object-fit: cover;
+							}
+						}
+
+						.project-title {
+							margin-top: 1em;
+
+							a {
+								color: white;
+							}
+						}
+
+						.project-cta {
+							width: 250px;
+							background: white;
+							color: #131313;
+							height: 60px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							margin-top: 1.5em;
+							transition: 0.7s all ease;
+						}
+					}
+				}
 			}
 		}
 

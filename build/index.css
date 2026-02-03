@@ -18133,6 +18133,129 @@ img {
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
+#main section.portfolio .portfolio-archive .filter-inputs {
+  background-color: black;
+  padding: 2em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 2em;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-shadow: 0px 5px 50px -20px black;
+          box-shadow: 0px 5px 50px -20px black;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-search input {
+  height: 60px;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  background: transparent;
+  font-size: 18px;
+  font-weight: lighter;
+  width: 300px;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 12px;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button {
+  color: white;
+  border-radius: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  padding: 4px 20px;
+  text-align: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  -webkit-transform: scale(1.05);
+          transform: scale(1.05);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .filter-inputs .project-filter-buttons button.is-active {
+  background-color: white;
+  color: black;
+  border-color: white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.portfolio .portfolio-archive .projects-grid {
+  padding: 0;
+  color: white;
+  list-style: none;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2em;
+}
+@media (min-width: 768px) {
+  #main section.portfolio .portfolio-archive .projects-grid {
+    -ms-grid-columns: (1fr)[2];
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 992px) {
+  #main section.portfolio .portfolio-archive .projects-grid {
+    -ms-grid-columns: (1fr)[3];
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media screen and (min-width: 2160px) {
+  #main section.portfolio .portfolio-archive .projects-grid {
+    -ms-grid-columns: (1fr)[4];
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-thumb img {
+  max-width: 100%;
+  max-height: 300px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-title {
+  margin-top: 1em;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-title a {
+  color: white;
+}
+#main section.portfolio .portfolio-archive .projects-grid .project-card .project-cta {
+  width: 250px;
+  background: white;
+  color: #131313;
+  height: 60px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-top: 1.5em;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
 #main section.what-i-do .section-content {
   width: 100%;
   max-width: 600px;
