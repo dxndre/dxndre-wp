@@ -14097,6 +14097,9 @@ body.is-frontend #wpadminbar {
 body.is-frontend.page-template-page-full #main {
   max-width: 100%;
 }
+body.is-frontend.page-template-page-standard #main > .content {
+  overflow: hidden;
+}
 body.is-frontend.page-template-page-homepage #hireMeModal,
 body.is-frontend.page-template-page-homepage #clientModal,
 body.is-frontend.page-template-page-homepage #recruiterModal {
@@ -18472,7 +18475,7 @@ img {
   margin-top: 2em;
   font-size: 12px;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.5);
 }
 #main section.portfolio .portfolio-archive .projects-grid .project-card .project-cta {
   width: 100%;

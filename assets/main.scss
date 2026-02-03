@@ -150,6 +150,10 @@ body.is-frontend {
 	&.page-template-page-standard {
 		#main {
 			// overflow-x: hidden;
+
+			> .content {
+				overflow: hidden;
+			}
 		}
 	}
 
@@ -4041,7 +4045,7 @@ img {
 							margin-top: 2em;
 							font-size: 12px;
 							letter-spacing: 1px;
-							color: rgba(255,255,255,0.75);
+							color: rgba(255,255,255,0.5);
 						}
 
 						.project-cta {
