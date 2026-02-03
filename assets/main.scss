@@ -919,6 +919,10 @@ body.is-frontend {
 					height: auto;
 					max-height: 300px;
 					object-fit: cover;
+
+					@include media-breakpoint-up(lg) {
+						max-height: none;
+					}
 				}
 			}
 
@@ -1637,6 +1641,7 @@ body.is-frontend {
 		background-position: bottom;
 		overflow-x: hidden;
 		background-repeat: no-repeat;
+		background-attachment: fixed;
 
 		#main {
 			overflow-x: hidden;
@@ -3914,6 +3919,10 @@ img {
 								border-radius: 0;
 								background: transparent;
 
+								@include media-breakpoint-up(md) {
+									padding: 16px 20px;
+								}
+
 								&:hover {
 									background: white;
 									color: black;
@@ -5672,6 +5681,8 @@ footer {
 				border-color: transparent;
 				outline: none;
 				box-shadow: none;
+				position: relative;
+				z-index: 1;
 
 				&:hover {
 					background-color: darken($dxndre-red, 10%);
@@ -5687,6 +5698,8 @@ footer {
 				outline: none;
 				color: white;
 				box-shadow: none;
+				position: relative;
+				z-index: 1;
 
 				&:hover {
 					background-color: white;
@@ -5702,6 +5715,8 @@ footer {
 				border-color: transparent;
 				outline: none;
 				box-shadow: none;
+				position: relative;
+				z-index: 1;
 
 				&:hover {
 					background-color: white;
@@ -5718,6 +5733,8 @@ footer {
 				border-color: transparent;
 				outline: none;
 				box-shadow: none;
+				position: relative;
+				z-index: 1;
 
 				&:hover {
 					background-color: $dxndre-red;

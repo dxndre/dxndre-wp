@@ -1284,9 +1284,7 @@ function dx_project_meta_shortcode() {
 }
 add_shortcode( 'project_meta', 'dx_project_meta_shortcode' );
 
-// Projects Marquee (for Homepage)
-
-// Projects Marquee (Homepage)
+// Projects Marquee (For Homepage)
 add_shortcode('projects_marquee', function () {
 
   $projects = get_posts([
@@ -1304,7 +1302,7 @@ add_shortcode('projects_marquee', function () {
   ob_start(); ?>
 
   <section class="projects-marquee">
-    <div class="marquee-track">
+    <div id="projects-track" class="marquee-track">
 
       <?php foreach ($projects as $project): ?>
 

@@ -15068,6 +15068,11 @@ body.is-frontend.single-project #main .wp-block-image img {
   -o-object-fit: cover;
      object-fit: cover;
 }
+@media (min-width: 992px) {
+  body.is-frontend.single-project #main .wp-block-image img {
+    max-height: none;
+  }
+}
 @-webkit-keyframes gallery-scroll {
   from {
     -webkit-transform: translateX(0);
@@ -15811,6 +15816,7 @@ body.is-frontend.page-template-page-login, body.is-frontend.page-template-page-f
   background-position: bottom;
   overflow-x: hidden;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 body.is-frontend.page-template-page-login #main, body.is-frontend.page-template-page-forgot-password #main, body.is-frontend.page-template-page-signup #main, body.is-frontend.page-template-page-submit-ticket #main {
   overflow-x: hidden;
@@ -18296,6 +18302,11 @@ img {
   border-radius: 0;
   background: transparent;
 }
+@media (min-width: 768px) {
+  #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.btn, #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-buttons .wp-block-button #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.wp-block-button__link {
+    padding: 16px 20px;
+  }
+}
 #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.btn:hover, #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane .wp-block-buttons .wp-block-button a.wp-block-button__link:hover, .wp-block-buttons .wp-block-button #main section.what-i-do .service-boxes .services-tabs .tab-content .tab-pane a.wp-block-button__link:hover {
   background: white;
   color: black;
@@ -20103,6 +20114,8 @@ footer.site-footer .site-footer-social a:hover {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 .wp-block-buttons .wp-block-button.primary .wp-block-button__link:hover {
   background-color: rgb(152.1578947368, 24.8421052632, 24.8421052632);
@@ -20115,6 +20128,8 @@ footer.site-footer .site-footer-social a:hover {
   color: white;
   -webkit-box-shadow: none;
           box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 .wp-block-buttons .wp-block-button.secondary .wp-block-button__link:hover {
   background-color: white;
@@ -20127,6 +20142,8 @@ footer.site-footer .site-footer-social a:hover {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 .wp-block-buttons .wp-block-button.tertiary .wp-block-button__link:hover {
   background-color: white;
@@ -20140,6 +20157,8 @@ footer.site-footer .site-footer-social a:hover {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 .wp-block-buttons .wp-block-button.quaternary .wp-block-button__link:hover {
   background-color: #C42020;
