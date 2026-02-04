@@ -1039,10 +1039,17 @@ body.is-frontend {
 						font-weight: 300;
 						width: 100%;
 						max-width: 768px;
-						margin-bottom: 2.5em;
+						margin-bottom: 1em;
+
+						&:last-of-type {
+							margin-bottom: 2.5em;
+
+							@include media-breakpoint-up(md) {
+								margin-bottom: 4em;
+							}
+						}
 
 						@include media-breakpoint-up(md) {
-							margin-bottom: 4em;
 							font-size: 18px;
 							line-height: 32px;
 						}
@@ -3692,6 +3699,14 @@ img {
 		}
 
 		&.portfolio {
+			&:not(.viewport-active) {
+				opacity: 1;
+
+				@include media-breakpoint-up(md) {
+					opacity: 0;
+				}
+			}	
+
 			&.neg-margin {
 				margin-top: -25vh;
 

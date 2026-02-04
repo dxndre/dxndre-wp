@@ -1399,152 +1399,152 @@ function dx_projects_archive_shortcode($atts) {
 	}
 	?>
 
-	<section class="portfolio-archive" data-projects-archive>
+	<div class="portfolio-archive" data-projects-archive>
 
-	<div class="filter-inputs">
-		<div class="project-search">
-			<input
-				id="search-box"
-				type="search"
-				placeholder="Search projects…"
-				aria-label="Search projects"
-				data-project-search
-			/>
-		</div>
-
-		<div class="project-filter-buttons">
-			<button data-filter="all" class="is-active">All</button>
-			<button data-filter="design">Design</button>
-			<button data-filter="development">WordPress</button>
-			<button data-filter="static">Static</button>
-			<button data-filter="shopify">Shopify</button>
-			<button data-context="freelance">Freelance</button>
-			<button data-context="commercial">Commercial</button>
-		</div>
-	</div>
-
-	<!-- Dynamic state title -->
-	<h2 class="projects-state-title">
-		Showing <span data-projects-state-title class="label">All</span> Projects
-	</h2>
-
-	<!-- Empty state -->
-	<div class="projects-empty-state" hidden data-projects-empty>
-		<h3>No Projects Found</h3>
-		<span>Try adjusting your filters or search terms.</span>
-	</div>
-
-	<ul class="projects-grid" data-projects-grid>
-		<?php while ($query->have_posts()) : $query->the_post();
-
-			/* ----------------------------
-			ACF fields
-			---------------------------- */
-			$title_override = get_field('project_name_override');
-			$header_image   = get_field('header_image');
-			$client_type    = get_field('client_type'); // freelance | commercial
-			$employer       = get_field('employer');
-			$types          = get_field('project_type') ?: [];
-			$project_status = get_field('project_status');
-			$site_status    = get_field('site_status');
-
-			/* ----------------------------
-			Derived values
-			---------------------------- */
-			$year = (int) get_the_date('Y');
-
-			$context_label = ($client_type === 'commercial' && $employer)
-				? 'Commercial — ' . esc_html($employer)
-				: ucfirst($client_type ?: 'Freelance');
-
-			$type_attr = implode(' ', array_map('sanitize_title', (array) $types));
-
-			$search_blob = strtolower(
-				get_the_title() . ' ' .
-				get_the_excerpt() . ' ' .
-				implode(' ', $types) . ' ' .
-				$context_label . ' ' .
-				$year
-			);
-
-			$display_title = $title_override ?: get_the_title();
-
-			/* ----------------------------
-			Image fallback
-			---------------------------- */
-		if (!empty($header_image)) {
-				$image_html = wp_get_attachment_image($header_image['ID'], 'large');
-			} else {
-				$image_html = get_the_post_thumbnail(get_the_ID(), 'large');
-			}
-		?>
-
-		<li
-			class="project-card"
-			data-type="<?= esc_attr($type_attr); ?>"
-			data-year="<?= esc_attr($year); ?>"
-			data-context="<?= esc_attr($client_type); ?>"
-			data-search="<?= esc_attr($search_blob); ?>"
-		>
-			<a href="<?php the_permalink(); ?>" class="project-thumb">
-				<?php
-					// Default featured image
-					the_post_thumbnail('large', [
-						'class' => 'project-image project-image--default'
-					]);
-
-					// ACF hover image (optional)
-					if (!empty($header_image)) {
-						echo wp_get_attachment_image(
-							$header_image['ID'],
-							'large',
-							false,
-							[
-								'class' => 'project-image project-image--hover'
-							]
-						);
-					}
-				?>
-			</a>
-
-			<div class="project-meta">
-				<span class="project-year"><?= esc_html($year); ?></span>
-				<span class="meta-separator">•</span>
-				<span class="project-context"><?= esc_html($context_label); ?></span>
-
-				<?php if ($site_status) : ?>
-					<span class="meta-separator">•</span>
-					<span class="site-status site-status--<?= esc_attr($site_status); ?>">
-						<?= esc_html(ucwords(str_replace('_', ' ', $site_status))); ?>
-					</span>
-				<?php endif; ?>
+		<div class="filter-inputs">
+			<div class="project-search">
+				<input
+					id="search-box"
+					type="search"
+					placeholder="Search projects…"
+					aria-label="Search projects"
+					data-project-search
+				/>
 			</div>
 
-			<h3 class="project-title">
-				<a href="<?php the_permalink(); ?>">
-					<?= esc_html($display_title); ?>
+			<div class="project-filter-buttons">
+				<button data-filter="all" class="is-active">All</button>
+				<button data-filter="design">Design</button>
+				<button data-filter="development">WordPress</button>
+				<button data-filter="static">Static</button>
+				<button data-filter="shopify">Shopify</button>
+				<button data-context="freelance">Freelance</button>
+				<button data-context="commercial">Commercial</button>
+			</div>
+		</div>
+
+		<!-- Dynamic state title -->
+		<h2 class="projects-state-title">
+			Showing <span data-projects-state-title class="label">All</span> Projects
+		</h2>
+
+		<!-- Empty state -->
+		<div class="projects-empty-state" hidden data-projects-empty>
+			<h3>No Projects Found</h3>
+			<span>Try adjusting your filters or search terms.</span>
+		</div>
+
+		<ul class="projects-grid" data-projects-grid>
+			<?php while ($query->have_posts()) : $query->the_post();
+
+				/* ----------------------------
+				ACF fields
+				---------------------------- */
+				$title_override = get_field('project_name_override');
+				$header_image   = get_field('header_image');
+				$client_type    = get_field('client_type'); // freelance | commercial
+				$employer       = get_field('employer');
+				$types          = get_field('project_type') ?: [];
+				$project_status = get_field('project_status');
+				$site_status    = get_field('site_status');
+
+				/* ----------------------------
+				Derived values
+				---------------------------- */
+				$year = (int) get_the_date('Y');
+
+				$context_label = ($client_type === 'commercial' && $employer)
+					? 'Commercial — ' . esc_html($employer)
+					: ucfirst($client_type ?: 'Freelance');
+
+				$type_attr = implode(' ', array_map('sanitize_title', (array) $types));
+
+				$search_blob = strtolower(
+					get_the_title() . ' ' .
+					get_the_excerpt() . ' ' .
+					implode(' ', $types) . ' ' .
+					$context_label . ' ' .
+					$year
+				);
+
+				$display_title = $title_override ?: get_the_title();
+
+				/* ----------------------------
+				Image fallback
+				---------------------------- */
+			if (!empty($header_image)) {
+					$image_html = wp_get_attachment_image($header_image['ID'], 'large');
+				} else {
+					$image_html = get_the_post_thumbnail(get_the_ID(), 'large');
+				}
+			?>
+
+			<li
+				class="project-card"
+				data-type="<?= esc_attr($type_attr); ?>"
+				data-year="<?= esc_attr($year); ?>"
+				data-context="<?= esc_attr($client_type); ?>"
+				data-search="<?= esc_attr($search_blob); ?>"
+			>
+				<a href="<?php the_permalink(); ?>" class="project-thumb">
+					<?php
+						// Default featured image
+						the_post_thumbnail('large', [
+							'class' => 'project-image project-image--default'
+						]);
+
+						// ACF hover image (optional)
+						if (!empty($header_image)) {
+							echo wp_get_attachment_image(
+								$header_image['ID'],
+								'large',
+								false,
+								[
+									'class' => 'project-image project-image--hover'
+								]
+							);
+						}
+					?>
 				</a>
-			</h3>
 
-			<p class="excerpt"><?php the_excerpt(); ?></p>
+				<div class="project-meta">
+					<span class="project-year"><?= esc_html($year); ?></span>
+					<span class="meta-separator">•</span>
+					<span class="project-context"><?= esc_html($context_label); ?></span>
 
-			<?php if (!empty($types)) : ?>
-				<ul class="project-types">
-					<?php foreach ($types as $type) : ?>
-						<li><?= esc_html($type); ?></li>
-					<?php endforeach; ?>
-				</ul>
-			<?php endif; ?>
+					<?php if ($site_status) : ?>
+						<span class="meta-separator">•</span>
+						<span class="site-status site-status--<?= esc_attr($site_status); ?>">
+							<?= esc_html(ucwords(str_replace('_', ' ', $site_status))); ?>
+						</span>
+					<?php endif; ?>
+				</div>
 
-			<a href="<?php the_permalink(); ?>" class="project-cta">
-				View Case Study →
-			</a>
-		</li>
+				<h3 class="project-title">
+					<a href="<?php the_permalink(); ?>">
+						<?= esc_html($display_title); ?>
+					</a>
+				</h3>
 
-		<?php endwhile; wp_reset_postdata(); ?>
-	</ul>
+				<p class="excerpt"><?php the_excerpt(); ?></p>
 
-</section>
+				<?php if (!empty($types)) : ?>
+					<ul class="project-types">
+						<?php foreach ($types as $type) : ?>
+							<li><?= esc_html($type); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+
+				<a href="<?php the_permalink(); ?>" class="project-cta">
+					View Case Study →
+				</a>
+			</li>
+
+			<?php endwhile; wp_reset_postdata(); ?>
+		</ul>
+
+	</div>
 
 	<?php
 	return ob_get_clean();

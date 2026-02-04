@@ -15190,11 +15190,18 @@ body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
   font-weight: 300;
   width: 100%;
   max-width: 768px;
+  margin-bottom: 1em;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .subtitle:last-of-type {
   margin-bottom: 2.5em;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
+  body.is-frontend.single-project #main .story-section .cs-chapter .subtitle:last-of-type {
     margin-bottom: 4em;
+  }
+}
+@media (min-width: 768px) {
+  body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
     font-size: 18px;
     line-height: 32px;
   }
@@ -18068,6 +18075,14 @@ img {
      border-image: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.8)), color-stop(70%, rgba(255, 255, 255, 0))) 1;
      border-image: linear-gradient(90deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%) 1;
   opacity: 0.6;
+}
+#main section.portfolio:not(.viewport-active) {
+  opacity: 1;
+}
+@media (min-width: 768px) {
+  #main section.portfolio:not(.viewport-active) {
+    opacity: 0;
+  }
 }
 #main section.portfolio.neg-margin {
   margin-top: -25vh;
