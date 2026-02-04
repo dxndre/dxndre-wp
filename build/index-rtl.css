@@ -14065,6 +14065,21 @@ body.is-frontend h1, body.is-frontend .h1, body.is-frontend h2, body.is-frontend
 body.is-frontend p {
   line-height: 32px;
 }
+@media screen and (min-width: 1600px) {
+  body.is-frontend .container {
+    max-width: 1460px;
+  }
+}
+@media screen and (min-width: 1920px) {
+  body.is-frontend .container {
+    max-width: 1580px;
+  }
+}
+@media screen and (min-width: 2560px) {
+  body.is-frontend .container {
+    max-width: 1600px;
+  }
+}
 body.is-frontend #wpadminbar {
   background: black;
 }
