@@ -18088,6 +18088,93 @@ img {
   font-weight: 300;
   margin-bottom: 24px;
 }
+#main section.text-image .section-content .dx-gym-table-wrap {
+  overflow-x: auto;
+  margin-top: 2rem;
+}
+#main section.text-image .section-content .dx-gym-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 900px;
+}
+#main section.text-image .section-content .dx-gym-table th,
+#main section.text-image .section-content .dx-gym-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+  text-align: left;
+}
+#main section.text-image .section-content .dx-gym-table th {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+#main section.text-image .section-content .dx-gym-table tbody tr {
+  -webkit-transition: background 0.3s ease;
+  transition: background 0.3s ease;
+}
+#main section.text-image .section-content .dx-gym-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+#main section.text-image .section-content {
+  /* ==========================
+  SCORE STYLES
+  ========================== */
+}
+#main section.text-image .section-content .dx-score {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  min-width: 48px;
+  font-weight: 600;
+}
+#main section.text-image .section-content .dx-score--empty {
+  opacity: 0.4;
+}
+#main section.text-image .section-content .dx-score--na {
+  font-style: italic;
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+#main section.text-image .section-content .dx-score--num {
+  color: white;
+}
+#main section.text-image .section-content .dx-score--trash {
+  font-size: 1.2rem;
+  -webkit-filter: grayscale(20%);
+          filter: grayscale(20%);
+}
+#main section.text-image .section-content .dx-score--diamond {
+  font-size: 1.2rem;
+}
+#main section.text-image .section-content .dx-visit-type {
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+#main section.text-image .section-content {
+  /* ==========================
+  MOBILE BEHAVIOUR
+  ========================== */
+}
+@media (max-width: 767.98px) {
+  #main section.text-image .section-content .dx-gym-table {
+    font-size: 0.85rem;
+  }
+  #main section.text-image .section-content .dx-gym-table th,
+  #main section.text-image .section-content .dx-gym-table td {
+    padding: 0.75rem;
+  }
+}
 #main section.text-image .tools > .wp-block-group__inner-container {
   display: -webkit-box;
   display: -ms-flexbox;

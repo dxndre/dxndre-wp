@@ -1549,3 +1549,174 @@ function dx_projects_archive_shortcode($atts) {
 	<?php
 	return ob_get_clean();
 }
+
+/**
+ * Gym table shortcode: [dx_gym_table]
+ * Pulls from CPT: fitness
+ * ACF fields expected:
+ * - gym_chain (select)
+ * - visited_date (date, stored as Y-m-d)
+ * - visit_type (select, David Lloyds only)
+ * - score_gym, score_swim, score_spa, score_cafe (select)
+ * - notes (textarea)
+ */
+
+function dx_render_facility_score($value) {
+	// Handle empty / null
+	if ($value === null || $value === '' || $value === false) {
+		return '<span class="dx-score dx-score--empty">—</span>';
+	}
+
+	// Unavailable
+	if ($value === 'unavailable') {
+		return '<span class="dx-score dx-score--na">Unavailable</span>';
+	}
+
+	// Normal numeric score
+	$score = is_numeric($value) ? (int) $value : null;
+
+	if ($score === 0) {
+		return '<span class="dx-score dx-score--trash" title="0/10">🗑️</span>';
+	}
+
+	if ($score === 10) {
+		return '<span class="dx-score dx-score--diamond" title="10/10">💎</span>';
+	}
+
+	if ($score !== null) {
+		// Optional: show number with /10
+		return '<span class="dx-score dx-score--num" title="' . esc_attr($score . '/10') . '">' . esc_html($score) . '/10</span>';
+	}
+
+	return '<span class="dx-score dx-score--empty">—</span>';
+}
+
+function dx_gym_chain_label($value) {
+	$map = [
+		'davidlloyds'  => 'David Lloyds',
+		'puregym'      => 'PureGym',
+		'virginactive' => 'Virgin Active',
+		'fitnessfirst' => 'Fitness First',
+		'thegymgroup'  => 'The Gym Group',
+		'other'        => 'Other',
+	];
+	return $map[$value] ?? ($value ?: '—');
+}
+
+function dx_visit_type_label($value) {
+	$map = [
+		'guest'        => 'Guest',
+		'platinum2023' => 'Platinum (Tier 3 Membership)',
+		'platinum2025' => 'Platinum (Tier 1 Membership)',
+		'diamond'      => 'Diamond (Tier 1 Membership)',
+		'didnt_use'    => 'Didn’t use',
+	];
+	return $map[$value] ?? ($value ?: '—');
+}
+
+function dx_shortcode_gym_table($atts) {
+	$atts = shortcode_atts([
+		'chain' => '',         // optional filter: davidlloyds / puregym etc
+		'limit' => -1,         // optional limit
+	], $atts, 'dx_gym_table');
+
+	$args = [
+		'post_type'      => 'gym-review',
+		'posts_per_page' => (int) $atts['limit'],
+		'post_status'    => 'publish',
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+	];
+
+	// Optional: filter by chain (ACF stored as meta)
+	if (!empty($atts['chain'])) {
+		$args['meta_query'] = [
+			[
+				'key'     => 'gym_chain',
+				'value'   => sanitize_text_field($atts['chain']),
+				'compare' => '=',
+			]
+		];
+	}
+
+	$q = new WP_Query($args);
+
+	ob_start();
+
+	if (!$q->have_posts()) {
+		echo '<p>No gym visits yet.</p>';
+		return ob_get_clean();
+	}
+
+	echo '<div class="dx-gym-table-wrap">';
+	echo '<table class="dx-gym-table">';
+	echo '<thead>
+			<tr>
+				<th>Gym Chain</th>
+				<th>Branch</th>
+				<th>Visited</th>
+				<th>Gym 🏋🏾‍♂️</th>
+				<th>Swim 🏊🏾</th>
+				<th>Spa Retreat 🧖🏽</th>
+				<th>Cafeteria & Work Area 🍱</th>
+				<th>Notes 📄</th>
+			</tr>
+		  </thead>';
+	echo '<tbody>';
+
+	while ($q->have_posts()) {
+		$q->the_post();
+
+		$branch     = get_the_title();
+
+		$chain_val  = function_exists('get_field') ? get_field('gym_chain') : '';
+		$chain_lbl  = dx_gym_chain_label($chain_val);
+
+		$date_raw   = function_exists('get_field') ? get_field('visited_date') : ''; // expecting Y-m-d
+		$visited    = '—';
+		if (!empty($date_raw)) {
+			$ts = strtotime($date_raw);
+			if ($ts) $visited = date_i18n('F Y', $ts);
+		}
+
+		$visit_type_val = function_exists('get_field') ? get_field('visit_type') : '';
+		$visit_type_lbl = dx_visit_type_label($visit_type_val);
+
+		// Facility scores
+		$score_gym  = function_exists('get_field') ? get_field('score_gym')  : '';
+		$score_swim = function_exists('get_field') ? get_field('score_swim') : '';
+		$score_spa  = function_exists('get_field') ? get_field('score_spa')  : '';
+		$score_cafe = function_exists('get_field') ? get_field('score_cafe') : '';
+
+		$notes      = function_exists('get_field') ? get_field('notes') : '';
+
+		// Add membership type only for David Lloyds (matches your requirement)
+		if ($chain_val === 'davidlloyds' && !empty($visit_type_val) && $visit_type_val !== 'didnt_use') {
+			$notes_prefix = '<div class="dx-visit-type"><strong>Visit:</strong> ' . esc_html($visit_type_lbl) . '</div>';
+		} else {
+			$notes_prefix = '';
+		}
+
+		echo '<tr>';
+			echo '<td>' . esc_html($chain_lbl) . '</td>';
+			echo '<td><a href="' . esc_url(get_permalink()) . '">' . esc_html($branch) . '</a></td>';
+			echo '<td>' . esc_html($visited) . '</td>';
+
+			echo '<td>' . dx_render_facility_score($score_gym)  . '</td>';
+			echo '<td>' . dx_render_facility_score($score_swim) . '</td>';
+			echo '<td>' . dx_render_facility_score($score_spa)  . '</td>';
+			echo '<td>' . dx_render_facility_score($score_cafe) . '</td>';
+
+			echo '<td>' . $notes_prefix . wp_kses_post(nl2br(esc_html($notes))) . '</td>';
+		echo '</tr>';
+	}
+
+	wp_reset_postdata();
+
+	echo '</tbody>';
+	echo '</table>';
+	echo '</div>';
+
+	return ob_get_clean();
+}
+add_shortcode('dx_gym_table', 'dx_shortcode_gym_table');

@@ -278,7 +278,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "post"
+                "value": "gym-review"
             }
         ]
     ],
@@ -292,5 +292,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1771895875
+    "modified": 1771898154
 }

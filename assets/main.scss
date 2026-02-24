@@ -3703,6 +3703,98 @@ img {
 					// 	font-size: 20px;
 					// }
 				}
+
+				.dx-gym-table-wrap {
+					overflow-x: auto;
+					margin-top: 2rem;
+				}
+
+				.dx-gym-table {
+					width: 100%;
+					border-collapse: collapse;
+					font-size: 0.95rem;
+					min-width: 900px; // prevents ugly squish on mobile
+
+					th,
+					td {
+						padding: 1rem;
+						border-bottom: 1px solid rgba(255,255,255,0.08);
+						vertical-align: top;
+						text-align: left;
+					}
+
+					th {
+						font-size: 0.75rem;
+						letter-spacing: 1px;
+						text-transform: uppercase;
+						color: rgba(255,255,255,0.6);
+						font-weight: 600;
+					}
+
+					tbody tr {
+						transition: background 0.3s ease;
+
+						&:hover {
+							background: rgba(255,255,255,0.03);
+						}
+					}
+				}
+
+				/* ==========================
+				SCORE STYLES
+				========================== */
+
+				.dx-score {
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					min-width: 48px;
+					font-weight: 600;
+
+					&--empty {
+						opacity: 0.4;
+					}
+
+					&--na {
+						font-style: italic;
+						opacity: 0.6;
+						font-size: 0.85rem;
+					}
+
+					&--num {
+						color: white;
+					}
+
+					&--trash {
+						font-size: 1.2rem;
+						filter: grayscale(20%);
+					}
+
+					&--diamond {
+						font-size: 1.2rem;
+					}
+				}
+
+				.dx-visit-type {
+					font-size: 0.8rem;
+					margin-bottom: 0.5rem;
+					opacity: 0.8;
+				}
+
+				/* ==========================
+				MOBILE BEHAVIOUR
+				========================== */
+
+				@include media-breakpoint-down(md) {
+					.dx-gym-table {
+						font-size: 0.85rem;
+
+						th,
+						td {
+							padding: 0.75rem;
+						}
+					}
+				}
 			}
 
 			.tools {
