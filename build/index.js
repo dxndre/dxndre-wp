@@ -24,6 +24,21 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   'use strict';
 
+  // n
+  // Navbar scroll state toggle
+  function initNavbarScrolled() {
+    var nav = document.querySelector('.navbar');
+    if (!nav) return;
+    var onScroll = function onScroll() {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    };
+    window.addEventListener('scroll', onScroll, {
+      passive: true
+    });
+    onScroll();
+  }
+  document.addEventListener('DOMContentLoaded', initNavbarScrolled);
+
   // Focus input if Searchform is empty
   [].forEach.call(document.querySelectorAll('.search-form'), function (el) {
     el.addEventListener('submit', function (e) {
@@ -42,21 +57,6 @@ __webpack_require__.r(__webpack_exports__);
       trigger: 'focus'
     });
   });
-
-  // Toggle `.scrolled` on `.navbar`
-  function updateNavbarScrolled() {
-    var nav = document.querySelector('.navbar');
-    if (!nav) return;
-    if (window.scrollY > 10) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  }
-  document.addEventListener('scroll', updateNavbarScrolled, {
-    passive: true
-  });
-  updateNavbarScrolled();
   document.addEventListener('DOMContentLoaded', function () {
     /* ==========================
        NAVBAR OPEN STATE
@@ -931,27 +931,41 @@ __webpack_require__.r(__webpack_exports__);
     ========================== */
 
     (function () {
-      var scrollContainer = document.querySelector('#main') || document.querySelector('.entry-content');
       var wrapper = document.querySelector('.chapters-wrapper');
-      if (!scrollContainer || !wrapper) return;
+      if (!wrapper) return;
+      var header = document.querySelector('.navbar'); // or '#header'
+      var headerOffset = function headerOffset() {
+        return header ? header.getBoundingClientRect().height : 0;
+      };
       var inStory = false;
-      var updateStoryState = function updateStoryState() {
-        var containerRect = scrollContainer.getBoundingClientRect();
-        var wrapperRect = wrapper.getBoundingClientRect();
+      var compute = function compute() {
+        var rect = wrapper.getBoundingClientRect();
+        var offset = headerOffset();
 
-        // wrapper top relative to container top
-        var wrapperTopInContainer = wrapperRect.top - containerRect.top;
-        var wrapperBottomInContainer = wrapperRect.bottom - containerRect.top;
-        var nowInStory = wrapperTopInContainer <= 0 && wrapperBottomInContainer > 0;
+        // Consider “in story” once wrapper has passed under the header,
+        // and hasn’t fully exited above/below the viewport
+        var nowInStory = rect.top <= offset + 2 &&
+        // +2px tolerance
+        rect.bottom > offset + 2;
         if (nowInStory !== inStory) {
           inStory = nowInStory;
           document.body.classList.toggle('is-in-story', inStory);
+          // Debug (remove once happy)
+          // console.log('[story]', { inStory, top: rect.top, bottom: rect.bottom, offset });
         }
       };
-      scrollContainer.addEventListener('scroll', updateStoryState, {
+      window.addEventListener('scroll', compute, {
         passive: true
       });
-      updateStoryState(); // run once
+      window.addEventListener('resize', compute, {
+        passive: true
+      });
+
+      // Run a few times because images/fonts can shift layout after DOMContentLoaded
+      requestAnimationFrame(compute);
+      window.addEventListener('load', compute, {
+        passive: true
+      });
     })();
 
     /* --------------------------------
@@ -959,14 +973,13 @@ __webpack_require__.r(__webpack_exports__);
     -------------------------------- */
 
     window.addEventListener('wheel', function (e) {
+      if (!document.body.classList.contains('is-in-story')) return;
       if (!isLockedInChapters || isSnapping) return;
       if (Math.abs(e.deltaY) < 40) return;
       var goingDown = e.deltaY > 0;
       var goingUp = e.deltaY < 0;
       var atTopBoundary = wrapperTop() >= -10;
       var atBottomBoundary = wrapperBottom() <= vh() + 10;
-
-      // Block escape unless boundary reached
       if (goingUp && !atTopBoundary) {
         e.preventDefault();
         snapTo(activeIndex - 1);

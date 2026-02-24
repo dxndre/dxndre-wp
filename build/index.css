@@ -15223,7 +15223,6 @@ body.is-frontend.single-project #main .story-section .cs-chapter .subtitle:last-
 }
 @media (min-width: 992px) {
   body.is-frontend.single-project #main .story-section .cs-chapter .subtitle {
-    font-size: 20px;
     width: 80%;
   }
 }
@@ -15328,6 +15327,15 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
   gap: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
   width: 100%;
+  -webkit-transform: 0.7s all ease;
+          transform: 0.7s all ease;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel:not(.image):hover {
+  -webkit-transform: scale(1.025);
+          transform: scale(1.025);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 @media (min-width: 768px) {
   body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel {
@@ -15347,6 +15355,19 @@ body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel p:last-of-type {
   margin-bottom: 0;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel p a {
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 2px;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel p a:hover {
+  border-bottom: 1px solid white;
+  color: white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 body.is-frontend.single-project #main .story-section .cs-chapter .cs-panel-track .cs-panel .wp-block-list {
   padding-left: 16px;

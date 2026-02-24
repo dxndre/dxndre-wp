@@ -1069,7 +1069,7 @@ body.is-frontend {
 						}
 
 						@include media-breakpoint-up(lg) {
-							font-size: 20px;
+							// font-size: 20px;
 							width: 80%;
 						}
 					}
@@ -1167,7 +1167,16 @@ body.is-frontend {
 							gap: $space-2;
 							border: 1px solid rgba(255,255,255,0.25);
 							width: 100%;
+							transform: 0.7s all ease;
 
+							&:not(.image) {
+								&:hover {
+									transform: scale(1.025);
+									border: 1px solid rgba(255,255,255,0.5);
+									transition: 0.3s all ease;
+								}
+							}
+							
 							@include media-breakpoint-up(md) {
 								width: auto;
 							}
@@ -1186,6 +1195,19 @@ body.is-frontend {
 
 								&:last-of-type {
 									margin-bottom: 0;
+								}
+
+								a {
+									color: white;
+									border-bottom: 1px solid rgba(255,255,255,0.5);
+									padding-bottom: 2px;
+									transition: 0.3s all ease;
+
+									&:hover {
+										border-bottom: 1px solid white;
+										color: white;
+										transition: 0.3s all ease;
+									}
 								}
 							}
 

@@ -4,6 +4,22 @@ import * as bootstrap from 'bootstrap';
 (function () {
 	'use strict';
 
+	// n
+	// Navbar scroll state toggle
+	function initNavbarScrolled() {
+	const nav = document.querySelector('.navbar');
+	if (!nav) return;
+
+	const onScroll = () => {
+		nav.classList.toggle('scrolled', window.scrollY > 10);
+	};
+
+	window.addEventListener('scroll', onScroll, { passive: true });
+	onScroll();
+	}
+
+	document.addEventListener('DOMContentLoaded', initNavbarScrolled);
+
 	// Focus input if Searchform is empty
 	[].forEach.call(document.querySelectorAll('.search-form'), (el) => {
 		el.addEventListener('submit', function (e) {
@@ -22,21 +38,6 @@ import * as bootstrap from 'bootstrap';
 			trigger: 'focus',
 		});
 	});
-
-	// Toggle `.scrolled` on `.navbar`
-	function updateNavbarScrolled() {
-		var nav = document.querySelector('.navbar');
-		if (!nav) return;
-
-		if (window.scrollY > 10) {
-			nav.classList.add('scrolled');
-		} else {
-			nav.classList.remove('scrolled');
-		}
-	}
-
-	document.addEventListener('scroll', updateNavbarScrolled, { passive: true });
-	updateNavbarScrolled();
 
 	document.addEventListener('DOMContentLoaded', () => {
 
@@ -1023,39 +1024,38 @@ import * as bootstrap from 'bootstrap';
 			========================== */
 
 			(() => {
-				const scrollContainer =
-					document.querySelector('#main') ||
-					document.querySelector('.entry-content');
+			const wrapper = document.querySelector('.chapters-wrapper');
+			if (!wrapper) return;
 
-				const wrapper = document.querySelector('.chapters-wrapper');
+			const header = document.querySelector('.navbar'); // or '#header'
+			const headerOffset = () => (header ? header.getBoundingClientRect().height : 0);
 
-				if (!scrollContainer || !wrapper) return;
+			let inStory = false;
 
-				let inStory = false;
+			const compute = () => {
+				const rect = wrapper.getBoundingClientRect();
+				const offset = headerOffset();
 
-				const updateStoryState = () => {
-					const containerRect = scrollContainer.getBoundingClientRect();
-					const wrapperRect = wrapper.getBoundingClientRect();
+				// Consider “in story” once wrapper has passed under the header,
+				// and hasn’t fully exited above/below the viewport
+				const nowInStory =
+				rect.top <= offset + 2 &&   // +2px tolerance
+				rect.bottom > offset + 2;
 
-					// wrapper top relative to container top
-					const wrapperTopInContainer =
-						wrapperRect.top - containerRect.top;
+				if (nowInStory !== inStory) {
+				inStory = nowInStory;
+				document.body.classList.toggle('is-in-story', inStory);
+				// Debug (remove once happy)
+				// console.log('[story]', { inStory, top: rect.top, bottom: rect.bottom, offset });
+				}
+			};
 
-					const wrapperBottomInContainer =
-						wrapperRect.bottom - containerRect.top;
+			window.addEventListener('scroll', compute, { passive: true });
+			window.addEventListener('resize', compute, { passive: true });
 
-					const nowInStory =
-						wrapperTopInContainer <= 0 &&
-						wrapperBottomInContainer > 0;
-
-					if (nowInStory !== inStory) {
-						inStory = nowInStory;
-						document.body.classList.toggle('is-in-story', inStory);
-					}
-				};
-
-				scrollContainer.addEventListener('scroll', updateStoryState, { passive: true });
-				updateStoryState(); // run once
+			// Run a few times because images/fonts can shift layout after DOMContentLoaded
+			requestAnimationFrame(compute);
+			window.addEventListener('load', compute, { passive: true });
 			})();
 
 			/* --------------------------------
@@ -1063,31 +1063,31 @@ import * as bootstrap from 'bootstrap';
 			-------------------------------- */
 
 			window.addEventListener(
-				'wheel',
-				(e) => {
-					if (!isLockedInChapters || isSnapping) return;
-					if (Math.abs(e.deltaY) < 40) return;
+			'wheel',
+			(e) => {
+				if (!document.body.classList.contains('is-in-story')) return;
+				if (!isLockedInChapters || isSnapping) return;
+				if (Math.abs(e.deltaY) < 40) return;
 
-					const goingDown = e.deltaY > 0;
-					const goingUp = e.deltaY < 0;
+				const goingDown = e.deltaY > 0;
+				const goingUp = e.deltaY < 0;
 
-					const atTopBoundary = wrapperTop() >= -10;
-					const atBottomBoundary = wrapperBottom() <= vh() + 10;
+				const atTopBoundary = wrapperTop() >= -10;
+				const atBottomBoundary = wrapperBottom() <= vh() + 10;
 
-					// Block escape unless boundary reached
-					if (goingUp && !atTopBoundary) {
-						e.preventDefault();
-						snapTo(activeIndex - 1);
-						return;
-					}
+				if (goingUp && !atTopBoundary) {
+				e.preventDefault();
+				snapTo(activeIndex - 1);
+				return;
+				}
 
-					if (goingDown && !atBottomBoundary) {
-						e.preventDefault();
-						snapTo(activeIndex + 1);
-						return;
-					}
-				},
-				{ passive: false }
+				if (goingDown && !atBottomBoundary) {
+				e.preventDefault();
+				snapTo(activeIndex + 1);
+				return;
+				}
+			},
+			{ passive: false }
 			);
 
 			/* --------------------------------
