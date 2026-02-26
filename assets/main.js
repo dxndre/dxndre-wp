@@ -1320,6 +1320,107 @@ import * as bootstrap from 'bootstrap';
 
 			update();
 		})();
+
+		// Filtering, searching and lazy loading for the Gyms archive (cards)
+
+		(() => {
+			const archive = document.querySelector('[data-gyms-archive]');
+			if (!archive) return;
+
+			const grid     = archive.querySelector('[data-gyms-grid]');
+			const search   = archive.querySelector('[data-gym-search]');
+			const buttons  = [...archive.querySelectorAll('.gym-filter-buttons button')];
+			const titleEl  = archive.querySelector('[data-gyms-state-title]');
+			const emptyEl  = archive.querySelector('[data-gyms-empty]');
+			const loadMore = archive.querySelector('[data-gyms-load-more]');
+
+			if (!grid) return;
+
+			const allCards = [...grid.querySelectorAll('[data-gym-card]')];
+
+			let activeChain = 'all';
+			let visibleCount = 10;
+
+			const LABELS = {
+				all: 'All',
+				davidlloyds: 'David Lloyd',
+				puregym: 'PureGym',
+				virginactive: 'Virgin Active',
+				fitnessfirst: 'Fitness First',
+				thegymgroup: 'The Gym Group',
+			};
+
+			const updateTitle = () => {
+				const label = LABELS[activeChain] || 'All';
+				if (titleEl) titleEl.textContent = label;
+			};
+
+			const update = () => {
+				const q = (search?.value || '').trim().toLowerCase();
+
+				const eligible = allCards.filter(card => {
+					const chain = card.dataset.chain || 'unknown';
+					const chainOk = activeChain === 'all' || chain === activeChain;
+
+					const haystack = (card.dataset.search || '').toLowerCase();
+					const searchOk = !q || haystack.includes(q);
+
+					return chainOk && searchOk;
+				});
+
+				// Hide everything first
+				allCards.forEach(c => (c.hidden = true));
+
+				// Show first N eligible
+				eligible.slice(0, visibleCount).forEach(c => (c.hidden = false));
+
+				// Empty state + load more
+				if (emptyEl) emptyEl.hidden = eligible.length !== 0;
+				if (loadMore) loadMore.hidden = eligible.length <= visibleCount;
+
+				updateTitle();
+			};
+
+			// Chain filter buttons
+			buttons.forEach(btn => {
+				btn.addEventListener('click', () => {
+					buttons.forEach(b => b.classList.remove('is-active'));
+					btn.classList.add('is-active');
+
+					activeChain = btn.dataset.chain || 'all';
+					visibleCount = 10;
+					update();
+				});
+			});
+
+			// Search
+			search?.addEventListener('input', () => {
+				visibleCount = 10;
+				update();
+			});
+
+			// Load more
+			loadMore?.addEventListener('click', () => {
+				visibleCount += 10;
+				update();
+			});
+
+			// Notes accordion (delegated)
+			archive.addEventListener('click', (e) => {
+				const toggle = e.target.closest('[data-notes-toggle]');
+				if (!toggle) return;
+
+				const card  = toggle.closest('[data-gym-card]');
+				const panel = card?.querySelector('[data-notes-panel]');
+				if (!card || !panel) return;
+
+				const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+				toggle.setAttribute('aria-expanded', String(!isOpen));
+				card.classList.toggle('is-notes-open', !isOpen);
+			});
+
+			update();
+		})();
 	})
 ();
 

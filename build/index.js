@@ -1193,6 +1193,98 @@ __webpack_require__.r(__webpack_exports__);
     search.addEventListener('input', update);
     update();
   })();
+
+  // Filtering, searching and lazy loading for the Gyms archive (cards)
+
+  (function () {
+    var archive = document.querySelector('[data-gyms-archive]');
+    if (!archive) return;
+    var grid = archive.querySelector('[data-gyms-grid]');
+    var search = archive.querySelector('[data-gym-search]');
+    var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.gym-filter-buttons button'));
+    var titleEl = archive.querySelector('[data-gyms-state-title]');
+    var emptyEl = archive.querySelector('[data-gyms-empty]');
+    var loadMore = archive.querySelector('[data-gyms-load-more]');
+    if (!grid) return;
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(grid.querySelectorAll('[data-gym-card]'));
+    var activeChain = 'all';
+    var visibleCount = 10;
+    var LABELS = {
+      all: 'All',
+      davidlloyds: 'David Lloyd',
+      puregym: 'PureGym',
+      virginactive: 'Virgin Active',
+      fitnessfirst: 'Fitness First',
+      thegymgroup: 'The Gym Group'
+    };
+    var updateTitle = function updateTitle() {
+      var label = LABELS[activeChain] || 'All';
+      if (titleEl) titleEl.textContent = label;
+    };
+    var update = function update() {
+      var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
+      var eligible = allCards.filter(function (card) {
+        var chain = card.dataset.chain || 'unknown';
+        var chainOk = activeChain === 'all' || chain === activeChain;
+        var haystack = (card.dataset.search || '').toLowerCase();
+        var searchOk = !q || haystack.includes(q);
+        return chainOk && searchOk;
+      });
+
+      // Hide everything first
+      allCards.forEach(function (c) {
+        return c.hidden = true;
+      });
+
+      // Show first N eligible
+      eligible.slice(0, visibleCount).forEach(function (c) {
+        return c.hidden = false;
+      });
+
+      // Empty state + load more
+      if (emptyEl) emptyEl.hidden = eligible.length !== 0;
+      if (loadMore) loadMore.hidden = eligible.length <= visibleCount;
+      updateTitle();
+    };
+
+    // Chain filter buttons
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) {
+          return b.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        activeChain = btn.dataset.chain || 'all';
+        visibleCount = 10;
+        update();
+      });
+    });
+
+    // Search
+    search === null || search === void 0 || search.addEventListener('input', function () {
+      visibleCount = 10;
+      update();
+    });
+
+    // Load more
+    loadMore === null || loadMore === void 0 || loadMore.addEventListener('click', function () {
+      visibleCount += 10;
+      update();
+    });
+
+    // Notes accordion (delegated)
+    archive.addEventListener('click', function (e) {
+      var toggle = e.target.closest('[data-notes-toggle]');
+      if (!toggle) return;
+      var card = toggle.closest('[data-gym-card]');
+      var panel = card === null || card === void 0 ? void 0 : card.querySelector('[data-notes-panel]');
+      if (!card || !panel) return;
+      var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      card.classList.toggle('is-notes-open', !isOpen);
+    });
+    update();
+  })();
 })();
 
 /***/ }),

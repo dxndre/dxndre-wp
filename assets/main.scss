@@ -3681,117 +3681,398 @@ img {
 					font-size: 28px !important;
 					margin-bottom: 16px;
 
-					@include media-breakpoint-up(md) {
-						font-size: 36px !important;
-					}
-
-					@include media-breakpoint-up(lg) {
-						font-size: 48px !important;
-					}
+					@include media-breakpoint-up(md) { font-size: 36px !important; }
+					@include media-breakpoint-up(lg) { font-size: 48px !important; }
 				}
 
 				p {
 					font-size: 16px;
 					font-weight: 300;
 					margin-bottom: 24px;
-
-					// @include media-breakpoint-up(md) {
-					// 	font-size: 18px;
-					// }
-
-					// @include media-breakpoint-up(lg) {
-					// 	font-size: 20px;
-					// }
 				}
 
-				.dx-gym-table-wrap {
-					overflow-x: auto;
-					margin-top: 2rem;
-				}
+				/* =========================================================
+				ARCHIVE CONTROLS
+				========================================================= */
 
-				.dx-gym-table {
-					width: 100%;
-					border-collapse: collapse;
-					font-size: 0.95rem;
-					min-width: 900px; // prevents ugly squish on mobile
+				.gym-archive[data-gyms-archive] {
 
-					th,
-					td {
-						padding: 1rem;
-						border-bottom: 1px solid rgba(255,255,255,0.08);
-						vertical-align: top;
-						text-align: left;
+					.filter-inputs {
+						display: grid;
+						gap: 1rem;
+						margin-top: 1.5rem;
+						margin-bottom: 1.5rem;
+
+						@include media-breakpoint-up(lg) {
+							grid-template-columns: 1fr 1fr auto;
+							align-items: center;
+						}
 					}
 
-					th {
-						font-size: 0.75rem;
-						letter-spacing: 1px;
-						text-transform: uppercase;
-						color: rgba(255,255,255,0.6);
+					.gym-search input[type="search"] {
+						width: 100%;
+						height: 60px;
+						padding: 0 1.25rem;
+						border-radius: 0;
+						border: 2px solid rgba(255,255,255,0.85);
+						background: transparent;
+						color: white;
+						font-size: 1rem;
+						font-weight: 300;
+						transition: 0.25s ease;
+
+						&::placeholder { color: rgba(255,255,255,0.5); }
+
+						&:focus {
+							outline: none;
+							box-shadow: none;
+							background: rgba(255,255,255,0.06);
+							border-color: white;
+						}
+					}
+
+					.gym-filter-buttons {
+						display: flex;
+						flex-wrap: wrap;
+						gap: 0.75rem;
+
+						button {
+							border-radius: 0;
+							border: 1px solid rgba(255,255,255,0.35);
+							background: rgba(0,0,0,0.25);
+							color: rgba(255,255,255,0.75);
+							padding: 0.5rem 1rem;
+							font-size: 0.75rem;
+							letter-spacing: 0.08em;
+							text-transform: uppercase;
+							transition: 0.25s ease;
+							cursor: pointer;
+
+							&:hover {
+								border-color: rgba(255,255,255,0.65);
+								color: rgba(255,255,255,0.95);
+							}
+
+							&.is-active {
+								border-color: white;
+								color: black;
+								background: white;
+							}
+						}
+					}
+
+					.gym-controls {
+						display: grid;
+						gap: 0.75rem;
+
+						@include media-breakpoint-up(lg) {
+							justify-items: end;
+						}
+					}
+
+					.gym-sort select {
+						height: 46px;
+						padding: 0 0.85rem;
+						border-radius: 0;
+						border: 1px solid rgba(255,255,255,0.35);
+						background: rgba(0,0,0,0.25);
+						color: white;
+						font-size: 0.9rem;
+						outline: none;
+
+						&:focus {
+							border-color: rgba(255,255,255,0.75);
+						}
+					}
+
+					.gym-view-toggle {
+						display: inline-flex;
+						gap: 0.5rem;
+
+						button {
+							height: 46px;
+							padding: 0 0.9rem;
+							border-radius: 0;
+							border: 1px solid rgba(255,255,255,0.35);
+							background: rgba(0,0,0,0.25);
+							color: rgba(255,255,255,0.8);
+							font-size: 0.75rem;
+							letter-spacing: 0.08em;
+							text-transform: uppercase;
+							transition: 0.25s ease;
+
+							&.is-active {
+								background: white;
+								color: black;
+								border-color: white;
+							}
+						}
+					}
+
+					.gyms-state-title {
+						margin: 0 0 0.75rem;
+
+						.label {
+							border-bottom: 1px dashed rgba(255,255,255,0.6);
+							padding-bottom: 2px;
+						}
+					}
+
+					.gyms-empty-state {
+						border: 1px solid rgba(255,255,255,0.15);
+						padding: 2rem;
+						margin-top: 1.5rem;
+						background: rgba(0,0,0,0.25);
+						backdrop-filter: blur(10px);
+
+						h3 { margin-bottom: 0.5rem; }
+						span { opacity: 0.75; font-weight: 300; }
+					}
+				}
+
+				/* =========================================================
+				GRID + LIST VIEW
+				========================================================= */
+
+				.dx-gyms-grid {
+					display: grid;
+					gap: 1.25rem;
+					margin-top: 2rem;
+
+					@include media-breakpoint-up(md) {
+						grid-template-columns: repeat(2, 1fr);
+						gap: 1.5rem;
+					}
+
+					@include media-breakpoint-up(xl) {
+						grid-template-columns: repeat(3, 1fr);
+					}
+				}
+
+				.gym-archive.is-list-view {
+					.dx-gyms-grid {
+						grid-template-columns: 1fr !important;
+					}
+
+					.dx-gym-card {
+						padding: 1.5rem;
+					}
+				}
+
+				/* =========================================================
+				CARD
+				========================================================= */
+
+				.dx-gym-card {
+					background: rgba(255,255,255,0.03);
+					border: 1px solid rgba(255,255,255,0.06);
+					padding: 2rem;
+					display: flex;
+					flex-direction: column;
+					gap: 1.25rem;
+					transition: 0.35s ease;
+
+					&:hover {
+						background: rgba(255,255,255,0.05);
+						transform: translateY(-3px);
+					}
+				}
+
+				.dx-gym-card__header {
+					display: flex;
+					flex-direction: column;
+					gap: 0.75rem;
+				}
+
+				.dx-gym-card__branch {
+					margin: 0;
+					font-size: 1.25rem;
+
+					a { color: white; }
+				}
+
+				.dx-gym-card__meta {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 0.5rem;
+				}
+
+				.dx-badge {
+					font-size: 0.7rem;
+					padding: 0.4rem 0.75rem;
+					border-radius: 999px;
+					background: rgba(255,255,255,0.08);
+					display: inline-flex;
+					align-items: center;
+					gap: 0.4rem;
+
+					&--overall {
+						border: 1px solid rgba(255,255,255,0.12);
+					}
+
+					&--overall[data-score="na"] {
+						opacity: 0.65;
+					}
+
+					/* Overall heat colouring */
+					&--overall[data-score="0"]  { color: #ff3b3b; }
+					&--overall[data-score="1"]  { color: #ff4b4b; }
+					&--overall[data-score="2"]  { color: #ff5a5a; }
+					&--overall[data-score="3"]  { color: #ff7070; }
+					&--overall[data-score="4"]  { color: #ff8a8a; }
+					&--overall[data-score="5"]  { color: rgba(255,255,255,0.95); }
+					&--overall[data-score="6"]  { color: #d8ffd8; }
+					&--overall[data-score="7"]  { color: #b8ffb8; }
+					&--overall[data-score="8"]  { color: #7dff7d; }
+					&--overall[data-score="9"]  { color: #4dff9f; }
+					&--overall[data-score="10"] { color: #66ffe0; }
+				}
+
+				/* =========================================================
+				SCORES + ANIMATED BARS
+				========================================================= */
+
+				.dx-gym-card__scores {
+					display: grid;
+					gap: 0.85rem;
+				}
+
+				.dx-score-block {
+					display: grid;
+					gap: 0.4rem;
+
+					.dx-score-top {
+						display: flex;
+						justify-content: space-between;
+						gap: 1rem;
+						font-size: 0.9rem;
+					}
+
+					.dx-score-label {
+						opacity: 0.85;
+						font-weight: 300;
+					}
+
+					.dx-score-value {
 						font-weight: 600;
 					}
 
-					tbody tr {
-						transition: background 0.3s ease;
+					.dx-score-bar {
+						height: 6px;
+						background: rgba(255,255,255,0.08);
+						overflow: hidden;
+					}
+
+					.dx-score-bar span {
+						display: block;
+						height: 100%;
+						width: 100%;
+						transform-origin: left;
+						transform: scaleX(0);
+						transition: transform 650ms cubic-bezier(.2,.8,.2,1);
+						background: currentColor;
+						opacity: 0.9;
+					}
+
+					/* animate in on load */
+					.dx-score-bar span { transform: scaleX(var(--pct, 0)); }
+
+					&.is-unavailable,
+					&.is-didnt-use {
+						color: rgba(255,255,255,0.45);
+
+						.dx-score-value { font-weight: 300; }
+					}
+
+					/* score colour mapping (0–10) */
+					&[data-score="0"]  { color: #ff3b3b; }
+					&[data-score="1"]  { color: #ff4b4b; }
+					&[data-score="2"]  { color: #ff5a5a; }
+					&[data-score="3"]  { color: #ff7070; }
+					&[data-score="4"]  { color: #ff8a8a; }
+					&[data-score="5"]  { color: rgba(255,255,255,0.95); }
+					&[data-score="6"]  { color: #d8ffd8; }
+					&[data-score="7"]  { color: #b8ffb8; }
+					&[data-score="8"]  { color: #7dff7d; }
+					&[data-score="9"]  { color: #4dff9f; }
+					&[data-score="10"] { color: #66ffe0; }
+				}
+
+				/* =========================================================
+				NOTES ACCORDION
+				========================================================= */
+
+				.dx-notes {
+					border-top: 1px solid rgba(255,255,255,0.06);
+					padding-top: 1rem;
+				}
+
+				.dx-notes__toggle {
+					width: 100%;
+					display: inline-flex;
+					justify-content: space-between;
+					align-items: center;
+					background: transparent;
+					border: none;
+					color: rgba(255,255,255,0.85);
+					padding: 0;
+					cursor: pointer;
+					font-size: 0.9rem;
+
+					.chev {
+						transition: transform 0.25s ease;
+						opacity: 0.8;
+					}
+				}
+
+				.dx-notes__panel {
+					max-height: 0;
+					overflow: hidden;
+					opacity: 0.75;
+					font-size: 0.85rem;
+					line-height: 1.6;
+					transition: max-height 0.35s ease, opacity 0.35s ease, margin-top 0.35s ease;
+					margin-top: 0;
+				}
+
+				.dx-gym-card.is-notes-open {
+					.dx-notes__panel {
+						max-height: 240px; // enough for most notes; increase if you want
+						margin-top: 0.75rem;
+						opacity: 0.9;
+					}
+
+					.dx-notes__toggle .chev {
+						transform: rotate(180deg);
+					}
+				}
+
+				.dx-notes__empty {
+					opacity: 0.65;
+				}
+
+				/* =========================================================
+				PAGINATION
+				========================================================= */
+
+				.gym-pagination {
+					margin-top: 1.25rem;
+					display: flex;
+					justify-content: center;
+
+					button {
+						border-radius: 0;
+						min-height: 56px;
+						min-width: 220px;
+						border: 1px solid rgba(255,255,255,0.65);
+						background: transparent;
+						color: white;
+						transition: 0.25s ease;
 
 						&:hover {
-							background: rgba(255,255,255,0.03);
-						}
-					}
-				}
-
-				/* ==========================
-				SCORE STYLES
-				========================== */
-
-				.dx-score {
-					display: inline-flex;
-					align-items: center;
-					justify-content: center;
-					min-width: 48px;
-					font-weight: 600;
-
-					&--empty {
-						opacity: 0.4;
-					}
-
-					&--na {
-						font-style: italic;
-						opacity: 0.6;
-						font-size: 0.85rem;
-					}
-
-					&--num {
-						color: white;
-					}
-
-					&--trash {
-						font-size: 1.2rem;
-						filter: grayscale(20%);
-					}
-
-					&--diamond {
-						font-size: 1.2rem;
-					}
-				}
-
-				.dx-visit-type {
-					font-size: 0.8rem;
-					margin-bottom: 0.5rem;
-					opacity: 0.8;
-				}
-
-				/* ==========================
-				MOBILE BEHAVIOUR
-				========================== */
-
-				@include media-breakpoint-down(md) {
-					.dx-gym-table {
-						font-size: 0.85rem;
-
-						th,
-						td {
-							padding: 0.75rem;
+							background: white;
+							color: black;
+							border-color: white;
 						}
 					}
 				}

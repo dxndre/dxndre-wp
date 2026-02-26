@@ -1562,33 +1562,49 @@ function dx_projects_archive_shortcode($atts) {
  */
 
 function dx_render_facility_score($value) {
-	// Handle empty / null
-	if ($value === null || $value === '' || $value === false) {
-		return '<span class="dx-score dx-score--empty">—</span>';
+	$value = is_string($value) ? trim($value) : $value;
+
+	// Default blank to "didnt_use"
+	if ($value === '' || $value === null) {
+		$value = 'didnt_use';
 	}
 
 	// Unavailable
 	if ($value === 'unavailable') {
-		return '<span class="dx-score dx-score--na">Unavailable</span>';
+		return '<span class="dx-score is-unavailable"><span class="dx-score-emoji">—</span><span class="dx-score-text">Unavailable</span></span>';
 	}
 
-	// Normal numeric score
+	// Didn’t use
+	if ($value === 'didnt_use') {
+		return '<span class="dx-score is-didnt-use"><span class="dx-score-emoji">—</span><span class="dx-score-text">Didn’t use</span></span>';
+	}
+
+	// Numeric score 0–10
 	$score = is_numeric($value) ? (int) $value : null;
+	if ($score === null || $score < 0 || $score > 10) {
+		return '<span class="dx-score is-didnt-use"><span class="dx-score-emoji">—</span><span class="dx-score-text">Didn’t use</span></span>';
+	}
 
 	if ($score === 0) {
-		return '<span class="dx-score dx-score--trash" title="0/10">🗑️</span>';
+		$emoji = '🗑️';
+	} elseif ($score >= 1 && $score <= 4) {
+		$emoji = '👎🏾';
+	} elseif ($score === 5) {
+		$emoji = '🤷🏾‍♂️';
+	} elseif ($score >= 6 && $score <= 9) {
+		$emoji = '👍🏾';
+	} elseif ($score === 10) {
+		$emoji = '💎';
+	} else {
+		$emoji = '—';
 	}
 
-	if ($score === 10) {
-		return '<span class="dx-score dx-score--diamond" title="10/10">💎</span>';
-	}
-
-	if ($score !== null) {
-		// Optional: show number with /10
-		return '<span class="dx-score dx-score--num" title="' . esc_attr($score . '/10') . '">' . esc_html($score) . '/10</span>';
-	}
-
-	return '<span class="dx-score dx-score--empty">—</span>';
+	return sprintf(
+		'<span class="dx-score" data-score="%d"><span class="dx-score-emoji">%s</span><span class="dx-score-text">%d/10</span></span>',
+		$score,
+		$emoji,
+		$score
+	);
 }
 
 function dx_gym_chain_label($value) {
@@ -1616,8 +1632,8 @@ function dx_visit_type_label($value) {
 
 function dx_shortcode_gym_table($atts) {
 	$atts = shortcode_atts([
-		'chain' => '',         // optional filter: davidlloyds / puregym etc
-		'limit' => -1,         // optional limit
+		'chain' => '',     // optional filter: davidlloyds / puregym etc
+		'limit' => -1,     // optional limit
 	], $atts, 'dx_gym_table');
 
 	$args = [
@@ -1628,7 +1644,6 @@ function dx_shortcode_gym_table($atts) {
 		'order'          => 'DESC',
 	];
 
-	// Optional: filter by chain (ACF stored as meta)
 	if (!empty($atts['chain'])) {
 		$args['meta_query'] = [
 			[
@@ -1648,75 +1663,236 @@ function dx_shortcode_gym_table($atts) {
 		return ob_get_clean();
 	}
 
-	echo '<div class="dx-gym-table-wrap">';
-	echo '<table class="dx-gym-table">';
-	echo '<thead>
-			<tr>
-				<th>Gym Chain</th>
-				<th>Branch</th>
-				<th>Visited</th>
-				<th>Gym 🏋🏾‍♂️</th>
-				<th>Swim 🏊🏾</th>
-				<th>Spa Retreat 🧖🏽</th>
-				<th>Cafeteria & Work Area 🍱</th>
-				<th>Notes 📄</th>
-			</tr>
-		  </thead>';
-	echo '<tbody>';
+	// Wrapper (Projects-page style)
+	echo '<div class="gym-archive" data-gyms-archive>';
+
+	/**
+	 * Controls UI (search / filters / sort / view toggle)
+	 * You can move this into your page builder if you prefer,
+	 * but this gives you a working default.
+	 */
+	echo '
+		<div class="filter-inputs">
+			<div class="gym-search">
+				<input type="search" placeholder="Search gyms…" aria-label="Search gyms" data-gym-search />
+			</div>
+
+			<div class="gym-filter-buttons">
+				<button class="is-active" data-chain="all">All</button>
+				<button data-chain="davidlloyds">David Lloyd</button>
+				<button data-chain="puregym">PureGym</button>
+				<button data-chain="virginactive">Virgin Active</button>
+				<button data-chain="fitnessfirst">Fitness First</button>
+				<button data-chain="thegymgroup">The Gym Group</button>
+			</div>
+
+			<div class="gym-controls">
+				<label class="gym-sort">
+					<span class="sr-only">Sort</span>
+					<select data-gym-sort aria-label="Sort gyms">
+						<option value="overall_desc">Highest rated</option>
+						<option value="overall_asc">Lowest rated</option>
+						<option value="date_desc">Visit date (newest)</option>
+						<option value="date_asc">Visit date (oldest)</option>
+						<option value="az">A–Z</option>
+						<option value="za">Z–A</option>
+					</select>
+				</label>
+
+				<div class="gym-view-toggle" role="group" aria-label="View toggle">
+					<button type="button" class="is-active" data-gym-view="cards">Cards</button>
+					<button type="button" data-gym-view="list">List</button>
+				</div>
+			</div>
+		</div>
+
+		<h2 class="gyms-state-title">
+			Showing <span data-gyms-state-title class="label">All</span> Gyms
+		</h2>
+
+		<div class="gyms-empty-state" hidden data-gyms-empty>
+			<h3>No Gyms Found</h3>
+			<span>Try adjusting your filters or search terms.</span>
+		</div>
+	';
+
+	echo '<div class="dx-gyms-grid" data-gyms-grid>';
 
 	while ($q->have_posts()) {
 		$q->the_post();
 
 		$branch     = get_the_title();
 
-		$chain_val  = function_exists('get_field') ? get_field('gym_chain') : '';
+		$chain_val  = get_field('gym_chain');
 		$chain_lbl  = dx_gym_chain_label($chain_val);
 
-		$date_raw   = function_exists('get_field') ? get_field('visited_date') : ''; // expecting Y-m-d
+		$date_raw   = get_field('visited_date'); // stored Y-m-d
 		$visited    = '—';
+		$visited_ts = 0;
+
 		if (!empty($date_raw)) {
 			$ts = strtotime($date_raw);
-			if ($ts) $visited = date_i18n('F Y', $ts);
+			if ($ts) {
+				$visited_ts = $ts;
+				$visited = date_i18n('F Y', $ts);
+			}
 		}
 
-		$visit_type_val = function_exists('get_field') ? get_field('visit_type') : '';
+		$visit_type_val = get_field('visit_type');
 		$visit_type_lbl = dx_visit_type_label($visit_type_val);
 
-		// Facility scores
-		$score_gym  = function_exists('get_field') ? get_field('score_gym')  : '';
-		$score_swim = function_exists('get_field') ? get_field('score_swim') : '';
-		$score_spa  = function_exists('get_field') ? get_field('score_spa')  : '';
-		$score_cafe = function_exists('get_field') ? get_field('score_cafe') : '';
+		// Facility scores (support 'didnt_use' + 'unavailable' + numeric)
+		$sGym  = dx_normalise_facility_score(get_field('score_gym'));
+		$sSwim = dx_normalise_facility_score(get_field('score_swim'));
+		$sSpa  = dx_normalise_facility_score(get_field('score_spa'));
+		$sCafe = dx_normalise_facility_score(get_field('score_cafe'));
 
-		$notes      = function_exists('get_field') ? get_field('notes') : '';
+		$overall = dx_calc_overall_score([$sGym, $sSwim, $sSpa, $sCafe]); // null if none
+		$overall_score = ($overall === null) ? -1 : (int) $overall;
+		$overall_emoji = ($overall === null) ? '—' : dx_score_to_emoji($overall);
 
-		// Add membership type only for David Lloyds (matches your requirement)
-		if ($chain_val === 'davidlloyds' && !empty($visit_type_val) && $visit_type_val !== 'didnt_use') {
-			$notes_prefix = '<div class="dx-visit-type"><strong>Visit:</strong> ' . esc_html($visit_type_lbl) . '</div>';
-		} else {
-			$notes_prefix = '';
-		}
+		$notes = (string) get_field('notes');
 
-		echo '<tr>';
-			echo '<td>' . esc_html($chain_lbl) . '</td>';
-			echo '<td><a href="' . esc_url(get_permalink()) . '">' . esc_html($branch) . '</a></td>';
-			echo '<td>' . esc_html($visited) . '</td>';
+		$search_blob = strtolower(trim($branch.' '.$chain_lbl.' '.$visited.' '.$notes));
 
-			echo '<td>' . dx_render_facility_score($score_gym)  . '</td>';
-			echo '<td>' . dx_render_facility_score($score_swim) . '</td>';
-			echo '<td>' . dx_render_facility_score($score_spa)  . '</td>';
-			echo '<td>' . dx_render_facility_score($score_cafe) . '</td>';
+		echo '
+		<article
+			class="dx-gym-card"
+			data-gym-card
+			data-chain="'.esc_attr($chain_val ?: 'unknown').'"
+			data-search="'.esc_attr($search_blob).'"
+			data-branch="'.esc_attr(strtolower($branch)).'"
+			data-visited-ts="'.esc_attr($visited_ts).'"
+			data-overall="'.esc_attr($overall_score).'"
+		>
+			<div class="dx-gym-card__header">
+				<h3 class="dx-gym-card__branch">
+					<a href="'.esc_url(get_permalink()).'">'.esc_html($branch).'</a>
+				</h3>
 
-			echo '<td>' . $notes_prefix . wp_kses_post(nl2br(esc_html($notes))) . '</td>';
-		echo '</tr>';
+				<div class="dx-gym-card__meta">
+					<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
+					<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
+
+					'.(
+						$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
+						? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'
+						: ''
+					).'
+
+					<span class="dx-badge dx-badge--overall" '.($overall !== null ? 'data-score="'.esc_attr($overall).'"' : 'data-score="na"').'>
+						<span class="emoji">'.esc_html($overall_emoji).'</span>
+						<span class="text">'.($overall !== null ? esc_html($overall).'/10' : 'No rating').'</span>
+					</span>
+				</div>
+			</div>
+
+			<div class="dx-gym-card__scores">
+				'.dx_render_facility_score_block('Gym',  get_field('score_gym')).'
+				'.dx_render_facility_score_block('Swim', get_field('score_swim')).'
+				'.dx_render_facility_score_block('Spa',  get_field('score_spa')).'
+				'.dx_render_facility_score_block('Café', get_field('score_cafe')).'
+			</div>
+
+			<div class="dx-notes">
+				<button class="dx-notes__toggle" type="button" data-notes-toggle aria-expanded="false">
+					Expand Notes
+					<span class="chev" aria-hidden="true">▾</span>
+				</button>
+
+				<div class="dx-notes__panel" data-notes-panel>
+					'.($notes ? wp_kses_post(nl2br(esc_html($notes))) : '<span class="dx-notes__empty">No notes for this visit.</span>').'
+				</div>
+			</div>
+		</article>';
 	}
 
-	wp_reset_postdata();
+	echo '</div>'; // grid
 
-	echo '</tbody>';
-	echo '</table>';
-	echo '</div>';
+	echo '
+		<div class="gym-pagination">
+			<button type="button" data-gyms-load-more>Load more</button>
+		</div>
+	';
+
+	echo '</div>'; // archive
 
 	return ob_get_clean();
 }
 add_shortcode('dx_gym_table', 'dx_shortcode_gym_table');
+
+// Score Block Renderer
+
+function dx_score_to_emoji($score) {
+	$score = (int) $score;
+
+	if ($score === 0) return '🗑️';
+	if ($score >= 1 && $score <= 4) return '👎🏾';
+	if ($score === 5) return '🤷🏾‍♂️';
+	if ($score >= 6 && $score <= 9) return '👍🏾';
+	if ($score === 10) return '💎';
+
+	return '—';
+}
+
+function dx_normalise_facility_score($raw) {
+	// supports: '', null, 'didnt_use', 'unavailable', numeric
+	if ($raw === null || $raw === '' || $raw === 'didnt_use') return null;
+	if ($raw === 'unavailable') return 'unavailable';
+
+	$n = (int) $raw;
+	if ($n < 0) $n = 0;
+	if ($n > 10) $n = 10;
+	return $n;
+}
+
+function dx_calc_overall_score($scores) {
+	// average only numeric scores (ignore null and 'unavailable')
+	$nums = [];
+	foreach ($scores as $s) {
+		if (is_int($s)) $nums[] = $s;
+	}
+	if (!count($nums)) return null;
+
+	return (int) round(array_sum($nums) / count($nums));
+}
+
+function dx_render_facility_score_block($label, $rawScore) {
+	$score = dx_normalise_facility_score($rawScore);
+
+	// Unavailable
+	if ($score === 'unavailable') {
+		return '
+		<div class="dx-score-block is-unavailable">
+			<div class="dx-score-top">
+				<span class="dx-score-label">'.esc_html($label).'</span>
+				<span class="dx-score-value">Unavailable</span>
+			</div>
+			<div class="dx-score-bar" aria-hidden="true"><span style="--pct:0"></span></div>
+		</div>';
+	}
+
+	// Didn't use (default state)
+	if ($score === null) {
+		return '
+		<div class="dx-score-block is-didnt-use">
+			<div class="dx-score-top">
+				<span class="dx-score-label">'.esc_html($label).'</span>
+				<span class="dx-score-value">Didn’t use</span>
+			</div>
+			<div class="dx-score-bar" aria-hidden="true"><span style="--pct:0"></span></div>
+		</div>';
+	}
+
+	$emoji = dx_score_to_emoji($score);
+	$pct   = $score / 10;
+
+	return '
+	<div class="dx-score-block" data-score="'.esc_attr($score).'">
+		<div class="dx-score-top">
+			<span class="dx-score-label">'.esc_html($label).'</span>
+			<span class="dx-score-value">'.esc_html($emoji).' '.esc_html($score).'/10</span>
+		</div>
+		<div class="dx-score-bar" aria-hidden="true"><span style="--pct:'.esc_attr($pct).'"></span></div>
+	</div>';
+}
