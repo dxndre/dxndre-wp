@@ -1246,6 +1246,10 @@ body.is-frontend {
 							&:first-of-type {
 								padding-left: 28px;
 							}
+
+							&:last-of-type {
+								margin-right: 6em;
+							}
 						}
 					}
 
@@ -3830,6 +3834,20 @@ img {
 					}
 				}
 
+				.gym-archive[data-view="list"] {
+					.dx-gyms-grid {
+						display: grid;
+						gap: 12px;
+						grid-template-columns: repeat(1, 1fr);
+					}
+
+					.dx-gym-card {
+						// whatever “list” style means for you:
+						display: grid;
+						grid-template-columns: 1fr;
+					}
+				}
+
 				/* =========================================================
 				GRID + LIST VIEW
 				========================================================= */
@@ -3882,6 +3900,28 @@ img {
 					display: flex;
 					flex-direction: column;
 					gap: 0.75rem;
+				}
+
+				.dx-gym-card__subtitle {
+					margin-bottom: 0.5rem;
+					font-size: 0.8rem;
+					letter-spacing: 0.14em;
+					text-transform: uppercase;
+					color: rgba(255,255,255,0.65);
+					line-height: 1.3;
+
+					a {
+						color: inherit;
+						padding-bottom: 4px;
+						text-decoration: none;
+						border-bottom: 1px solid rgba(255,255,255,0.25);
+						transition: 0.25s ease;
+
+						&:hover {
+							color: white;
+							border-bottom: 1px solid white;
+						}
+					}
 				}
 
 				.dx-gym-card__branch {

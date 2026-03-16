@@ -593,834 +593,675 @@ import * as bootstrap from 'bootstrap';
 			img.dataset.hasBackdrop = 'true';
 
 			img.parentNode.insertBefore(clone, img);
-			});
 		});
+	});
 
-		// Projects Marquee
+	// Projects Marquee
 
-		(() => {
-			const marquee = document.querySelector('.projects-marquee');
-			const track = marquee?.querySelector('.marquee-track');
-			if (!track) return;
+	(() => {
+		const marquee = document.querySelector('.projects-marquee');
+		const track = marquee?.querySelector('.marquee-track');
+		if (!track) return;
 
-			// Duplicate content for seamless loop
-			const items = [...track.children];
-			items.forEach(item => track.appendChild(item.cloneNode(true)));
+		// Duplicate content for seamless loop
+		const items = [...track.children];
+		items.forEach(item => track.appendChild(item.cloneNode(true)));
 
-			let position = 0;
-			let speed = 0.6;          // base speed
-			let targetSpeed = speed;
+		let position = 0;
+		let speed = 0.6;          // base speed
+		let targetSpeed = speed;
 
-			function animate() {
-				position -= targetSpeed;
-				const resetPoint = track.scrollWidth / 2;
+		function animate() {
+			position -= targetSpeed;
+			const resetPoint = track.scrollWidth / 2;
 
-				if (Math.abs(position) >= resetPoint) {
-				position = 0;
-				}
-
-				track.style.transform = `translate3d(${position}px,0,0)`;
-
-				// Smooth easing toward target speed
-				targetSpeed += (speed - targetSpeed) * 0.08;
-
-				requestAnimationFrame(animate);
+			if (Math.abs(position) >= resetPoint) {
+			position = 0;
 			}
 
-			marquee.addEventListener('mouseenter', () => {
-				speed = 0.05; // slow glide instead of stop
+			track.style.transform = `translate3d(${position}px,0,0)`;
+
+			// Smooth easing toward target speed
+			targetSpeed += (speed - targetSpeed) * 0.08;
+
+			requestAnimationFrame(animate);
+		}
+
+		marquee.addEventListener('mouseenter', () => {
+			speed = 0.05; // slow glide instead of stop
+		});
+
+		marquee.addEventListener('mouseleave', () => {
+			speed = 0.6;
+		});
+
+		animate();
+	})();
+
+
+	// Previous modal back button functionality
+
+	document.addEventListener('click', (e) => {
+		const backBtn = e.target.closest('.modal-back');
+		if (!backBtn) return;
+
+		const targetModal = backBtn.dataset.backTo;
+		const currentModal = backBtn.closest('.modal');
+
+		if (!targetModal || !currentModal) return;
+
+		const currentInstance = bootstrap.Modal.getInstance(currentModal);
+		currentInstance.hide();
+
+		const nextModalEl = document.querySelector(targetModal);
+		const nextInstance = new bootstrap.Modal(nextModalEl);
+		nextInstance.show();
+	});
+
+	// Make sure only mone modal is open at a time
+
+	document.addEventListener('DOMContentLoaded', () => {
+
+		// -----------------------------
+		// Modal controller
+		// -----------------------------
+		function showModalSafely(targetSelector) {
+			const openModals = document.querySelectorAll('.modal.show');
+
+			if (openModals.length) {
+				let remaining = openModals.length;
+
+				openModals.forEach((modal) => {
+					const instance = bootstrap.Modal.getInstance(modal);
+					if (!instance) {
+						remaining--;
+						return;
+					}
+
+					modal.addEventListener(
+						'hidden.bs.modal',
+						() => {
+							remaining--;
+							if (remaining === 0) {
+								openTargetModal(targetSelector);
+							}
+						},
+						{ once: true }
+					);
+
+					instance.hide();
+				});
+			} else {
+				openTargetModal(targetSelector);
+			}
+		}
+
+		function openTargetModal(targetSelector) {
+			const modalEl = document.querySelector(targetSelector);
+			if (!modalEl) return;
+
+			const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+				backdrop: 'static',
+				focus: true
 			});
 
-			marquee.addEventListener('mouseleave', () => {
-				speed = 0.6;
-			});
+			modal.show();
+		}
 
-			animate();
-		})();
+		// -----------------------------
+		// Step 2: Navigation bindings
+		// -----------------------------
 
+		// Client path
+		document.querySelector('.js-client-path')?.addEventListener('click', () => {
+			showModalSafely('#clientModal');
+		});
 
-		// Previous modal back button functionality
+		// Recruiter path
+		document.querySelector('.js-recruiter-path')?.addEventListener('click', () => {
+			showModalSafely('#recruiterModal');
+		});
 
+		// Back buttons (delegated)
 		document.addEventListener('click', (e) => {
 			const backBtn = e.target.closest('.modal-back');
 			if (!backBtn) return;
 
-			const targetModal = backBtn.dataset.backTo;
-			const currentModal = backBtn.closest('.modal');
+			const target = backBtn.dataset.backTo;
+			if (!target) return;
 
-			if (!targetModal || !currentModal) return;
-
-			const currentInstance = bootstrap.Modal.getInstance(currentModal);
-			currentInstance.hide();
-
-			const nextModalEl = document.querySelector(targetModal);
-			const nextInstance = new bootstrap.Modal(nextModalEl);
-			nextInstance.show();
+			showModalSafely(target);
 		});
 
-		// Make sure only mone modal is open at a time
-
-		document.addEventListener('DOMContentLoaded', () => {
-
-			// -----------------------------
-			// Modal controller
-			// -----------------------------
-			function showModalSafely(targetSelector) {
-				const openModals = document.querySelectorAll('.modal.show');
-
-				if (openModals.length) {
-					let remaining = openModals.length;
-
-					openModals.forEach((modal) => {
-						const instance = bootstrap.Modal.getInstance(modal);
-						if (!instance) {
-							remaining--;
-							return;
-						}
-
-						modal.addEventListener(
-							'hidden.bs.modal',
-							() => {
-								remaining--;
-								if (remaining === 0) {
-									openTargetModal(targetSelector);
-								}
-							},
-							{ once: true }
-						);
-
-						instance.hide();
-					});
-				} else {
-					openTargetModal(targetSelector);
-				}
-			}
-
-			function openTargetModal(targetSelector) {
-				const modalEl = document.querySelector(targetSelector);
-				if (!modalEl) return;
-
-				const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
-					backdrop: 'static',
-					focus: true
-				});
-
-				modal.show();
-			}
-
-			// -----------------------------
-			// Step 2: Navigation bindings
-			// -----------------------------
-
-			// Client path
-			document.querySelector('.js-client-path')?.addEventListener('click', () => {
-				showModalSafely('#clientModal');
-			});
-
-			// Recruiter path
-			document.querySelector('.js-recruiter-path')?.addEventListener('click', () => {
-				showModalSafely('#recruiterModal');
-			});
-
-			// Back buttons (delegated)
-			document.addEventListener('click', (e) => {
-				const backBtn = e.target.closest('.modal-back');
-				if (!backBtn) return;
-
-				const target = backBtn.dataset.backTo;
-				if (!target) return;
-
-				showModalSafely(target);
-			});
-
-			// -----------------------------
-			// Step 3: Cleanup safety net
-			// -----------------------------
-			document.addEventListener('hidden.bs.modal', () => {
-				document.body.classList.remove('modal-open');
-				document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-			});
-
+		// -----------------------------
+		// Step 3: Cleanup safety net
+		// -----------------------------
+		document.addEventListener('hidden.bs.modal', () => {
+			document.body.classList.remove('modal-open');
+			document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
 		});
 
-		// Gallery marquee for Portfolio page
+	});
 
-		document.querySelectorAll('.gallery-marquee').forEach(marquee => {
-			const track = marquee.querySelector('.gallery-track');
-			if (!track) return;
+	// Gallery marquee for Portfolio page
 
-			const galleries = track.querySelectorAll('.wp-block-gallery');
-			if (galleries.length < 2) return;
+	document.querySelectorAll('.gallery-marquee').forEach(marquee => {
+		const track = marquee.querySelector('.gallery-track');
+		if (!track) return;
 
-			let position = 0;
-			let speed = 0.5; // gallery pace (slower than projects)
-			let paused = false;
+		const galleries = track.querySelectorAll('.wp-block-gallery');
+		if (galleries.length < 2) return;
 
-			const galleryWidth = galleries[0].offsetWidth;
+		let position = 0;
+		let speed = 0.5; // gallery pace (slower than projects)
+		let paused = false;
 
-			function animate() {
-				if (!paused) {
-					position -= speed;
+		const galleryWidth = galleries[0].offsetWidth;
 
-					// seamless loop
-					if (Math.abs(position) >= galleryWidth) {
-						position += galleryWidth;
-					}
+		function animate() {
+			if (!paused) {
+				position -= speed;
 
-					track.style.transform = `translate3d(${position}px, 0, 0)`;
+				// seamless loop
+				if (Math.abs(position) >= galleryWidth) {
+					position += galleryWidth;
 				}
 
-				requestAnimationFrame(animate);
+				track.style.transform = `translate3d(${position}px, 0, 0)`;
 			}
 
-			// Pause on hover
-			marquee.addEventListener('mouseenter', () => paused = true);
-			marquee.addEventListener('mouseleave', () => paused = false);
-
-			// Pause when off-screen
-			const observer = new IntersectionObserver(entries => {
-				paused = !entries[0].isIntersecting;
-			}, { threshold: 0.15 });
-
-			observer.observe(marquee);
-
-			animate();
-		});
-
-		function initSmartSearchSuggestions() {
-			const suggestionsEl = document.querySelector('.search-suggestions');
-			if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
-
-			const searchInput = document.querySelector('input[type="search"]');
-
-			const params = new URLSearchParams(window.location.search);
-			const query =
-				searchInput?.value.trim() ||
-				params.get('s')?.trim();
-
-			if (!query) return;
-
-			fetch(`/wp-json/wp/v2/search?search=${encodeURIComponent(query)}`)
-				.then(res => res.json())
-				.then(results => {
-					if (!Array.isArray(results) || !results.length) return;
-
-					const seen = new Set();
-					const fragment = document.createDocumentFragment();
-
-					results.slice(0, 6).forEach((item, index) => {
-						if (!item.title || seen.has(item.title)) return;
-						seen.add(item.title);
-
-						const li = document.createElement('li');
-						li.style.setProperty('--delay', index);
-
-						li.innerHTML = `
-							<a href="${item.url}" class="search-suggestion">
-								<span class="suggestion-type">
-									${item.subtype.replace('-', ' ')}
-								</span>
-								<div class="suggestion-content">
-									<span class="suggestion-label">${item.title}</span>
-									<span class="suggestion-arrow">→</span>
-								</div>
-							</a>
-						`;
-
-						fragment.appendChild(li);
-					});
-
-					if (!fragment.childNodes.length) return;
-
-					suggestionsEl.innerHTML = '';
-					suggestionsEl.appendChild(fragment);
-					suggestionsEl.classList.add('is-visible');
-				})
-				.catch(() => {
-					// silent fail
-				});
+			requestAnimationFrame(animate);
 		}
 
-		document.addEventListener('DOMContentLoaded', () => {
-			// Initialise search suggestions
-			initSmartSearchSuggestions();
+		// Pause on hover
+		marquee.addEventListener('mouseenter', () => paused = true);
+		marquee.addEventListener('mouseleave', () => paused = false);
 
-			// Visibility listener for Homepage Hero inner content
-			const hero = document.querySelector('.cover-content');
-			if (!hero) return;
+		// Pause when off-screen
+		const observer = new IntersectionObserver(entries => {
+			paused = !entries[0].isIntersecting;
+		}, { threshold: 0.15 });
 
-			requestAnimationFrame(() => {
-				hero.classList.add('is-revealed');
+		observer.observe(marquee);
+
+		animate();
+	});
+
+	function initSmartSearchSuggestions() {
+		const suggestionsEl = document.querySelector('.search-suggestions');
+		if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
+
+		const searchInput = document.querySelector('input[type="search"]');
+
+		const params = new URLSearchParams(window.location.search);
+		const query =
+			searchInput?.value.trim() ||
+			params.get('s')?.trim();
+
+		if (!query) return;
+
+		fetch(`/wp-json/wp/v2/search?search=${encodeURIComponent(query)}`)
+			.then(res => res.json())
+			.then(results => {
+				if (!Array.isArray(results) || !results.length) return;
+
+				const seen = new Set();
+				const fragment = document.createDocumentFragment();
+
+				results.slice(0, 6).forEach((item, index) => {
+					if (!item.title || seen.has(item.title)) return;
+					seen.add(item.title);
+
+					const li = document.createElement('li');
+					li.style.setProperty('--delay', index);
+
+					li.innerHTML = `
+						<a href="${item.url}" class="search-suggestion">
+							<span class="suggestion-type">
+								${item.subtype.replace('-', ' ')}
+							</span>
+							<div class="suggestion-content">
+								<span class="suggestion-label">${item.title}</span>
+								<span class="suggestion-arrow">→</span>
+							</div>
+						</a>
+					`;
+
+					fragment.appendChild(li);
+				});
+
+				if (!fragment.childNodes.length) return;
+
+				suggestionsEl.innerHTML = '';
+				suggestionsEl.appendChild(fragment);
+				suggestionsEl.classList.add('is-visible');
+			})
+			.catch(() => {
+				// silent fail
 			});
+	}
+
+	document.addEventListener('DOMContentLoaded', () => {
+		// Initialise search suggestions
+		initSmartSearchSuggestions();
+
+		// Visibility listener for Homepage Hero inner content
+		const hero = document.querySelector('.cover-content');
+		if (!hero) return;
+
+		requestAnimationFrame(() => {
+			hero.classList.add('is-revealed');
+		});
+	});
+
+	/* ==========================
+	CASE STUDY: STORY CONTROLLER (SIMPLIFIED)
+	========================== */
+
+	function initStoryController() {
+		// Prevent double-init (bfcache / partial reload)
+		if (document.body.dataset.storyInit === 'true') return;
+		document.body.dataset.storyInit = 'true';
+
+		const chaptersWrapper = document.querySelector('.chapters-wrapper');
+		const storySections   = [...document.querySelectorAll('.story-section')];
+		const chapterWrap     = document.querySelector('.chapter-selector');
+		const chapterNav      = chapterWrap?.querySelector('ul');
+
+		// Safety exit
+		if (!chaptersWrapper || !storySections.length || !chapterNav) return;
+
+		// -----------------------------
+		// URL hash control (prevents auto #chapter-1 on load)
+		// -----------------------------
+		let hasUserEnteredStory = false;
+		const hadInitialHash = !!window.location.hash;
+
+		// -----------------------------
+		// 1) Build chapter selector
+		// -----------------------------
+		chapterNav.innerHTML = '';
+
+		const chapterMeta = storySections
+			.map(section => {
+				const chapterEl = section.querySelector('.cs-chapter[id]');
+				const titleEl   = chapterEl?.querySelector('h2.chapter-title');
+				if (!chapterEl || !titleEl) return null;
+				return { section, id: chapterEl.id, title: titleEl.textContent.trim() };
+			})
+			.filter(Boolean);
+
+		// If only 1 chapter, remove selector UI
+		if (chapterMeta.length <= 1) {
+			chapterWrap?.remove();
+			return;
+		}
+
+		chapterMeta.forEach(({ id, title }) => {
+			const li = document.createElement('li');
+			li.dataset.target = id;
+			li.innerHTML = `<span>${title}</span>`;
+			chapterNav.appendChild(li);
 		});
 
-		/* ==========================
-		CASE STUDY: STORY CONTROLLER (FINAL)
-		========================== */
+		const chapterLinks = [...chapterNav.querySelectorAll('li')];
 
-		(() => {
-			const hero = document.querySelector('.story-hero');
-			const chaptersWrapper = document.querySelector('.chapters-wrapper');
-			const storySections = [...document.querySelectorAll('.story-section')];
-			const chapterWrap = document.querySelector('.chapter-selector');
-			const chapterNav = chapterWrap?.querySelector('ul');
-
-			// Safety exit
-			if (!hero || !chaptersWrapper || !storySections.length || !chapterNav) return;
-
-			/* --------------------------------
-			1. Build chapter selector dynamically
-			-------------------------------- */
-
-			chapterNav.innerHTML = '';
-
-			const chapters = storySections
-				.map(section => section.querySelector('.cs-chapter'))
-				.filter(Boolean);
-
-			chapters.forEach(chapter => {
-				const heading = chapter.querySelector('h2.chapter-title');
-				if (!heading || !chapter.id) return;
-
-				const li = document.createElement('li');
-				li.dataset.target = chapter.id;
-				li.innerHTML = `<span>${heading.textContent.trim()}</span>`;
-				chapterNav.appendChild(li);
-			});
-
-			const chapterLinks = [...chapterNav.querySelectorAll('li')];
-
-			if (chapterLinks.length <= 1) {
-				chapterWrap.remove();
-				return;
-			}
-
-			/* --------------------------------
-			Progress indicator element
-			-------------------------------- */
-
+		// Progress bar (optional)
+		let progressBar = chapterWrap.querySelector('.chapter-progress span');
+		if (!progressBar) {
 			const progress = document.createElement('div');
 			progress.className = 'chapter-progress';
 			progress.innerHTML = `<span></span>`;
 			chapterWrap.appendChild(progress);
+			progressBar = progress.querySelector('span');
+		}
 
-			const progressBar = progress.querySelector('span');
+		// -----------------------------
+		// Helpers
+		// -----------------------------
+		const getBgLayers = () => [...document.querySelectorAll('.story-backgrounds .bg')];
 
-			/* --------------------------------
-			2. State
-			-------------------------------- */
+		const setActiveBackground = (id) => {
+			if (!id) return;
+			const layers = getBgLayers();
+			if (!layers.length) return;
 
-			let activeIndex = 0;
-			let activeSection = null;
-			let isSnapping = false;
-			let isLockedInChapters = false;
-			let hasEnteredStory = false;
+			layers.forEach(bg => {
+				bg.classList.toggle('is-active', bg.dataset.bg === id);
+			});
+		};
 
-			const vh = () => window.innerHeight;
+		const setActive = (index) => {
+			const item = chapterMeta[index];
+			if (!item) return;
 
-			const wrapperTop = () =>
-				chaptersWrapper.getBoundingClientRect().top;
+			// section highlight
+			storySections.forEach(s => s.classList.remove('viewport-active'));
+			item.section.classList.add('viewport-active');
 
-			const wrapperBottom = () =>
-				chaptersWrapper.getBoundingClientRect().bottom;
+			// selector highlight
+			chapterLinks.forEach(link => {
+				link.classList.toggle('is-active', link.dataset.target === item.id);
+			});
 
-			/* --------------------------------
-			3. Activate section (single source of truth)
-			-------------------------------- */
+			// URL hash (only update after the user reaches the story,
+			// OR if they landed directly on a hash)
+			if ((hasUserEnteredStory || hadInitialHash) && window.location.hash !== `#${item.id}`) {
+				history.replaceState(null, '', `#${item.id}`);
+			}
 
-			const setActiveSection = (section) => {
-				if (!section || activeSection === section) return;
+			// backgrounds
+			setActiveBackground(item.id);
 
-				storySections.forEach(s => s.classList.remove('viewport-active'));
-				section.classList.add('viewport-active');
+			// progress
+			const pct = ((index + 1) / chapterMeta.length);
+			progressBar.style.transform = `scaleY(${pct})`;
+		};
 
-				activeSection = section;
-				activeIndex = Math.max(0, storySections.indexOf(section));
+		const snapTo = (index) => {
+			const item = chapterMeta[index];
+			if (!item) return;
+			item.section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		};
 
-				const chapterEl = section.querySelector('.cs-chapter[id]');
-				const id = chapterEl ? chapterEl.id : null;
+		// -----------------------------
+		// 2) Simple "in story" state (10vh scroll trigger)
+		// -----------------------------
+		const updateStoryState = () => {
+			const threshold = window.innerHeight * 0.10; // 10vh
+			const inStory = window.scrollY >= threshold;
 
-				chapterLinks.forEach(link =>
-					link.classList.toggle('is-active', link.dataset.target === id)
-				);
+			document.body.classList.toggle('is-in-story', inStory);
 
-				if (id && hasEnteredStory && document.body.classList.contains('is-in-story')) {
-					history.replaceState(null, '', `#${id}`);
-				}
+			if (inStory) {
+				hasUserEnteredStory = true;
+			}
+		};
 
-				setActiveBackground(id);
+		window.addEventListener('scroll', updateStoryState, { passive: true });
+		window.addEventListener('resize', updateStoryState, { passive: true });
 
-				// Update progress bar
-				const pct = ((activeIndex + 1) / storySections.length) * 100;
-				progressBar.style.transform = `scaleY(${pct / 100})`;
+		// Run once on load
+		updateStoryState();
 
-				
-			};
+		// -----------------------------
+		// 3) Active section detection (single observer)
+		// -----------------------------
+		let activeIndex = 0;
 
-			/* --------------------------------
-			4. Snap helper
-			-------------------------------- */
+		const ratioMap = new Map();
 
-			const snapTo = (index) => {
-				const target = storySections[index];
-				if (!target || isSnapping) return;
+		const activeObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach(entry => {
+					ratioMap.set(entry.target, entry.intersectionRatio);
+				});
 
-				isSnapping = true;
-				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				let best = null;
+				let bestRatio = 0;
 
-				setTimeout(() => {
-					isSnapping = false;
-				}, 850);
-			};
-
-			/* --------------------------------
-			5. Active section observer (NO story state here)
-			-------------------------------- */
-
-			const visibilityMap = new Map();
-
-			const storyObserver = new IntersectionObserver(
-				(entries) => {
-					entries.forEach(entry => {
-						visibilityMap.set(entry.target, entry.intersectionRatio);
-					});
-
-					let topSection = null;
-					let topRatio = 0;
-
-					visibilityMap.forEach((ratio, section) => {
-						if (ratio > topRatio) {
-							topRatio = ratio;
-							topSection = section;
-						}
-					});
-
-					// Always update active section when one is dominant
-					if (topSection && topRatio > 0.5) {
-						hasEnteredStory = true;
-						setActiveSection(topSection);
+				ratioMap.forEach((ratio, el) => {
+					if (ratio > bestRatio) {
+						bestRatio = ratio;
+						best = el;
 					}
-				},
-				{ threshold: [0, 0.25, 0.5, 0.75, 0.9] }
-			);
+				});
 
-			storySections.forEach(section => storyObserver.observe(section));
+				if (!best || bestRatio < 0.35) return;
 
-			/* --------------------------------
-			6. Wrapper lock observer
-			-------------------------------- */
-
-			const wrapperObserver = new IntersectionObserver(
-				([entry]) => {
-					isLockedInChapters = entry.intersectionRatio >= 0.9;
-				},
-				{ threshold: [0.9] }
-			);
-
-			wrapperObserver.observe(chaptersWrapper);
-
-			/* ==========================
-			STORY MODE — CONTAINER AWARE
-			========================== */
-
-			(() => {
-			const wrapper = document.querySelector('.chapters-wrapper');
-			if (!wrapper) return;
-
-			const header = document.querySelector('.navbar'); // or '#header'
-			const headerOffset = () => (header ? header.getBoundingClientRect().height : 0);
-
-			let inStory = false;
-
-			const compute = () => {
-				const rect = wrapper.getBoundingClientRect();
-				const offset = headerOffset();
-
-				// Consider “in story” once wrapper has passed under the header,
-				// and hasn’t fully exited above/below the viewport
-				const nowInStory =
-				rect.top <= offset + 2 &&   // +2px tolerance
-				rect.bottom > offset + 2;
-
-				if (nowInStory !== inStory) {
-				inStory = nowInStory;
-				document.body.classList.toggle('is-in-story', inStory);
-				// Debug (remove once happy)
-				// console.log('[story]', { inStory, top: rect.top, bottom: rect.bottom, offset });
-				}
-			};
-
-			window.addEventListener('scroll', compute, { passive: true });
-			window.addEventListener('resize', compute, { passive: true });
-
-			// Run a few times because images/fonts can shift layout after DOMContentLoaded
-			requestAnimationFrame(compute);
-			window.addEventListener('load', compute, { passive: true });
-			})();
-
-			/* --------------------------------
-			7. Wheel locking logic
-			-------------------------------- */
-
-			window.addEventListener(
-			'wheel',
-			(e) => {
-				if (!document.body.classList.contains('is-in-story')) return;
-				if (!isLockedInChapters || isSnapping) return;
-				if (Math.abs(e.deltaY) < 40) return;
-
-				const goingDown = e.deltaY > 0;
-				const goingUp = e.deltaY < 0;
-
-				const atTopBoundary = wrapperTop() >= -10;
-				const atBottomBoundary = wrapperBottom() <= vh() + 10;
-
-				if (goingUp && !atTopBoundary) {
-				e.preventDefault();
-				snapTo(activeIndex - 1);
-				return;
-				}
-
-				if (goingDown && !atBottomBoundary) {
-				e.preventDefault();
-				snapTo(activeIndex + 1);
-				return;
+				const idx = chapterMeta.findIndex(x => x.section === best);
+				if (idx !== -1 && idx !== activeIndex) {
+					activeIndex = idx;
+					setActive(activeIndex);
 				}
 			},
-			{ passive: false }
-			);
+			{ threshold: [0, 0.25, 0.35, 0.5, 0.75] }
+		);
 
-			/* --------------------------------
-			8. Keyboard navigation
-			-------------------------------- */
+		// -----------------------------
+		// 4) Click navigation
+		// -----------------------------
+		chapterLinks.forEach((link, idx) => {
+			link.addEventListener('click', () => {
+				activeIndex = idx;
+				setActive(activeIndex);
+				snapTo(activeIndex);
+			});
+		});
 
-			window.addEventListener('keydown', (e) => {
-				if (!isLockedInChapters || isSnapping) return;
+		// -----------------------------
+		// 5) Optional wheel/keyboard snapping (kept simple)
+		// -----------------------------
+		let isSnapping = false;
 
-				// Ignore typing contexts
-				const tag = document.activeElement?.tagName;
-				if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+		const doSnap = (nextIdx) => {
+			if (isSnapping) return;
+			if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
 
-				if (['ArrowDown', 'PageDown'].includes(e.key)) {
-					e.preventDefault();
-					if (activeIndex < storySections.length - 1) {
-						snapTo(activeIndex + 1);
-					}
-				}
+			isSnapping = true;
+			activeIndex = nextIdx;
+			setActive(activeIndex);
+			snapTo(activeIndex);
 
-				if (['ArrowUp', 'PageUp'].includes(e.key)) {
-					e.preventDefault();
-					if (activeIndex > 0) {
-						snapTo(activeIndex - 1);
-					}
+			setTimeout(() => { isSnapping = false; }, 700);
+		};
+
+		window.addEventListener('wheel', (e) => {
+			if (!document.body.classList.contains('is-in-story')) return;
+			if (Math.abs(e.deltaY) < 40) return;
+
+			// Only hijack scroll if we’re in the wrapper (prevents random capture)
+			const rect = chaptersWrapper.getBoundingClientRect();
+			if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+
+			e.preventDefault();
+			doSnap(e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1);
+		}, { passive: false });
+
+		window.addEventListener('keydown', (e) => {
+			if (!document.body.classList.contains('is-in-story')) return;
+
+			const tag = document.activeElement?.tagName;
+			if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+
+			if (['ArrowDown', 'PageDown'].includes(e.key)) {
+				e.preventDefault();
+				doSnap(activeIndex + 1);
+			}
+			if (['ArrowUp', 'PageUp'].includes(e.key)) {
+				e.preventDefault();
+				doSnap(activeIndex - 1);
+			}
+		});
+
+		// -----------------------------
+		// 6) Initial state
+		// -----------------------------
+		// If you land on a hash, start there.
+		// Otherwise: do NOT force-set active (prevents #chapter-1 on load).
+		const startId = window.location.hash?.replace('#', '');
+		const startIdx = startId
+			? chapterMeta.findIndex(x => x.id === startId)
+			: 0;
+
+		activeIndex = startIdx >= 0 ? startIdx : 0;
+
+		if (hadInitialHash) {
+			setActive(activeIndex);
+		}
+	}
+
+	document.addEventListener('DOMContentLoaded', initStoryController);
+	window.addEventListener('pageshow', initStoryController);
+
+	/* ==========================
+	GYMS ARCHIVE
+	========================== */
+
+	(() => {
+		const archive = document.querySelector('[data-gyms-archive]');
+		if (!archive) return;
+
+		const grid     = archive.querySelector('[data-gyms-grid]');
+		const search   = archive.querySelector('[data-gym-search]');
+		const sortSel  = archive.querySelector('[data-gym-sort]');
+		const buttons  = [...archive.querySelectorAll('.gym-filter-buttons button')];
+		const viewBtns = [...archive.querySelectorAll('[data-gym-view]')];
+		const titleEl  = archive.querySelector('[data-gyms-state-title]');
+		const emptyEl  = archive.querySelector('[data-gyms-empty]');
+		const loadMore = archive.querySelector('[data-gyms-load-more]');
+		const notesCb  = archive.querySelector('[data-gym-toggle-notes]');
+
+		if (!grid) return;
+
+		const allCards = [...grid.querySelectorAll('[data-gym-card]')];
+
+		const LABELS = {
+			all: 'All',
+			davidlloyds: 'David Lloyd',
+			puregym: 'PureGym',
+			virginactive: 'Virgin Active',
+			bodyworks: 'Bodyworks Gym',
+			thegymgroup: 'The Gym Group',
+			other: 'Other',
+		};
+
+		let activeChain = buttons.find(btn => btn.classList.contains('is-active'))?.dataset.chain || 'all';
+		let visibleCount = 10;
+
+		const getBranch = (el) =>
+			(el.getAttribute('data-branch') || '').trim().toLowerCase();
+
+		const getOverall = (el) =>
+			parseFloat(el.getAttribute('data-overall')) || 0;
+
+		const getVisitedTs = (el) =>
+			parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
+
+		const updateTitle = () => {
+			if (!titleEl) return;
+			titleEl.textContent = LABELS[activeChain] || 'All';
+		};
+
+		const sortCards = (cards) => {
+			const mode = sortSel?.value || 'overall_desc';
+			const sorted = [...cards];
+
+			sorted.sort((a, b) => {
+				const aBranch  = getBranch(a);
+				const bBranch  = getBranch(b);
+				const aOverall = getOverall(a);
+				const bOverall = getOverall(b);
+				const aDate    = getVisitedTs(a);
+				const bDate    = getVisitedTs(b);
+
+				switch (mode) {
+					case 'overall_desc':
+						return (bOverall - aOverall) || aBranch.localeCompare(bBranch);
+
+					case 'overall_asc':
+						return (aOverall - bOverall) || aBranch.localeCompare(bBranch);
+
+					case 'date_desc':
+						return (bDate - aDate) || aBranch.localeCompare(bBranch);
+
+					case 'date_asc':
+						return (aDate - bDate) || aBranch.localeCompare(bBranch);
+
+					case 'za':
+						return bBranch.localeCompare(aBranch);
+
+					case 'az':
+					default:
+						return aBranch.localeCompare(bBranch);
 				}
 			});
 
-			/* --------------------------------
-			9. Chapter click navigation
-			-------------------------------- */
+			return sorted;
+		};
 
-			chapterLinks.forEach(link => {
-				link.addEventListener('click', () => {
-					hasEnteredStory = true;
+		const update = () => {
+			const q = (search?.value || '').trim().toLowerCase();
 
-					const target = document.getElementById(link.dataset.target);
-					if (!target) return;
+			const eligible = allCards.filter(card => {
+				const chain = card.getAttribute('data-chain') || 'unknown';
+				const chainOk = activeChain === 'all' || chain === activeChain;
 
-					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				});
+				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
+				const searchOk = !q || haystack.includes(q);
+
+				return chainOk && searchOk;
 			});
 
-			/* --------------------------------
-			10. Chapter selector visibility (STABLE)
-			-------------------------------- */
+			const ordered = sortCards(eligible);
 
-			let selectorVisible = false;
+			ordered.forEach(card => grid.appendChild(card));
 
-			const selectorObserver = new IntersectionObserver(
-				(entries) => {
-					const entry = entries[0];
-
-					// Enter chapters once wrapper is meaningfully in view
-					if (entry.intersectionRatio > 0.3) {
-						if (!selectorVisible) {
-							selectorVisible = true;
-							document.body.classList.add('is-in-chapters');
-						}
-						return;
-					}
-
-					// Fully exit chapters only when wrapper is completely out of view
-					if (entry.intersectionRatio === 0) {
-						selectorVisible = false;
-						document.body.classList.remove('is-in-chapters');
-					}
-				},
-				{
-					threshold: [0, 0.3]
-				}
-			);
-
-			selectorObserver.observe(chaptersWrapper);
-
-			/* --------------------------------
-			11. Touch swipe navigation (mobile)
-			-------------------------------- */
-
-			let touchStartY = null;
-
-			window.addEventListener('touchstart', (e) => {
-				if (!isLockedInChapters) return;
-				touchStartY = e.touches[0].clientY;
-			}, { passive: true });
-
-			window.addEventListener('touchend', (e) => {
-				if (!isLockedInChapters || isSnapping || touchStartY === null) return;
-
-				const endY = e.changedTouches[0].clientY;
-				const deltaY = touchStartY - endY;
-
-				// Require a meaningful swipe
-				if (Math.abs(deltaY) < 60) return;
-
-				if (deltaY > 0 && activeIndex < storySections.length - 1) {
-					// swipe up → next
-					snapTo(activeIndex + 1);
-				}
-
-				if (deltaY < 0 && activeIndex > 0) {
-					// swipe down → previous
-					snapTo(activeIndex - 1);
-				}
-
-				touchStartY = null;
+			allCards.forEach(card => {
+				card.hidden = true;
 			});
 
-			/* --------------------------------
-			BACKGROUND LAYERS (ROBUST)
-			-------------------------------- */
-
-			const getBgLayers = () => [...document.querySelectorAll('.story-backgrounds .bg')];
-
-			const setActiveBackground = (chapterId) => {
-				if (!chapterId) {
-					// No id → nothing to set
-					return;
-				}
-
-				const layers = getBgLayers();
-				if (!layers.length) {
-					console.warn('[BG] No background layers found. Expected .story-backgrounds .bg');
-					return;
-				}
-
-				let matched = false;
-
-				layers.forEach(bg => {
-					const isActive = bg.dataset.bg === chapterId;
-					bg.classList.toggle('is-active', isActive);
-					if (isActive) matched = true;
-				});
-
-				if (!matched) {
-					console.warn(
-						`[BG] No bg matched chapterId "${chapterId}". Check .bg[data-bg="..."] values match your chapter IDs.`
-					);
-				}
-			};
-
-		})();
-
-		// Filtering for the Projects Page
-
-		(() => {
-			const archive   = document.querySelector('[data-projects-archive]');
-			if (!archive) return;
-
-			const cards     = [...archive.querySelectorAll('.project-card')];
-			const search    = archive.querySelector('[data-project-search]');
-			const buttons   = [...archive.querySelectorAll('.project-filter-buttons button')];
-			const title     = archive.querySelector('[data-projects-state-title]');
-			const empty     = archive.querySelector('[data-projects-empty]');
-
-			const FILTER_LABELS = {
-				all: 'All',
-				design: 'Design',
-				development: 'WordPress',
-				static: 'Static',
-				shopify: 'Shopify',
-				freelance: 'Freelance',
-				commercial: 'Commercial'
-			};
-
-			let activeFilter  = 'all';
-			let activeContext = null;
-
-			const updateTitle = (key) => {
-				const labelText = FILTER_LABELS[key] || 'All';
-
-				// Reset animation
-				title.classList.remove('is-animated');
-				void title.offsetWidth; // force reflow
-
-				title.textContent = labelText;
-				title.classList.add('is-animated');
-			};
-
-			const update = () => {
-				let visibleCount = 0;
-				const query = search.value.toLowerCase();
-
-				cards.forEach(card => {
-					const matchesSearch =
-						!query || card.dataset.search.includes(query);
-
-					const matchesType =
-						activeFilter === 'all' ||
-						card.dataset.type.includes(activeFilter);
-
-					const matchesContext =
-						!activeContext ||
-						card.dataset.context === activeContext;
-
-					const visible = matchesSearch && matchesType && matchesContext;
-					card.hidden = !visible;
-
-					if (visible) visibleCount++;
-				});
-
-				// Update title (priority: type → context → all)
-				if (activeFilter !== 'all') {
-					updateTitle(activeFilter);
-				} else if (activeContext) {
-					updateTitle(activeContext);
-				} else {
-					updateTitle('all');
-				}
-
-				// Empty state
-				empty.hidden = visibleCount !== 0;
-			};
-
-			// Filter buttons
-			buttons.forEach(btn => {
-				btn.addEventListener('click', () => {
-					buttons.forEach(b => b.classList.remove('is-active'));
-					btn.classList.add('is-active');
-
-					activeFilter  = btn.dataset.filter || 'all';
-					activeContext = btn.dataset.context || null;
-
-					update();
-				});
+			ordered.slice(0, visibleCount).forEach(card => {
+				card.hidden = false;
 			});
 
-			// Search
-			search.addEventListener('input', update);
+			if (emptyEl) {
+				emptyEl.hidden = ordered.length !== 0;
+			}
 
-			update();
-		})();
+			if (loadMore) {
+				loadMore.hidden = ordered.length <= visibleCount;
+			}
 
-		// Filtering, searching and lazy loading for the Gyms archive (cards)
+			updateTitle();
+		};
 
-		(() => {
-			const archive = document.querySelector('[data-gyms-archive]');
-			if (!archive) return;
+		buttons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				buttons.forEach(b => b.classList.remove('is-active'));
+				btn.classList.add('is-active');
 
-			const grid     = archive.querySelector('[data-gyms-grid]');
-			const search   = archive.querySelector('[data-gym-search]');
-			const buttons  = [...archive.querySelectorAll('.gym-filter-buttons button')];
-			const titleEl  = archive.querySelector('[data-gyms-state-title]');
-			const emptyEl  = archive.querySelector('[data-gyms-empty]');
-			const loadMore = archive.querySelector('[data-gyms-load-more]');
-
-			if (!grid) return;
-
-			const allCards = [...grid.querySelectorAll('[data-gym-card]')];
-
-			let activeChain = 'all';
-			let visibleCount = 10;
-
-			const LABELS = {
-				all: 'All',
-				davidlloyds: 'David Lloyd',
-				puregym: 'PureGym',
-				virginactive: 'Virgin Active',
-				fitnessfirst: 'Fitness First',
-				thegymgroup: 'The Gym Group',
-			};
-
-			const updateTitle = () => {
-				const label = LABELS[activeChain] || 'All';
-				if (titleEl) titleEl.textContent = label;
-			};
-
-			const update = () => {
-				const q = (search?.value || '').trim().toLowerCase();
-
-				const eligible = allCards.filter(card => {
-					const chain = card.dataset.chain || 'unknown';
-					const chainOk = activeChain === 'all' || chain === activeChain;
-
-					const haystack = (card.dataset.search || '').toLowerCase();
-					const searchOk = !q || haystack.includes(q);
-
-					return chainOk && searchOk;
-				});
-
-				// Hide everything first
-				allCards.forEach(c => (c.hidden = true));
-
-				// Show first N eligible
-				eligible.slice(0, visibleCount).forEach(c => (c.hidden = false));
-
-				// Empty state + load more
-				if (emptyEl) emptyEl.hidden = eligible.length !== 0;
-				if (loadMore) loadMore.hidden = eligible.length <= visibleCount;
-
-				updateTitle();
-			};
-
-			// Chain filter buttons
-			buttons.forEach(btn => {
-				btn.addEventListener('click', () => {
-					buttons.forEach(b => b.classList.remove('is-active'));
-					btn.classList.add('is-active');
-
-					activeChain = btn.dataset.chain || 'all';
-					visibleCount = 10;
-					update();
-				});
-			});
-
-			// Search
-			search?.addEventListener('input', () => {
+				activeChain = btn.dataset.chain || 'all';
 				visibleCount = 10;
 				update();
 			});
+		});
 
-			// Load more
-			loadMore?.addEventListener('click', () => {
-				visibleCount += 10;
-				update();
-			});
-
-			// Notes accordion (delegated)
-			archive.addEventListener('click', (e) => {
-				const toggle = e.target.closest('[data-notes-toggle]');
-				if (!toggle) return;
-
-				const card  = toggle.closest('[data-gym-card]');
-				const panel = card?.querySelector('[data-notes-panel]');
-				if (!card || !panel) return;
-
-				const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-				toggle.setAttribute('aria-expanded', String(!isOpen));
-				card.classList.toggle('is-notes-open', !isOpen);
-			});
-
+		search?.addEventListener('input', () => {
+			visibleCount = 10;
 			update();
-		})();
-	})
-();
+		});
+
+		sortSel?.addEventListener('change', () => {
+			visibleCount = 10;
+			update();
+		});
+
+		loadMore?.addEventListener('click', () => {
+			visibleCount += 10;
+			update();
+		});
+
+		viewBtns.forEach(btn => {
+			btn.addEventListener('click', () => {
+				viewBtns.forEach(b => b.classList.remove('is-active'));
+				btn.classList.add('is-active');
+
+				const view = btn.getAttribute('data-gym-view') || 'cards';
+				archive.setAttribute('data-view', view);
+			});
+		});
+
+		notesCb?.addEventListener('change', () => {
+			archive.classList.toggle('is-showing-notes', notesCb.checked);
+		});
+
+		const initialViewBtn = viewBtns.find(btn => btn.classList.contains('is-active'));
+		archive.setAttribute('data-view', initialViewBtn?.getAttribute('data-gym-view') || 'cards');
+
+		update();
+	})();
+
+
+})();
 

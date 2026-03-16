@@ -20,7 +20,7 @@
                 "davidlloyds": "David Lloyds",
                 "puregym": "PureGym",
                 "virginactive": "Virgin Active",
-                "fitnessfirst": "Fitness First",
+                "bodyworks": "Bodyworks Gym",
                 "thegymgroup": "The Gym Group",
                 "other": "Other"
             },
@@ -271,6 +271,52 @@
             "placeholder": "",
             "new_lines": "br",
             "allow_in_bindings": 0
+        },
+        {
+            "key": "field_69b843e3566e5",
+            "label": "Gym Location",
+            "name": "gym_location",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_69b8472c566e6",
+            "label": "Google Maps URL",
+            "name": "google_maps_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_69b843e3566e5",
+                        "operator": "!=empty"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": ""
         }
     ],
     "location": [
@@ -292,5 +338,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1771898154
+    "modified": 1773704426
 }

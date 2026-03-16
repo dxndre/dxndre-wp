@@ -751,7 +751,7 @@ __webpack_require__.r(__webpack_exports__);
         seen.add(item.title);
         var li = document.createElement('li');
         li.style.setProperty('--delay', index);
-        li.innerHTML = "\n\t\t\t\t\t\t\t<a href=\"".concat(item.url, "\" class=\"search-suggestion\">\n\t\t\t\t\t\t\t\t<span class=\"suggestion-type\">\n\t\t\t\t\t\t\t\t\t").concat(item.subtype.replace('-', ' '), "\n\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t<div class=\"suggestion-content\">\n\t\t\t\t\t\t\t\t\t<span class=\"suggestion-label\">").concat(item.title, "</span>\n\t\t\t\t\t\t\t\t\t<span class=\"suggestion-arrow\">\u2192</span>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t");
+        li.innerHTML = "\n\t\t\t\t\t\t<a href=\"".concat(item.url, "\" class=\"search-suggestion\">\n\t\t\t\t\t\t\t<span class=\"suggestion-type\">\n\t\t\t\t\t\t\t\t").concat(item.subtype.replace('-', ' '), "\n\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t<div class=\"suggestion-content\">\n\t\t\t\t\t\t\t\t<span class=\"suggestion-label\">").concat(item.title, "</span>\n\t\t\t\t\t\t\t\t<span class=\"suggestion-arrow\">\u2192</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t");
         fragment.appendChild(li);
       });
       if (!fragment.childNodes.length) return;
@@ -775,479 +775,338 @@ __webpack_require__.r(__webpack_exports__);
   });
 
   /* ==========================
-  CASE STUDY: STORY CONTROLLER (FINAL)
+  CASE STUDY: STORY CONTROLLER (SIMPLIFIED)
   ========================== */
 
-  (function () {
-    var hero = document.querySelector('.story-hero');
+  function initStoryController() {
+    var _window$location$hash;
+    // Prevent double-init (bfcache / partial reload)
+    if (document.body.dataset.storyInit === 'true') return;
+    document.body.dataset.storyInit = 'true';
     var chaptersWrapper = document.querySelector('.chapters-wrapper');
     var storySections = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.story-section'));
     var chapterWrap = document.querySelector('.chapter-selector');
     var chapterNav = chapterWrap === null || chapterWrap === void 0 ? void 0 : chapterWrap.querySelector('ul');
 
     // Safety exit
-    if (!hero || !chaptersWrapper || !storySections.length || !chapterNav) return;
+    if (!chaptersWrapper || !storySections.length || !chapterNav) return;
 
-    /* --------------------------------
-    1. Build chapter selector dynamically
-    -------------------------------- */
+    // -----------------------------
+    // URL hash control (prevents auto #chapter-1 on load)
+    // -----------------------------
+    var hasUserEnteredStory = false;
+    var hadInitialHash = !!window.location.hash;
 
+    // -----------------------------
+    // 1) Build chapter selector
+    // -----------------------------
     chapterNav.innerHTML = '';
-    var chapters = storySections.map(function (section) {
-      return section.querySelector('.cs-chapter');
+    var chapterMeta = storySections.map(function (section) {
+      var chapterEl = section.querySelector('.cs-chapter[id]');
+      var titleEl = chapterEl === null || chapterEl === void 0 ? void 0 : chapterEl.querySelector('h2.chapter-title');
+      if (!chapterEl || !titleEl) return null;
+      return {
+        section: section,
+        id: chapterEl.id,
+        title: titleEl.textContent.trim()
+      };
     }).filter(Boolean);
-    chapters.forEach(function (chapter) {
-      var heading = chapter.querySelector('h2.chapter-title');
-      if (!heading || !chapter.id) return;
+
+    // If only 1 chapter, remove selector UI
+    if (chapterMeta.length <= 1) {
+      chapterWrap === null || chapterWrap === void 0 || chapterWrap.remove();
+      return;
+    }
+    chapterMeta.forEach(function (_ref6) {
+      var id = _ref6.id,
+        title = _ref6.title;
       var li = document.createElement('li');
-      li.dataset.target = chapter.id;
-      li.innerHTML = "<span>".concat(heading.textContent.trim(), "</span>");
+      li.dataset.target = id;
+      li.innerHTML = "<span>".concat(title, "</span>");
       chapterNav.appendChild(li);
     });
     var chapterLinks = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(chapterNav.querySelectorAll('li'));
-    if (chapterLinks.length <= 1) {
-      chapterWrap.remove();
-      return;
+
+    // Progress bar (optional)
+    var progressBar = chapterWrap.querySelector('.chapter-progress span');
+    if (!progressBar) {
+      var progress = document.createElement('div');
+      progress.className = 'chapter-progress';
+      progress.innerHTML = "<span></span>";
+      chapterWrap.appendChild(progress);
+      progressBar = progress.querySelector('span');
     }
 
-    /* --------------------------------
-    Progress indicator element
-    -------------------------------- */
-
-    var progress = document.createElement('div');
-    progress.className = 'chapter-progress';
-    progress.innerHTML = "<span></span>";
-    chapterWrap.appendChild(progress);
-    var progressBar = progress.querySelector('span');
-
-    /* --------------------------------
-    2. State
-    -------------------------------- */
-
-    var activeIndex = 0;
-    var activeSection = null;
-    var isSnapping = false;
-    var isLockedInChapters = false;
-    var hasEnteredStory = false;
-    var vh = function vh() {
-      return window.innerHeight;
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    var getBgLayers = function getBgLayers() {
+      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
     };
-    var wrapperTop = function wrapperTop() {
-      return chaptersWrapper.getBoundingClientRect().top;
+    var setActiveBackground = function setActiveBackground(id) {
+      if (!id) return;
+      var layers = getBgLayers();
+      if (!layers.length) return;
+      layers.forEach(function (bg) {
+        bg.classList.toggle('is-active', bg.dataset.bg === id);
+      });
     };
-    var wrapperBottom = function wrapperBottom() {
-      return chaptersWrapper.getBoundingClientRect().bottom;
-    };
+    var setActive = function setActive(index) {
+      var item = chapterMeta[index];
+      if (!item) return;
 
-    /* --------------------------------
-    3. Activate section (single source of truth)
-    -------------------------------- */
-
-    var setActiveSection = function setActiveSection(section) {
-      if (!section || activeSection === section) return;
+      // section highlight
       storySections.forEach(function (s) {
         return s.classList.remove('viewport-active');
       });
-      section.classList.add('viewport-active');
-      activeSection = section;
-      activeIndex = Math.max(0, storySections.indexOf(section));
-      var chapterEl = section.querySelector('.cs-chapter[id]');
-      var id = chapterEl ? chapterEl.id : null;
+      item.section.classList.add('viewport-active');
+
+      // selector highlight
       chapterLinks.forEach(function (link) {
-        return link.classList.toggle('is-active', link.dataset.target === id);
+        link.classList.toggle('is-active', link.dataset.target === item.id);
       });
-      if (id && hasEnteredStory && document.body.classList.contains('is-in-story')) {
-        history.replaceState(null, '', "#".concat(id));
+
+      // URL hash (only update after the user reaches the story,
+      // OR if they landed directly on a hash)
+      if ((hasUserEnteredStory || hadInitialHash) && window.location.hash !== "#".concat(item.id)) {
+        history.replaceState(null, '', "#".concat(item.id));
       }
-      setActiveBackground(id);
 
-      // Update progress bar
-      var pct = (activeIndex + 1) / storySections.length * 100;
-      progressBar.style.transform = "scaleY(".concat(pct / 100, ")");
+      // backgrounds
+      setActiveBackground(item.id);
+
+      // progress
+      var pct = (index + 1) / chapterMeta.length;
+      progressBar.style.transform = "scaleY(".concat(pct, ")");
     };
-
-    /* --------------------------------
-    4. Snap helper
-    -------------------------------- */
-
     var snapTo = function snapTo(index) {
-      var target = storySections[index];
-      if (!target || isSnapping) return;
-      isSnapping = true;
-      target.scrollIntoView({
+      var item = chapterMeta[index];
+      if (!item) return;
+      item.section.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
-      setTimeout(function () {
-        isSnapping = false;
-      }, 850);
     };
 
-    /* --------------------------------
-    5. Active section observer (NO story state here)
-    -------------------------------- */
+    // -----------------------------
+    // 2) Simple "in story" state (10vh scroll trigger)
+    // -----------------------------
+    var updateStoryState = function updateStoryState() {
+      var threshold = window.innerHeight * 0.10; // 10vh
+      var inStory = window.scrollY >= threshold;
+      document.body.classList.toggle('is-in-story', inStory);
+      if (inStory) {
+        hasUserEnteredStory = true;
+      }
+    };
+    window.addEventListener('scroll', updateStoryState, {
+      passive: true
+    });
+    window.addEventListener('resize', updateStoryState, {
+      passive: true
+    });
 
-    var visibilityMap = new Map();
-    var storyObserver = new IntersectionObserver(function (entries) {
+    // Run once on load
+    updateStoryState();
+
+    // -----------------------------
+    // 3) Active section detection (single observer)
+    // -----------------------------
+    var activeIndex = 0;
+    var ratioMap = new Map();
+    var activeObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        visibilityMap.set(entry.target, entry.intersectionRatio);
+        ratioMap.set(entry.target, entry.intersectionRatio);
       });
-      var topSection = null;
-      var topRatio = 0;
-      visibilityMap.forEach(function (ratio, section) {
-        if (ratio > topRatio) {
-          topRatio = ratio;
-          topSection = section;
+      var best = null;
+      var bestRatio = 0;
+      ratioMap.forEach(function (ratio, el) {
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = el;
         }
       });
-
-      // Always update active section when one is dominant
-      if (topSection && topRatio > 0.5) {
-        hasEnteredStory = true;
-        setActiveSection(topSection);
+      if (!best || bestRatio < 0.35) return;
+      var idx = chapterMeta.findIndex(function (x) {
+        return x.section === best;
+      });
+      if (idx !== -1 && idx !== activeIndex) {
+        activeIndex = idx;
+        setActive(activeIndex);
       }
     }, {
-      threshold: [0, 0.25, 0.5, 0.75, 0.9]
-    });
-    storySections.forEach(function (section) {
-      return storyObserver.observe(section);
+      threshold: [0, 0.25, 0.35, 0.5, 0.75]
     });
 
-    /* --------------------------------
-    6. Wrapper lock observer
-    -------------------------------- */
-
-    var wrapperObserver = new IntersectionObserver(function (_ref6) {
-      var _ref7 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref6, 1),
-        entry = _ref7[0];
-      isLockedInChapters = entry.intersectionRatio >= 0.9;
-    }, {
-      threshold: [0.9]
+    // -----------------------------
+    // 4) Click navigation
+    // -----------------------------
+    chapterLinks.forEach(function (link, idx) {
+      link.addEventListener('click', function () {
+        activeIndex = idx;
+        setActive(activeIndex);
+        snapTo(activeIndex);
+      });
     });
-    wrapperObserver.observe(chaptersWrapper);
 
-    /* ==========================
-    STORY MODE — CONTAINER AWARE
-    ========================== */
-
-    (function () {
-      var wrapper = document.querySelector('.chapters-wrapper');
-      if (!wrapper) return;
-      var header = document.querySelector('.navbar'); // or '#header'
-      var headerOffset = function headerOffset() {
-        return header ? header.getBoundingClientRect().height : 0;
-      };
-      var inStory = false;
-      var compute = function compute() {
-        var rect = wrapper.getBoundingClientRect();
-        var offset = headerOffset();
-
-        // Consider “in story” once wrapper has passed under the header,
-        // and hasn’t fully exited above/below the viewport
-        var nowInStory = rect.top <= offset + 2 &&
-        // +2px tolerance
-        rect.bottom > offset + 2;
-        if (nowInStory !== inStory) {
-          inStory = nowInStory;
-          document.body.classList.toggle('is-in-story', inStory);
-          // Debug (remove once happy)
-          // console.log('[story]', { inStory, top: rect.top, bottom: rect.bottom, offset });
-        }
-      };
-      window.addEventListener('scroll', compute, {
-        passive: true
-      });
-      window.addEventListener('resize', compute, {
-        passive: true
-      });
-
-      // Run a few times because images/fonts can shift layout after DOMContentLoaded
-      requestAnimationFrame(compute);
-      window.addEventListener('load', compute, {
-        passive: true
-      });
-    })();
-
-    /* --------------------------------
-    7. Wheel locking logic
-    -------------------------------- */
-
+    // -----------------------------
+    // 5) Optional wheel/keyboard snapping (kept simple)
+    // -----------------------------
+    var isSnapping = false;
+    var doSnap = function doSnap(nextIdx) {
+      if (isSnapping) return;
+      if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
+      isSnapping = true;
+      activeIndex = nextIdx;
+      setActive(activeIndex);
+      snapTo(activeIndex);
+      setTimeout(function () {
+        isSnapping = false;
+      }, 700);
+    };
     window.addEventListener('wheel', function (e) {
       if (!document.body.classList.contains('is-in-story')) return;
-      if (!isLockedInChapters || isSnapping) return;
       if (Math.abs(e.deltaY) < 40) return;
-      var goingDown = e.deltaY > 0;
-      var goingUp = e.deltaY < 0;
-      var atTopBoundary = wrapperTop() >= -10;
-      var atBottomBoundary = wrapperBottom() <= vh() + 10;
-      if (goingUp && !atTopBoundary) {
-        e.preventDefault();
-        snapTo(activeIndex - 1);
-        return;
-      }
-      if (goingDown && !atBottomBoundary) {
-        e.preventDefault();
-        snapTo(activeIndex + 1);
-        return;
-      }
+
+      // Only hijack scroll if we’re in the wrapper (prevents random capture)
+      var rect = chaptersWrapper.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      e.preventDefault();
+      doSnap(e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1);
     }, {
       passive: false
     });
-
-    /* --------------------------------
-    8. Keyboard navigation
-    -------------------------------- */
-
     window.addEventListener('keydown', function (e) {
       var _document$activeEleme;
-      if (!isLockedInChapters || isSnapping) return;
-
-      // Ignore typing contexts
+      if (!document.body.classList.contains('is-in-story')) return;
       var tag = (_document$activeEleme = document.activeElement) === null || _document$activeEleme === void 0 ? void 0 : _document$activeEleme.tagName;
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
       if (['ArrowDown', 'PageDown'].includes(e.key)) {
         e.preventDefault();
-        if (activeIndex < storySections.length - 1) {
-          snapTo(activeIndex + 1);
-        }
+        doSnap(activeIndex + 1);
       }
       if (['ArrowUp', 'PageUp'].includes(e.key)) {
         e.preventDefault();
-        if (activeIndex > 0) {
-          snapTo(activeIndex - 1);
-        }
+        doSnap(activeIndex - 1);
       }
     });
 
-    /* --------------------------------
-    9. Chapter click navigation
-    -------------------------------- */
+    // -----------------------------
+    // 6) Initial state
+    // -----------------------------
+    // If you land on a hash, start there.
+    // Otherwise: do NOT force-set active (prevents #chapter-1 on load).
+    var startId = (_window$location$hash = window.location.hash) === null || _window$location$hash === void 0 ? void 0 : _window$location$hash.replace('#', '');
+    var startIdx = startId ? chapterMeta.findIndex(function (x) {
+      return x.id === startId;
+    }) : 0;
+    activeIndex = startIdx >= 0 ? startIdx : 0;
+    if (hadInitialHash) {
+      setActive(activeIndex);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initStoryController);
+  window.addEventListener('pageshow', initStoryController);
 
-    chapterLinks.forEach(function (link) {
-      link.addEventListener('click', function () {
-        hasEnteredStory = true;
-        var target = document.getElementById(link.dataset.target);
-        if (!target) return;
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      });
-    });
+  /* ==========================
+  GYMS ARCHIVE
+  ========================== */
 
-    /* --------------------------------
-    10. Chapter selector visibility (STABLE)
-    -------------------------------- */
-
-    var selectorVisible = false;
-    var selectorObserver = new IntersectionObserver(function (entries) {
-      var entry = entries[0];
-
-      // Enter chapters once wrapper is meaningfully in view
-      if (entry.intersectionRatio > 0.3) {
-        if (!selectorVisible) {
-          selectorVisible = true;
-          document.body.classList.add('is-in-chapters');
-        }
-        return;
-      }
-
-      // Fully exit chapters only when wrapper is completely out of view
-      if (entry.intersectionRatio === 0) {
-        selectorVisible = false;
-        document.body.classList.remove('is-in-chapters');
-      }
-    }, {
-      threshold: [0, 0.3]
-    });
-    selectorObserver.observe(chaptersWrapper);
-
-    /* --------------------------------
-    11. Touch swipe navigation (mobile)
-    -------------------------------- */
-
-    var touchStartY = null;
-    window.addEventListener('touchstart', function (e) {
-      if (!isLockedInChapters) return;
-      touchStartY = e.touches[0].clientY;
-    }, {
-      passive: true
-    });
-    window.addEventListener('touchend', function (e) {
-      if (!isLockedInChapters || isSnapping || touchStartY === null) return;
-      var endY = e.changedTouches[0].clientY;
-      var deltaY = touchStartY - endY;
-
-      // Require a meaningful swipe
-      if (Math.abs(deltaY) < 60) return;
-      if (deltaY > 0 && activeIndex < storySections.length - 1) {
-        // swipe up → next
-        snapTo(activeIndex + 1);
-      }
-      if (deltaY < 0 && activeIndex > 0) {
-        // swipe down → previous
-        snapTo(activeIndex - 1);
-      }
-      touchStartY = null;
-    });
-
-    /* --------------------------------
-    BACKGROUND LAYERS (ROBUST)
-    -------------------------------- */
-
-    var getBgLayers = function getBgLayers() {
-      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
-    };
-    var setActiveBackground = function setActiveBackground(chapterId) {
-      if (!chapterId) {
-        // No id → nothing to set
-        return;
-      }
-      var layers = getBgLayers();
-      if (!layers.length) {
-        console.warn('[BG] No background layers found. Expected .story-backgrounds .bg');
-        return;
-      }
-      var matched = false;
-      layers.forEach(function (bg) {
-        var isActive = bg.dataset.bg === chapterId;
-        bg.classList.toggle('is-active', isActive);
-        if (isActive) matched = true;
-      });
-      if (!matched) {
-        console.warn("[BG] No bg matched chapterId \"".concat(chapterId, "\". Check .bg[data-bg=\"...\"] values match your chapter IDs."));
-      }
-    };
-  })();
-
-  // Filtering for the Projects Page
-
-  (function () {
-    var archive = document.querySelector('[data-projects-archive]');
-    if (!archive) return;
-    var cards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.project-card'));
-    var search = archive.querySelector('[data-project-search]');
-    var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
-    var title = archive.querySelector('[data-projects-state-title]');
-    var empty = archive.querySelector('[data-projects-empty]');
-    var FILTER_LABELS = {
-      all: 'All',
-      design: 'Design',
-      development: 'WordPress',
-      static: 'Static',
-      shopify: 'Shopify',
-      freelance: 'Freelance',
-      commercial: 'Commercial'
-    };
-    var activeFilter = 'all';
-    var activeContext = null;
-    var updateTitle = function updateTitle(key) {
-      var labelText = FILTER_LABELS[key] || 'All';
-
-      // Reset animation
-      title.classList.remove('is-animated');
-      void title.offsetWidth; // force reflow
-
-      title.textContent = labelText;
-      title.classList.add('is-animated');
-    };
-    var update = function update() {
-      var visibleCount = 0;
-      var query = search.value.toLowerCase();
-      cards.forEach(function (card) {
-        var matchesSearch = !query || card.dataset.search.includes(query);
-        var matchesType = activeFilter === 'all' || card.dataset.type.includes(activeFilter);
-        var matchesContext = !activeContext || card.dataset.context === activeContext;
-        var visible = matchesSearch && matchesType && matchesContext;
-        card.hidden = !visible;
-        if (visible) visibleCount++;
-      });
-
-      // Update title (priority: type → context → all)
-      if (activeFilter !== 'all') {
-        updateTitle(activeFilter);
-      } else if (activeContext) {
-        updateTitle(activeContext);
-      } else {
-        updateTitle('all');
-      }
-
-      // Empty state
-      empty.hidden = visibleCount !== 0;
-    };
-
-    // Filter buttons
-    buttons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        buttons.forEach(function (b) {
-          return b.classList.remove('is-active');
-        });
-        btn.classList.add('is-active');
-        activeFilter = btn.dataset.filter || 'all';
-        activeContext = btn.dataset.context || null;
-        update();
-      });
-    });
-
-    // Search
-    search.addEventListener('input', update);
-    update();
-  })();
-
-  // Filtering, searching and lazy loading for the Gyms archive (cards)
-
-  (function () {
+  (function (_buttons$find) {
     var archive = document.querySelector('[data-gyms-archive]');
     if (!archive) return;
     var grid = archive.querySelector('[data-gyms-grid]');
     var search = archive.querySelector('[data-gym-search]');
+    var sortSel = archive.querySelector('[data-gym-sort]');
     var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.gym-filter-buttons button'));
+    var viewBtns = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('[data-gym-view]'));
     var titleEl = archive.querySelector('[data-gyms-state-title]');
     var emptyEl = archive.querySelector('[data-gyms-empty]');
     var loadMore = archive.querySelector('[data-gyms-load-more]');
+    var notesCb = archive.querySelector('[data-gym-toggle-notes]');
     if (!grid) return;
     var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(grid.querySelectorAll('[data-gym-card]'));
-    var activeChain = 'all';
-    var visibleCount = 10;
     var LABELS = {
       all: 'All',
       davidlloyds: 'David Lloyd',
       puregym: 'PureGym',
       virginactive: 'Virgin Active',
-      fitnessfirst: 'Fitness First',
-      thegymgroup: 'The Gym Group'
+      bodyworks: 'Bodyworks Gym',
+      thegymgroup: 'The Gym Group',
+      other: 'Other'
+    };
+    var activeChain = ((_buttons$find = buttons.find(function (btn) {
+      return btn.classList.contains('is-active');
+    })) === null || _buttons$find === void 0 ? void 0 : _buttons$find.dataset.chain) || 'all';
+    var visibleCount = 10;
+    var getBranch = function getBranch(el) {
+      return (el.getAttribute('data-branch') || '').trim().toLowerCase();
+    };
+    var getOverall = function getOverall(el) {
+      return parseFloat(el.getAttribute('data-overall')) || 0;
+    };
+    var getVisitedTs = function getVisitedTs(el) {
+      return parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
     };
     var updateTitle = function updateTitle() {
-      var label = LABELS[activeChain] || 'All';
-      if (titleEl) titleEl.textContent = label;
+      if (!titleEl) return;
+      titleEl.textContent = LABELS[activeChain] || 'All';
+    };
+    var sortCards = function sortCards(cards) {
+      var mode = (sortSel === null || sortSel === void 0 ? void 0 : sortSel.value) || 'overall_desc';
+      var sorted = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(cards);
+      sorted.sort(function (a, b) {
+        var aBranch = getBranch(a);
+        var bBranch = getBranch(b);
+        var aOverall = getOverall(a);
+        var bOverall = getOverall(b);
+        var aDate = getVisitedTs(a);
+        var bDate = getVisitedTs(b);
+        switch (mode) {
+          case 'overall_desc':
+            return bOverall - aOverall || aBranch.localeCompare(bBranch);
+          case 'overall_asc':
+            return aOverall - bOverall || aBranch.localeCompare(bBranch);
+          case 'date_desc':
+            return bDate - aDate || aBranch.localeCompare(bBranch);
+          case 'date_asc':
+            return aDate - bDate || aBranch.localeCompare(bBranch);
+          case 'za':
+            return bBranch.localeCompare(aBranch);
+          case 'az':
+          default:
+            return aBranch.localeCompare(bBranch);
+        }
+      });
+      return sorted;
     };
     var update = function update() {
       var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
       var eligible = allCards.filter(function (card) {
-        var chain = card.dataset.chain || 'unknown';
+        var chain = card.getAttribute('data-chain') || 'unknown';
         var chainOk = activeChain === 'all' || chain === activeChain;
-        var haystack = (card.dataset.search || '').toLowerCase();
+        var haystack = (card.getAttribute('data-search') || '').toLowerCase();
         var searchOk = !q || haystack.includes(q);
         return chainOk && searchOk;
       });
-
-      // Hide everything first
-      allCards.forEach(function (c) {
-        return c.hidden = true;
+      var ordered = sortCards(eligible);
+      ordered.forEach(function (card) {
+        return grid.appendChild(card);
       });
-
-      // Show first N eligible
-      eligible.slice(0, visibleCount).forEach(function (c) {
-        return c.hidden = false;
+      allCards.forEach(function (card) {
+        card.hidden = true;
       });
-
-      // Empty state + load more
-      if (emptyEl) emptyEl.hidden = eligible.length !== 0;
-      if (loadMore) loadMore.hidden = eligible.length <= visibleCount;
+      ordered.slice(0, visibleCount).forEach(function (card) {
+        card.hidden = false;
+      });
+      if (emptyEl) {
+        emptyEl.hidden = ordered.length !== 0;
+      }
+      if (loadMore) {
+        loadMore.hidden = ordered.length <= visibleCount;
+      }
       updateTitle();
     };
-
-    // Chain filter buttons
     buttons.forEach(function (btn) {
       btn.addEventListener('click', function () {
         buttons.forEach(function (b) {
@@ -1259,30 +1118,35 @@ __webpack_require__.r(__webpack_exports__);
         update();
       });
     });
-
-    // Search
     search === null || search === void 0 || search.addEventListener('input', function () {
       visibleCount = 10;
       update();
     });
-
-    // Load more
+    sortSel === null || sortSel === void 0 || sortSel.addEventListener('change', function () {
+      visibleCount = 10;
+      update();
+    });
     loadMore === null || loadMore === void 0 || loadMore.addEventListener('click', function () {
       visibleCount += 10;
       update();
     });
-
-    // Notes accordion (delegated)
-    archive.addEventListener('click', function (e) {
-      var toggle = e.target.closest('[data-notes-toggle]');
-      if (!toggle) return;
-      var card = toggle.closest('[data-gym-card]');
-      var panel = card === null || card === void 0 ? void 0 : card.querySelector('[data-notes-panel]');
-      if (!card || !panel) return;
-      var isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!isOpen));
-      card.classList.toggle('is-notes-open', !isOpen);
+    viewBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        viewBtns.forEach(function (b) {
+          return b.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        var view = btn.getAttribute('data-gym-view') || 'cards';
+        archive.setAttribute('data-view', view);
+      });
     });
+    notesCb === null || notesCb === void 0 || notesCb.addEventListener('change', function () {
+      archive.classList.toggle('is-showing-notes', notesCb.checked);
+    });
+    var initialViewBtn = viewBtns.find(function (btn) {
+      return btn.classList.contains('is-active');
+    });
+    archive.setAttribute('data-view', (initialViewBtn === null || initialViewBtn === void 0 ? void 0 : initialViewBtn.getAttribute('data-gym-view')) || 'cards');
     update();
   })();
 })();

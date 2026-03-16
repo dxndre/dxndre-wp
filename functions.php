@@ -1126,13 +1126,6 @@ function dxndre_client_login_logout_menu($items, $args) {
 // Enqueue Lenis Script (for scooth scrolling)
 
 function dx_enqueue_scripts() {
-	wp_enqueue_script(
-		'dx-main',
-		get_template_directory_uri() . '/assets/main.js',
-		[],
-		null,
-		true
-	);
 
 	// Force module type
 	add_filter('script_loader_tag', function ($tag, $handle) {
@@ -1612,7 +1605,7 @@ function dx_gym_chain_label($value) {
 		'davidlloyds'  => 'David Lloyds',
 		'puregym'      => 'PureGym',
 		'virginactive' => 'Virgin Active',
-		'fitnessfirst' => 'Fitness First',
+		'bodyworks'    => 'Bodyworks Gym',
 		'thegymgroup'  => 'The Gym Group',
 		'other'        => 'Other',
 	];
@@ -1682,7 +1675,7 @@ function dx_shortcode_gym_table($atts) {
 				<button data-chain="davidlloyds">David Lloyd</button>
 				<button data-chain="puregym">PureGym</button>
 				<button data-chain="virginactive">Virgin Active</button>
-				<button data-chain="fitnessfirst">Fitness First</button>
+				<button data-chain="bodyworks">Bodyworks Gym</button>
 				<button data-chain="thegymgroup">The Gym Group</button>
 			</div>
 
@@ -1726,7 +1719,7 @@ function dx_shortcode_gym_table($atts) {
 		$chain_val  = get_field('gym_chain');
 		$chain_lbl  = dx_gym_chain_label($chain_val);
 
-		$date_raw   = get_field('visited_date'); // stored Y-m-d
+		$date_raw   = get_field('visited_date');
 		$visited    = '—';
 		$visited_ts = 0;
 
@@ -1741,39 +1734,67 @@ function dx_shortcode_gym_table($atts) {
 		$visit_type_val = get_field('visit_type');
 		$visit_type_lbl = dx_visit_type_label($visit_type_val);
 
-		// Facility scores (support 'didnt_use' + 'unavailable' + numeric)
 		$sGym  = dx_normalise_facility_score(get_field('score_gym'));
 		$sSwim = dx_normalise_facility_score(get_field('score_swim'));
 		$sSpa  = dx_normalise_facility_score(get_field('score_spa'));
 		$sCafe = dx_normalise_facility_score(get_field('score_cafe'));
 
-		$overall = dx_calc_overall_score([$sGym, $sSwim, $sSpa, $sCafe]); // null if none
+		$overall = dx_calc_overall_score([$sGym, $sSwim, $sSpa, $sCafe]);
 		$overall_score = ($overall === null) ? -1 : (int) $overall;
 		$overall_emoji = ($overall === null) ? '—' : dx_score_to_emoji($overall);
 
 		$notes = (string) get_field('notes');
 
-		$search_blob = strtolower(trim($branch.' '.$chain_lbl.' '.$visited.' '.$notes));
+		$location_text = trim((string) get_field('gym_location'));
+		$maps_url      = trim((string) get_field('google_maps_url'));
+
+		$location_html = '';
+
+		if ($location_text && $maps_url) {
+			$location_html = '
+				<span class="dx-badge dx-badge--location">
+					<a href="' . esc_url($maps_url) . '" target="_blank" rel="noopener noreferrer">
+						📍 ' . esc_html($location_text) . '
+					</a>
+				</span>';
+		} elseif ($location_text) {
+			$location_html = '
+				<span class="dx-badge dx-badge--location">
+					📍 ' . esc_html($location_text) . '
+				</span>';
+		}
+
+		$search_blob = strtolower(trim($branch . ' ' . $chain_lbl . ' ' . $visited . ' ' . $location_text . ' ' . $notes));
 
 		echo '
-		<article
-			class="dx-gym-card"
-			data-gym-card
-			data-chain="'.esc_attr($chain_val ?: 'unknown').'"
-			data-search="'.esc_attr($search_blob).'"
-			data-branch="'.esc_attr(strtolower($branch)).'"
-			data-visited-ts="'.esc_attr($visited_ts).'"
-			data-overall="'.esc_attr($overall_score).'"
-		>
+			<article
+				class="dx-gym-card"
+				data-gym-card
+				data-chain="'.esc_attr($chain_val ?: 'unknown').'"
+				data-search="'.esc_attr($search_blob).'"
+				data-branch="'.esc_attr(strtolower($branch)).'"
+				data-visited-ts="'.esc_attr($visited_ts).'"
+				data-overall="'.esc_attr($overall_score).'"
+			>
+
+
 			<div class="dx-gym-card__header">
 				<h3 class="dx-gym-card__branch">
 					<a href="'.esc_url(get_permalink()).'">'.esc_html($branch).'</a>
 				</h3>
+			'.($location_text
+				? '<div class="dx-gym-card__subtitle">' .
+					($maps_url
+						? '📍' . '<a href="'.esc_url($maps_url).'" target="_blank" rel="noopener noreferrer"> '.esc_html($location_text).'</a>'
+						: ' '.esc_html($location_text)
+					) .
+					'</div>'
+				: ''
+			).'
 
-				<div class="dx-gym-card__meta">
-					<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
-					<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
-
+			<div class="dx-gym-card__meta">
+				<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
+				<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
 					'.(
 						$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
 						? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'
@@ -1788,9 +1809,9 @@ function dx_shortcode_gym_table($atts) {
 			</div>
 
 			<div class="dx-gym-card__scores">
-				'.dx_render_facility_score_block('Gym',  get_field('score_gym')).'
+				'.dx_render_facility_score_block('Gym', get_field('score_gym')).'
 				'.dx_render_facility_score_block('Swim', get_field('score_swim')).'
-				'.dx_render_facility_score_block('Spa',  get_field('score_spa')).'
+				'.dx_render_facility_score_block('Spa', get_field('score_spa')).'
 				'.dx_render_facility_score_block('Café', get_field('score_cafe')).'
 			</div>
 
