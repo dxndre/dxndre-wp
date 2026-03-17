@@ -78,8 +78,7 @@ __webpack_require__.r(__webpack_exports__);
     var sections = document.querySelectorAll('section');
     var sectionObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        // The case study page manages these with its own controller
-        if (entry.target.classList.contains('story-section') || entry.target.classList.contains('story-hero')) {
+        if (entry.target.classList.contains('story-section') || entry.target.classList.contains('story-hero') || entry.target.querySelector('[data-gyms-archive]')) {
           return;
         }
         if (entry.isIntersecting) {
@@ -1140,8 +1139,17 @@ __webpack_require__.r(__webpack_exports__);
         archive.setAttribute('data-view', view);
       });
     });
-    notesCb === null || notesCb === void 0 || notesCb.addEventListener('change', function () {
-      archive.classList.toggle('is-showing-notes', notesCb.checked);
+
+    // Notes toggle
+    grid === null || grid === void 0 || grid.addEventListener('click', function (e) {
+      var toggle = e.target.closest('[data-notes-toggle]');
+      if (!toggle) return;
+      var card = toggle.closest('[data-gym-card]');
+      var panel = card === null || card === void 0 ? void 0 : card.querySelector('[data-notes-panel]');
+      if (!card || !panel) return;
+      var isOpen = card.classList.contains('is-notes-open');
+      card.classList.toggle('is-notes-open', !isOpen);
+      toggle.setAttribute('aria-expanded', String(!isOpen));
     });
     var initialViewBtn = viewBtns.find(function (btn) {
       return btn.classList.contains('is-active');
@@ -1149,6 +1157,27 @@ __webpack_require__.r(__webpack_exports__);
     archive.setAttribute('data-view', (initialViewBtn === null || initialViewBtn === void 0 ? void 0 : initialViewBtn.getAttribute('data-gym-view')) || 'cards');
     update();
   })();
+
+  /* ==========================
+  GYM VIEWPORT-ACTIVE (DEDICATED)
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var archive = document.querySelector('[data-gyms-archive]');
+    if (!archive) return;
+
+    // Use nearest section as the thing we toggle
+    var section = archive.closest('section') || archive;
+    var observer = new IntersectionObserver(function (_ref7) {
+      var _ref8 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref7, 1),
+        entry = _ref8[0];
+      section.classList.toggle('viewport-active', entry.isIntersecting);
+    }, {
+      threshold: 0.05,
+      rootMargin: '-10% 0px -10% 0px'
+    });
+    observer.observe(archive);
+  });
 })();
 
 /***/ }),

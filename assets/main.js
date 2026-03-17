@@ -65,8 +65,11 @@ import * as bootstrap from 'bootstrap';
 		const sectionObserver = new IntersectionObserver(
 			(entries) => {
 				entries.forEach(entry => {
-					// The case study page manages these with its own controller
-					if (entry.target.classList.contains('story-section') || entry.target.classList.contains('story-hero')) {
+					if (
+						entry.target.classList.contains('story-section') ||
+						entry.target.classList.contains('story-hero') ||
+						entry.target.querySelector('[data-gyms-archive]')
+					) {
 						return;
 					}
 
@@ -1252,8 +1255,19 @@ import * as bootstrap from 'bootstrap';
 			});
 		});
 
-		notesCb?.addEventListener('change', () => {
-			archive.classList.toggle('is-showing-notes', notesCb.checked);
+		// Notes toggle
+		grid?.addEventListener('click', (e) => {
+			const toggle = e.target.closest('[data-notes-toggle]');
+			if (!toggle) return;
+
+			const card = toggle.closest('[data-gym-card]');
+			const panel = card?.querySelector('[data-notes-panel]');
+			if (!card || !panel) return;
+
+			const isOpen = card.classList.contains('is-notes-open');
+
+			card.classList.toggle('is-notes-open', !isOpen);
+			toggle.setAttribute('aria-expanded', String(!isOpen));
 		});
 
 		const initialViewBtn = viewBtns.find(btn => btn.classList.contains('is-active'));
@@ -1262,6 +1276,29 @@ import * as bootstrap from 'bootstrap';
 		update();
 	})();
 
+	/* ==========================
+	GYM VIEWPORT-ACTIVE (DEDICATED)
+	========================== */
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const archive = document.querySelector('[data-gyms-archive]');
+		if (!archive) return;
+
+		// Use nearest section as the thing we toggle
+		const section = archive.closest('section') || archive;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				section.classList.toggle('viewport-active', entry.isIntersecting);
+			},
+			{
+				threshold: 0.05,
+				rootMargin: '-10% 0px -10% 0px'
+			}
+		);
+
+		observer.observe(archive);
+	});
 
 })();
 

@@ -1740,7 +1740,7 @@ function dx_shortcode_gym_table($atts) {
 		$sCafe = dx_normalise_facility_score(get_field('score_cafe'));
 
 		$overall = dx_calc_overall_score([$sGym, $sSwim, $sSpa, $sCafe]);
-		$overall_score = ($overall === null) ? -1 : (int) $overall;
+		$overall_score = ($overall === null) ? -1 : round($overall, 1);
 		$overall_emoji = ($overall === null) ? '—' : dx_score_to_emoji($overall);
 
 		$notes = (string) get_field('notes');
@@ -1774,7 +1774,7 @@ function dx_shortcode_gym_table($atts) {
 				data-search="'.esc_attr($search_blob).'"
 				data-branch="'.esc_attr(strtolower($branch)).'"
 				data-visited-ts="'.esc_attr($visited_ts).'"
-				data-overall="'.esc_attr($overall_score).'"
+				data-overall="'.esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1).'"
 			>
 
 
@@ -1803,7 +1803,7 @@ function dx_shortcode_gym_table($atts) {
 
 					<span class="dx-badge dx-badge--overall" '.($overall !== null ? 'data-score="'.esc_attr($overall).'"' : 'data-score="na"').'>
 						<span class="emoji">'.esc_html($overall_emoji).'</span>
-						<span class="text">'.($overall !== null ? esc_html($overall).'/10' : 'No rating').'</span>
+						<span class="text">'.($overall !== null ? esc_html(number_format($overall, 1)).'/10' : 'No rating').'</span>
 					</span>
 				</div>
 			</div>
@@ -1845,15 +1845,16 @@ add_shortcode('dx_gym_table', 'dx_shortcode_gym_table');
 // Score Block Renderer
 
 function dx_score_to_emoji($score) {
-	$score = (int) $score;
+	if ($score === null) return '—';
 
-	if ($score === 0) return '🗑️';
-	if ($score >= 1 && $score <= 4) return '👎🏾';
-	if ($score === 5) return '🤷🏾‍♂️';
-	if ($score >= 6 && $score <= 9) return '👍🏾';
-	if ($score === 10) return '💎';
+	if ($score == 0) return '🗑️';
+	if ($score == 10) return '💎';
 
-	return '—';
+	if ($score >= 1 && $score < 5) return '👎🏾';
+	if ($score == 5) return '🤷🏾‍♂️';
+	if ($score > 5 && $score < 10) return '👍🏾';
+
+	return '👍🏾';
 }
 
 function dx_normalise_facility_score($raw) {

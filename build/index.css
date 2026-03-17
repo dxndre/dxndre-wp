@@ -18154,6 +18154,9 @@ img {
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   gap: 0.75rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-filter-buttons button {
   border-radius: 0;
@@ -18186,6 +18189,15 @@ img {
   #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-controls {
     justify-items: end;
   }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-sort {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 12px;
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-sort select {
   height: 46px;
