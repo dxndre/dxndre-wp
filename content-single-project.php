@@ -7,8 +7,8 @@
 
 <div class="story-backgrounds">
 	<div class="bg is-active" data-bg="chapter-1" style="background-color: black;"></div>
-	<div class="bg" data-bg="chapter-2" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/calcbg.png')"></div>
-	<div class="bg" data-bg="chapter-3" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg5.jpg')"></div>
+	<div class="bg" data-bg="chapter-2" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg7.jpg')"></div>
+	<div class="bg" data-bg="chapter-3" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg8.jpg')"></div>
 	<div class="bg" data-bg="chapter-4" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/img/chapterbg6.jpg')"></div>
 </div>
 

@@ -1051,6 +1051,86 @@ __webpack_require__.r(__webpack_exports__);
   window.addEventListener('pageshow', initStoryController);
 
   /* ==========================
+  PROJECTS ARCHIVE
+  ========================== */
+
+  (function () {
+    var archive = document.querySelector('[data-projects-archive]');
+    if (!archive) return;
+    var grid = archive.querySelector('[data-projects-grid]');
+    var search = archive.querySelector('[data-project-search]');
+    var filterButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
+    var titleEl = archive.querySelector('[data-projects-state-title]');
+    var emptyEl = archive.querySelector('[data-projects-empty]');
+    if (!grid) return;
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(grid.querySelectorAll('.project-card'));
+    var activeMode = 'filter';
+    var activeValue = 'all';
+    var LABELS = {
+      all: 'All',
+      design: 'Design',
+      development: 'WordPress',
+      static: 'Static',
+      shopify: 'Shopify',
+      freelance: 'Freelance',
+      commercial: 'Commercial'
+    };
+    var updateTitle = function updateTitle() {
+      if (!titleEl) return;
+      titleEl.textContent = LABELS[activeValue] || 'All';
+    };
+    var matchesFilter = function matchesFilter(card) {
+      if (activeValue === 'all') return true;
+      if (activeMode === 'filter') {
+        var types = (card.getAttribute('data-type') || '').split(/\s+/).map(function (value) {
+          return value.trim();
+        }).filter(Boolean);
+        return types.includes(activeValue);
+      }
+      if (activeMode === 'context') {
+        return (card.getAttribute('data-context') || '') === activeValue;
+      }
+      return true;
+    };
+    var update = function update() {
+      var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
+      var visibleCount = 0;
+      allCards.forEach(function (card) {
+        var haystack = (card.getAttribute('data-search') || '').toLowerCase();
+        var searchOk = !q || haystack.includes(q);
+        var filterOk = matchesFilter(card);
+        var show = searchOk && filterOk;
+        card.hidden = !show;
+        if (show) {
+          visibleCount++;
+        }
+      });
+      if (emptyEl) {
+        emptyEl.hidden = visibleCount !== 0;
+      }
+      updateTitle();
+    };
+    filterButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        filterButtons.forEach(function (btn) {
+          return btn.classList.remove('is-active');
+        });
+        button.classList.add('is-active');
+        if (button.hasAttribute('data-filter')) {
+          activeMode = 'filter';
+          activeValue = button.getAttribute('data-filter') || 'all';
+        } else if (button.hasAttribute('data-context')) {
+          activeMode = 'context';
+          activeValue = button.getAttribute('data-context') || 'all';
+        }
+        update();
+      });
+    });
+    search === null || search === void 0 || search.addEventListener('input', update);
+    update();
+  })();
+
+  /* ==========================
   GYMS ARCHIVE
   ========================== */
 

@@ -1151,6 +1151,108 @@ import * as bootstrap from 'bootstrap';
 	window.addEventListener('pageshow', initStoryController);
 
 	/* ==========================
+	PROJECTS ARCHIVE
+	========================== */
+
+	(() => {
+		const archive = document.querySelector('[data-projects-archive]');
+		if (!archive) return;
+
+		const grid = archive.querySelector('[data-projects-grid]');
+		const search = archive.querySelector('[data-project-search]');
+		const filterButtons = [...archive.querySelectorAll('.project-filter-buttons button')];
+		const titleEl = archive.querySelector('[data-projects-state-title]');
+		const emptyEl = archive.querySelector('[data-projects-empty]');
+
+		if (!grid) return;
+
+		const allCards = [...grid.querySelectorAll('.project-card')];
+
+		let activeMode = 'filter';
+		let activeValue = 'all';
+
+		const LABELS = {
+			all: 'All',
+			design: 'Design',
+			development: 'WordPress',
+			static: 'Static',
+			shopify: 'Shopify',
+			freelance: 'Freelance',
+			commercial: 'Commercial',
+		};
+
+		const updateTitle = () => {
+			if (!titleEl) return;
+			titleEl.textContent = LABELS[activeValue] || 'All';
+		};
+
+		const matchesFilter = (card) => {
+			if (activeValue === 'all') return true;
+
+			if (activeMode === 'filter') {
+				const types = (card.getAttribute('data-type') || '')
+					.split(/\s+/)
+					.map(value => value.trim())
+					.filter(Boolean);
+
+				return types.includes(activeValue);
+			}
+
+			if (activeMode === 'context') {
+				return (card.getAttribute('data-context') || '') === activeValue;
+			}
+
+			return true;
+		};
+
+		const update = () => {
+			const q = (search?.value || '').trim().toLowerCase();
+
+			let visibleCount = 0;
+
+			allCards.forEach(card => {
+				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
+				const searchOk = !q || haystack.includes(q);
+				const filterOk = matchesFilter(card);
+				const show = searchOk && filterOk;
+
+				card.hidden = !show;
+
+				if (show) {
+					visibleCount++;
+				}
+			});
+
+			if (emptyEl) {
+				emptyEl.hidden = visibleCount !== 0;
+			}
+
+			updateTitle();
+		};
+
+		filterButtons.forEach(button => {
+			button.addEventListener('click', () => {
+				filterButtons.forEach(btn => btn.classList.remove('is-active'));
+				button.classList.add('is-active');
+
+				if (button.hasAttribute('data-filter')) {
+					activeMode = 'filter';
+					activeValue = button.getAttribute('data-filter') || 'all';
+				} else if (button.hasAttribute('data-context')) {
+					activeMode = 'context';
+					activeValue = button.getAttribute('data-context') || 'all';
+				}
+
+				update();
+			});
+		});
+
+		search?.addEventListener('input', update);
+
+		update();
+	})();
+
+	/* ==========================
 	GYMS ARCHIVE
 	========================== */
 
