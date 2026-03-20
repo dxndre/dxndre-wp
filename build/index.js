@@ -101,19 +101,22 @@ __webpack_require__.r(__webpack_exports__);
     var counters = document.querySelectorAll('.stat-figure');
     var animateCounter = function animateCounter(el) {
       var raw = el.textContent.trim();
-      var hasPlus = raw.includes('+');
-      var target = parseInt(raw.replace(/\D/g, ''), 10);
+      var match = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+      if (!match) return;
+      var target = parseFloat(match[1]);
+      var suffix = match[2].trim(); // e.g. "KG", "+", "kg", etc.
+
       var startTime = null;
       var duration = 1800;
       var _tick = function tick(timestamp) {
         if (!startTime) startTime = timestamp;
         var progress = Math.min((timestamp - startTime) / duration, 1);
         var value = Math.floor(progress * target);
-        el.textContent = value + (hasPlus ? '+' : '');
+        el.textContent = "".concat(value).concat(suffix ? suffix : '');
         if (progress < 1) {
           requestAnimationFrame(_tick);
         } else {
-          el.textContent = target + (hasPlus ? '+' : '');
+          el.textContent = "".concat(target).concat(suffix ? suffix : '');
         }
       };
       requestAnimationFrame(_tick);
@@ -864,6 +867,7 @@ __webpack_require__.r(__webpack_exports__);
       chapterLinks.forEach(function (link) {
         link.classList.toggle('is-active', link.dataset.target === item.id);
       });
+      document.body.classList.add('is-in-chapters');
 
       // URL hash (only update after the user reaches the story,
       // OR if they landed directly on a hash)
@@ -889,16 +893,30 @@ __webpack_require__.r(__webpack_exports__);
 
     // -----------------------------
     // 2) Simple "in story" state (10vh scroll trigger)
+    // Uses #main as the scroll container on single project pages
     // -----------------------------
+    var scrollContainer = document.querySelector('#main') || window;
+    var getScrollTop = function getScrollTop() {
+      if (scrollContainer === window) {
+        return window.scrollY || window.pageYOffset || 0;
+      }
+      return scrollContainer.scrollTop || 0;
+    };
+    var getViewportHeight = function getViewportHeight() {
+      if (scrollContainer === window) {
+        return window.innerHeight;
+      }
+      return scrollContainer.clientHeight || window.innerHeight;
+    };
     var updateStoryState = function updateStoryState() {
-      var threshold = window.innerHeight * 0.10; // 10vh
-      var inStory = window.scrollY >= threshold;
+      var threshold = getViewportHeight() * 0.10; // 10vh
+      var inStory = getScrollTop() >= threshold;
       document.body.classList.toggle('is-in-story', inStory);
       if (inStory) {
         hasUserEnteredStory = true;
       }
     };
-    window.addEventListener('scroll', updateStoryState, {
+    scrollContainer.addEventListener('scroll', updateStoryState, {
       passive: true
     });
     window.addEventListener('resize', updateStoryState, {
@@ -907,6 +925,25 @@ __webpack_require__.r(__webpack_exports__);
 
     // Run once on load
     updateStoryState();
+
+    // -----------------------------
+    // 2b) Chapter selector visibility
+    // -----------------------------
+    var updateChapterSelectorState = function updateChapterSelectorState() {
+      var rect = chaptersWrapper.getBoundingClientRect();
+      var viewportH = window.innerHeight;
+      var isVisible = rect.top < viewportH * 0.85 && rect.bottom > viewportH * 0.15;
+      document.body.classList.toggle('is-in-chapters', isVisible);
+    };
+    window.addEventListener('scroll', updateChapterSelectorState, {
+      passive: true
+    });
+    window.addEventListener('resize', updateChapterSelectorState, {
+      passive: true
+    });
+
+    // Run once on load
+    updateChapterSelectorState();
 
     // -----------------------------
     // 3) Active section detection (single observer)
@@ -935,6 +972,9 @@ __webpack_require__.r(__webpack_exports__);
       }
     }, {
       threshold: [0, 0.25, 0.35, 0.5, 0.75]
+    });
+    storySections.forEach(function (section) {
+      return activeObserver.observe(section);
     });
 
     // -----------------------------
@@ -966,12 +1006,15 @@ __webpack_require__.r(__webpack_exports__);
     window.addEventListener('wheel', function (e) {
       if (!document.body.classList.contains('is-in-story')) return;
       if (Math.abs(e.deltaY) < 40) return;
-
-      // Only hijack scroll if we’re in the wrapper (prevents random capture)
+      if (isSnapping) return;
       var rect = chaptersWrapper.getBoundingClientRect();
       if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      var nextIdx = e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1;
+
+      // Let normal page scrolling continue if we're at the boundaries
+      if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
       e.preventDefault();
-      doSnap(e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1);
+      doSnap(nextIdx);
     }, {
       passive: false
     });
@@ -1037,7 +1080,7 @@ __webpack_require__.r(__webpack_exports__);
     var activeChain = ((_buttons$find = buttons.find(function (btn) {
       return btn.classList.contains('is-active');
     })) === null || _buttons$find === void 0 ? void 0 : _buttons$find.dataset.chain) || 'all';
-    var visibleCount = 10;
+    var visibleCount = 6;
     var getBranch = function getBranch(el) {
       return (el.getAttribute('data-branch') || '').trim().toLowerCase();
     };
@@ -1113,20 +1156,20 @@ __webpack_require__.r(__webpack_exports__);
         });
         btn.classList.add('is-active');
         activeChain = btn.dataset.chain || 'all';
-        visibleCount = 10;
+        visibleCount = 6;
         update();
       });
     });
     search === null || search === void 0 || search.addEventListener('input', function () {
-      visibleCount = 10;
+      visibleCount = 6;
       update();
     });
     sortSel === null || sortSel === void 0 || sortSel.addEventListener('change', function () {
-      visibleCount = 10;
+      visibleCount = 6;
       update();
     });
     loadMore === null || loadMore === void 0 || loadMore.addEventListener('click', function () {
-      visibleCount += 10;
+      visibleCount += 6;
       update();
     });
     viewBtns.forEach(function (btn) {

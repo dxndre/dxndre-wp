@@ -95,23 +95,28 @@ import * as bootstrap from 'bootstrap';
 
 		const animateCounter = (el) => {
 			const raw = el.textContent.trim();
-			const hasPlus = raw.includes('+');
-			const target = parseInt(raw.replace(/\D/g, ''), 10);
+
+			const match = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+			if (!match) return;
+
+			const target = parseFloat(match[1]);
+			const suffix = match[2].trim(); // e.g. "KG", "+", "kg", etc.
 
 			let startTime = null;
 			const duration = 1800;
 
 			const tick = (timestamp) => {
 				if (!startTime) startTime = timestamp;
+
 				const progress = Math.min((timestamp - startTime) / duration, 1);
 				const value = Math.floor(progress * target);
 
-				el.textContent = value + (hasPlus ? '+' : '');
+				el.textContent = `${value}${suffix ? suffix : ''}`;
 
 				if (progress < 1) {
 					requestAnimationFrame(tick);
 				} else {
-					el.textContent = target + (hasPlus ? '+' : '');
+					el.textContent = `${target}${suffix ? suffix : ''}`;
 				}
 			};
 
@@ -947,6 +952,8 @@ import * as bootstrap from 'bootstrap';
 				link.classList.toggle('is-active', link.dataset.target === item.id);
 			});
 
+			document.body.classList.add('is-in-chapters');
+
 			// URL hash (only update after the user reaches the story,
 			// OR if they landed directly on a hash)
 			if ((hasUserEnteredStory || hadInitialHash) && window.location.hash !== `#${item.id}`) {
@@ -969,10 +976,29 @@ import * as bootstrap from 'bootstrap';
 
 		// -----------------------------
 		// 2) Simple "in story" state (10vh scroll trigger)
+		// Uses #main as the scroll container on single project pages
 		// -----------------------------
+		const scrollContainer = document.querySelector('#main') || window;
+
+		const getScrollTop = () => {
+			if (scrollContainer === window) {
+				return window.scrollY || window.pageYOffset || 0;
+			}
+
+			return scrollContainer.scrollTop || 0;
+		};
+
+		const getViewportHeight = () => {
+			if (scrollContainer === window) {
+				return window.innerHeight;
+			}
+
+			return scrollContainer.clientHeight || window.innerHeight;
+		};
+
 		const updateStoryState = () => {
-			const threshold = window.innerHeight * 0.10; // 10vh
-			const inStory = window.scrollY >= threshold;
+			const threshold = getViewportHeight() * 0.10; // 10vh
+			const inStory = getScrollTop() >= threshold;
 
 			document.body.classList.toggle('is-in-story', inStory);
 
@@ -981,11 +1007,31 @@ import * as bootstrap from 'bootstrap';
 			}
 		};
 
-		window.addEventListener('scroll', updateStoryState, { passive: true });
+		scrollContainer.addEventListener('scroll', updateStoryState, { passive: true });
 		window.addEventListener('resize', updateStoryState, { passive: true });
 
 		// Run once on load
 		updateStoryState();
+
+				// -----------------------------
+				// 2b) Chapter selector visibility
+				// -----------------------------
+				const updateChapterSelectorState = () => {
+					const rect = chaptersWrapper.getBoundingClientRect();
+					const viewportH = window.innerHeight;
+
+					const isVisible =
+						rect.top < viewportH * 0.85 &&
+						rect.bottom > viewportH * 0.15;
+
+					document.body.classList.toggle('is-in-chapters', isVisible);
+				};
+
+				window.addEventListener('scroll', updateChapterSelectorState, { passive: true });
+				window.addEventListener('resize', updateChapterSelectorState, { passive: true });
+
+				// Run once on load
+				updateChapterSelectorState();
 
 		// -----------------------------
 		// 3) Active section detection (single observer)
@@ -1021,6 +1067,8 @@ import * as bootstrap from 'bootstrap';
 			{ threshold: [0, 0.25, 0.35, 0.5, 0.75] }
 		);
 
+		storySections.forEach(section => activeObserver.observe(section));
+
 		// -----------------------------
 		// 4) Click navigation
 		// -----------------------------
@@ -1052,13 +1100,18 @@ import * as bootstrap from 'bootstrap';
 		window.addEventListener('wheel', (e) => {
 			if (!document.body.classList.contains('is-in-story')) return;
 			if (Math.abs(e.deltaY) < 40) return;
+			if (isSnapping) return;
 
-			// Only hijack scroll if we’re in the wrapper (prevents random capture)
 			const rect = chaptersWrapper.getBoundingClientRect();
 			if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
 
+			const nextIdx = e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1;
+
+			// Let normal page scrolling continue if we're at the boundaries
+			if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
+
 			e.preventDefault();
-			doSnap(e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1);
+			doSnap(nextIdx);
 		}, { passive: false });
 
 		window.addEventListener('keydown', (e) => {
@@ -1130,7 +1183,7 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		let activeChain = buttons.find(btn => btn.classList.contains('is-active'))?.dataset.chain || 'all';
-		let visibleCount = 10;
+		let visibleCount = 6;
 
 		const getBranch = (el) =>
 			(el.getAttribute('data-branch') || '').trim().toLowerCase();
@@ -1225,23 +1278,23 @@ import * as bootstrap from 'bootstrap';
 				btn.classList.add('is-active');
 
 				activeChain = btn.dataset.chain || 'all';
-				visibleCount = 10;
+				visibleCount = 6;
 				update();
 			});
 		});
 
 		search?.addEventListener('input', () => {
-			visibleCount = 10;
+			visibleCount = 6;
 			update();
 		});
 
 		sortSel?.addEventListener('change', () => {
-			visibleCount = 10;
+			visibleCount = 6;
 			update();
 		});
 
 		loadMore?.addEventListener('click', () => {
-			visibleCount += 10;
+			visibleCount += 6;
 			update();
 		});
 

@@ -3778,6 +3778,7 @@ img {
 					.gym-sort {
 						display: flex;
 						align-items: center;
+						justify-content: center;
 						gap: 12px;
 
 						select {
@@ -3798,6 +3799,7 @@ img {
 
 					.gym-view-toggle {
 						display: inline-flex;
+						justify-content: center;
 						gap: 0.5rem;
 
 						button {
@@ -4114,7 +4116,12 @@ img {
 						border: 1px solid rgba(255,255,255,0.65);
 						background: transparent;
 						color: white;
+						margin-top: 2em;
 						transition: 0.25s ease;
+
+						@include media-breakpoint-up(md) {
+							margin-top: 3em;
+						}
 
 						&:hover {
 							background: white;
@@ -4152,6 +4159,21 @@ img {
 					}
 				}
 			}
+		}
+
+		&.gym-table-section {
+			.intro-text {
+				width: 100%;
+				max-width: 800px;
+			}
+
+			&.neg-margin {
+				margin-top: -20vh;
+			}
+		}
+
+		&.stats {
+			margin: 5em 0;
 		}
 
 		&.portfolio {

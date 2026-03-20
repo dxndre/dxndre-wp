@@ -18171,6 +18171,9 @@ img {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   gap: 12px;
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-sort select {
@@ -18190,6 +18193,9 @@ img {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   gap: 0.5rem;
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-view-toggle button {
@@ -18578,8 +18584,14 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.65);
   background: transparent;
   color: white;
+  margin-top: 2em;
   -webkit-transition: 0.25s ease;
   transition: 0.25s ease;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content .gym-pagination button {
+    margin-top: 3em;
+  }
 }
 #main section.text-image .section-content .gym-pagination button:hover {
   background: white;
@@ -18609,6 +18621,16 @@ img {
      border-image: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.8)), color-stop(70%, rgba(255, 255, 255, 0))) 1;
      border-image: linear-gradient(90deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%) 1;
   opacity: 0.6;
+}
+#main section.gym-table-section .intro-text {
+  width: 100%;
+  max-width: 800px;
+}
+#main section.gym-table-section.neg-margin {
+  margin-top: -20vh;
+}
+#main section.stats {
+  margin: 5em 0;
 }
 #main section.portfolio:not(.viewport-active) {
   opacity: 1;
