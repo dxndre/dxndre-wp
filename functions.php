@@ -1447,7 +1447,7 @@ function dx_projects_archive_shortcode($atts) {
 				$year = (int) get_the_date('Y');
 
 				$context_label = ($client_type === 'commercial' && $employer)
-					? 'Commercial — ' . esc_html($employer)
+					? 'Commercial — ' . $employer
 					: ucfirst($client_type ?: 'Freelance');
 
 				$type_attr = implode(' ', array_map('sanitize_title', (array) $types));
