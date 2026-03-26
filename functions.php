@@ -1738,6 +1738,35 @@ function dx_shortcode_gym_table($atts) {
 		}
 	}
 
+	// -----------------------------
+	// Gym counts per chain
+	// -----------------------------
+	$chain_counts = [
+		'all'           => 0,
+		'davidlloyds'   => 0,
+		'puregym'       => 0,
+		'virginactive'  => 0,
+		'bodyworks'     => 0,
+		'thegymgroup'   => 0,
+		'other'         => 0,
+	];
+
+	if ($q->have_posts()) {
+		foreach ($q->posts as $post_obj) {
+			$post_id = $post_obj->ID;
+
+			$chain = get_field('gym_chain', $post_id);
+
+			$chain_counts['all']++;
+
+			if (isset($chain_counts[$chain])) {
+				$chain_counts[$chain]++;
+			} else {
+				$chain_counts['other']++;
+			}
+		}
+	}
+
 	ob_start();
 
 	if (!$q->have_posts()) {
@@ -1760,12 +1789,13 @@ function dx_shortcode_gym_table($atts) {
 			</div>
 
 			<div class="gym-filter-buttons">
-				<button class="is-active" data-chain="all">All</button>
-				<button data-chain="davidlloyds">David Lloyd</button>
-				<button data-chain="puregym">PureGym</button>
-				<button data-chain="virginactive">Virgin Active</button>
-				<button data-chain="bodyworks">Bodyworks Gym</button>
-				<button data-chain="thegymgroup">The Gym Group</button>
+				<button class="is-active" data-chain="all">All (' . intval($chain_counts['all']) . ')</button>
+				<button data-chain="davidlloyds">David Lloyd (' . intval($chain_counts['davidlloyds']) . ')</button>
+				<button data-chain="puregym">PureGym (' . intval($chain_counts['puregym']) . ')</button>
+				<button data-chain="virginactive">Virgin Active (' . intval($chain_counts['virginactive']) . ')</button>
+				<button data-chain="bodyworks">Bodyworks Gym (' . intval($chain_counts['bodyworks']) . ')</button>
+				<button data-chain="thegymgroup">The Gym Group (' . intval($chain_counts['thegymgroup']) . ')</button>
+				<button data-chain="other">Other (' . intval($chain_counts['other']) . ')</button>
 			</div>
 
 			<div class="gym-controls">
@@ -2109,3 +2139,27 @@ function dx_render_facility_score_block($label, $rawScore) {
 		<div class="dx-score-bar" aria-hidden="true"><span style="--pct:'.esc_attr($pct).'"></span></div>
 	</div>';
 }
+
+// Enqueue Leaflet for dark maps on the Bus Pages
+
+function dx_enqueue_leaflet_assets() {
+	if (!is_singular('bus-diary-entry')) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'leaflet-css',
+		'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+		[],
+		'1.9.4'
+	);
+
+	wp_enqueue_script(
+		'leaflet-js',
+		'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+		[],
+		'1.9.4',
+		true
+	);
+}
+add_action('wp_enqueue_scripts', 'dx_enqueue_leaflet_assets');

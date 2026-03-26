@@ -1331,6 +1331,132 @@ __webpack_require__.r(__webpack_exports__);
     });
     observer.observe(archive);
   });
+
+  // JS Hook for Bus Map
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var mapEl = document.querySelector('[data-bus-map]');
+    if (!mapEl) return;
+    var route = mapEl.dataset.route || '';
+    var start = mapEl.dataset.startName || '';
+    var end = mapEl.dataset.endName || '';
+    console.log('Bus map placeholder ready:', {
+      route: route,
+      start: start,
+      end: end
+    });
+  });
+
+  // Bus Map
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var mapEl = document.querySelector('[data-bus-map]');
+    if (!mapEl || typeof L === 'undefined') return;
+    var route = mapEl.dataset.route || '';
+    var startName = mapEl.dataset.startName || 'Start';
+    var endName = mapEl.dataset.endName || 'End';
+    var startLat = parseFloat(mapEl.dataset.startLat);
+    var startLng = parseFloat(mapEl.dataset.startLng);
+    var endLat = parseFloat(mapEl.dataset.endLat);
+    var endLng = parseFloat(mapEl.dataset.endLng);
+    var hasStart = !Number.isNaN(startLat) && !Number.isNaN(startLng);
+    var hasEnd = !Number.isNaN(endLat) && !Number.isNaN(endLng);
+    if (!hasStart && !hasEnd) {
+      mapEl.innerHTML = '<div class="bus-map__empty">No journey coordinates added yet.</div>';
+      return;
+    }
+    var map = L.map(mapEl, {
+      scrollWheelZoom: false,
+      zoomControl: true
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map);
+    var points = [];
+    var startIcon = L.divIcon({
+      className: 'bus-map-marker bus-map-marker--start',
+      html: '<span></span>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+    var endIcon = L.divIcon({
+      className: 'bus-map-marker bus-map-marker--end',
+      html: '<span></span>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+    if (hasStart) {
+      var startPoint = [startLat, startLng];
+      points.push(startPoint);
+      L.marker(startPoint, {
+        icon: startIcon
+      }).addTo(map).bindPopup("<strong>".concat(startName, "</strong>").concat(route ? "<br>Route ".concat(route) : ''));
+    }
+    if (hasEnd) {
+      var endPoint = [endLat, endLng];
+      points.push(endPoint);
+      L.marker(endPoint, {
+        icon: endIcon
+      }).addTo(map).bindPopup("<strong>".concat(endName, "</strong>").concat(route ? "<br>Route ".concat(route) : ''));
+    }
+    if (hasStart && hasEnd) {
+      L.polyline([[startLat, startLng], [endLat, endLng]], {
+        color: '#ffffff',
+        weight: 4,
+        opacity: 0.85
+      }).addTo(map);
+    }
+    if (points.length === 1) {
+      map.setView(points[0], 13);
+    } else {
+      map.fitBounds(points, {
+        padding: [40, 40]
+      });
+    }
+    window.addEventListener('resize', function () {
+      map.invalidateSize();
+    });
+  });
+
+  // View Switching
+
+  document.querySelectorAll('[data-view-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var view = btn.dataset.viewToggle;
+
+      // buttons
+      document.querySelectorAll('[data-view-toggle]').forEach(function (b) {
+        b.classList.remove('is-active');
+      });
+      btn.classList.add('is-active');
+
+      // views
+      document.querySelectorAll('.bus-stage__view').forEach(function (v) {
+        v.classList.remove('is-active');
+      });
+      var target = document.querySelector("[data-view=\"".concat(view, "\"]"));
+      if (target) target.classList.add('is-active');
+    });
+  });
+
+  // Bus Panel Toggle
+
+  document.querySelectorAll('[data-bus-panel-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.dataset.busPanelToggle;
+      var panel = document.querySelector("[data-bus-panel=\"".concat(key, "\"]"));
+      if (!panel) return;
+      var isHidden = panel.hasAttribute('hidden');
+      document.querySelectorAll('[data-bus-panel]').forEach(function (p) {
+        return p.setAttribute('hidden', 'hidden');
+      });
+      if (isHidden) {
+        panel.removeAttribute('hidden');
+      }
+    });
+  });
 })();
 
 /***/ }),
