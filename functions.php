@@ -1649,6 +1649,56 @@ function dx_shortcode_gym_table($atts) {
 
 	$q = new WP_Query($args);
 
+	// -----------------------------
+	// Compute best & worst David Lloyd gyms
+	// -----------------------------
+	$best_dl_score  = null;
+	$worst_dl_score = null;
+	$best_dl_id     = null;
+	$worst_dl_id    = null;
+
+	if ($q->have_posts()) {
+		foreach ($q->posts as $post_obj) {
+			$post_id = $post_obj->ID;
+
+			$chain = get_field('gym_chain', $post_id);
+
+			if ($chain !== 'davidlloyds') {
+				continue;
+			}
+
+			$sGym   = dx_normalise_facility_score(get_field('score_gym', $post_id));
+			$sSwim  = dx_normalise_facility_score(get_field('score_swim', $post_id));
+			$sSpa   = dx_normalise_facility_score(get_field('score_spa', $post_id));
+			$sCafe  = dx_normalise_facility_score(get_field('score_cafe', $post_id));
+			$sClean = dx_normalise_facility_score(get_field('cleanliness_maintenance', $post_id));
+			$sPark  = dx_normalise_facility_score(get_field('parking', $post_id));
+
+			$overall = dx_calc_overall_score([
+				'gym'     => $sGym,
+				'swim'    => $sSwim,
+				'spa'     => $sSpa,
+				'cafe'    => $sCafe,
+				'clean'   => $sClean,
+				'parking' => $sPark,
+			]);
+
+			if ($overall === null) {
+				continue;
+			}
+
+			if ($best_dl_score === null || $overall > $best_dl_score) {
+				$best_dl_score = $overall;
+				$best_dl_id    = $post_id;
+			}
+
+			if ($worst_dl_score === null || $overall < $worst_dl_score) {
+				$worst_dl_score = $overall;
+				$worst_dl_id    = $post_id;
+			}
+		}
+	}
+
 	ob_start();
 
 	if (!$q->have_posts()) {
@@ -1683,10 +1733,10 @@ function dx_shortcode_gym_table($atts) {
 				<label class="gym-sort">
 					<span class="sr-only">Sort</span>
 					<select data-gym-sort aria-label="Sort gyms">
-						<option value="overall_desc">Highest rated</option>
-						<option value="overall_asc">Lowest rated</option>
-						<option value="date_desc">Visit date (newest)</option>
-						<option value="date_asc">Visit date (oldest)</option>
+						<option value="overall_desc">Best Rated</option>
+						<option value="overall_asc">Worst Rated</option>
+						<option value="date_desc">Visit date (Recent)</option>
+						<option value="date_asc">Visit date (Oldest)</option>
 						<option value="az">A–Z</option>
 						<option value="za">Z–A</option>
 					</select>
@@ -1734,14 +1784,42 @@ function dx_shortcode_gym_table($atts) {
 		$visit_type_val = get_field('visit_type');
 		$visit_type_lbl = dx_visit_type_label($visit_type_val);
 
-		$sGym  = dx_normalise_facility_score(get_field('score_gym'));
-		$sSwim = dx_normalise_facility_score(get_field('score_swim'));
-		$sSpa  = dx_normalise_facility_score(get_field('score_spa'));
-		$sCafe = dx_normalise_facility_score(get_field('score_cafe'));
+		$post_id = get_the_ID();
 
-		$overall = dx_calc_overall_score([$sGym, $sSwim, $sSpa, $sCafe]);
+		$sGym   = dx_normalise_facility_score(get_field('score_gym', $post_id));
+		$sSwim  = dx_normalise_facility_score(get_field('score_swim', $post_id));
+		$sSpa   = dx_normalise_facility_score(get_field('score_spa', $post_id));
+		$sCafe  = dx_normalise_facility_score(get_field('score_cafe', $post_id));
+		$sClean = dx_normalise_facility_score(get_field('cleanliness_maintenance', $post_id));
+		$sPark  = dx_normalise_facility_score(get_field('parking', $post_id));
+
+		$overall = dx_calc_overall_score([
+			'gym'     => $sGym,
+			'swim'    => $sSwim,
+			'spa'     => $sSpa,
+			'cafe'    => $sCafe,
+			'clean'   => $sClean,
+			'parking' => $sPark,
+		]);
+
+		$overall_percentage = ($overall === null) ? null : round($overall * 10);
 		$overall_score = ($overall === null) ? -1 : round($overall, 1);
 		$overall_emoji = ($overall === null) ? '—' : dx_score_to_emoji($overall);
+
+		// -----------------------------
+		// Best / Worst badges
+		// -----------------------------
+		$badge_html = '';
+
+		if ($chain_val === 'davidlloyds' && $overall !== null) {
+			$current_id = get_the_ID();
+
+			if ($best_dl_id && $current_id === $best_dl_id) {
+				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--best">🏆 Best</span>';
+			} elseif ($worst_dl_id && $current_id === $worst_dl_id) {
+				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--worst">💩 Worst</span>';
+			}
+		}
 
 		$notes = (string) get_field('notes');
 
@@ -1795,24 +1873,31 @@ function dx_shortcode_gym_table($atts) {
 			<div class="dx-gym-card__meta">
 				<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
 				<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
-					'.(
-						$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
-						? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'
-						: ''
-					).'
+				'.$badge_html.'
+				'.(
+					$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
+					? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'
+					: ''
+				).'
 
-					<span class="dx-badge dx-badge--overall" '.($overall !== null ? 'data-score="'.esc_attr($overall).'"' : 'data-score="na"').'>
-						<span class="emoji">'.esc_html($overall_emoji).'</span>
-						<span class="text">'.($overall !== null ? esc_html(number_format($overall, 1)).'/10' : 'No rating').'</span>
+				<span class="dx-badge dx-badge--overall '.esc_attr(dx_overall_score_class($overall)).'" '.($overall !== null ? 'data-score="'.esc_attr(number_format($overall, 1, '.', '')).'"' : 'data-score="na"').'>
+					<span class="emoji">'.esc_html($overall_emoji).'</span>
+					<span class="text">
+						'.($overall !== null
+							? esc_html(rtrim(rtrim(number_format($overall * 10, 1), '0'), '.')).'%'
+							: 'No rating'
+						).'
 					</span>
-				</div>
+				</span>
 			</div>
 
 			<div class="dx-gym-card__scores">
 				'.dx_render_facility_score_block('Gym', get_field('score_gym')).'
-				'.dx_render_facility_score_block('Swim', get_field('score_swim')).'
-				'.dx_render_facility_score_block('Spa', get_field('score_spa')).'
-				'.dx_render_facility_score_block('Café', get_field('score_cafe')).'
+				'.dx_render_facility_score_block('Wetside Facilities', get_field('score_swim')).'
+				'.dx_render_facility_score_block('Spa Retreat', get_field('score_spa')).'
+				'.dx_render_facility_score_block('Café & Work Area', get_field('score_cafe')).'
+				'.dx_render_facility_score_block('Cleanliness & Maintenance', get_field('cleanliness_maintenance')).'
+				'.dx_render_facility_score_block('Parking', get_field('parking')).'
 			</div>
 
 			<div class="dx-notes">
@@ -1868,15 +1953,50 @@ function dx_normalise_facility_score($raw) {
 	return $n;
 }
 
-function dx_calc_overall_score($scores) {
-	// average only numeric scores (ignore null and 'unavailable')
-	$nums = [];
-	foreach ($scores as $s) {
-		if (is_int($s)) $nums[] = $s;
+function dx_overall_score_class($score) {
+	if ($score === null || !is_numeric($score)) {
+		return 'is-unrated';
 	}
-	if (!count($nums)) return null;
 
-	return (int) round(array_sum($nums) / count($nums));
+	$score = (float) $score;
+
+	if ($score >= 6) {
+		return 'is-good';
+	}
+
+	if ($score >= 4) {
+		return 'is-mid';
+	}
+
+	return 'is-bad';
+}
+
+function dx_calc_overall_score( $scores ) {
+
+	$weights = [
+		'gym'        => 2.0,
+		'swim'       => 1.5,
+		'spa'        => 1.5,
+		'cafe'       => 1.0,
+		'clean'      => 2.5,
+		'parking'    => 1.0,
+	];
+
+	$total_score  = 0;
+	$total_weight = 0;
+
+	foreach ($scores as $key => $score) {
+		if (!is_numeric($score)) continue;
+
+		$weight = $weights[$key] ?? 1;
+
+		$total_score  += $score * $weight;
+		$total_weight += $weight;
+	}
+
+	if ($total_weight === 0) return null;
+
+	return round($total_score / $total_weight, 2);
 }
 
 function dx_render_facility_score_block($label, $rawScore) {
@@ -1896,11 +2016,19 @@ function dx_render_facility_score_block($label, $rawScore) {
 
 	// Didn't use (default state)
 	if ($score === null) {
+
+		// Custom fallback labels
+		$fallback = 'Didn’t use';
+
+		if (strtolower($label) === 'cleanliness' || strtolower($label) === 'cleanliness & maintenance') {
+			$fallback = 'Not Assessed';
+		}
+
 		return '
 		<div class="dx-score-block is-didnt-use">
 			<div class="dx-score-top">
 				<span class="dx-score-label">'.esc_html($label).'</span>
-				<span class="dx-score-value">Didn’t use</span>
+				<span class="dx-score-value">'.esc_html($fallback).'</span>
 			</div>
 			<div class="dx-score-bar" aria-hidden="true"><span style="--pct:0"></span></div>
 		</div>';

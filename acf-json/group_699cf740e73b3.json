@@ -252,6 +252,84 @@
             "save_options": 0
         },
         {
+            "key": "field_69c34e20990f2",
+            "label": "Cleanliness & Maintenance",
+            "name": "cleanliness_maintenance",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Select a score or mark as Unavailable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "25",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "unavailable": "Unavailable",
+                "0": "0",
+                "1": "1",
+                "2": "2",
+                "3": "3",
+                "4": "4",
+                "5": "5",
+                "6": "6",
+                "7": "7",
+                "8": "8",
+                "9": "9",
+                "10": "10"
+            },
+            "default_value": false,
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_69c34e48990f3",
+            "label": "Parking",
+            "name": "parking",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Select a score or mark as Unavailable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "25",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "unavailable": "Unavailable",
+                "0": "0",
+                "1": "1",
+                "2": "2",
+                "3": "3",
+                "4": "4",
+                "5": "5",
+                "6": "6",
+                "7": "7",
+                "8": "8",
+                "9": "9",
+                "10": "10"
+            },
+            "default_value": false,
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
             "key": "field_dx_gym_notes",
             "label": "Notes",
             "name": "notes",
@@ -338,5 +416,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1773704426
+    "modified": 1774407266
 }
