@@ -3980,6 +3980,15 @@ img {
 					align-items: center;
 					gap: 0.4rem;
 
+					&--category {
+						border: 1px solid rgba(102, 255, 224, 0.35);
+						background: rgba(102, 255, 224, 0.08);
+						color: #9fffea;
+						text-transform: uppercase;
+						letter-spacing: 1px;
+						font-size: 0.625rem;
+					}
+
 					&--best {
 						border: 1px solid #ffac34;
 						text-transform: uppercase;
@@ -4092,10 +4101,11 @@ img {
 						transition: transform 650ms cubic-bezier(.2,.8,.2,1);
 						background: currentColor;
 						opacity: 0.9;
+						will-change: transform;
 					}
 
 					/* animate in on load */
-					.dx-score-bar span { transform: scaleX(var(--pct, 0)); }
+					// .dx-score-bar span { transform: scaleX(var(--pct, 0)); }
 
 					&.is-unavailable,
 					&.is-didnt-use {

@@ -1428,6 +1428,47 @@ import * as bootstrap from 'bootstrap';
 		const initialViewBtn = viewBtns.find(btn => btn.classList.contains('is-active'));
 		archive.setAttribute('data-view', initialViewBtn?.getAttribute('data-gym-view') || 'cards');
 
+		// Progress bar stagger animation on reveal
+		const animatedCards = new WeakSet();
+
+		const animateCardBars = (card) => {
+			if (!card || animatedCards.has(card)) return;
+
+			const bars = [...card.querySelectorAll('.dx-score-bar span')];
+			if (!bars.length) return;
+
+			animatedCards.add(card);
+
+			bars.forEach((bar, index) => {
+				const pct = getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
+
+				bar.style.transform = 'scaleX(0)';
+
+				setTimeout(() => {
+					bar.style.transform = `scaleX(${pct})`;
+				}, index * 100);
+			});
+		};
+
+		const cardObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						animateCardBars(entry.target);
+						cardObserver.unobserve(entry.target);
+					}
+				});
+			},
+			{
+				threshold: 0.2,
+				rootMargin: '0px 0px -10% 0px'
+			}
+		);
+
+		allCards.forEach(card => {
+			cardObserver.observe(card);
+		});
+
 		update();
 	})();
 

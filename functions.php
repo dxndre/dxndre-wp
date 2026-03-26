@@ -1699,6 +1699,45 @@ function dx_shortcode_gym_table($atts) {
 		}
 	}
 
+	// -----------------------------
+	// Compute category winners
+	// -----------------------------
+	$category_winners = [
+		'gym'     => ['score' => null, 'id' => null],
+		'swim'    => ['score' => null, 'id' => null],
+		'spa'     => ['score' => null, 'id' => null],
+		'cafe'    => ['score' => null, 'id' => null],
+		'clean'   => ['score' => null, 'id' => null],
+		'parking' => ['score' => null, 'id' => null],
+	];
+
+	if ($q->have_posts()) {
+		foreach ($q->posts as $post_obj) {
+			$post_id = $post_obj->ID;
+
+			$scores = [
+				'gym'     => dx_normalise_facility_score(get_field('score_gym', $post_id)),
+				'swim'    => dx_normalise_facility_score(get_field('score_swim', $post_id)),
+				'spa'     => dx_normalise_facility_score(get_field('score_spa', $post_id)),
+				'cafe'    => dx_normalise_facility_score(get_field('score_cafe', $post_id)),
+				'clean'   => dx_normalise_facility_score(get_field('cleanliness_maintenance', $post_id)),
+				'parking' => dx_normalise_facility_score(get_field('parking', $post_id)),
+			];
+
+			foreach ($scores as $key => $score) {
+				if (!is_numeric($score)) continue;
+
+				if (
+					$category_winners[$key]['score'] === null ||
+					$score > $category_winners[$key]['score']
+				) {
+					$category_winners[$key]['score'] = $score;
+					$category_winners[$key]['id']    = $post_id;
+				}
+			}
+		}
+	}
+
 	ob_start();
 
 	if (!$q->have_posts()) {
@@ -1815,11 +1854,34 @@ function dx_shortcode_gym_table($atts) {
 			$current_id = get_the_ID();
 
 			if ($best_dl_id && $current_id === $best_dl_id) {
-				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--best">🏆 Best</span>';
+				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--best">🏆 Best Overall</span>';
 			} elseif ($worst_dl_id && $current_id === $worst_dl_id) {
-				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--worst">💩 Worst</span>';
+				$badge_html = '<span class="dx-badge dx-badge--rank dx-badge--worst">💩 Worst Overall</span>';
 			}
 		}
+
+		$category_badges = [];
+
+		if (get_the_ID() === ($category_winners['gym']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">🏋️ Best Gym</span>';
+		}
+		if (get_the_ID() === ($category_winners['swim']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">🏊 Best Wetside</span>';
+		}
+		if (get_the_ID() === ($category_winners['spa']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">💎 Best Spa</span>';
+		}
+		if (get_the_ID() === ($category_winners['cafe']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">☕ Best Work Area</span>';
+		}
+		if (get_the_ID() === ($category_winners['clean']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">🧼 Cleanest</span>';
+		}
+		if (get_the_ID() === ($category_winners['parking']['id'] ?? 0)) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category">🚗 Best Parking</span>';
+		}
+
+		$category_badges_html = implode('', $category_badges);
 
 		$notes = (string) get_field('notes');
 
@@ -1874,6 +1936,7 @@ function dx_shortcode_gym_table($atts) {
 				<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
 				<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
 				'.$badge_html.'
+				'.$category_badges_html.'
 				'.(
 					$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
 					? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'

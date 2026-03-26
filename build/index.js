@@ -1278,6 +1278,36 @@ __webpack_require__.r(__webpack_exports__);
       return btn.classList.contains('is-active');
     });
     archive.setAttribute('data-view', (initialViewBtn === null || initialViewBtn === void 0 ? void 0 : initialViewBtn.getAttribute('data-gym-view')) || 'cards');
+
+    // Progress bar stagger animation on reveal
+    var animatedCards = new WeakSet();
+    var animateCardBars = function animateCardBars(card) {
+      if (!card || animatedCards.has(card)) return;
+      var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(card.querySelectorAll('.dx-score-bar span'));
+      if (!bars.length) return;
+      animatedCards.add(card);
+      bars.forEach(function (bar, index) {
+        var pct = getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
+        bar.style.transform = 'scaleX(0)';
+        setTimeout(function () {
+          bar.style.transform = "scaleX(".concat(pct, ")");
+        }, index * 100);
+      });
+    };
+    var cardObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCardBars(entry.target);
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -10% 0px'
+    });
+    allCards.forEach(function (card) {
+      cardObserver.observe(card);
+    });
     update();
   })();
 

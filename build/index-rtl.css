@@ -18398,6 +18398,14 @@ img {
           align-items: center;
   gap: 0.4rem;
 }
+#main section.text-image .section-content .dx-badge--category {
+  border: 1px solid rgba(102, 255, 224, 0.35);
+  background: rgba(102, 255, 224, 0.08);
+  color: #9fffea;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.625rem;
+}
 #main section.text-image .section-content .dx-badge--best {
   border: 1px solid #ffac34;
   text-transform: uppercase;
@@ -18523,13 +18531,10 @@ img {
   transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
   background: currentColor;
   opacity: 0.9;
+  will-change: transform;
 }
 #main section.text-image .section-content .dx-score-block {
   /* animate in on load */
-}
-#main section.text-image .section-content .dx-score-block .dx-score-bar span {
-  -webkit-transform: scaleX(var(--pct, 0));
-          transform: scaleX(var(--pct, 0));
 }
 #main section.text-image .section-content .dx-score-block.is-unavailable, #main section.text-image .section-content .dx-score-block.is-didnt-use {
   color: rgba(255, 255, 255, 0.45);
