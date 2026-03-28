@@ -15886,29 +15886,50 @@ body.is-frontend.single-bus-diary-entry #main {
 body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry {
   color: white;
 }
-body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero {
   position: relative;
 }
-body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero > img {
+  -webkit-animation: none;
+          animation: none;
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero .wp-block-cover__background {
+  opacity: 1;
+  background: #000000;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), color-stop(75%, rgba(0, 0, 0, 0)), to(rgb(0, 0, 0)));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 75%, rgb(0, 0, 0) 100%);
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner {
   width: 100%;
   max-width: 760px;
   padding: 6rem 1rem 4rem;
+  margin: 0 auto;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner {
+  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner {
     padding: 8rem 0 5rem;
   }
 }
-body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner .h1 {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner .h1 {
   font-size: 2.75rem;
   margin-bottom: 1rem;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-inner .h1 {
+  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-inner .h1 {
     font-size: 4rem;
   }
 }
-body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-subtitle {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-diary-entry__hero-subtitle {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -15920,6 +15941,9 @@ body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__hero-subt
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 1.25rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__excerpt {
   max-width: 640px;
@@ -15991,18 +16015,177 @@ body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__body {
 body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry__body p:last-child {
   margin-bottom: 0;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stat-card,
-body.is-frontend.single-bus-diary-entry #main section .bus-panel {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  z-index: 1000;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.75rem 1rem;
+  min-width: 280px;
+  max-width: calc(100% - 32px);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  -webkit-animation: dockFloat 6s ease-in-out infinite;
+          animation: dockFloat 6s ease-in-out infinite;
+}
+@-webkit-keyframes dockFloat {
+  0%, 100% {
+    -webkit-transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    -webkit-transform: translateX(-50%) translateY(-4px);
+            transform: translateX(-50%) translateY(-4px);
+  }
+}
+@keyframes dockFloat {
+  0%, 100% {
+    -webkit-transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    -webkit-transform: translateX(-50%) translateY(-4px);
+            transform: translateX(-50%) translateY(-4px);
+  }
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock {
+  /* ===== MOBILE STACK ===== */
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    padding: 0.75rem 1.25rem;
+  }
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__stats {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.75rem;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__stats {
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+  }
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__stats .stat {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+  /* subtle glow */
+  -webkit-box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.4rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+@media (min-width: 576px) {
+  body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls {
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+  }
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls button {
+  width: 44px;
+  height: 44px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  -webkit-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+  /* hover */
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  -webkit-transform: translateY(-1px);
+          transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls button {
+  /* active state */
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-dock__controls button.is-active {
+  background: white;
+  color: black;
+  border-color: white;
+  -webkit-box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stat-card,
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-panel {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
   -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stat-card {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stat-card {
   padding: 1.25rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stat-card .label {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stat-card .label {
   display: block;
   margin-bottom: 0.45rem;
   font-size: 0.75rem;
@@ -16010,19 +16193,19 @@ body.is-frontend.single-bus-diary-entry #main section .bus-stat-card .label {
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.58);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stat-card strong {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stat-card strong {
   font-size: 1rem;
   font-weight: 600;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-panel {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-panel {
   padding: 1.5rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-panel h2, body.is-frontend.single-bus-diary-entry #main section .bus-panel .h2 {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-panel h2, body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-panel .h2 {
   margin-bottom: 1rem;
   font-size: 1.75rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-badge-row {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-badge-row {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16031,7 +16214,7 @@ body.is-frontend.single-bus-diary-entry #main section .bus-badge-row {
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-badge {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-badge {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -16046,7 +16229,7 @@ body.is-frontend.single-bus-diary-entry #main section .bus-badge {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-spotify a {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-spotify a {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -16064,11 +16247,11 @@ body.is-frontend.single-bus-diary-entry #main section .bus-spotify a {
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-spotify a:hover {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-spotify a:hover {
   background: #C42020;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map {
   width: 100%;
   min-height: 420px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -16076,25 +16259,25 @@ body.is-frontend.single-bus-diary-entry #main section .bus-map {
   overflow: hidden;
   position: relative;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map .leaflet-control-zoom a {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map .leaflet-control-zoom a {
   background: rgba(0, 0, 0, 0.75);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map .leaflet-popup-content-wrapper,
-body.is-frontend.single-bus-diary-entry #main section .bus-map .leaflet-popup-tip {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map .leaflet-popup-content-wrapper,
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map .leaflet-popup-tip {
   background: #111;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.08);
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map .leaflet-popup-content {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map .leaflet-popup-content {
   font-family: "Outfit", sans-serif;
   font-size: 0.9rem;
   line-height: 1.5;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map__empty {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map__empty {
   min-height: 420px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -16110,7 +16293,7 @@ body.is-frontend.single-bus-diary-entry #main section .bus-map__empty {
   color: rgba(255, 255, 255, 0.6);
   background: radial-gradient(circle at top left, rgba(0, 174, 255, 0.12), transparent 35%), radial-gradient(circle at bottom right, rgba(255, 122, 0, 0.12), transparent 35%), rgba(255, 255, 255, 0.02);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map-meta {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map-meta {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16121,11 +16304,11 @@ body.is-frontend.single-bus-diary-entry #main section .bus-map-meta {
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.9rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map-marker {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map-marker {
   background: transparent !important;
   border: none !important;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map-marker span {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map-marker span {
   display: block;
   width: 18px;
   height: 18px;
@@ -16133,13 +16316,13 @@ body.is-frontend.single-bus-diary-entry #main section .bus-map-marker span {
   -webkit-box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
           box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map-marker--start span {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map-marker--start span {
   background: #66ffe0;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-map-marker--end span {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-map-marker--end span {
   background: #ff6b6b;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-summary-list {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-summary-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -16147,7 +16330,7 @@ body.is-frontend.single-bus-diary-entry #main section .bus-summary-list {
   display: grid;
   gap: 0.9rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-summary-list li {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-summary-list li {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16158,21 +16341,22 @@ body.is-frontend.single-bus-diary-entry #main section .bus-summary-list li {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-summary-list span {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-summary-list span {
   color: rgba(255, 255, 255, 0.62);
   font-size: 0.9rem;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-summary-list strong {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-summary-list strong {
   color: white;
   font-weight: 600;
   text-align: right;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stage {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stage {
   position: relative;
   height: 100vh;
   overflow: hidden;
+  margin-top: -15vh;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stage__view {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stage__view {
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -16180,15 +16364,15 @@ body.is-frontend.single-bus-diary-entry #main section .bus-stage__view {
   -webkit-transition: opacity 0.5s ease;
   transition: opacity 0.5s ease;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-stage__view.is-active {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-stage__view.is-active {
   opacity: 1;
   pointer-events: auto;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-spotify-mini {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-spotify-mini {
   width: 100%;
   max-width: 420px;
 }
-body.is-frontend.single-bus-diary-entry #main section .bus-spotify-mini iframe {
+body.is-frontend.single-bus-diary-entry #main section.bus-diary-entry .bus-spotify-mini iframe {
   display: block;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);

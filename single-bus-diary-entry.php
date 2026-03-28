@@ -49,15 +49,18 @@ while (have_posts()) : the_post();
 ?>
 
 <section class="bus-diary-entry viewport-active">
-	<div class="wp-block-cover bus-diary-entry__hero hero-background" style="min-height:100vh;">
-		<?php if (has_post_thumbnail()) : ?>
-			<?php the_post_thumbnail('full', [
-				'class' => 'wp-block-cover__image-background',
-				'data-object-fit' => 'cover'
-			]); ?>
-		<?php endif; ?>
+	<div class="wp-block-cover bus-diary-entry__hero hero-background" style="min-height:75vh;">
+		<div class="overlay">
+			<?php if (has_post_thumbnail()) : ?>
+				<?php the_post_thumbnail('full', [
+					'class' => 'wp-block-cover__image-background',
+					'data-object-fit' => 'cover'
+				]); ?>
+			<?php endif; ?>
+		</div>
+		
 
-		<span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-70 has-background-dim"></span>
+		<span aria-hidden="true" class="wp-block-cover__background"></span>
 
 		<div class="wp-block-cover__inner-container is-layout-constrained">
 			<div class="wp-block-group container">
@@ -85,16 +88,26 @@ while (have_posts()) : the_post();
 						<p class="bus-diary-entry__excerpt"><?php echo esc_html(get_the_excerpt()); ?></p>
 					<?php endif; ?>
 
-					<div class="bus-diary-entry__hero-actions">
-						<?php if ($spotify_url) : ?>
-							<a class="btn btn-light" href="<?php echo esc_url($spotify_url); ?>" target="_blank" rel="noopener noreferrer">
-								Open Soundtrack
+					<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex bus-diary-entry__hero-actions">
+
+						<div class="wp-block-button primary">
+							<a class="wp-block-button__link wp-element-button"
+							href="#bus-stage">
+								View Journey Experience
 							</a>
+						</div>
+
+						<?php if ($spotify_url) : ?>
+							<div class="wp-block-button quaternary">
+								<a class="wp-block-button__link wp-element-button"
+								href="<?php echo esc_url($spotify_url); ?>"
+								target="_blank"
+								rel="noopener noreferrer">
+									<i class="fa-brands fa-spotify"></i> Open Soundtrack
+								</a>
+							</div>
 						<?php endif; ?>
 
-						<a class="btn btn-outline-light" href="#bus-stage">
-							View Journey Experience
-						</a>
 					</div>
 				</div>
 			</div>
