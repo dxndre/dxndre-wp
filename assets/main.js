@@ -1644,5 +1644,325 @@ import * as bootstrap from 'bootstrap';
 		});
 	});
 
+	/* ==========================
+		BUS DIARY STAGE + TFL DEPARTURES
+	========================== */
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const busEntry = document.querySelector('.bus-diary-entry');
+		if (!busEntry) return;
+
+		const busStage = busEntry.querySelector('.bus-stage');
+		const dock = busEntry.querySelector('[data-bus-dock]');
+
+		if (busStage && dock) {
+			const views = [...busStage.querySelectorAll('.bus-stage__view')];
+			const toggles = [...dock.querySelectorAll('[data-view-toggle]')];
+
+			const setView = (viewName) => {
+				views.forEach(view => {
+					view.classList.toggle('is-active', view.dataset.view === viewName);
+				});
+
+				toggles.forEach(btn => {
+					btn.classList.toggle('is-active', btn.dataset.viewToggle === viewName);
+				});
+			};
+
+			toggles.forEach(btn => {
+				btn.addEventListener('click', () => {
+					const viewName = btn.dataset.viewToggle;
+					if (!viewName) return;
+					setView(viewName);
+				});
+			});
+		}
+
+		const panelToggleButtons = [...busEntry.querySelectorAll('[data-bus-panel-toggle]')];
+		const panels = [...busEntry.querySelectorAll('[data-bus-panel]')];
+
+		if (panelToggleButtons.length && panels.length) {
+			panelToggleButtons.forEach(btn => {
+				btn.addEventListener('click', () => {
+					const key = btn.dataset.busPanelToggle;
+					if (!key) return;
+
+					const panel = busEntry.querySelector(`[data-bus-panel="${key}"]`);
+					if (!panel) return;
+
+					const isHidden = panel.hasAttribute('hidden');
+
+					panels.forEach(p => p.setAttribute('hidden', 'hidden'));
+
+					if (isHidden) {
+						panel.removeAttribute('hidden');
+					}
+				});
+			});
+		}
+
+		/* ==========================
+		TFL DEPARTURES NEAR YOU
+		========================== */
+
+		const departuresRoot = busEntry.querySelector('[data-bus-departures]');
+		if (!departuresRoot || typeof DX_BUS_DIARY === 'undefined') return;
+
+		const locateBtn = departuresRoot.querySelector('[data-bus-locate]');
+		const statusEl = departuresRoot.querySelector('[data-bus-status]');
+		const stopsEl = departuresRoot.querySelector('[data-bus-stops]');
+		const resultsEl = departuresRoot.querySelector('[data-bus-results]');
+
+		if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+
+		const restBase = DX_BUS_DIARY.rest_url.replace(/\/$/, '');
+
+		const minsLabel = (seconds) => {
+			if (seconds === null || seconds === undefined) return '—';
+			const mins = Math.round(seconds / 60);
+			if (mins <= 0) return 'Due';
+			return `${mins} min`;
+		};
+
+		const renderArrivals = (arrivals) => {
+			if (!arrivals.length) {
+				resultsEl.innerHTML = `
+					<div class="bus-arrival-card">
+						<div class="bus-arrival-main">No live departures found.</div>
+					</div>
+				`;
+				return;
+			}
+
+			resultsEl.innerHTML = arrivals.map(item => `
+				<div class="bus-arrival-card">
+					<div class="bus-arrival-main">
+						<div class="bus-arrival-line">${item.lineName || 'Bus'}</div>
+						<div class="bus-arrival-destination">${item.destinationName || 'Unknown destination'}</div>
+						<div class="bus-arrival-meta">${item.towards || ''}</div>
+					</div>
+					<div class="bus-arrival-time">${minsLabel(item.timeToStation)}</div>
+				</div>
+			`).join('');
+		};
+
+		const loadArrivals = async (stopId, stopName) => {
+			statusEl.textContent = `Loading departures for ${stopName}…`;
+			resultsEl.innerHTML = '';
+
+			try {
+				const res = await fetch(
+					`${restBase}/tfl-stop-arrivals?stop_id=${encodeURIComponent(stopId)}`,
+					{
+						headers: {
+							'X-WP-Nonce': DX_BUS_DIARY.nonce
+						}
+					}
+				);
+
+				const data = await res.json();
+
+				if (!data.success) {
+					throw new Error(data.message || 'Could not load arrivals.');
+				}
+
+				statusEl.textContent = `Showing live departures for ${stopName}`;
+				renderArrivals(data.arrivals || []);
+			} catch (err) {
+				statusEl.textContent = 'Unable to load live departures right now.';
+				resultsEl.innerHTML = `
+					<div class="bus-arrival-card">
+						<div class="bus-arrival-main">${err.message}</div>
+					</div>
+				`;
+			}
+		};
+
+		const renderStops = (stops) => {
+			if (!stops.length) {
+				stopsEl.innerHTML = `
+					<div class="bus-stop-card">
+						<p>No nearby bus stops found.</p>
+					</div>
+				`;
+				resultsEl.innerHTML = '';
+				return;
+			}
+
+			stopsEl.innerHTML = stops.map((stop, index) => `
+				<button
+					type="button"
+					class="bus-stop-card ${index === 0 ? 'is-active' : ''}"
+					data-stop-id="${stop.id}"
+					data-stop-name="${stop.name}"
+				>
+					<h4>${stop.name}</h4>
+					<p>${stop.distance ?? '—'}m away ${stop.indicator ? `• Stop ${stop.indicator}` : ''}</p>
+				</button>
+			`).join('');
+
+			const stopButtons = [...stopsEl.querySelectorAll('[data-stop-id]')];
+
+			stopButtons.forEach(btn => {
+				btn.addEventListener('click', () => {
+					stopButtons.forEach(b => b.classList.remove('is-active'));
+					btn.classList.add('is-active');
+					loadArrivals(btn.dataset.stopId, btn.dataset.stopName);
+				});
+			});
+
+			loadArrivals(stops[0].id, stops[0].name);
+		};
+
+		locateBtn.addEventListener('click', () => {
+			if (!navigator.geolocation) {
+				statusEl.textContent = 'Geolocation is not supported on this device.';
+				return;
+			}
+
+			statusEl.textContent = 'Getting your location…';
+			stopsEl.innerHTML = '';
+			resultsEl.innerHTML = '';
+
+			navigator.geolocation.getCurrentPosition(async (position) => {
+				const { latitude, longitude } = position.coords;
+
+				try {
+					const res = await fetch(
+						`${restBase}/tfl-nearby-stops?lat=${encodeURIComponent(latitude)}&lng=${encodeURIComponent(longitude)}&radius=600`,
+						{
+							headers: {
+								'X-WP-Nonce': DX_BUS_DIARY.nonce
+							}
+						}
+					);
+
+					const data = await res.json();
+
+					if (!data.success) {
+						throw new Error(data.message || 'Could not load nearby stops.');
+					}
+
+					statusEl.textContent = 'Nearby stops found.';
+					renderStops(data.stops || []);
+				} catch (err) {
+					statusEl.textContent = 'Unable to find nearby stops right now.';
+					stopsEl.innerHTML = `
+						<div class="bus-stop-card">
+							<p>${err.message}</p>
+						</div>
+					`;
+				}
+			}, () => {
+				statusEl.textContent = 'Location access was denied.';
+			}, {
+				enableHighAccuracy: true,
+				timeout: 10000,
+				maximumAge: 60000
+			});
+		});
+	});
+
+	/* ==========================
+	BUS DIARY STAGE SWITCHER
+	========================== */
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const busEntry = document.querySelector('.bus-diary-entry');
+		if (!busEntry) return;
+
+		const stage = busEntry.querySelector('.bus-stage');
+		const dock = busEntry.querySelector('[data-bus-dock]');
+		const toggleButtons = [...busEntry.querySelectorAll('[data-view-toggle]')];
+		const views = [...busEntry.querySelectorAll('.bus-stage__view[data-view]')];
+
+		if (!stage || !dock || !toggleButtons.length || !views.length) return;
+
+		const setActiveView = (viewName) => {
+			views.forEach((view) => {
+				view.classList.toggle('is-active', view.dataset.view === viewName);
+			});
+
+			toggleButtons.forEach((button) => {
+				const isActive = button.dataset.viewToggle === viewName;
+				button.classList.toggle('is-active', isActive);
+				button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+			});
+		};
+
+		toggleButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				const viewName = button.dataset.viewToggle;
+				if (!viewName) return;
+				setActiveView(viewName);
+			});
+		});
+
+		const activeButton = dock.querySelector('[data-view-toggle].is-active');
+		setActiveView(activeButton?.dataset.viewToggle || 'map');
+	});
+
+	/* ==========================
+	BUS DIARY DEPARTURES SAFETY
+	========================== */
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const departuresRoot = document.querySelector('[data-bus-departures]');
+		if (!departuresRoot) return;
+
+		const locateBtn = departuresRoot.querySelector('[data-bus-locate]');
+		const statusEl = departuresRoot.querySelector('[data-bus-status]');
+		const stopsEl = departuresRoot.querySelector('[data-bus-stops]');
+		const resultsEl = departuresRoot.querySelector('[data-bus-results]');
+
+		if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+
+		if (locateBtn.dataset.busLocateBound === 'true') return;
+		locateBtn.dataset.busLocateBound = 'true';
+
+		const setStatus = (message) => {
+			statusEl.textContent = message;
+		};
+
+		locateBtn.addEventListener('click', () => {
+			if (!navigator.geolocation) {
+				setStatus('Geolocation is not supported on this device.');
+				return;
+			}
+
+			setStatus('Getting your location…');
+			stopsEl.innerHTML = '';
+			resultsEl.innerHTML = '';
+
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const lat = position.coords.latitude;
+					const lng = position.coords.longitude;
+					setStatus(`Location found: ${lat.toFixed(5)}, ${lng.toFixed(5)}.`);
+				},
+				(error) => {
+					switch (error.code) {
+						case error.PERMISSION_DENIED:
+							setStatus('Location access was denied.');
+							break;
+						case error.POSITION_UNAVAILABLE:
+							setStatus('Your location is currently unavailable.');
+							break;
+						case error.TIMEOUT:
+							setStatus('Location request timed out.');
+							break;
+						default:
+							setStatus('Unable to get your location right now.');
+					}
+				},
+				{
+					enableHighAccuracy: true,
+					timeout: 10000,
+					maximumAge: 300000,
+				}
+			);
+		});
+	});
+
 })();
 

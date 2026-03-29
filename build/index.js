@@ -1457,6 +1457,295 @@ __webpack_require__.r(__webpack_exports__);
       }
     });
   });
+
+  /* ==========================
+  	BUS DIARY STAGE + TFL DEPARTURES
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var busEntry = document.querySelector('.bus-diary-entry');
+    if (!busEntry) return;
+    var busStage = busEntry.querySelector('.bus-stage');
+    var dock = busEntry.querySelector('[data-bus-dock]');
+    if (busStage && dock) {
+      var views = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(busStage.querySelectorAll('.bus-stage__view'));
+      var toggles = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(dock.querySelectorAll('[data-view-toggle]'));
+      var setView = function setView(viewName) {
+        views.forEach(function (view) {
+          view.classList.toggle('is-active', view.dataset.view === viewName);
+        });
+        toggles.forEach(function (btn) {
+          btn.classList.toggle('is-active', btn.dataset.viewToggle === viewName);
+        });
+      };
+      toggles.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var viewName = btn.dataset.viewToggle;
+          if (!viewName) return;
+          setView(viewName);
+        });
+      });
+    }
+    var panelToggleButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(busEntry.querySelectorAll('[data-bus-panel-toggle]'));
+    var panels = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(busEntry.querySelectorAll('[data-bus-panel]'));
+    if (panelToggleButtons.length && panels.length) {
+      panelToggleButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.dataset.busPanelToggle;
+          if (!key) return;
+          var panel = busEntry.querySelector("[data-bus-panel=\"".concat(key, "\"]"));
+          if (!panel) return;
+          var isHidden = panel.hasAttribute('hidden');
+          panels.forEach(function (p) {
+            return p.setAttribute('hidden', 'hidden');
+          });
+          if (isHidden) {
+            panel.removeAttribute('hidden');
+          }
+        });
+      });
+    }
+
+    /* ==========================
+    TFL DEPARTURES NEAR YOU
+    ========================== */
+
+    var departuresRoot = busEntry.querySelector('[data-bus-departures]');
+    if (!departuresRoot || typeof DX_BUS_DIARY === 'undefined') return;
+    var locateBtn = departuresRoot.querySelector('[data-bus-locate]');
+    var statusEl = departuresRoot.querySelector('[data-bus-status]');
+    var stopsEl = departuresRoot.querySelector('[data-bus-stops]');
+    var resultsEl = departuresRoot.querySelector('[data-bus-results]');
+    if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+    var restBase = DX_BUS_DIARY.rest_url.replace(/\/$/, '');
+    var minsLabel = function minsLabel(seconds) {
+      if (seconds === null || seconds === undefined) return '—';
+      var mins = Math.round(seconds / 60);
+      if (mins <= 0) return 'Due';
+      return "".concat(mins, " min");
+    };
+    var renderArrivals = function renderArrivals(arrivals) {
+      if (!arrivals.length) {
+        resultsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t\t<div class=\"bus-arrival-main\">No live departures found.</div>\n\t\t\t\t\t</div>\n\t\t\t\t";
+        return;
+      }
+      resultsEl.innerHTML = arrivals.map(function (item) {
+        return "\n\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t<div class=\"bus-arrival-main\">\n\t\t\t\t\t\t<div class=\"bus-arrival-line\">".concat(item.lineName || 'Bus', "</div>\n\t\t\t\t\t\t<div class=\"bus-arrival-destination\">").concat(item.destinationName || 'Unknown destination', "</div>\n\t\t\t\t\t\t<div class=\"bus-arrival-meta\">").concat(item.towards || '', "</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"bus-arrival-time\">").concat(minsLabel(item.timeToStation), "</div>\n\t\t\t\t</div>\n\t\t\t");
+      }).join('');
+    };
+    var loadArrivals = /*#__PURE__*/function () {
+      var _ref9 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee2(stopId, stopName) {
+        var res, data, _t;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              statusEl.textContent = "Loading departures for ".concat(stopName, "\u2026");
+              resultsEl.innerHTML = '';
+              _context2.prev = 1;
+              _context2.next = 2;
+              return fetch("".concat(restBase, "/tfl-stop-arrivals?stop_id=").concat(encodeURIComponent(stopId)), {
+                headers: {
+                  'X-WP-Nonce': DX_BUS_DIARY.nonce
+                }
+              });
+            case 2:
+              res = _context2.sent;
+              _context2.next = 3;
+              return res.json();
+            case 3:
+              data = _context2.sent;
+              if (data.success) {
+                _context2.next = 4;
+                break;
+              }
+              throw new Error(data.message || 'Could not load arrivals.');
+            case 4:
+              statusEl.textContent = "Showing live departures for ".concat(stopName);
+              renderArrivals(data.arrivals || []);
+              _context2.next = 6;
+              break;
+            case 5:
+              _context2.prev = 5;
+              _t = _context2["catch"](1);
+              statusEl.textContent = 'Unable to load live departures right now.';
+              resultsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t\t<div class=\"bus-arrival-main\">".concat(_t.message, "</div>\n\t\t\t\t\t</div>\n\t\t\t\t");
+            case 6:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, null, [[1, 5]]);
+      }));
+      return function loadArrivals(_x2, _x3) {
+        return _ref9.apply(this, arguments);
+      };
+    }();
+    var renderStops = function renderStops(stops) {
+      if (!stops.length) {
+        stopsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-stop-card\">\n\t\t\t\t\t\t<p>No nearby bus stops found.</p>\n\t\t\t\t\t</div>\n\t\t\t\t";
+        resultsEl.innerHTML = '';
+        return;
+      }
+      stopsEl.innerHTML = stops.map(function (stop, index) {
+        var _stop$distance;
+        return "\n\t\t\t\t<button\n\t\t\t\t\ttype=\"button\"\n\t\t\t\t\tclass=\"bus-stop-card ".concat(index === 0 ? 'is-active' : '', "\"\n\t\t\t\t\tdata-stop-id=\"").concat(stop.id, "\"\n\t\t\t\t\tdata-stop-name=\"").concat(stop.name, "\"\n\t\t\t\t>\n\t\t\t\t\t<h4>").concat(stop.name, "</h4>\n\t\t\t\t\t<p>").concat((_stop$distance = stop.distance) !== null && _stop$distance !== void 0 ? _stop$distance : '—', "m away ").concat(stop.indicator ? "\u2022 Stop ".concat(stop.indicator) : '', "</p>\n\t\t\t\t</button>\n\t\t\t");
+      }).join('');
+      var stopButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(stopsEl.querySelectorAll('[data-stop-id]'));
+      stopButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          stopButtons.forEach(function (b) {
+            return b.classList.remove('is-active');
+          });
+          btn.classList.add('is-active');
+          loadArrivals(btn.dataset.stopId, btn.dataset.stopName);
+        });
+      });
+      loadArrivals(stops[0].id, stops[0].name);
+    };
+    locateBtn.addEventListener('click', function () {
+      if (!navigator.geolocation) {
+        statusEl.textContent = 'Geolocation is not supported on this device.';
+        return;
+      }
+      statusEl.textContent = 'Getting your location…';
+      stopsEl.innerHTML = '';
+      resultsEl.innerHTML = '';
+      navigator.geolocation.getCurrentPosition(/*#__PURE__*/function () {
+        var _ref0 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee3(position) {
+          var _position$coords, latitude, longitude, res, data, _t2;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context3) {
+            while (1) switch (_context3.prev = _context3.next) {
+              case 0:
+                _position$coords = position.coords, latitude = _position$coords.latitude, longitude = _position$coords.longitude;
+                _context3.prev = 1;
+                _context3.next = 2;
+                return fetch("".concat(restBase, "/tfl-nearby-stops?lat=").concat(encodeURIComponent(latitude), "&lng=").concat(encodeURIComponent(longitude), "&radius=600"), {
+                  headers: {
+                    'X-WP-Nonce': DX_BUS_DIARY.nonce
+                  }
+                });
+              case 2:
+                res = _context3.sent;
+                _context3.next = 3;
+                return res.json();
+              case 3:
+                data = _context3.sent;
+                if (data.success) {
+                  _context3.next = 4;
+                  break;
+                }
+                throw new Error(data.message || 'Could not load nearby stops.');
+              case 4:
+                statusEl.textContent = 'Nearby stops found.';
+                renderStops(data.stops || []);
+                _context3.next = 6;
+                break;
+              case 5:
+                _context3.prev = 5;
+                _t2 = _context3["catch"](1);
+                statusEl.textContent = 'Unable to find nearby stops right now.';
+                stopsEl.innerHTML = "\n\t\t\t\t\t\t<div class=\"bus-stop-card\">\n\t\t\t\t\t\t\t<p>".concat(_t2.message, "</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t");
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }, _callee3, null, [[1, 5]]);
+        }));
+        return function (_x4) {
+          return _ref0.apply(this, arguments);
+        };
+      }(), function () {
+        statusEl.textContent = 'Location access was denied.';
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      });
+    });
+  });
+
+  /* ==========================
+  BUS DIARY STAGE SWITCHER
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var busEntry = document.querySelector('.bus-diary-entry');
+    if (!busEntry) return;
+    var stage = busEntry.querySelector('.bus-stage');
+    var dock = busEntry.querySelector('[data-bus-dock]');
+    var toggleButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(busEntry.querySelectorAll('[data-view-toggle]'));
+    var views = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(busEntry.querySelectorAll('.bus-stage__view[data-view]'));
+    if (!stage || !dock || !toggleButtons.length || !views.length) return;
+    var setActiveView = function setActiveView(viewName) {
+      views.forEach(function (view) {
+        view.classList.toggle('is-active', view.dataset.view === viewName);
+      });
+      toggleButtons.forEach(function (button) {
+        var isActive = button.dataset.viewToggle === viewName;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+    toggleButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var viewName = button.dataset.viewToggle;
+        if (!viewName) return;
+        setActiveView(viewName);
+      });
+    });
+    var activeButton = dock.querySelector('[data-view-toggle].is-active');
+    setActiveView((activeButton === null || activeButton === void 0 ? void 0 : activeButton.dataset.viewToggle) || 'map');
+  });
+
+  /* ==========================
+  BUS DIARY DEPARTURES SAFETY
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var departuresRoot = document.querySelector('[data-bus-departures]');
+    if (!departuresRoot) return;
+    var locateBtn = departuresRoot.querySelector('[data-bus-locate]');
+    var statusEl = departuresRoot.querySelector('[data-bus-status]');
+    var stopsEl = departuresRoot.querySelector('[data-bus-stops]');
+    var resultsEl = departuresRoot.querySelector('[data-bus-results]');
+    if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+    if (locateBtn.dataset.busLocateBound === 'true') return;
+    locateBtn.dataset.busLocateBound = 'true';
+    var setStatus = function setStatus(message) {
+      statusEl.textContent = message;
+    };
+    locateBtn.addEventListener('click', function () {
+      if (!navigator.geolocation) {
+        setStatus('Geolocation is not supported on this device.');
+        return;
+      }
+      setStatus('Getting your location…');
+      stopsEl.innerHTML = '';
+      resultsEl.innerHTML = '';
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        setStatus("Location found: ".concat(lat.toFixed(5), ", ").concat(lng.toFixed(5), "."));
+      }, function (error) {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setStatus('Location access was denied.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setStatus('Your location is currently unavailable.');
+            break;
+          case error.TIMEOUT:
+            setStatus('Location request timed out.');
+            break;
+          default:
+            setStatus('Unable to get your location right now.');
+        }
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000
+      });
+    });
+  });
 })();
 
 /***/ }),

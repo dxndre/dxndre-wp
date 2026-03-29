@@ -2163,3 +2163,209 @@ function dx_enqueue_leaflet_assets() {
 	);
 }
 add_action('wp_enqueue_scripts', 'dx_enqueue_leaflet_assets');
+
+/**
+ * ==========================
+ * BUS DIARY + TFL DEPARTURES
+ * ==========================
+ */
+
+/**
+ * Add these to wp-config.php on local/live:
+ *
+ * define('DX_TFL_APP_ID', 'your_app_id');
+ * define('DX_TFL_APP_KEY', 'your_app_key');
+ */
+
+function dx_get_tfl_credentials() {
+	return [
+		'app_id'  => defined('DX_TFL_APP_ID') ? DX_TFL_APP_ID : '',
+		'app_key' => defined('DX_TFL_APP_KEY') ? DX_TFL_APP_KEY : '',
+	];
+}
+
+function dx_tfl_api_get($path, $query = []) {
+	$creds = dx_get_tfl_credentials();
+
+	if (!empty($creds['app_id'])) {
+		$query['app_id'] = $creds['app_id'];
+	}
+
+	if (!empty($creds['app_key'])) {
+		$query['app_key'] = $creds['app_key'];
+	}
+
+	$url = 'https://api.tfl.gov.uk' . $path;
+
+	if (!empty($query)) {
+		$url = add_query_arg($query, $url);
+	}
+
+	$response = wp_remote_get($url, [
+		'timeout' => 15,
+		'headers' => [
+			'Accept' => 'application/json',
+		],
+	]);
+
+	if (is_wp_error($response)) {
+		return $response;
+	}
+
+	$code = wp_remote_retrieve_response_code($response);
+	$body = wp_remote_retrieve_body($response);
+	$data = json_decode($body, true);
+
+	if ($code < 200 || $code >= 300) {
+		return new WP_Error(
+			'dx_tfl_api_error',
+			'TfL API request failed.',
+			[
+				'status' => $code,
+				'body'   => $data,
+			]
+		);
+	}
+
+	return $data;
+}
+
+add_action('rest_api_init', function () {
+
+	register_rest_route('dx/v1', '/tfl-nearby-stops', [
+		'methods'  => 'GET',
+		'callback' => 'dx_rest_tfl_nearby_stops',
+		'permission_callback' => '__return_true',
+		'args' => [
+			'lat' => [
+				'required' => true,
+				'type'     => 'number',
+			],
+			'lng' => [
+				'required' => true,
+				'type'     => 'number',
+			],
+			'radius' => [
+				'required' => false,
+				'type'     => 'integer',
+				'default'  => 500,
+			],
+		],
+	]);
+
+	register_rest_route('dx/v1', '/tfl-stop-arrivals', [
+		'methods'  => 'GET',
+		'callback' => 'dx_rest_tfl_stop_arrivals',
+		'permission_callback' => '__return_true',
+		'args' => [
+			'stop_id' => [
+				'required' => true,
+				'type'     => 'string',
+			],
+		],
+	]);
+});
+
+function dx_rest_tfl_nearby_stops(WP_REST_Request $request) {
+	$lat    = (float) $request->get_param('lat');
+	$lng    = (float) $request->get_param('lng');
+	$radius = (int) $request->get_param('radius');
+
+	/**
+	 * StopPoint endpoint with lat/lon search.
+	 * We keep it focused on bus stops.
+	 */
+	$data = dx_tfl_api_get('/StopPoint', [
+		'lat'          => $lat,
+		'lon'          => $lng,
+		'stopTypes'    => 'NaptanPublicBusCoachTram',
+		'modes'        => 'bus',
+		'radius'       => $radius,
+		'useStopPointHierarchy' => 'false',
+	]);
+
+	if (is_wp_error($data)) {
+		return new WP_REST_Response([
+			'success' => false,
+			'message' => $data->get_error_message(),
+			'error'   => $data->get_error_data(),
+		], 500);
+	}
+
+	$results = [];
+
+	if (!empty($data['stopPoints']) && is_array($data['stopPoints'])) {
+		foreach ($data['stopPoints'] as $stop) {
+			$results[] = [
+				'id'          => $stop['id'] ?? '',
+				'name'        => $stop['commonName'] ?? '',
+				'distance'    => isset($stop['distance']) ? round((float) $stop['distance']) : null,
+				'lat'         => $stop['lat'] ?? null,
+				'lon'         => $stop['lon'] ?? null,
+				'indicator'   => $stop['indicator'] ?? '',
+				'smsCode'     => $stop['smsCode'] ?? '',
+				'lines'       => !empty($stop['lines']) ? wp_list_pluck($stop['lines'], 'name') : [],
+			];
+		}
+	}
+
+	usort($results, function ($a, $b) {
+		return ($a['distance'] ?? 999999) <=> ($b['distance'] ?? 999999);
+	});
+
+	return new WP_REST_Response([
+		'success' => true,
+		'stops'   => array_slice($results, 0, 5),
+	], 200);
+}
+
+function dx_rest_tfl_stop_arrivals(WP_REST_Request $request) {
+	$stop_id = sanitize_text_field($request->get_param('stop_id'));
+
+	$data = dx_tfl_api_get('/StopPoint/' . rawurlencode($stop_id) . '/Arrivals');
+
+	if (is_wp_error($data)) {
+		return new WP_REST_Response([
+			'success' => false,
+			'message' => $data->get_error_message(),
+			'error'   => $data->get_error_data(),
+		], 500);
+	}
+
+	$arrivals = [];
+
+	if (is_array($data)) {
+		foreach ($data as $item) {
+			$arrivals[] = [
+				'lineName'           => $item['lineName'] ?? '',
+				'destinationName'    => $item['destinationName'] ?? '',
+				'timeToStation'      => isset($item['timeToStation']) ? (int) $item['timeToStation'] : null,
+				'expectedArrival'    => $item['expectedArrival'] ?? '',
+				'vehicleId'          => $item['vehicleId'] ?? '',
+				'currentLocation'    => $item['currentLocation'] ?? '',
+				'towards'            => $item['towards'] ?? '',
+			];
+		}
+	}
+
+	usort($arrivals, function ($a, $b) {
+		return ($a['timeToStation'] ?? 999999) <=> ($b['timeToStation'] ?? 999999);
+	});
+
+	return new WP_REST_Response([
+		'success'  => true,
+		'arrivals' => array_slice($arrivals, 0, 10),
+	], 200);
+}
+
+function dx_bus_diary_enqueue_assets() {
+	if (!is_singular('bus-diary-entry')) {
+		return;
+	}
+
+	wp_localize_script('mainjs', 'DX_BUS_DIARY', [
+		'rest_url' => esc_url_raw(rest_url('dx/v1/')),
+		'nonce'    => wp_create_nonce('wp_rest'),
+	]);
+}
+add_action('wp_enqueue_scripts', 'dx_bus_diary_enqueue_assets', 20);
