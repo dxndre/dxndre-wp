@@ -1496,193 +1496,164 @@ import * as bootstrap from 'bootstrap';
 		observer.observe(archive);
 	});
 
-	// JS Hook for Bus Map
-
-	document.addEventListener('DOMContentLoaded', () => {
-		const mapEl = document.querySelector('[data-bus-map]');
-		if (!mapEl) return;
-
-		const route = mapEl.dataset.route || '';
-		const start = mapEl.dataset.startName || '';
-		const end = mapEl.dataset.endName || '';
-
-		console.log('Bus map placeholder ready:', { route, start, end });
-	});
-
-	// Bus Map
-
-	document.addEventListener('DOMContentLoaded', () => {
-		const mapEl = document.querySelector('[data-bus-map]');
-		if (!mapEl || typeof L === 'undefined') return;
-
-		const route = mapEl.dataset.route || '';
-		const startName = mapEl.dataset.startName || 'Start';
-		const endName = mapEl.dataset.endName || 'End';
-
-		const startLat = parseFloat(mapEl.dataset.startLat);
-		const startLng = parseFloat(mapEl.dataset.startLng);
-		const endLat = parseFloat(mapEl.dataset.endLat);
-		const endLng = parseFloat(mapEl.dataset.endLng);
-
-		const hasStart = !Number.isNaN(startLat) && !Number.isNaN(startLng);
-		const hasEnd = !Number.isNaN(endLat) && !Number.isNaN(endLng);
-
-		if (!hasStart && !hasEnd) {
-			mapEl.innerHTML = '<div class="bus-map__empty">No journey coordinates added yet.</div>';
-			return;
-		}
-
-		const map = L.map(mapEl, {
-			scrollWheelZoom: false,
-			zoomControl: true
-		});
-
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-			attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-			subdomains: 'abcd',
-			maxZoom: 20
-		}).addTo(map);
-
-		const points = [];
-
-		const startIcon = L.divIcon({
-			className: 'bus-map-marker bus-map-marker--start',
-			html: '<span></span>',
-			iconSize: [18, 18],
-			iconAnchor: [9, 9]
-		});
-
-		const endIcon = L.divIcon({
-			className: 'bus-map-marker bus-map-marker--end',
-			html: '<span></span>',
-			iconSize: [18, 18],
-			iconAnchor: [9, 9]
-		});
-
-		if (hasStart) {
-			const startPoint = [startLat, startLng];
-			points.push(startPoint);
-
-			L.marker(startPoint, { icon: startIcon })
-				.addTo(map)
-				.bindPopup(`<strong>${startName}</strong>${route ? `<br>Route ${route}` : ''}`);
-		}
-
-		if (hasEnd) {
-			const endPoint = [endLat, endLng];
-			points.push(endPoint);
-
-			L.marker(endPoint, { icon: endIcon })
-				.addTo(map)
-				.bindPopup(`<strong>${endName}</strong>${route ? `<br>Route ${route}` : ''}`);
-		}
-
-		if (hasStart && hasEnd) {
-			L.polyline(
-				[
-					[startLat, startLng],
-					[endLat, endLng]
-				],
-				{
-					color: '#ffffff',
-					weight: 4,
-					opacity: 0.85
-				}
-			).addTo(map);
-		}
-
-		if (points.length === 1) {
-			map.setView(points[0], 13);
-		} else {
-			map.fitBounds(points, {
-				padding: [40, 40]
-			});
-		}
-
-		window.addEventListener('resize', () => {
-			map.invalidateSize();
-		});
-	});
-
-	// View Switching
-
-	document.querySelectorAll('[data-view-toggle]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const view = btn.dataset.viewToggle;
-
-			// buttons
-			document.querySelectorAll('[data-view-toggle]').forEach(b => {
-				b.classList.remove('is-active');
-			});
-			btn.classList.add('is-active');
-
-			// views
-			document.querySelectorAll('.bus-stage__view').forEach(v => {
-				v.classList.remove('is-active');
-			});
-
-			const target = document.querySelector(`[data-view="${view}"]`);
-			if (target) target.classList.add('is-active');
-		});
-	});
-
-	// Bus Panel Toggle
-
-	document.querySelectorAll('[data-bus-panel-toggle]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const key = btn.dataset.busPanelToggle;
-			const panel = document.querySelector(`[data-bus-panel="${key}"]`);
-			if (!panel) return;
-
-			const isHidden = panel.hasAttribute('hidden');
-
-			document.querySelectorAll('[data-bus-panel]').forEach(p => p.setAttribute('hidden', 'hidden'));
-
-			if (isHidden) {
-				panel.removeAttribute('hidden');
-			}
-		});
-	});
-
 	/* ==========================
-		BUS DIARY STAGE + TFL DEPARTURES
+	BUS DIARY
 	========================== */
 
 	document.addEventListener('DOMContentLoaded', () => {
 		const busEntry = document.querySelector('.bus-diary-entry');
 		if (!busEntry) return;
 
-		const busStage = busEntry.querySelector('.bus-stage');
+		const mapEl = busEntry.querySelector('[data-bus-map]');
 		const dock = busEntry.querySelector('[data-bus-dock]');
+		const paneStage = busEntry.querySelector('[data-bus-pane-stage]');
+		const toggleButtons = dock ? [...dock.querySelectorAll('[data-view-toggle]')] : [];
+		const paneViews = paneStage ? [...paneStage.querySelectorAll('.bus-pane-view[data-pane-view]')] : [];
 
-		if (busStage && dock) {
-			const views = [...busStage.querySelectorAll('.bus-stage__view')];
-			const toggles = [...dock.querySelectorAll('[data-view-toggle]')];
+		/* ==========================
+		BUS MAP
+		========================== */
 
-			const setView = (viewName) => {
-				views.forEach(view => {
-					view.classList.toggle('is-active', view.dataset.view === viewName);
+		if (mapEl) {
+			const route = mapEl.dataset.route || '';
+			const startName = mapEl.dataset.startName || 'Start';
+			const endName = mapEl.dataset.endName || 'End';
+
+			console.log('Bus map ready:', {
+				route,
+				start: startName,
+				end: endName
+			});
+
+			if (typeof L !== 'undefined') {
+				const startLat = parseFloat(mapEl.dataset.startLat);
+				const startLng = parseFloat(mapEl.dataset.startLng);
+				const endLat = parseFloat(mapEl.dataset.endLat);
+				const endLng = parseFloat(mapEl.dataset.endLng);
+
+				const hasStart = !Number.isNaN(startLat) && !Number.isNaN(startLng);
+				const hasEnd = !Number.isNaN(endLat) && !Number.isNaN(endLng);
+
+				if (!hasStart && !hasEnd) {
+					mapEl.innerHTML = '<div class="bus-map__empty">No journey coordinates added yet.</div>';
+				} else {
+					const map = L.map(mapEl, {
+						scrollWheelZoom: false,
+						zoomControl: true
+					});
+
+					L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+						attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+						subdomains: 'abcd',
+						maxZoom: 20
+					}).addTo(map);
+
+					const points = [];
+
+					const startIcon = L.divIcon({
+						className: 'bus-map-marker bus-map-marker--start',
+						html: '<span></span>',
+						iconSize: [18, 18],
+						iconAnchor: [9, 9]
+					});
+
+					const endIcon = L.divIcon({
+						className: 'bus-map-marker bus-map-marker--end',
+						html: '<span></span>',
+						iconSize: [18, 18],
+						iconAnchor: [9, 9]
+					});
+
+					if (hasStart) {
+						const startPoint = [startLat, startLng];
+						points.push(startPoint);
+
+						L.marker(startPoint, { icon: startIcon })
+							.addTo(map)
+							.bindPopup(`<strong>${startName}</strong>${route ? `<br>Route ${route}` : ''}`);
+					}
+
+					if (hasEnd) {
+						const endPoint = [endLat, endLng];
+						points.push(endPoint);
+
+						L.marker(endPoint, { icon: endIcon })
+							.addTo(map)
+							.bindPopup(`<strong>${endName}</strong>${route ? `<br>Route ${route}` : ''}`);
+					}
+
+					if (hasStart && hasEnd) {
+						L.polyline(
+							[
+								[startLat, startLng],
+								[endLat, endLng]
+							],
+							{
+								color: '#ffffff',
+								weight: 4,
+								opacity: 0.85
+							}
+						).addTo(map);
+					}
+
+					if (points.length === 1) {
+						map.setView(points[0], 13);
+					} else {
+						map.fitBounds(points, {
+							padding: [40, 40]
+						});
+					}
+
+					window.addEventListener('resize', () => {
+						map.invalidateSize();
+					});
+				}
+			}
+		}
+
+		/* ==========================
+		BUS DIARY STATE SWITCHING
+		Only the left pane changes state
+		========================== */
+
+		if (dock && paneStage && toggleButtons.length && paneViews.length) {
+			const setActivePane = (viewName) => {
+				paneViews.forEach((view) => {
+					view.classList.toggle('is-active', view.dataset.paneView === viewName);
 				});
 
-				toggles.forEach(btn => {
-					btn.classList.toggle('is-active', btn.dataset.viewToggle === viewName);
+				toggleButtons.forEach((button) => {
+					const isActive = button.dataset.viewToggle === viewName;
+					button.classList.toggle('is-active', isActive);
+					button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 				});
+
+				if (viewName === 'map') {
+					window.dispatchEvent(new Event('resize'));
+				}
 			};
 
-			toggles.forEach(btn => {
-				btn.addEventListener('click', () => {
-					const viewName = btn.dataset.viewToggle;
+			toggleButtons.forEach((button) => {
+				button.addEventListener('click', () => {
+					const viewName = button.dataset.viewToggle;
 					if (!viewName) return;
-					setView(viewName);
+					setActivePane(viewName);
 				});
 			});
+
+			const activeButton = dock.querySelector('[data-view-toggle].is-active');
+			setActivePane(activeButton?.dataset.viewToggle || 'map');
 		}
+
+		/* ==========================
+		BUS PANEL TOGGLES
+		========================== */
 
 		const panelToggleButtons = [...busEntry.querySelectorAll('[data-bus-panel-toggle]')];
 		const panels = [...busEntry.querySelectorAll('[data-bus-panel]')];
 
 		if (panelToggleButtons.length && panels.length) {
-			panelToggleButtons.forEach(btn => {
+			panelToggleButtons.forEach((btn) => {
 				btn.addEventListener('click', () => {
 					const key = btn.dataset.busPanelToggle;
 					if (!key) return;
@@ -1692,7 +1663,7 @@ import * as bootstrap from 'bootstrap';
 
 					const isHidden = panel.hasAttribute('hidden');
 
-					panels.forEach(p => p.setAttribute('hidden', 'hidden'));
+					panels.forEach((p) => p.setAttribute('hidden', 'hidden'));
 
 					if (isHidden) {
 						panel.removeAttribute('hidden');
@@ -1706,7 +1677,7 @@ import * as bootstrap from 'bootstrap';
 		========================== */
 
 		const departuresRoot = busEntry.querySelector('[data-bus-departures]');
-		if (!departuresRoot || typeof DX_BUS_DIARY === 'undefined') return;
+		if (!departuresRoot) return;
 
 		const locateBtn = departuresRoot.querySelector('[data-bus-locate]');
 		const statusEl = departuresRoot.querySelector('[data-bus-status]');
@@ -1714,8 +1685,15 @@ import * as bootstrap from 'bootstrap';
 		const resultsEl = departuresRoot.querySelector('[data-bus-results]');
 
 		if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+		if (locateBtn.dataset.busLocateBound === 'true') return;
+		locateBtn.dataset.busLocateBound = 'true';
 
-		const restBase = DX_BUS_DIARY.rest_url.replace(/\/$/, '');
+		const hasBusConfig = typeof DX_BUS_DIARY !== 'undefined' && DX_BUS_DIARY && DX_BUS_DIARY.rest_url;
+		const restBase = hasBusConfig ? DX_BUS_DIARY.rest_url.replace(/\/$/, '') : '';
+
+		const setStatus = (message) => {
+			statusEl.textContent = message;
+		};
 
 		const minsLabel = (seconds) => {
 			if (seconds === null || seconds === undefined) return '—';
@@ -1734,7 +1712,7 @@ import * as bootstrap from 'bootstrap';
 				return;
 			}
 
-			resultsEl.innerHTML = arrivals.map(item => `
+			resultsEl.innerHTML = arrivals.map((item) => `
 				<div class="bus-arrival-card">
 					<div class="bus-arrival-main">
 						<div class="bus-arrival-line">${item.lineName || 'Bus'}</div>
@@ -1747,7 +1725,7 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		const loadArrivals = async (stopId, stopName) => {
-			statusEl.textContent = `Loading departures for ${stopName}…`;
+			setStatus(`Loading departures for ${stopName}…`);
 			resultsEl.innerHTML = '';
 
 			try {
@@ -1766,10 +1744,10 @@ import * as bootstrap from 'bootstrap';
 					throw new Error(data.message || 'Could not load arrivals.');
 				}
 
-				statusEl.textContent = `Showing live departures for ${stopName}`;
+				setStatus(`Showing live departures for ${stopName}`);
 				renderArrivals(data.arrivals || []);
 			} catch (err) {
-				statusEl.textContent = 'Unable to load live departures right now.';
+				setStatus('Unable to load live departures right now.');
 				resultsEl.innerHTML = `
 					<div class="bus-arrival-card">
 						<div class="bus-arrival-main">${err.message}</div>
@@ -1803,9 +1781,9 @@ import * as bootstrap from 'bootstrap';
 
 			const stopButtons = [...stopsEl.querySelectorAll('[data-stop-id]')];
 
-			stopButtons.forEach(btn => {
+			stopButtons.forEach((btn) => {
 				btn.addEventListener('click', () => {
-					stopButtons.forEach(b => b.classList.remove('is-active'));
+					stopButtons.forEach((b) => b.classList.remove('is-active'));
 					btn.classList.add('is-active');
 					loadArrivals(btn.dataset.stopId, btn.dataset.stopName);
 				});
@@ -1815,118 +1793,15 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		locateBtn.addEventListener('click', () => {
-			if (!navigator.geolocation) {
-				statusEl.textContent = 'Geolocation is not supported on this device.';
-				return;
-			}
-
-			statusEl.textContent = 'Getting your location…';
-			stopsEl.innerHTML = '';
-			resultsEl.innerHTML = '';
-
-			navigator.geolocation.getCurrentPosition(async (position) => {
-				const { latitude, longitude } = position.coords;
-
-				try {
-					const res = await fetch(
-						`${restBase}/tfl-nearby-stops?lat=${encodeURIComponent(latitude)}&lng=${encodeURIComponent(longitude)}&radius=600`,
-						{
-							headers: {
-								'X-WP-Nonce': DX_BUS_DIARY.nonce
-							}
-						}
-					);
-
-					const data = await res.json();
-
-					if (!data.success) {
-						throw new Error(data.message || 'Could not load nearby stops.');
-					}
-
-					statusEl.textContent = 'Nearby stops found.';
-					renderStops(data.stops || []);
-				} catch (err) {
-					statusEl.textContent = 'Unable to find nearby stops right now.';
-					stopsEl.innerHTML = `
-						<div class="bus-stop-card">
-							<p>${err.message}</p>
-						</div>
-					`;
-				}
-			}, () => {
-				statusEl.textContent = 'Location access was denied.';
-			}, {
-				enableHighAccuracy: true,
-				timeout: 10000,
-				maximumAge: 60000
-			});
-		});
-	});
-
-	/* ==========================
-	BUS DIARY STAGE SWITCHER
-	========================== */
-
-	document.addEventListener('DOMContentLoaded', () => {
-		const busEntry = document.querySelector('.bus-diary-entry');
-		if (!busEntry) return;
-
-		const stage = busEntry.querySelector('.bus-stage');
-		const dock = busEntry.querySelector('[data-bus-dock]');
-		const toggleButtons = [...busEntry.querySelectorAll('[data-view-toggle]')];
-		const views = [...busEntry.querySelectorAll('.bus-stage__view[data-view]')];
-
-		if (!stage || !dock || !toggleButtons.length || !views.length) return;
-
-		const setActiveView = (viewName) => {
-			views.forEach((view) => {
-				view.classList.toggle('is-active', view.dataset.view === viewName);
-			});
-
-			toggleButtons.forEach((button) => {
-				const isActive = button.dataset.viewToggle === viewName;
-				button.classList.toggle('is-active', isActive);
-				button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-			});
-		};
-
-		toggleButtons.forEach((button) => {
-			button.addEventListener('click', () => {
-				const viewName = button.dataset.viewToggle;
-				if (!viewName) return;
-				setActiveView(viewName);
-			});
-		});
-
-		const activeButton = dock.querySelector('[data-view-toggle].is-active');
-		setActiveView(activeButton?.dataset.viewToggle || 'map');
-	});
-
-	/* ==========================
-	BUS DIARY DEPARTURES SAFETY
-	========================== */
-
-	document.addEventListener('DOMContentLoaded', () => {
-		const departuresRoot = document.querySelector('[data-bus-departures]');
-		if (!departuresRoot) return;
-
-		const locateBtn = departuresRoot.querySelector('[data-bus-locate]');
-		const statusEl = departuresRoot.querySelector('[data-bus-status]');
-		const stopsEl = departuresRoot.querySelector('[data-bus-stops]');
-		const resultsEl = departuresRoot.querySelector('[data-bus-results]');
-
-		if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
-
-		if (locateBtn.dataset.busLocateBound === 'true') return;
-		locateBtn.dataset.busLocateBound = 'true';
-
-		const setStatus = (message) => {
-			statusEl.textContent = message;
-		};
-
-		locateBtn.addEventListener('click', () => {
-			if (!navigator.geolocation) {
-				setStatus('Geolocation is not supported on this device.');
+			if (!hasBusConfig) {
+				setStatus('Live departures are not configured yet.');
+				resultsEl.innerHTML = '';
+				stopsEl.innerHTML = `
+					<div class="bus-stop-card">
+						<p>DX_BUS_DIARY is missing or not localised into the page.</p>
+					</div>
+				`;
+				console.warn('DX_BUS_DIARY is missing from the page.');
 				return;
 			}
 
@@ -1935,10 +1810,35 @@ import * as bootstrap from 'bootstrap';
 			resultsEl.innerHTML = '';
 
 			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					const lat = position.coords.latitude;
-					const lng = position.coords.longitude;
-					setStatus(`Location found: ${lat.toFixed(5)}, ${lng.toFixed(5)}.`);
+				async (position) => {
+					const { latitude, longitude } = position.coords;
+
+					try {
+						const res = await fetch(
+							`${restBase}/tfl-nearby-stops?lat=${encodeURIComponent(latitude)}&lng=${encodeURIComponent(longitude)}&radius=600`,
+							{
+								headers: {
+									'X-WP-Nonce': DX_BUS_DIARY.nonce
+								}
+							}
+						);
+
+						const data = await res.json();
+
+						if (!data.success) {
+							throw new Error(data.message || 'Could not load nearby stops.');
+						}
+
+						setStatus('Nearby stops found.');
+						renderStops(data.stops || []);
+					} catch (err) {
+						setStatus('Unable to find nearby stops right now.');
+						stopsEl.innerHTML = `
+							<div class="bus-stop-card">
+								<p>${err.message}</p>
+							</div>
+						`;
+					}
 				},
 				(error) => {
 					switch (error.code) {
@@ -1958,7 +1858,7 @@ import * as bootstrap from 'bootstrap';
 				{
 					enableHighAccuracy: true,
 					timeout: 10000,
-					maximumAge: 300000,
+					maximumAge: 60000
 				}
 			);
 		});

@@ -1707,34 +1707,8 @@ body.is-frontend {
 	}
 
 	&.single-bus-diary-entry {
-		.bus-panel--story,
-		.bus-panel--departures,
-		.bus-panel--mood {
-			max-width: 1200px;
-			margin: 0 auto;
-			min-height: 60vh;
-		}
-
 		#main {
 			max-width: 100%;
-
-			.bus-stage {
-				position: relative;
-				min-height: 78vh;
-			}
-
-			.bus-stage__view {
-				display: none;
-				opacity: 0;
-				transform: translateY(16px);
-				transition: opacity 0.35s ease, transform 0.35s ease;
-
-				&.is-active {
-					display: block;
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
 		}
 
 		.bus-diary-entry {
@@ -1759,8 +1733,7 @@ body.is-frontend {
 					opacity: 1;
 					position: absolute;
 					inset: 0;
-					background:
-						linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,1) 100%);
+					background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,1) 100%);
 				}
 			}
 
@@ -1809,6 +1782,18 @@ body.is-frontend {
 				margin-top: 1.5rem;
 			}
 
+			&__content {
+				background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.5));
+			}
+
+			&__map-stage {
+				padding: 1rem;
+
+				@include media-breakpoint-up(lg) {
+					padding: 2rem;
+				}
+			}
+
 			&__body {
 				font-weight: 300;
 				line-height: 1.9;
@@ -1819,44 +1804,15 @@ body.is-frontend {
 				}
 			}
 
-			&__content {
-				// padding: 2rem 0 6rem;
-				background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.5));
-			}
-
-			&__split-stage {
-				display: grid;
-				grid-template-columns: 1fr;
-				// gap: 1.5rem;
-				align-items: stretch;
-
-				@include media-breakpoint-up(xl) {
-					grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
-					min-height: 78vh;
-				}
-			}
-
-			&__split-media,
-			&__split-map {
-				min-width: 0;
-			}
-
-			&__split-map {
-				display: flex;
-			}
-
 			&__split-image {
 				position: relative;
-				min-height: 420px;
+				min-height: 320px;
 				height: 100%;
 				border: 1px solid rgba(255,255,255,0.08);
 				background: rgba(255,255,255,0.03);
 				overflow: hidden;
 				box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-
-				@include media-breakpoint-up(xl) {
-					min-height: 100%;
-				}
+				border-radius: 20px;
 
 				img {
 					display: block;
@@ -1882,14 +1838,12 @@ body.is-frontend {
 		}
 
 		.bus-panel {
-			// background: rgba(255,255,255,0.03);
-			// border: 1px solid rgba(255,255,255,0.08);
 			backdrop-filter: blur(18px);
 			box-shadow: 0 20px 80px rgba(0,0,0,0.35);
-			padding: 1.5rem;
+			padding: 1.25rem;
 
 			@include media-breakpoint-up(md) {
-				padding: 2rem;
+				padding: 1.5rem;
 			}
 
 			h2 {
@@ -1902,10 +1856,26 @@ body.is-frontend {
 				flex-direction: column;
 				flex: 1 1 auto;
 			}
+
+			&--story,
+			&--departures,
+			&--mood {
+				margin: 0;
+				min-height: 100%;
+				background: rgba(10,10,10,0.78);
+				border: 1px solid rgba(255,255,255,0.08);
+				border-radius: 24px;
+			}
 		}
 
 		.bus-panel--map-primary {
 			padding-bottom: 1rem;
+			width: 100%;
+			min-height: 78vh;
+
+			@include media-breakpoint-up(xl) {
+				min-height: calc(100vh - 4rem);
+			}
 		}
 
 		.bus-panel__topbar {
@@ -1944,23 +1914,29 @@ body.is-frontend {
 
 		.bus-map-shell {
 			position: relative;
+			border-radius: 28px;
+			overflow: hidden;
+			border: 1px solid rgba(255,255,255,0.08);
 		}
 
 		.bus-map {
 			width: 100%;
-			min-height: 560px;
+			min-height: 620px;
 			background: rgba(255,255,255,0.02);
-			border: 1px solid rgba(255,255,255,0.08);
 			overflow: hidden;
 			position: relative;
+
+			@include media-breakpoint-up(xl) {
+				min-height: calc(100vh - 12rem);
+			}
 
 			.leaflet-container {
 				font-family: "Outfit", sans-serif;
 			}
 
 			.leaflet-popup-content {
-					line-height: 1.5;
-				}
+				line-height: 1.5;
+			}
 
 			.leaflet-control-zoom a {
 				background: rgba(0,0,0,0.8);
@@ -1977,6 +1953,52 @@ body.is-frontend {
 			}
 		}
 
+		.bus-map-stage-ui {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			z-index: 450;
+		}
+
+		.bus-floating-pane {
+			position: absolute;
+			left: 1rem;
+			bottom: 6.5rem;
+			width: min(440px, calc(100% - 2rem));
+			max-width: 440px;
+			pointer-events: auto;
+			z-index: 520;
+
+			@include media-breakpoint-up(lg) {
+				left: 1.5rem;
+				bottom: 7rem;
+			}
+		}
+
+		.bus-pane-stage {
+			position: relative;
+			min-height: 320px;
+		}
+
+		.bus-pane-view {
+			display: none;
+			opacity: 0;
+			transform: translateY(16px);
+			transition: opacity 0.35s ease, transform 0.35s ease;
+			height: 100%;
+
+			&.is-active {
+				display: block;
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			> .bus-panel,
+			> .bus-diary-entry__split-image {
+				height: 100%;
+			}
+		}
+
 		.bus-map-overlay-card {
 			position: absolute;
 			top: 1rem;
@@ -1988,6 +2010,7 @@ body.is-frontend {
 			border: 1px solid rgba(255,255,255,0.08);
 			box-shadow: 0 10px 40px rgba(0,0,0,0.35);
 			z-index: 500;
+			pointer-events: auto;
 
 			.eyebrow {
 				display: block;
@@ -2059,11 +2082,11 @@ body.is-frontend {
 		}
 
 		.bus-dock {
-			position: fixed;
+			position: absolute;
 			left: 50%;
-			bottom: 2rem;
+			bottom: 1rem;
 			transform: translateX(-50%);
-			z-index: 1000;
+			z-index: 550;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -2074,9 +2097,13 @@ body.is-frontend {
 			border: 1px solid rgba(255,255,255,0.08);
 			border-radius: 999px;
 			box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+			pointer-events: auto;
+			width: calc(100% - 2rem);
+			max-width: 760px;
 
 			@include media-breakpoint-up(md) {
 				flex-direction: row;
+				justify-content: space-between;
 			}
 		}
 
@@ -2107,6 +2134,23 @@ body.is-frontend {
 					background: white;
 					color: black;
 				}
+			}
+		}
+
+		.bus-badge-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.bus-spotify-mini {
+			iframe {
+				display: block;
+				width: 100%;
+				border: 1px solid rgba(255,255,255,0.08);
+				box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+				background: rgba(255,255,255,0.03);
 			}
 		}
 
@@ -2151,10 +2195,6 @@ body.is-frontend {
 		.bus-departures__grid {
 			display: grid;
 			gap: 1rem;
-
-			@include media-breakpoint-up(lg) {
-				grid-template-columns: 320px minmax(0, 1fr);
-			}
 		}
 
 		.bus-departures__stops,

@@ -15854,35 +15854,8 @@ body.is-frontend.single-service::after {
           filter: contrast(1.5) brightness(0.5) blur(20px);
   opacity: 0;
 }
-body.is-frontend.single-bus-diary-entry .bus-panel--story,
-body.is-frontend.single-bus-diary-entry .bus-panel--departures,
-body.is-frontend.single-bus-diary-entry .bus-panel--mood {
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 60vh;
-}
 body.is-frontend.single-bus-diary-entry #main {
   max-width: 100%;
-}
-body.is-frontend.single-bus-diary-entry #main .bus-stage {
-  position: relative;
-  min-height: 78vh;
-}
-body.is-frontend.single-bus-diary-entry #main .bus-stage__view {
-  display: none;
-  opacity: 0;
-  -webkit-transform: translateY(16px);
-          transform: translateY(16px);
-  -webkit-transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
-  transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  transition: opacity 0.35s ease, transform 0.35s ease, -webkit-transform 0.35s ease;
-}
-body.is-frontend.single-bus-diary-entry #main .bus-stage__view.is-active {
-  display: block;
-  opacity: 1;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
 }
 body.is-frontend.single-bus-diary-entry .bus-diary-entry {
   color: white;
@@ -15957,6 +15930,18 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-actions {
           justify-content: center;
   margin-top: 1.5rem;
 }
+body.is-frontend.single-bus-diary-entry .bus-diary-entry__content {
+  background: -webkit-gradient(linear, right top, right bottom, from(rgba(0, 0, 0, 0.15)), to(rgba(0, 0, 0, 0.5)));
+  background: linear-gradient(-180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
+}
+body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
+  padding: 1rem;
+}
+@media (min-width: 992px) {
+  body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
+    padding: 2rem;
+  }
+}
 body.is-frontend.single-bus-diary-entry .bus-diary-entry__body {
   font-weight: 300;
   line-height: 1.9;
@@ -15965,48 +15950,16 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__body {
 body.is-frontend.single-bus-diary-entry .bus-diary-entry__body p:last-child {
   margin-bottom: 0;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__content {
-  background: -webkit-gradient(linear, right top, right bottom, from(rgba(0, 0, 0, 0.15)), to(rgba(0, 0, 0, 0.5)));
-  background: linear-gradient(-180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
-}
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-stage {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1fr;
-  grid-template-columns: 1fr;
-  -webkit-box-align: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
-}
-@media (min-width: 1200px) {
-  body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-stage {
-    -ms-grid-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
-    min-height: 78vh;
-  }
-}
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-media, body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-map {
-  min-width: 0;
-}
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-map {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
 body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image {
   position: relative;
-  min-height: 420px;
+  min-height: 320px;
   height: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
   overflow: hidden;
   -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-}
-@media (min-width: 1200px) {
-  body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image {
-    min-height: 100%;
-  }
+  border-radius: 20px;
 }
 body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image img {
   display: block;
@@ -16041,11 +15994,11 @@ body.is-frontend.single-bus-diary-entry .bus-panel {
   backdrop-filter: blur(18px);
   -webkit-box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
           box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 @media (min-width: 768px) {
   body.is-frontend.single-bus-diary-entry .bus-panel {
-    padding: 2rem;
+    padding: 1.5rem;
   }
 }
 body.is-frontend.single-bus-diary-entry .bus-panel h2, body.is-frontend.single-bus-diary-entry .bus-panel .h2 {
@@ -16064,8 +16017,22 @@ body.is-frontend.single-bus-diary-entry .bus-panel--map {
       -ms-flex: 1 1 auto;
           flex: 1 1 auto;
 }
+body.is-frontend.single-bus-diary-entry .bus-panel--story, body.is-frontend.single-bus-diary-entry .bus-panel--departures, body.is-frontend.single-bus-diary-entry .bus-panel--mood {
+  margin: 0;
+  min-height: 100%;
+  background: rgba(10, 10, 10, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+}
 body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
   padding-bottom: 1rem;
+  width: 100%;
+  min-height: 78vh;
+}
+@media (min-width: 1200px) {
+  body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
+    min-height: calc(100vh - 4rem);
+  }
 }
 body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
   display: -webkit-box;
@@ -16120,14 +16087,21 @@ body.is-frontend.single-bus-diary-entry .bus-dock .stat {
 }
 body.is-frontend.single-bus-diary-entry .bus-map-shell {
   position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 body.is-frontend.single-bus-diary-entry .bus-map {
   width: 100%;
-  min-height: 560px;
+  min-height: 620px;
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
   position: relative;
+}
+@media (min-width: 1200px) {
+  body.is-frontend.single-bus-diary-entry .bus-map {
+    min-height: calc(100vh - 12rem);
+  }
 }
 body.is-frontend.single-bus-diary-entry .bus-map .leaflet-container {
   font-family: "Outfit", sans-serif;
@@ -16147,6 +16121,52 @@ body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-tip {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
 }
+body.is-frontend.single-bus-diary-entry .bus-map-stage-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 450;
+}
+body.is-frontend.single-bus-diary-entry .bus-floating-pane {
+  position: absolute;
+  right: 1rem;
+  bottom: 6.5rem;
+  width: min(440px, 100% - 2rem);
+  max-width: 440px;
+  pointer-events: auto;
+  z-index: 520;
+}
+@media (min-width: 992px) {
+  body.is-frontend.single-bus-diary-entry .bus-floating-pane {
+    right: 1.5rem;
+    bottom: 7rem;
+  }
+}
+body.is-frontend.single-bus-diary-entry .bus-pane-stage {
+  position: relative;
+  min-height: 320px;
+}
+body.is-frontend.single-bus-diary-entry .bus-pane-view {
+  display: none;
+  opacity: 0;
+  -webkit-transform: translateY(16px);
+          transform: translateY(16px);
+  -webkit-transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: opacity 0.35s ease, -webkit-transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease, -webkit-transform 0.35s ease;
+  height: 100%;
+}
+body.is-frontend.single-bus-diary-entry .bus-pane-view.is-active {
+  display: block;
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+body.is-frontend.single-bus-diary-entry .bus-pane-view > .bus-panel,
+body.is-frontend.single-bus-diary-entry .bus-pane-view > .bus-diary-entry__split-image {
+  height: 100%;
+}
 body.is-frontend.single-bus-diary-entry .bus-map-overlay-card {
   position: absolute;
   top: 1rem;
@@ -16159,6 +16179,7 @@ body.is-frontend.single-bus-diary-entry .bus-map-overlay-card {
   -webkit-box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
   z-index: 500;
+  pointer-events: auto;
 }
 body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .eyebrow {
   display: block;
@@ -16227,12 +16248,12 @@ body.is-frontend.single-bus-diary-entry .bus-map-marker--end span {
   background: #ff6b6b;
 }
 body.is-frontend.single-bus-diary-entry .bus-dock {
-  position: fixed;
+  position: absolute;
   right: 50%;
-  bottom: 2rem;
+  bottom: 1rem;
   -webkit-transform: translateX(50%);
           transform: translateX(50%);
-  z-index: 1000;
+  z-index: 550;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16251,6 +16272,9 @@ body.is-frontend.single-bus-diary-entry .bus-dock {
   border-radius: 999px;
   -webkit-box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
           box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  width: calc(100% - 2rem);
+  max-width: 760px;
 }
 @media (min-width: 768px) {
   body.is-frontend.single-bus-diary-entry .bus-dock {
@@ -16258,6 +16282,9 @@ body.is-frontend.single-bus-diary-entry .bus-dock {
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
             flex-direction: row;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
   }
 }
 body.is-frontend.single-bus-diary-entry .bus-dock__stats {
@@ -16294,6 +16321,23 @@ body.is-frontend.single-bus-diary-entry .bus-dock__controls button {
 body.is-frontend.single-bus-diary-entry .bus-dock__controls button.is-active, body.is-frontend.single-bus-diary-entry .bus-dock__controls button:hover {
   background: white;
   color: black;
+}
+body.is-frontend.single-bus-diary-entry .bus-badge-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+body.is-frontend.single-bus-diary-entry .bus-spotify-mini iframe {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.03);
 }
 body.is-frontend.single-bus-diary-entry .bus-departures {
   display: -ms-grid;
@@ -16351,12 +16395,6 @@ body.is-frontend.single-bus-diary-entry .bus-departures__grid {
   display: -ms-grid;
   display: grid;
   gap: 1rem;
-}
-@media (min-width: 992px) {
-  body.is-frontend.single-bus-diary-entry .bus-departures__grid {
-    -ms-grid-columns: 320px minmax(0, 1fr);
-    grid-template-columns: 320px minmax(0, 1fr);
-  }
 }
 body.is-frontend.single-bus-diary-entry .bus-departures__stops,
 body.is-frontend.single-bus-diary-entry .bus-departures__results {

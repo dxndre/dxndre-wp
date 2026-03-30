@@ -104,17 +104,26 @@
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
 				<script>
-					(function(){
+					(function() {
 						var btn = document.getElementById('dxndre-search-toggle');
 						var box = document.getElementById('dxndre-search-form');
-						btn && btn.addEventListener('click', function(e){
+
+						if (!btn || !box) return;
+
+						btn.addEventListener('click', function(e) {
 							e.preventDefault();
 							box.classList.toggle('open');
-							if(box.classList.contains('open')){ var input = box.querySelector('input[name="s"]'); input && input.focus(); }
+
+							if (box.classList.contains('open')) {
+								var input = box.querySelector('input[name="s"]');
+								if (input) input.focus();
+							}
 						});
-						// Close on outside click
-						document.addEventListener('click', function(e){
-							if(!box.contains(e.target) && !btn.contains(e.target)) box.classList.remove('open');
+
+						document.addEventListener('click', function(e) {
+							if (!box.contains(e.target) && !btn.contains(e.target)) {
+								box.classList.remove('open');
+							}
 						});
 					})();
 				</script>
