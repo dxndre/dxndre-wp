@@ -18702,6 +18702,187 @@ img {
     grid-template-columns: 400px auto auto;
   }
 }
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 20;
+  display: -ms-grid;
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(10, 10, 10, 0.82);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+@media (min-width: 992px) {
+  #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar {
+    -ms-grid-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__summary {
+  color: white;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__selected {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 0.5rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-chip {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.75rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.75rem;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close {
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  -webkit-transition: 0.25s ease;
+  transition: 0.25s ease;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn:hover:not(:disabled), #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn.is-active,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear:hover:not(:disabled),
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear.is-active,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare:hover:not(:disabled),
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare.is-active,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close:hover:not(:disabled),
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close.is-active {
+  background: white;
+  color: black;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__actions {
+  margin-bottom: 1rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 0.5rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare .label-remove {
+  display: none;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare.is-active .label-add {
+  display: none;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare.is-active .label-remove {
+  display: inline;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison {
+  margin: 2rem 0 3rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__header {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: end;
+        -ms-flex-align: end;
+            align-items: flex-end;
+  }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__table-wrap {
+  overflow-x: auto;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__table {
+  min-width: 720px;
+  display: -ms-grid;
+  display: grid;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__row {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: minmax(180px, 220px) (minmax(180px, 1fr))[3];
+  grid-template-columns: minmax(180px, 220px) repeat(3, minmax(180px, 1fr));
+  gap: 1px;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__metric,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell {
+  padding: 1rem;
+  background: rgba(12, 12, 12, 0.9);
+  color: white;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__metric {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.66);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell--gym h3, #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell--gym .h3 {
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell--gym span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.66);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell.is-winner {
+  background: rgba(255, 255, 255, 0.12);
+  -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-search input[type=search] {
   font-size: 18px;
   width: 100%;

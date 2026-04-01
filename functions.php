@@ -1828,6 +1828,44 @@ function dx_shortcode_gym_table($atts) {
 		</div>
 	';
 
+	// echo '<div class="dx-gyms-grid" data-gyms-grid>';
+
+	echo '
+		<div class="dx-gym-compare-bar" data-gym-compare-bar hidden>
+			<div class="dx-gym-compare-bar__summary">
+				<strong><span data-gym-compare-count>0</span>/3</strong> gyms selected
+			</div>
+
+			<div class="dx-gym-compare-bar__selected" data-gym-compare-selected></div>
+
+			<div class="dx-gym-compare-bar__actions">
+				<button type="button" class="dx-gym-compare-bar__btn" data-gym-compare-trigger disabled>
+					Compare now
+				</button>
+
+				<button type="button" class="dx-gym-compare-bar__clear" data-gym-compare-clear disabled>
+					Clear
+				</button>
+			</div>
+		</div>
+
+		<section class="dx-gym-comparison" data-gym-comparison hidden>
+			<div class="dx-gym-comparison__header">
+				<div>
+					<pre class="headline">Comparison</pre>
+					<h2>Gym Comparison</h2>
+					<p>Compare up to 3 reviewed branches side by side.</p>
+				</div>
+
+				<button type="button" class="dx-gym-comparison__close" data-gym-compare-close>
+					Close
+				</button>
+			</div>
+
+			<div class="dx-gym-comparison__table-wrap" data-gym-comparison-table></div>
+		</section>
+	';
+
 	echo '<div class="dx-gyms-grid" data-gyms-grid>';
 
 	while ($q->have_posts()) {
@@ -1940,11 +1978,24 @@ function dx_shortcode_gym_table($atts) {
 			<article
 				class="dx-gym-card"
 				data-gym-card
+				data-gym-id="'.esc_attr($post_id).'"
 				data-chain="'.esc_attr($chain_val ?: 'unknown').'"
+				data-chain-label="'.esc_attr($chain_lbl).'"
 				data-search="'.esc_attr($search_blob).'"
 				data-branch="'.esc_attr(strtolower($branch)).'"
+				data-branch-label="'.esc_attr($branch).'"
+				data-link="'.esc_url(get_permalink()).'"
 				data-visited-ts="'.esc_attr($visited_ts).'"
+				data-visited-label="'.esc_attr($visited).'"
 				data-overall="'.esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1).'"
+				data-overall-label="'.esc_attr($overall !== null ? rtrim(rtrim(number_format($overall * 10, 1), '0'), '.') . '%' : 'No rating').'"
+				data-gym-score="'.esc_attr(is_numeric($sGym) ? $sGym : '').'"
+				data-swim-score="'.esc_attr(is_numeric($sSwim) ? $sSwim : '').'"
+				data-spa-score="'.esc_attr(is_numeric($sSpa) ? $sSpa : '').'"
+				data-cafe-score="'.esc_attr(is_numeric($sCafe) ? $sCafe : '').'"
+				data-clean-score="'.esc_attr(is_numeric($sClean) ? $sClean : '').'"
+				data-parking-score="'.esc_attr(is_numeric($sPark) ? $sPark : '').'"
+				data-membership="'.esc_attr($visit_type_lbl ?: '—').'"
 			>
 
 
@@ -1982,6 +2033,13 @@ function dx_shortcode_gym_table($atts) {
 						).'
 					</span>
 				</span>
+			</div>
+
+			<div class="dx-gym-card__actions">
+				<button type="button" class="dx-gym-card__compare" data-gym-compare-toggle aria-pressed="false">
+					<span class="label-add">Add to compare</span>
+					<span class="label-remove">Remove</span>
+				</button>
 			</div>
 
 			<div class="dx-gym-card__scores">

@@ -1205,6 +1205,135 @@ import * as bootstrap from 'bootstrap';
 			return true;
 		};
 
+		const getCardData = (card) => ({
+	id: card.getAttribute('data-gym-id') || '',
+	branch: card.getAttribute('data-branch-label') || '',
+	chain: card.getAttribute('data-chain-label') || '',
+	link: card.getAttribute('data-link') || '',
+	visited: card.getAttribute('data-visited-label') || '—',
+	overall: parseFloat(card.getAttribute('data-overall')),
+	overallLabel: card.getAttribute('data-overall-label') || 'No rating',
+	membership: card.getAttribute('data-membership') || '—',
+	scores: {
+		gym: card.getAttribute('data-gym-score') || '',
+		swim: card.getAttribute('data-swim-score') || '',
+		spa: card.getAttribute('data-spa-score') || '',
+		cafe: card.getAttribute('data-cafe-score') || '',
+		clean: card.getAttribute('data-clean-score') || '',
+		parking: card.getAttribute('data-parking-score') || '',
+	}
+});
+
+const scoreLabel = (value) => {
+	if (value === '' || value === null || value === undefined) return '—';
+	return `${value}/10`;
+};
+
+const getWinnerIdsForMetric = (items, getter) => {
+	let best = null;
+	const ids = [];
+
+	items.forEach((item) => {
+		const value = getter(item);
+		if (value === '' || value === null || value === undefined || Number.isNaN(Number(value))) return;
+
+		const numeric = Number(value);
+
+		if (best === null || numeric > best) {
+			best = numeric;
+			ids.length = 0;
+			ids.push(item.id);
+		} else if (numeric === best) {
+			ids.push(item.id);
+		}
+	});
+
+	return ids;
+};
+
+const renderComparison = () => {
+	if (!comparison || !comparisonTable) return;
+
+	if (selectedGyms.length < 2) {
+		comparison.hidden = true;
+		comparisonTable.innerHTML = '';
+		return;
+	}
+
+	const items = selectedGyms
+		.map((id) => allCards.find((card) => card.getAttribute('data-gym-id') === id))
+		.filter(Boolean)
+		.map(getCardData);
+
+	if (items.length < 2) {
+		comparison.hidden = true;
+		comparisonTable.innerHTML = '';
+		return;
+	}
+
+	const rows = [
+		{ label: 'Overall', format: (item) => item.overallLabel, winners: getWinnerIdsForMetric(items, (item) => item.overall) },
+		{ label: 'Gym', format: (item) => scoreLabel(item.scores.gym), winners: getWinnerIdsForMetric(items, (item) => item.scores.gym) },
+		{ label: 'Wetside Facilities', format: (item) => scoreLabel(item.scores.swim), winners: getWinnerIdsForMetric(items, (item) => item.scores.swim) },
+		{ label: 'Spa Retreat', format: (item) => scoreLabel(item.scores.spa), winners: getWinnerIdsForMetric(items, (item) => item.scores.spa) },
+		{ label: 'Café & Work Area', format: (item) => scoreLabel(item.scores.cafe), winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe) },
+		{ label: 'Cleanliness & Maintenance', format: (item) => scoreLabel(item.scores.clean), winners: getWinnerIdsForMetric(items, (item) => item.scores.clean) },
+		{ label: 'Parking', format: (item) => scoreLabel(item.scores.parking), winners: getWinnerIdsForMetric(items, (item) => item.scores.parking) },
+		{ label: 'Membership', format: (item) => item.membership || '—', winners: [] },
+		{ label: 'Visited', format: (item) => item.visited || '—', winners: [] },
+	];
+
+	comparisonTable.innerHTML = `
+		<div class="dx-gym-comparison__table">
+			<div class="dx-gym-comparison__row dx-gym-comparison__row--head">
+				<div class="dx-gym-comparison__metric">Metric</div>
+				${items.map((item) => `
+					<div class="dx-gym-comparison__cell dx-gym-comparison__cell--gym">
+						<h3><a href="${item.link}">${item.branch}</a></h3>
+						<span>${item.chain}</span>
+					</div>
+				`).join('')}
+			</div>
+
+			${rows.map((row) => `
+				<div class="dx-gym-comparison__row">
+					<div class="dx-gym-comparison__metric">${row.label}</div>
+					${items.map((item) => `
+						<div class="dx-gym-comparison__cell ${row.winners.includes(item.id) ? 'is-winner' : ''}">
+							${row.format(item)}
+						</div>
+					`).join('')}
+				</div>
+			`).join('')}
+		</div>
+	`;
+};
+
+	const updateCompareBar = () => {
+		if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
+
+		compareBar.hidden = selectedGyms.length === 0;
+		compareCount.textContent = String(selectedGyms.length);
+		compareTrigger.disabled = selectedGyms.length < 2;
+		compareClear.disabled = selectedGyms.length === 0;
+
+		compareSelected.innerHTML = selectedGyms.map((id) => {
+			const card = allCards.find((item) => item.getAttribute('data-gym-id') === id);
+			const label = card?.getAttribute('data-branch-label') || 'Gym';
+			return `<span class="dx-gym-compare-chip">${label}</span>`;
+		}).join('');
+
+		allCards.forEach((card) => {
+			const id = card.getAttribute('data-gym-id');
+			const toggle = card.querySelector('[data-gym-compare-toggle]');
+			if (!toggle) return;
+
+			const isSelected = selectedGyms.includes(id);
+			toggle.classList.toggle('is-active', isSelected);
+			toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+		});
+	};
+
 		const update = () => {
 			const q = (search?.value || '').trim().toLowerCase();
 
@@ -1268,7 +1397,15 @@ import * as bootstrap from 'bootstrap';
 		const titleEl  = archive.querySelector('[data-gyms-state-title]');
 		const emptyEl  = archive.querySelector('[data-gyms-empty]');
 		const loadMore = archive.querySelector('[data-gyms-load-more]');
-		const notesCb  = archive.querySelector('[data-gym-toggle-notes]');
+
+		const compareBar = archive.querySelector('[data-gym-compare-bar]');
+		const compareCount = archive.querySelector('[data-gym-compare-count]');
+		const compareSelected = archive.querySelector('[data-gym-compare-selected]');
+		const compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
+		const compareClear = archive.querySelector('[data-gym-compare-clear]');
+		const comparison = archive.querySelector('[data-gym-comparison]');
+		const comparisonTable = archive.querySelector('[data-gym-comparison-table]');
+		const comparisonClose = archive.querySelector('[data-gym-compare-close]');
 
 		if (!grid) return;
 
@@ -1286,6 +1423,7 @@ import * as bootstrap from 'bootstrap';
 
 		let activeChain = buttons.find(btn => btn.classList.contains('is-active'))?.dataset.chain || 'all';
 		let visibleCount = 6;
+		let selectedGyms = [];
 
 		const getBranch = (el) =>
 			(el.getAttribute('data-branch') || '').trim().toLowerCase();
@@ -1336,6 +1474,138 @@ import * as bootstrap from 'bootstrap';
 			});
 
 			return sorted;
+		};
+
+		const getCardData = (card) => ({
+			id: card.getAttribute('data-gym-id') || '',
+			branch: card.getAttribute('data-branch-label') || '',
+			chain: card.getAttribute('data-chain-label') || '',
+			link: card.getAttribute('data-link') || '',
+			visited: card.getAttribute('data-visited-label') || '—',
+			overall: parseFloat(card.getAttribute('data-overall')),
+			overallLabel: card.getAttribute('data-overall-label') || 'No rating',
+			membership: card.getAttribute('data-membership') || '—',
+			scores: {
+				gym: card.getAttribute('data-gym-score') || '',
+				swim: card.getAttribute('data-swim-score') || '',
+				spa: card.getAttribute('data-spa-score') || '',
+				cafe: card.getAttribute('data-cafe-score') || '',
+				clean: card.getAttribute('data-clean-score') || '',
+				parking: card.getAttribute('data-parking-score') || '',
+			}
+		});
+
+		const scoreLabel = (value) => {
+			if (value === '' || value === null || value === undefined) return '—';
+			return `${value}/10`;
+		};
+
+		const getWinnerIdsForMetric = (items, getter) => {
+			let best = null;
+			const ids = [];
+
+			items.forEach((item) => {
+				const value = getter(item);
+
+				if (value === '' || value === null || value === undefined || Number.isNaN(Number(value))) {
+					return;
+				}
+
+				const numeric = Number(value);
+
+				if (best === null || numeric > best) {
+					best = numeric;
+					ids.length = 0;
+					ids.push(item.id);
+				} else if (numeric === best) {
+					ids.push(item.id);
+				}
+			});
+
+			return ids;
+		};
+
+		const renderComparison = () => {
+			if (!comparison || !comparisonTable) return;
+
+			if (selectedGyms.length < 2) {
+				comparison.hidden = true;
+				comparisonTable.innerHTML = '';
+				return;
+			}
+
+			const items = selectedGyms
+				.map((id) => allCards.find((card) => card.getAttribute('data-gym-id') === id))
+				.filter(Boolean)
+				.map(getCardData);
+
+			if (items.length < 2) {
+				comparison.hidden = true;
+				comparisonTable.innerHTML = '';
+				return;
+			}
+
+			const rows = [
+				{ label: 'Overall', format: (item) => item.overallLabel, winners: getWinnerIdsForMetric(items, (item) => item.overall) },
+				{ label: 'Gym', format: (item) => scoreLabel(item.scores.gym), winners: getWinnerIdsForMetric(items, (item) => item.scores.gym) },
+				{ label: 'Wetside Facilities', format: (item) => scoreLabel(item.scores.swim), winners: getWinnerIdsForMetric(items, (item) => item.scores.swim) },
+				{ label: 'Spa Retreat', format: (item) => scoreLabel(item.scores.spa), winners: getWinnerIdsForMetric(items, (item) => item.scores.spa) },
+				{ label: 'Café & Work Area', format: (item) => scoreLabel(item.scores.cafe), winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe) },
+				{ label: 'Cleanliness & Maintenance', format: (item) => scoreLabel(item.scores.clean), winners: getWinnerIdsForMetric(items, (item) => item.scores.clean) },
+				{ label: 'Parking', format: (item) => scoreLabel(item.scores.parking), winners: getWinnerIdsForMetric(items, (item) => item.scores.parking) },
+				{ label: 'Membership', format: (item) => item.membership || '—', winners: [] },
+				{ label: 'Visited', format: (item) => item.visited || '—', winners: [] },
+			];
+
+			comparisonTable.innerHTML = `
+				<div class="dx-gym-comparison__table">
+					<div class="dx-gym-comparison__row dx-gym-comparison__row--head">
+						<div class="dx-gym-comparison__metric">Metric</div>
+						${items.map((item) => `
+							<div class="dx-gym-comparison__cell dx-gym-comparison__cell--gym">
+								<h3><a href="${item.link}">${item.branch}</a></h3>
+								<span>${item.chain}</span>
+							</div>
+						`).join('')}
+					</div>
+
+					${rows.map((row) => `
+						<div class="dx-gym-comparison__row">
+							<div class="dx-gym-comparison__metric">${row.label}</div>
+							${items.map((item) => `
+								<div class="dx-gym-comparison__cell ${row.winners.includes(item.id) ? 'is-winner' : ''}">
+									${row.format(item)}
+								</div>
+							`).join('')}
+						</div>
+					`).join('')}
+				</div>
+			`;
+		};
+
+		const updateCompareBar = () => {
+			if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
+
+			compareBar.hidden = selectedGyms.length === 0;
+			compareCount.textContent = String(selectedGyms.length);
+			compareTrigger.disabled = selectedGyms.length < 2;
+			compareClear.disabled = selectedGyms.length === 0;
+
+			compareSelected.innerHTML = selectedGyms.map((id) => {
+				const card = allCards.find((item) => item.getAttribute('data-gym-id') === id);
+				const label = card?.getAttribute('data-branch-label') || 'Gym';
+				return `<span class="dx-gym-compare-chip">${label}</span>`;
+			}).join('');
+
+			allCards.forEach((card) => {
+				const id = card.getAttribute('data-gym-id');
+				const toggle = card.querySelector('[data-gym-compare-toggle]');
+				if (!toggle) return;
+
+				const isSelected = selectedGyms.includes(id);
+				toggle.classList.toggle('is-active', isSelected);
+				toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+			});
 		};
 
 		const update = () => {
@@ -1410,7 +1680,6 @@ import * as bootstrap from 'bootstrap';
 			});
 		});
 
-		// Notes toggle
 		grid?.addEventListener('click', (e) => {
 			const toggle = e.target.closest('[data-notes-toggle]');
 			if (!toggle) return;
@@ -1425,10 +1694,48 @@ import * as bootstrap from 'bootstrap';
 			toggle.setAttribute('aria-expanded', String(!isOpen));
 		});
 
+		grid?.addEventListener('click', (e) => {
+			const compareBtn = e.target.closest('[data-gym-compare-toggle]');
+			if (!compareBtn) return;
+
+			const card = compareBtn.closest('[data-gym-card]');
+			if (!card) return;
+
+			const id = card.getAttribute('data-gym-id');
+			if (!id) return;
+
+			if (selectedGyms.includes(id)) {
+				selectedGyms = selectedGyms.filter((item) => item !== id);
+			} else {
+				if (selectedGyms.length >= 3) return;
+				selectedGyms = [...selectedGyms, id];
+			}
+
+			updateCompareBar();
+			renderComparison();
+		});
+
+		compareTrigger?.addEventListener('click', () => {
+			renderComparison();
+			comparison?.removeAttribute('hidden');
+			comparison?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		});
+
+		compareClear?.addEventListener('click', () => {
+			selectedGyms = [];
+			updateCompareBar();
+			renderComparison();
+		});
+
+		comparisonClose?.addEventListener('click', () => {
+			if (comparison) {
+				comparison.hidden = true;
+			}
+		});
+
 		const initialViewBtn = viewBtns.find(btn => btn.classList.contains('is-active'));
 		archive.setAttribute('data-view', initialViewBtn?.getAttribute('data-gym-view') || 'cards');
 
-		// Progress bar stagger animation on reveal
 		const animatedCards = new WeakSet();
 
 		const animateCardBars = (card) => {
@@ -1469,6 +1776,8 @@ import * as bootstrap from 'bootstrap';
 			cardObserver.observe(card);
 		});
 
+		updateCompareBar();
+		renderComparison();
 		update();
 	})();
 
