@@ -18730,18 +18730,30 @@ img {
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar {
   position: sticky;
-  bottom: 1rem;
-  z-index: 20;
+  top: 1rem;
+  z-index: 40;
   display: -ms-grid;
   display: grid;
   gap: 1rem;
-  margin-top: 2rem;
+  margin: 2rem 0 1.5rem;
   padding: 1rem;
   background: rgba(10, 10, 10, 0.82);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   -webkit-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  -webkit-transform: translateY(12px);
+          transform: translateY(12px);
+  -webkit-transition: opacity 0.3s ease, -webkit-transform 0.3s ease;
+  transition: opacity 0.3s ease, -webkit-transform 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease, -webkit-transform 0.3s ease;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar.is-visible {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
 }
 @media (min-width: 992px) {
   #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar {
@@ -18777,7 +18789,8 @@ img {
   color: white;
   font-size: 0.75rem;
 }
-#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__actions {
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__actions,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__header-actions {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -18788,7 +18801,8 @@ img {
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare,
-#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close {
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__share {
   min-height: 48px;
   padding: 0 1rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -18803,14 +18817,21 @@ img {
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare:hover:not(:disabled),
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare.is-active,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close:hover:not(:disabled),
-#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close.is-active {
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close.is-active,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__share:hover:not(:disabled),
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__share.is-active {
   background: white;
   color: black;
 }
-#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn:disabled, #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__btn.is-disabled,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-bar__clear.is-disabled,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare:disabled,
-#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close:disabled {
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-card__compare.is-disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__close.is-disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__share:disabled,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__share.is-disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -18867,6 +18888,33 @@ img {
             align-items: flex-end;
   }
 }
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map-wrap {
+  margin-bottom: 1.25rem;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map {
+  min-height: 360px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map .leaflet-control-zoom a {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map .leaflet-popup-content-wrapper,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map .leaflet-popup-tip {
+  background: #111;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__map .leaflet-popup-content {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__table-wrap {
   overflow-x: auto;
 }
@@ -18883,6 +18931,10 @@ img {
   -ms-grid-columns: minmax(180px, 220px) (minmax(180px, 1fr))[3];
   grid-template-columns: minmax(180px, 220px) repeat(3, minmax(180px, 1fr));
   gap: 1px;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__row.is-two-up {
+  -ms-grid-columns: minmax(180px, 220px) (minmax(180px, 1fr))[2];
+  grid-template-columns: minmax(180px, 220px) repeat(2, minmax(180px, 1fr));
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__metric,
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell {
@@ -18905,9 +18957,182 @@ img {
   color: rgba(255, 255, 255, 0.66);
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-comparison__cell.is-winner {
-  background: rgba(255, 255, 255, 0.12);
-  -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  background: rgba(212, 175, 55, 0.75);
+  -webkit-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  color: black;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.05)), to(rgba(255, 255, 255, 0.02)));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(16px);
+  -webkit-box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0.06)), color-stop(30%, transparent), color-stop(70%, transparent), to(rgba(255, 255, 255, 0.03)));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 30%, transparent 70%, rgba(255, 255, 255, 0.03));
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel {
+    -ms-grid-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto auto;
+  }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  -webkit-transition: 0.25s ease;
+  transition: 0.25s ease;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.08);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy],
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-close] {
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-transition: 0.25s ease;
+  transition: 0.25s ease;
+  cursor: pointer;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy]:hover,
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-close]:hover {
+  background: white;
+  color: black;
+  border-color: white;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy] {
+  font-weight: 500;
+  min-width: 110px;
+  position: relative;
+  overflow: hidden;
+  -webkit-animation: copyPulse 0.35s ease;
+          animation: copyPulse 0.35s ease;
+}
+@-webkit-keyframes copyPulse {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(1.05);
+            transform: scale(1.05);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+@keyframes copyPulse {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(1.05);
+            transform: scale(1.05);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy].is-success {
+  background: #1f8f5f;
+  border-color: #1f8f5f;
+  color: #d2ffe9;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy].is-success:hover {
+  background: #26a46d;
+  border-color: #26a46d;
+  color: white;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy].is-error {
+  background: #a43a3a;
+  border-color: #a43a3a;
+  color: #ffd6d6;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-copy].is-error:hover {
+  background: #c24b4b;
+  border-color: #c24b4b;
+  color: white;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel button[data-gym-share-close] {
+  min-width: 48px;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-status {
+  grid-column: 1/-1;
+  min-height: 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.02em;
+}
+@media (min-width: 768px) {
+  #main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-status {
+    grid-column: auto;
+    -ms-grid-column-align: end;
+        justify-self: end;
+    text-align: right;
+  }
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-status.is-success {
+  color: #9ff7c2;
+}
+#main section.text-image .section-content .gym-archive[data-gyms-archive] .dx-gym-compare-share-panel .dx-gym-share-status.is-error {
+  color: #ff9d9d;
 }
 #main section.text-image .section-content .gym-archive[data-gyms-archive] .gym-search input[type=search] {
   font-size: 18px;

@@ -652,10 +652,36 @@ __webpack_require__.r(__webpack_exports__);
     function openTargetModal(targetSelector) {
       var modalEl = document.querySelector(targetSelector);
       if (!modalEl) return;
+
+      // 👇 Check if this is YOUR gym modal
+      var isGymModal = modalEl.classList.contains('dx-gym-share-modal');
       var modal = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getOrCreateInstance(modalEl, {
-        backdrop: 'static',
+        backdrop: isGymModal ? false : 'static',
         focus: true
       });
+
+      // 🔥 ONLY run custom backdrop logic for gym modal
+      if (isGymModal) {
+        var archiveSection = document.querySelector('[data-gyms-archive]');
+        if (archiveSection) {
+          archiveSection.querySelectorAll('.modal-backdrop').forEach(function (el) {
+            return el.remove();
+          });
+          var backdrop = document.createElement('div');
+          backdrop.className = 'modal-backdrop fade show';
+          archiveSection.appendChild(backdrop);
+          backdrop.addEventListener('click', function () {
+            return modal.hide();
+          });
+        }
+        modalEl.addEventListener('hidden.bs.modal', function () {
+          document.querySelectorAll('[data-gyms-archive] .modal-backdrop').forEach(function (el) {
+            return el.remove();
+          });
+        }, {
+          once: true
+        });
+      }
       modal.show();
     }
 
@@ -1092,163 +1118,6 @@ __webpack_require__.r(__webpack_exports__);
       }
       return true;
     };
-    var getCardData = function getCardData(card) {
-      return {
-        id: card.getAttribute('data-gym-id') || '',
-        branch: card.getAttribute('data-branch-label') || '',
-        chain: card.getAttribute('data-chain-label') || '',
-        link: card.getAttribute('data-link') || '',
-        visited: card.getAttribute('data-visited-label') || '—',
-        overall: parseFloat(card.getAttribute('data-overall')),
-        overallLabel: card.getAttribute('data-overall-label') || 'No rating',
-        membership: card.getAttribute('data-membership') || '—',
-        scores: {
-          gym: card.getAttribute('data-gym-score') || '',
-          swim: card.getAttribute('data-swim-score') || '',
-          spa: card.getAttribute('data-spa-score') || '',
-          cafe: card.getAttribute('data-cafe-score') || '',
-          clean: card.getAttribute('data-clean-score') || '',
-          parking: card.getAttribute('data-parking-score') || ''
-        }
-      };
-    };
-    var scoreLabel = function scoreLabel(value) {
-      if (value === '' || value === null || value === undefined) return '—';
-      return "".concat(value, "/10");
-    };
-    var getWinnerIdsForMetric = function getWinnerIdsForMetric(items, getter) {
-      var best = null;
-      var ids = [];
-      items.forEach(function (item) {
-        var value = getter(item);
-        if (value === '' || value === null || value === undefined || Number.isNaN(Number(value))) return;
-        var numeric = Number(value);
-        if (best === null || numeric > best) {
-          best = numeric;
-          ids.length = 0;
-          ids.push(item.id);
-        } else if (numeric === best) {
-          ids.push(item.id);
-        }
-      });
-      return ids;
-    };
-    var renderComparison = function renderComparison() {
-      if (!comparison || !comparisonTable) return;
-      if (selectedGyms.length < 2) {
-        comparison.hidden = true;
-        comparisonTable.innerHTML = '';
-        return;
-      }
-      var items = selectedGyms.map(function (id) {
-        return allCards.find(function (card) {
-          return card.getAttribute('data-gym-id') === id;
-        });
-      }).filter(Boolean).map(getCardData);
-      if (items.length < 2) {
-        comparison.hidden = true;
-        comparisonTable.innerHTML = '';
-        return;
-      }
-      var rows = [{
-        label: 'Overall',
-        format: function format(item) {
-          return item.overallLabel;
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.overall;
-        })
-      }, {
-        label: 'Gym',
-        format: function format(item) {
-          return scoreLabel(item.scores.gym);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.gym;
-        })
-      }, {
-        label: 'Wetside Facilities',
-        format: function format(item) {
-          return scoreLabel(item.scores.swim);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.swim;
-        })
-      }, {
-        label: 'Spa Retreat',
-        format: function format(item) {
-          return scoreLabel(item.scores.spa);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.spa;
-        })
-      }, {
-        label: 'Café & Work Area',
-        format: function format(item) {
-          return scoreLabel(item.scores.cafe);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.cafe;
-        })
-      }, {
-        label: 'Cleanliness & Maintenance',
-        format: function format(item) {
-          return scoreLabel(item.scores.clean);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.clean;
-        })
-      }, {
-        label: 'Parking',
-        format: function format(item) {
-          return scoreLabel(item.scores.parking);
-        },
-        winners: getWinnerIdsForMetric(items, function (item) {
-          return item.scores.parking;
-        })
-      }, {
-        label: 'Membership',
-        format: function format(item) {
-          return item.membership || '—';
-        },
-        winners: []
-      }, {
-        label: 'Visited',
-        format: function format(item) {
-          return item.visited || '—';
-        },
-        winners: []
-      }];
-      comparisonTable.innerHTML = "\n\t\t<div class=\"dx-gym-comparison__table\">\n\t\t\t<div class=\"dx-gym-comparison__row dx-gym-comparison__row--head\">\n\t\t\t\t<div class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t".concat(items.map(function (item) {
-        return "\n\t\t\t\t\t<div class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t<h3><a href=\"".concat(item.link, "\">").concat(item.branch, "</a></h3>\n\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t</div>\n\t\t\t\t");
-      }).join(''), "\n\t\t\t</div>\n\n\t\t\t").concat(rows.map(function (row) {
-        return "\n\t\t\t\t<div class=\"dx-gym-comparison__row\">\n\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">".concat(row.label, "</div>\n\t\t\t\t\t").concat(items.map(function (item) {
-          return "\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell ".concat(row.winners.includes(item.id) ? 'is-winner' : '', "\">\n\t\t\t\t\t\t\t").concat(row.format(item), "\n\t\t\t\t\t\t</div>\n\t\t\t\t\t");
-        }).join(''), "\n\t\t\t\t</div>\n\t\t\t");
-      }).join(''), "\n\t\t</div>\n\t");
-    };
-    var updateCompareBar = function updateCompareBar() {
-      if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
-      compareBar.hidden = selectedGyms.length === 0;
-      compareCount.textContent = String(selectedGyms.length);
-      compareTrigger.disabled = selectedGyms.length < 2;
-      compareClear.disabled = selectedGyms.length === 0;
-      compareSelected.innerHTML = selectedGyms.map(function (id) {
-        var card = allCards.find(function (item) {
-          return item.getAttribute('data-gym-id') === id;
-        });
-        var label = (card === null || card === void 0 ? void 0 : card.getAttribute('data-branch-label')) || 'Gym';
-        return "<span class=\"dx-gym-compare-chip\">".concat(label, "</span>");
-      }).join('');
-      allCards.forEach(function (card) {
-        var id = card.getAttribute('data-gym-id');
-        var toggle = card.querySelector('[data-gym-compare-toggle]');
-        if (!toggle) return;
-        var isSelected = selectedGyms.includes(id);
-        toggle.classList.toggle('is-active', isSelected);
-        toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-      });
-    };
     var update = function update() {
       var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
       var visibleCount = 0;
@@ -1307,9 +1176,16 @@ __webpack_require__.r(__webpack_exports__);
     var compareSelected = archive.querySelector('[data-gym-compare-selected]');
     var compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
     var compareClear = archive.querySelector('[data-gym-compare-clear]');
+    var compareShareButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('[data-gym-compare-share]'));
     var comparison = archive.querySelector('[data-gym-comparison]');
     var comparisonTable = archive.querySelector('[data-gym-comparison-table]');
     var comparisonClose = archive.querySelector('[data-gym-compare-close]');
+    var comparisonMapEl = archive.querySelector('[data-gym-comparison-map]');
+    var sharePanel = archive.querySelector('[data-gym-share-panel]');
+    var shareInput = archive.querySelector('[data-gym-share-input]');
+    var shareStatus = archive.querySelector('[data-gym-share-status]');
+    var shareCopyBtn = archive.querySelector('[data-gym-share-copy]');
+    var shareCloseBtn = archive.querySelector('[data-gym-share-close]');
     if (!grid) return;
     var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(grid.querySelectorAll('[data-gym-card]'));
     var LABELS = {
@@ -1326,6 +1202,8 @@ __webpack_require__.r(__webpack_exports__);
     })) === null || _buttons$find === void 0 ? void 0 : _buttons$find.dataset.chain) || 'all';
     var visibleCount = 6;
     var selectedGyms = [];
+    var compareMap = null;
+    var compareMarkers = [];
     var getBranch = function getBranch(el) {
       return (el.getAttribute('data-branch') || '').trim().toLowerCase();
     };
@@ -1368,6 +1246,9 @@ __webpack_require__.r(__webpack_exports__);
       return sorted;
     };
     var getCardData = function getCardData(card) {
+      if (!card || typeof card.getAttribute !== 'function') {
+        return null;
+      }
       return {
         id: card.getAttribute('data-gym-id') || '',
         branch: card.getAttribute('data-branch-label') || '',
@@ -1377,6 +1258,8 @@ __webpack_require__.r(__webpack_exports__);
         overall: parseFloat(card.getAttribute('data-overall')),
         overallLabel: card.getAttribute('data-overall-label') || 'No rating',
         membership: card.getAttribute('data-membership') || '—',
+        lat: parseFloat(card.getAttribute('data-lat')),
+        lng: parseFloat(card.getAttribute('data-lng')),
         scores: {
           gym: card.getAttribute('data-gym-score') || '',
           swim: card.getAttribute('data-swim-score') || '',
@@ -1410,21 +1293,157 @@ __webpack_require__.r(__webpack_exports__);
       });
       return ids;
     };
+    var getShareUrl = function getShareUrl() {
+      var url = new URL(window.location.href);
+      if (selectedGyms.length) {
+        url.searchParams.set('compare', selectedGyms.join(','));
+      } else {
+        url.searchParams.delete('compare');
+      }
+      return url.toString();
+    };
+    var syncShareUrl = function syncShareUrl() {
+      var url = new URL(window.location.href);
+      if (selectedGyms.length) {
+        url.searchParams.set('compare', selectedGyms.join(','));
+      } else {
+        url.searchParams.delete('compare');
+      }
+      window.history.replaceState({}, '', url.toString());
+    };
+    var openSharePanel = function openSharePanel() {
+      if (!sharePanel || selectedGyms.length < 2) return;
+      if (shareInput) {
+        shareInput.value = getShareUrl();
+        shareInput.focus();
+        shareInput.select();
+      }
+      if (shareStatus) {
+        shareStatus.textContent = '';
+      }
+      sharePanel.hidden = false;
+    };
+    var closeSharePanel = function closeSharePanel() {
+      if (!sharePanel) return;
+      sharePanel.hidden = true;
+      if (shareStatus) {
+        shareStatus.textContent = '';
+      }
+    };
+    var copyShareLink = function copyShareLink() {
+      var url = shareInput === null || shareInput === void 0 ? void 0 : shareInput.value;
+      if (!url || !shareCopyBtn) return;
+      var originalText = shareCopyBtn.dataset.originalText || shareCopyBtn.textContent;
+      shareCopyBtn.dataset.originalText = originalText;
+      var resetButtonState = function resetButtonState() {
+        window.setTimeout(function () {
+          shareCopyBtn.textContent = originalText;
+          shareCopyBtn.classList.remove('is-success', 'is-error');
+        }, 2000);
+      };
+      var setButtonState = function setButtonState(text, className) {
+        shareCopyBtn.textContent = text;
+        shareCopyBtn.classList.remove('is-success', 'is-error');
+        shareCopyBtn.classList.add(className);
+        resetButtonState();
+      };
+      var fallbackCopy = function fallbackCopy() {
+        var tempInput = document.createElement('textarea');
+        tempInput.value = url;
+        tempInput.setAttribute('readonly', 'readonly');
+        tempInput.style.position = 'fixed';
+        tempInput.style.top = '-9999px';
+        tempInput.style.left = '-9999px';
+        document.body.appendChild(tempInput);
+        tempInput.focus();
+        tempInput.select();
+        var copied = false;
+        try {
+          copied = document.execCommand('copy');
+        } catch (error) {
+          copied = false;
+        }
+        document.body.removeChild(tempInput);
+        if (copied) {
+          setButtonState('Link copied', 'is-success');
+        } else {
+          setButtonState('Copy failed', 'is-error');
+          shareInput === null || shareInput === void 0 || shareInput.focus();
+          shareInput === null || shareInput === void 0 || shareInput.select();
+        }
+      };
+      if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(function () {
+          setButtonState('Link copied', 'is-success');
+        }).catch(function () {
+          fallbackCopy();
+        });
+        return;
+      }
+      fallbackCopy();
+    };
+    var initComparisonMap = function initComparisonMap() {
+      if (!comparisonMapEl || typeof L === 'undefined') return null;
+      if (compareMap) return compareMap;
+      compareMap = L.map(comparisonMapEl, {
+        scrollWheelZoom: false,
+        zoomControl: true
+      });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(compareMap);
+      return compareMap;
+    };
+    var renderComparisonMap = function renderComparisonMap(items) {
+      if (!comparisonMapEl) return;
+      var mappable = items.filter(function (item) {
+        return !Number.isNaN(item.lat) && !Number.isNaN(item.lng);
+      });
+      comparisonMapEl.hidden = mappable.length === 0;
+      if (!mappable.length) return;
+      var map = initComparisonMap();
+      if (!map) return;
+      compareMarkers.forEach(function (marker) {
+        return marker.remove();
+      });
+      compareMarkers = [];
+      var points = [];
+      mappable.forEach(function (item) {
+        var point = [item.lat, item.lng];
+        points.push(point);
+        var marker = L.marker(point).addTo(map).bindPopup("<strong>".concat(item.branch, "</strong><br>").concat(item.chain).concat(item.overallLabel ? "<br>".concat(item.overallLabel) : ''));
+        compareMarkers.push(marker);
+      });
+      window.setTimeout(function () {
+        map.invalidateSize();
+        if (points.length === 1) {
+          map.setView(points[0], 12);
+        } else {
+          map.fitBounds(points, {
+            padding: [40, 40]
+          });
+        }
+      }, 100);
+    };
     var renderComparison = function renderComparison() {
       if (!comparison || !comparisonTable) return;
       if (selectedGyms.length < 2) {
         comparison.hidden = true;
         comparisonTable.innerHTML = '';
+        if (comparisonMapEl) comparisonMapEl.hidden = true;
         return;
       }
       var items = selectedGyms.map(function (id) {
         return allCards.find(function (card) {
           return card.getAttribute('data-gym-id') === id;
         });
-      }).filter(Boolean).map(getCardData);
+      }).filter(Boolean).map(getCardData).filter(Boolean);
       if (items.length < 2) {
         comparison.hidden = true;
         comparisonTable.innerHTML = '';
+        if (comparisonMapEl) comparisonMapEl.hidden = true;
         return;
       }
       var rows = [{
@@ -1496,20 +1515,27 @@ __webpack_require__.r(__webpack_exports__);
         },
         winners: []
       }];
-      comparisonTable.innerHTML = "\n\t\t\t\t<div class=\"dx-gym-comparison__table\">\n\t\t\t\t\t<div class=\"dx-gym-comparison__row dx-gym-comparison__row--head\">\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t\t\t".concat(items.map(function (item) {
-        return "\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t\t\t<h3><a href=\"".concat(item.link, "\">").concat(item.branch, "</a></h3>\n\t\t\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
-      }).join(''), "\n\t\t\t\t\t</div>\n\n\t\t\t\t\t").concat(rows.map(function (row) {
-        return "\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__row\">\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">".concat(row.label, "</div>\n\t\t\t\t\t\t\t").concat(items.map(function (item) {
+      comparisonTable.innerHTML = "\n\t\t\t\t<div class=\"dx-gym-comparison__table\">\n\t\t\t\t\t<div class=\"dx-gym-comparison__row dx-gym-comparison__row--head ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t\t\t").concat(items.map(function (item) {
+        return "\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t\t\t<h3 class=\"branch-name\">".concat(item.branch, "</h3>\n\t\t\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
+      }).join(''), "\n\t\t\t\t\t</div>\n\t\t\t\t\t").concat(rows.map(function (row) {
+        return "\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__row ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">").concat(row.label, "</div>\n\t\t\t\t\t\t\t").concat(items.map(function (item) {
           return "\n\t\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell ".concat(row.winners.includes(item.id) ? 'is-winner' : '', "\">\n\t\t\t\t\t\t\t\t\t").concat(row.format(item), "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t");
         }).join(''), "\n\t\t\t\t\t\t</div>\n\t\t\t\t\t");
       }).join(''), "\n\t\t\t\t</div>\n\t\t\t");
+      renderComparisonMap(items);
     };
     var updateCompareBar = function updateCompareBar() {
       if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
+      var atLimit = selectedGyms.length >= 3;
+      var hasEnoughToCompare = selectedGyms.length >= 2;
       compareBar.hidden = selectedGyms.length === 0;
+      compareBar.classList.toggle('is-visible', selectedGyms.length > 0);
       compareCount.textContent = String(selectedGyms.length);
-      compareTrigger.disabled = selectedGyms.length < 2;
+      compareTrigger.disabled = !hasEnoughToCompare;
       compareClear.disabled = selectedGyms.length === 0;
+      compareShareButtons.forEach(function (button) {
+        button.disabled = !hasEnoughToCompare;
+      });
       compareSelected.innerHTML = selectedGyms.map(function (id) {
         var card = allCards.find(function (item) {
           return item.getAttribute('data-gym-id') === id;
@@ -1522,9 +1548,16 @@ __webpack_require__.r(__webpack_exports__);
         var toggle = card.querySelector('[data-gym-compare-toggle]');
         if (!toggle) return;
         var isSelected = selectedGyms.includes(id);
+        var shouldDisable = atLimit && !isSelected;
         toggle.classList.toggle('is-active', isSelected);
+        toggle.classList.toggle('is-disabled', shouldDisable);
         toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        toggle.disabled = shouldDisable;
       });
+      if (selectedGyms.length < 2) {
+        closeSharePanel();
+      }
+      syncShareUrl();
     };
     var update = function update() {
       var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
@@ -1598,7 +1631,7 @@ __webpack_require__.r(__webpack_exports__);
     });
     grid === null || grid === void 0 || grid.addEventListener('click', function (e) {
       var compareBtn = e.target.closest('[data-gym-compare-toggle]');
-      if (!compareBtn) return;
+      if (!compareBtn || compareBtn.disabled) return;
       var card = compareBtn.closest('[data-gym-card]');
       if (!card) return;
       var id = card.getAttribute('data-gym-id');
@@ -1627,11 +1660,36 @@ __webpack_require__.r(__webpack_exports__);
       updateCompareBar();
       renderComparison();
     });
+    compareShareButtons.forEach(function (btn) {
+      btn.addEventListener('click', openSharePanel);
+    });
+    shareCopyBtn === null || shareCopyBtn === void 0 || shareCopyBtn.addEventListener('click', copyShareLink);
+    shareCloseBtn === null || shareCloseBtn === void 0 || shareCloseBtn.addEventListener('click', closeSharePanel);
     comparisonClose === null || comparisonClose === void 0 || comparisonClose.addEventListener('click', function () {
       if (comparison) {
         comparison.hidden = true;
       }
     });
+    var compareParam = new URLSearchParams(window.location.search).get('compare');
+    if (compareParam) {
+      selectedGyms = compareParam.split(',').map(function (id) {
+        return id.trim();
+      }).filter(function (id) {
+        return allCards.some(function (card) {
+          return card.getAttribute('data-gym-id') === id;
+        });
+      }).slice(0, 3);
+      if (selectedGyms.length >= 2) {
+        renderComparison();
+        comparison === null || comparison === void 0 || comparison.removeAttribute('hidden');
+        window.setTimeout(function () {
+          comparison === null || comparison === void 0 || comparison.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100);
+      }
+    }
     var initialViewBtn = viewBtns.find(function (btn) {
       return btn.classList.contains('is-active');
     });
@@ -1645,7 +1703,7 @@ __webpack_require__.r(__webpack_exports__);
       bars.forEach(function (bar, index) {
         var pct = getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
         bar.style.transform = 'scaleX(0)';
-        setTimeout(function () {
+        window.setTimeout(function () {
           bar.style.transform = "scaleX(".concat(pct, ")");
         }, index * 100);
       });

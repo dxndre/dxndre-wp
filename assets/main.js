@@ -708,10 +708,35 @@ import * as bootstrap from 'bootstrap';
 			const modalEl = document.querySelector(targetSelector);
 			if (!modalEl) return;
 
+			// 👇 Check if this is YOUR gym modal
+			const isGymModal = modalEl.classList.contains('dx-gym-share-modal');
+
 			const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
-				backdrop: 'static',
+				backdrop: isGymModal ? false : 'static',
 				focus: true
 			});
+
+			// 🔥 ONLY run custom backdrop logic for gym modal
+			if (isGymModal) {
+				const archiveSection = document.querySelector('[data-gyms-archive]');
+
+				if (archiveSection) {
+					archiveSection.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+					const backdrop = document.createElement('div');
+					backdrop.className = 'modal-backdrop fade show';
+
+					archiveSection.appendChild(backdrop);
+
+					backdrop.addEventListener('click', () => modal.hide());
+				}
+
+				modalEl.addEventListener('hidden.bs.modal', () => {
+					document
+						.querySelectorAll('[data-gyms-archive] .modal-backdrop')
+						.forEach(el => el.remove());
+				}, { once: true });
+			}
 
 			modal.show();
 		}
@@ -1205,134 +1230,6 @@ import * as bootstrap from 'bootstrap';
 			return true;
 		};
 
-		const getCardData = (card) => ({
-	id: card.getAttribute('data-gym-id') || '',
-	branch: card.getAttribute('data-branch-label') || '',
-	chain: card.getAttribute('data-chain-label') || '',
-	link: card.getAttribute('data-link') || '',
-	visited: card.getAttribute('data-visited-label') || '—',
-	overall: parseFloat(card.getAttribute('data-overall')),
-	overallLabel: card.getAttribute('data-overall-label') || 'No rating',
-	membership: card.getAttribute('data-membership') || '—',
-	scores: {
-		gym: card.getAttribute('data-gym-score') || '',
-		swim: card.getAttribute('data-swim-score') || '',
-		spa: card.getAttribute('data-spa-score') || '',
-		cafe: card.getAttribute('data-cafe-score') || '',
-		clean: card.getAttribute('data-clean-score') || '',
-		parking: card.getAttribute('data-parking-score') || '',
-	}
-});
-
-const scoreLabel = (value) => {
-	if (value === '' || value === null || value === undefined) return '—';
-	return `${value}/10`;
-};
-
-const getWinnerIdsForMetric = (items, getter) => {
-	let best = null;
-	const ids = [];
-
-	items.forEach((item) => {
-		const value = getter(item);
-		if (value === '' || value === null || value === undefined || Number.isNaN(Number(value))) return;
-
-		const numeric = Number(value);
-
-		if (best === null || numeric > best) {
-			best = numeric;
-			ids.length = 0;
-			ids.push(item.id);
-		} else if (numeric === best) {
-			ids.push(item.id);
-		}
-	});
-
-	return ids;
-};
-
-const renderComparison = () => {
-	if (!comparison || !comparisonTable) return;
-
-	if (selectedGyms.length < 2) {
-		comparison.hidden = true;
-		comparisonTable.innerHTML = '';
-		return;
-	}
-
-	const items = selectedGyms
-		.map((id) => allCards.find((card) => card.getAttribute('data-gym-id') === id))
-		.filter(Boolean)
-		.map(getCardData);
-
-	if (items.length < 2) {
-		comparison.hidden = true;
-		comparisonTable.innerHTML = '';
-		return;
-	}
-
-	const rows = [
-		{ label: 'Overall', format: (item) => item.overallLabel, winners: getWinnerIdsForMetric(items, (item) => item.overall) },
-		{ label: 'Gym', format: (item) => scoreLabel(item.scores.gym), winners: getWinnerIdsForMetric(items, (item) => item.scores.gym) },
-		{ label: 'Wetside Facilities', format: (item) => scoreLabel(item.scores.swim), winners: getWinnerIdsForMetric(items, (item) => item.scores.swim) },
-		{ label: 'Spa Retreat', format: (item) => scoreLabel(item.scores.spa), winners: getWinnerIdsForMetric(items, (item) => item.scores.spa) },
-		{ label: 'Café & Work Area', format: (item) => scoreLabel(item.scores.cafe), winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe) },
-		{ label: 'Cleanliness & Maintenance', format: (item) => scoreLabel(item.scores.clean), winners: getWinnerIdsForMetric(items, (item) => item.scores.clean) },
-		{ label: 'Parking', format: (item) => scoreLabel(item.scores.parking), winners: getWinnerIdsForMetric(items, (item) => item.scores.parking) },
-		{ label: 'Membership', format: (item) => item.membership || '—', winners: [] },
-		{ label: 'Visited', format: (item) => item.visited || '—', winners: [] },
-	];
-
-	comparisonTable.innerHTML = `
-		<div class="dx-gym-comparison__table">
-			<div class="dx-gym-comparison__row dx-gym-comparison__row--head">
-				<div class="dx-gym-comparison__metric">Metric</div>
-				${items.map((item) => `
-					<div class="dx-gym-comparison__cell dx-gym-comparison__cell--gym">
-						<h3><a href="${item.link}">${item.branch}</a></h3>
-						<span>${item.chain}</span>
-					</div>
-				`).join('')}
-			</div>
-
-			${rows.map((row) => `
-				<div class="dx-gym-comparison__row">
-					<div class="dx-gym-comparison__metric">${row.label}</div>
-					${items.map((item) => `
-						<div class="dx-gym-comparison__cell ${row.winners.includes(item.id) ? 'is-winner' : ''}">
-							${row.format(item)}
-						</div>
-					`).join('')}
-				</div>
-			`).join('')}
-		</div>
-	`;
-};
-
-	const updateCompareBar = () => {
-		if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
-
-		compareBar.hidden = selectedGyms.length === 0;
-		compareCount.textContent = String(selectedGyms.length);
-		compareTrigger.disabled = selectedGyms.length < 2;
-		compareClear.disabled = selectedGyms.length === 0;
-
-		compareSelected.innerHTML = selectedGyms.map((id) => {
-			const card = allCards.find((item) => item.getAttribute('data-gym-id') === id);
-			const label = card?.getAttribute('data-branch-label') || 'Gym';
-			return `<span class="dx-gym-compare-chip">${label}</span>`;
-		}).join('');
-
-		allCards.forEach((card) => {
-			const id = card.getAttribute('data-gym-id');
-			const toggle = card.querySelector('[data-gym-compare-toggle]');
-			if (!toggle) return;
-
-			const isSelected = selectedGyms.includes(id);
-			toggle.classList.toggle('is-active', isSelected);
-			toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-		});
-	};
 
 		const update = () => {
 			const q = (search?.value || '').trim().toLowerCase();
@@ -1389,13 +1286,13 @@ const renderComparison = () => {
 		const archive = document.querySelector('[data-gyms-archive]');
 		if (!archive) return;
 
-		const grid     = archive.querySelector('[data-gyms-grid]');
-		const search   = archive.querySelector('[data-gym-search]');
-		const sortSel  = archive.querySelector('[data-gym-sort]');
-		const buttons  = [...archive.querySelectorAll('.gym-filter-buttons button')];
+		const grid = archive.querySelector('[data-gyms-grid]');
+		const search = archive.querySelector('[data-gym-search]');
+		const sortSel = archive.querySelector('[data-gym-sort]');
+		const buttons = [...archive.querySelectorAll('.gym-filter-buttons button')];
 		const viewBtns = [...archive.querySelectorAll('[data-gym-view]')];
-		const titleEl  = archive.querySelector('[data-gyms-state-title]');
-		const emptyEl  = archive.querySelector('[data-gyms-empty]');
+		const titleEl = archive.querySelector('[data-gyms-state-title]');
+		const emptyEl = archive.querySelector('[data-gyms-empty]');
 		const loadMore = archive.querySelector('[data-gyms-load-more]');
 
 		const compareBar = archive.querySelector('[data-gym-compare-bar]');
@@ -1403,9 +1300,17 @@ const renderComparison = () => {
 		const compareSelected = archive.querySelector('[data-gym-compare-selected]');
 		const compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
 		const compareClear = archive.querySelector('[data-gym-compare-clear]');
+		const compareShareButtons = [...archive.querySelectorAll('[data-gym-compare-share]')];
 		const comparison = archive.querySelector('[data-gym-comparison]');
 		const comparisonTable = archive.querySelector('[data-gym-comparison-table]');
 		const comparisonClose = archive.querySelector('[data-gym-compare-close]');
+		const comparisonMapEl = archive.querySelector('[data-gym-comparison-map]');
+
+		const sharePanel = archive.querySelector('[data-gym-share-panel]');
+		const shareInput = archive.querySelector('[data-gym-share-input]');
+		const shareStatus = archive.querySelector('[data-gym-share-status]');
+		const shareCopyBtn = archive.querySelector('[data-gym-share-copy]');
+		const shareCloseBtn = archive.querySelector('[data-gym-share-close]');
 
 		if (!grid) return;
 
@@ -1421,18 +1326,15 @@ const renderComparison = () => {
 			other: 'Other',
 		};
 
-		let activeChain = buttons.find(btn => btn.classList.contains('is-active'))?.dataset.chain || 'all';
+		let activeChain = buttons.find((btn) => btn.classList.contains('is-active'))?.dataset.chain || 'all';
 		let visibleCount = 6;
 		let selectedGyms = [];
+		let compareMap = null;
+		let compareMarkers = [];
 
-		const getBranch = (el) =>
-			(el.getAttribute('data-branch') || '').trim().toLowerCase();
-
-		const getOverall = (el) =>
-			parseFloat(el.getAttribute('data-overall')) || 0;
-
-		const getVisitedTs = (el) =>
-			parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
+		const getBranch = (el) => (el.getAttribute('data-branch') || '').trim().toLowerCase();
+		const getOverall = (el) => parseFloat(el.getAttribute('data-overall')) || 0;
+		const getVisitedTs = (el) => parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
 
 		const updateTitle = () => {
 			if (!titleEl) return;
@@ -1444,29 +1346,24 @@ const renderComparison = () => {
 			const sorted = [...cards];
 
 			sorted.sort((a, b) => {
-				const aBranch  = getBranch(a);
-				const bBranch  = getBranch(b);
+				const aBranch = getBranch(a);
+				const bBranch = getBranch(b);
 				const aOverall = getOverall(a);
 				const bOverall = getOverall(b);
-				const aDate    = getVisitedTs(a);
-				const bDate    = getVisitedTs(b);
+				const aDate = getVisitedTs(a);
+				const bDate = getVisitedTs(b);
 
 				switch (mode) {
 					case 'overall_desc':
 						return (bOverall - aOverall) || aBranch.localeCompare(bBranch);
-
 					case 'overall_asc':
 						return (aOverall - bOverall) || aBranch.localeCompare(bBranch);
-
 					case 'date_desc':
 						return (bDate - aDate) || aBranch.localeCompare(bBranch);
-
 					case 'date_asc':
 						return (aDate - bDate) || aBranch.localeCompare(bBranch);
-
 					case 'za':
 						return bBranch.localeCompare(aBranch);
-
 					case 'az':
 					default:
 						return aBranch.localeCompare(bBranch);
@@ -1476,24 +1373,32 @@ const renderComparison = () => {
 			return sorted;
 		};
 
-		const getCardData = (card) => ({
-			id: card.getAttribute('data-gym-id') || '',
-			branch: card.getAttribute('data-branch-label') || '',
-			chain: card.getAttribute('data-chain-label') || '',
-			link: card.getAttribute('data-link') || '',
-			visited: card.getAttribute('data-visited-label') || '—',
-			overall: parseFloat(card.getAttribute('data-overall')),
-			overallLabel: card.getAttribute('data-overall-label') || 'No rating',
-			membership: card.getAttribute('data-membership') || '—',
-			scores: {
-				gym: card.getAttribute('data-gym-score') || '',
-				swim: card.getAttribute('data-swim-score') || '',
-				spa: card.getAttribute('data-spa-score') || '',
-				cafe: card.getAttribute('data-cafe-score') || '',
-				clean: card.getAttribute('data-clean-score') || '',
-				parking: card.getAttribute('data-parking-score') || '',
+		const getCardData = (card) => {
+			if (!card || typeof card.getAttribute !== 'function') {
+				return null;
 			}
-		});
+
+			return {
+				id: card.getAttribute('data-gym-id') || '',
+				branch: card.getAttribute('data-branch-label') || '',
+				chain: card.getAttribute('data-chain-label') || '',
+				link: card.getAttribute('data-link') || '',
+				visited: card.getAttribute('data-visited-label') || '—',
+				overall: parseFloat(card.getAttribute('data-overall')),
+				overallLabel: card.getAttribute('data-overall-label') || 'No rating',
+				membership: card.getAttribute('data-membership') || '—',
+				lat: parseFloat(card.getAttribute('data-lat')),
+				lng: parseFloat(card.getAttribute('data-lng')),
+				scores: {
+					gym: card.getAttribute('data-gym-score') || '',
+					swim: card.getAttribute('data-swim-score') || '',
+					spa: card.getAttribute('data-spa-score') || '',
+					cafe: card.getAttribute('data-cafe-score') || '',
+					clean: card.getAttribute('data-clean-score') || '',
+					parking: card.getAttribute('data-parking-score') || '',
+				},
+			};
+		};
 
 		const scoreLabel = (value) => {
 			if (value === '' || value === null || value === undefined) return '—';
@@ -1525,23 +1430,196 @@ const renderComparison = () => {
 			return ids;
 		};
 
+		const getShareUrl = () => {
+			const url = new URL(window.location.href);
+			if (selectedGyms.length) {
+				url.searchParams.set('compare', selectedGyms.join(','));
+			} else {
+				url.searchParams.delete('compare');
+			}
+			return url.toString();
+		};
+
+		const syncShareUrl = () => {
+			const url = new URL(window.location.href);
+			if (selectedGyms.length) {
+				url.searchParams.set('compare', selectedGyms.join(','));
+			} else {
+				url.searchParams.delete('compare');
+			}
+			window.history.replaceState({}, '', url.toString());
+		};
+
+		const openSharePanel = () => {
+			if (!sharePanel || selectedGyms.length < 2) return;
+
+			if (shareInput) {
+				shareInput.value = getShareUrl();
+				shareInput.focus();
+				shareInput.select();
+			}
+
+			if (shareStatus) {
+				shareStatus.textContent = '';
+			}
+
+			sharePanel.hidden = false;
+		};
+
+		const closeSharePanel = () => {
+			if (!sharePanel) return;
+			sharePanel.hidden = true;
+
+			if (shareStatus) {
+				shareStatus.textContent = '';
+			}
+		};
+
+		const copyShareLink = () => {
+			const url = shareInput?.value;
+			if (!url || !shareCopyBtn) return;
+
+			const originalText = shareCopyBtn.dataset.originalText || shareCopyBtn.textContent;
+			shareCopyBtn.dataset.originalText = originalText;
+
+			const resetButtonState = () => {
+				window.setTimeout(() => {
+					shareCopyBtn.textContent = originalText;
+					shareCopyBtn.classList.remove('is-success', 'is-error');
+				}, 2000);
+			};
+
+			const setButtonState = (text, className) => {
+				shareCopyBtn.textContent = text;
+				shareCopyBtn.classList.remove('is-success', 'is-error');
+				shareCopyBtn.classList.add(className);
+				resetButtonState();
+			};
+
+			const fallbackCopy = () => {
+				const tempInput = document.createElement('textarea');
+				tempInput.value = url;
+				tempInput.setAttribute('readonly', 'readonly');
+				tempInput.style.position = 'fixed';
+				tempInput.style.top = '-9999px';
+				tempInput.style.left = '-9999px';
+				document.body.appendChild(tempInput);
+				tempInput.focus();
+				tempInput.select();
+
+				let copied = false;
+
+				try {
+					copied = document.execCommand('copy');
+				} catch (error) {
+					copied = false;
+				}
+
+				document.body.removeChild(tempInput);
+
+				if (copied) {
+					setButtonState('Link copied', 'is-success');
+				} else {
+					setButtonState('Copy failed', 'is-error');
+					shareInput?.focus();
+					shareInput?.select();
+				}
+			};
+
+			if (
+				typeof navigator !== 'undefined' &&
+				navigator.clipboard &&
+				typeof navigator.clipboard.writeText === 'function' &&
+				window.isSecureContext
+			) {
+				navigator.clipboard.writeText(url)
+					.then(() => {
+						setButtonState('Link copied', 'is-success');
+					})
+					.catch(() => {
+						fallbackCopy();
+					});
+				return;
+			}
+
+			fallbackCopy();
+		};
+
+		const initComparisonMap = () => {
+			if (!comparisonMapEl || typeof L === 'undefined') return null;
+			if (compareMap) return compareMap;
+
+			compareMap = L.map(comparisonMapEl, {
+				scrollWheelZoom: false,
+				zoomControl: true,
+			});
+
+			L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+				subdomains: 'abcd',
+				maxZoom: 20,
+			}).addTo(compareMap);
+
+			return compareMap;
+		};
+
+		const renderComparisonMap = (items) => {
+			if (!comparisonMapEl) return;
+
+			const mappable = items.filter((item) => !Number.isNaN(item.lat) && !Number.isNaN(item.lng));
+
+			comparisonMapEl.hidden = mappable.length === 0;
+			if (!mappable.length) return;
+
+			const map = initComparisonMap();
+			if (!map) return;
+
+			compareMarkers.forEach((marker) => marker.remove());
+			compareMarkers = [];
+
+			const points = [];
+
+			mappable.forEach((item) => {
+				const point = [item.lat, item.lng];
+				points.push(point);
+
+				const marker = L.marker(point)
+					.addTo(map)
+					.bindPopup(`<strong>${item.branch}</strong><br>${item.chain}${item.overallLabel ? `<br>${item.overallLabel}` : ''}`);
+
+				compareMarkers.push(marker);
+			});
+
+			window.setTimeout(() => {
+				map.invalidateSize();
+				if (points.length === 1) {
+					map.setView(points[0], 12);
+				} else {
+					map.fitBounds(points, { padding: [40, 40] });
+				}
+			}, 100);
+		};
+
 		const renderComparison = () => {
 			if (!comparison || !comparisonTable) return;
 
 			if (selectedGyms.length < 2) {
 				comparison.hidden = true;
 				comparisonTable.innerHTML = '';
+				if (comparisonMapEl) comparisonMapEl.hidden = true;
 				return;
 			}
 
 			const items = selectedGyms
 				.map((id) => allCards.find((card) => card.getAttribute('data-gym-id') === id))
 				.filter(Boolean)
-				.map(getCardData);
+				.map(getCardData)
+				.filter(Boolean);
 
 			if (items.length < 2) {
 				comparison.hidden = true;
 				comparisonTable.innerHTML = '';
+				if (comparisonMapEl) comparisonMapEl.hidden = true;
 				return;
 			}
 
@@ -1559,18 +1637,17 @@ const renderComparison = () => {
 
 			comparisonTable.innerHTML = `
 				<div class="dx-gym-comparison__table">
-					<div class="dx-gym-comparison__row dx-gym-comparison__row--head">
+					<div class="dx-gym-comparison__row dx-gym-comparison__row--head ${items.length === 2 ? 'is-two-up' : ''}">
 						<div class="dx-gym-comparison__metric">Metric</div>
 						${items.map((item) => `
 							<div class="dx-gym-comparison__cell dx-gym-comparison__cell--gym">
-								<h3><a href="${item.link}">${item.branch}</a></h3>
+								<h3 class="branch-name">${item.branch}</h3>
 								<span>${item.chain}</span>
 							</div>
 						`).join('')}
 					</div>
-
 					${rows.map((row) => `
-						<div class="dx-gym-comparison__row">
+						<div class="dx-gym-comparison__row ${items.length === 2 ? 'is-two-up' : ''}">
 							<div class="dx-gym-comparison__metric">${row.label}</div>
 							${items.map((item) => `
 								<div class="dx-gym-comparison__cell ${row.winners.includes(item.id) ? 'is-winner' : ''}">
@@ -1581,15 +1658,25 @@ const renderComparison = () => {
 					`).join('')}
 				</div>
 			`;
+
+			renderComparisonMap(items);
 		};
 
 		const updateCompareBar = () => {
 			if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
 
+			const atLimit = selectedGyms.length >= 3;
+			const hasEnoughToCompare = selectedGyms.length >= 2;
+
 			compareBar.hidden = selectedGyms.length === 0;
+			compareBar.classList.toggle('is-visible', selectedGyms.length > 0);
 			compareCount.textContent = String(selectedGyms.length);
-			compareTrigger.disabled = selectedGyms.length < 2;
+			compareTrigger.disabled = !hasEnoughToCompare;
 			compareClear.disabled = selectedGyms.length === 0;
+
+			compareShareButtons.forEach((button) => {
+				button.disabled = !hasEnoughToCompare;
+			});
 
 			compareSelected.innerHTML = selectedGyms.map((id) => {
 				const card = allCards.find((item) => item.getAttribute('data-gym-id') === id);
@@ -1603,15 +1690,25 @@ const renderComparison = () => {
 				if (!toggle) return;
 
 				const isSelected = selectedGyms.includes(id);
+				const shouldDisable = atLimit && !isSelected;
+
 				toggle.classList.toggle('is-active', isSelected);
+				toggle.classList.toggle('is-disabled', shouldDisable);
 				toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+				toggle.disabled = shouldDisable;
 			});
+
+			if (selectedGyms.length < 2) {
+				closeSharePanel();
+			}
+
+			syncShareUrl();
 		};
 
 		const update = () => {
 			const q = (search?.value || '').trim().toLowerCase();
 
-			const eligible = allCards.filter(card => {
+			const eligible = allCards.filter((card) => {
 				const chain = card.getAttribute('data-chain') || 'unknown';
 				const chainOk = activeChain === 'all' || chain === activeChain;
 
@@ -1623,13 +1720,13 @@ const renderComparison = () => {
 
 			const ordered = sortCards(eligible);
 
-			ordered.forEach(card => grid.appendChild(card));
+			ordered.forEach((card) => grid.appendChild(card));
 
-			allCards.forEach(card => {
+			allCards.forEach((card) => {
 				card.hidden = true;
 			});
 
-			ordered.slice(0, visibleCount).forEach(card => {
+			ordered.slice(0, visibleCount).forEach((card) => {
 				card.hidden = false;
 			});
 
@@ -1644,9 +1741,9 @@ const renderComparison = () => {
 			updateTitle();
 		};
 
-		buttons.forEach(btn => {
+		buttons.forEach((btn) => {
 			btn.addEventListener('click', () => {
-				buttons.forEach(b => b.classList.remove('is-active'));
+				buttons.forEach((b) => b.classList.remove('is-active'));
 				btn.classList.add('is-active');
 
 				activeChain = btn.dataset.chain || 'all';
@@ -1670,9 +1767,9 @@ const renderComparison = () => {
 			update();
 		});
 
-		viewBtns.forEach(btn => {
+		viewBtns.forEach((btn) => {
 			btn.addEventListener('click', () => {
-				viewBtns.forEach(b => b.classList.remove('is-active'));
+				viewBtns.forEach((b) => b.classList.remove('is-active'));
 				btn.classList.add('is-active');
 
 				const view = btn.getAttribute('data-gym-view') || 'cards';
@@ -1689,14 +1786,13 @@ const renderComparison = () => {
 			if (!card || !panel) return;
 
 			const isOpen = card.classList.contains('is-notes-open');
-
 			card.classList.toggle('is-notes-open', !isOpen);
 			toggle.setAttribute('aria-expanded', String(!isOpen));
 		});
 
 		grid?.addEventListener('click', (e) => {
 			const compareBtn = e.target.closest('[data-gym-compare-toggle]');
-			if (!compareBtn) return;
+			if (!compareBtn || compareBtn.disabled) return;
 
 			const card = compareBtn.closest('[data-gym-card]');
 			if (!card) return;
@@ -1727,13 +1823,41 @@ const renderComparison = () => {
 			renderComparison();
 		});
 
+		compareShareButtons.forEach((btn) => {
+			btn.addEventListener('click', openSharePanel);
+		});
+
+		shareCopyBtn?.addEventListener('click', copyShareLink);
+		shareCloseBtn?.addEventListener('click', closeSharePanel);
+
 		comparisonClose?.addEventListener('click', () => {
 			if (comparison) {
 				comparison.hidden = true;
 			}
 		});
 
-		const initialViewBtn = viewBtns.find(btn => btn.classList.contains('is-active'));
+		const compareParam = new URLSearchParams(window.location.search).get('compare');
+		if (compareParam) {
+			selectedGyms = compareParam
+				.split(',')
+				.map((id) => id.trim())
+				.filter((id) => allCards.some((card) => card.getAttribute('data-gym-id') === id))
+				.slice(0, 3);
+
+			if (selectedGyms.length >= 2) {
+				renderComparison();
+				comparison?.removeAttribute('hidden');
+
+				window.setTimeout(() => {
+					comparison?.scrollIntoView({
+						behavior: 'smooth',
+						block: 'start',
+					});
+				}, 100);
+			}
+		}
+
+		const initialViewBtn = viewBtns.find((btn) => btn.classList.contains('is-active'));
 		archive.setAttribute('data-view', initialViewBtn?.getAttribute('data-gym-view') || 'cards');
 
 		const animatedCards = new WeakSet();
@@ -1748,10 +1872,9 @@ const renderComparison = () => {
 
 			bars.forEach((bar, index) => {
 				const pct = getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
-
 				bar.style.transform = 'scaleX(0)';
 
-				setTimeout(() => {
+				window.setTimeout(() => {
 					bar.style.transform = `scaleX(${pct})`;
 				}, index * 100);
 			});
@@ -1759,7 +1882,7 @@ const renderComparison = () => {
 
 		const cardObserver = new IntersectionObserver(
 			(entries) => {
-				entries.forEach(entry => {
+				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						animateCardBars(entry.target);
 						cardObserver.unobserve(entry.target);
@@ -1768,11 +1891,11 @@ const renderComparison = () => {
 			},
 			{
 				threshold: 0.2,
-				rootMargin: '0px 0px -10% 0px'
+				rootMargin: '0px 0px -10% 0px',
 			}
 		);
 
-		allCards.forEach(card => {
+		allCards.forEach((card) => {
 			cardObserver.observe(card);
 		});
 

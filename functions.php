@@ -1625,8 +1625,8 @@ function dx_visit_type_label($value) {
 
 function dx_shortcode_gym_table($atts) {
 	$atts = shortcode_atts([
-		'chain' => '',     // optional filter: davidlloyds / puregym etc
-		'limit' => -1,     // optional limit
+		'chain' => '',
+		'limit' => -1,
 	], $atts, 'dx_gym_table');
 
 	$args = [
@@ -1649,9 +1649,6 @@ function dx_shortcode_gym_table($atts) {
 
 	$q = new WP_Query($args);
 
-	// -----------------------------
-	// Compute best & worst David Lloyd gyms
-	// -----------------------------
 	$best_dl_score  = null;
 	$worst_dl_score = null;
 	$best_dl_id     = null;
@@ -1660,8 +1657,7 @@ function dx_shortcode_gym_table($atts) {
 	if ($q->have_posts()) {
 		foreach ($q->posts as $post_obj) {
 			$post_id = $post_obj->ID;
-
-			$chain = get_field('gym_chain', $post_id);
+			$chain   = get_field('gym_chain', $post_id);
 
 			if ($chain !== 'davidlloyds') {
 				continue;
@@ -1699,9 +1695,6 @@ function dx_shortcode_gym_table($atts) {
 		}
 	}
 
-	// -----------------------------
-	// Compute category winners
-	// -----------------------------
 	$category_winners = [
 		'gym'     => ['score' => null, 'id' => null],
 		'swim'    => ['score' => null, 'id' => null],
@@ -1725,12 +1718,11 @@ function dx_shortcode_gym_table($atts) {
 			];
 
 			foreach ($scores as $key => $score) {
-				if (!is_numeric($score)) continue;
+				if (!is_numeric($score)) {
+					continue;
+				}
 
-				if (
-					$category_winners[$key]['score'] === null ||
-					$score > $category_winners[$key]['score']
-				) {
+				if ($category_winners[$key]['score'] === null || $score > $category_winners[$key]['score']) {
 					$category_winners[$key]['score'] = $score;
 					$category_winners[$key]['id']    = $post_id;
 				}
@@ -1738,24 +1730,20 @@ function dx_shortcode_gym_table($atts) {
 		}
 	}
 
-	// -----------------------------
-	// Gym counts per chain
-	// -----------------------------
 	$chain_counts = [
-		'all'           => 0,
-		'davidlloyds'   => 0,
-		'puregym'       => 0,
-		'virginactive'  => 0,
-		'bodyworks'     => 0,
-		'thegymgroup'   => 0,
-		'other'         => 0,
+		'all'          => 0,
+		'davidlloyds'  => 0,
+		'puregym'      => 0,
+		'virginactive' => 0,
+		'bodyworks'    => 0,
+		'thegymgroup'  => 0,
+		'other'        => 0,
 	];
 
 	if ($q->have_posts()) {
 		foreach ($q->posts as $post_obj) {
 			$post_id = $post_obj->ID;
-
-			$chain = get_field('gym_chain', $post_id);
+			$chain   = get_field('gym_chain', $post_id);
 
 			$chain_counts['all']++;
 
@@ -1774,14 +1762,8 @@ function dx_shortcode_gym_table($atts) {
 		return ob_get_clean();
 	}
 
-	// Wrapper (Projects-page style)
 	echo '<div class="gym-archive" data-gyms-archive>';
 
-	/**
-	 * Controls UI (search / filters / sort / view toggle)
-	 * You can move this into your page builder if you prefer,
-	 * but this gives you a working default.
-	 */
 	echo '
 		<div class="filter-inputs">
 			<div class="gym-search">
@@ -1826,11 +1808,7 @@ function dx_shortcode_gym_table($atts) {
 			<h3>No Gyms Found</h3>
 			<span>Try adjusting your filters or search terms.</span>
 		</div>
-	';
 
-	// echo '<div class="dx-gyms-grid" data-gyms-grid>';
-
-	echo '
 		<div class="dx-gym-compare-bar" data-gym-compare-bar hidden>
 			<div class="dx-gym-compare-bar__summary">
 				<strong><span data-gym-compare-count>0</span>/3</strong> gyms selected
@@ -1843,10 +1821,33 @@ function dx_shortcode_gym_table($atts) {
 					Compare now
 				</button>
 
+				<button type="button" class="dx-gym-compare-bar__btn" data-gym-compare-share disabled>
+					Share comparison
+				</button>
+
 				<button type="button" class="dx-gym-compare-bar__clear" data-gym-compare-clear disabled>
 					Clear
 				</button>
 			</div>
+		</div>
+
+		<div class="dx-gym-compare-share-panel" data-gym-share-panel hidden>
+			<input 
+				type="text" 
+				readonly 
+				class="dx-gym-share-input" 
+				data-gym-share-input
+			/>
+
+			<button type="button" data-gym-share-copy>
+				Copy
+			</button>
+
+			<button type="button" data-gym-share-close>
+				✕
+			</button>
+
+			<span class="dx-gym-share-status" data-gym-share-status></span>
 		</div>
 
 		<section class="dx-gym-comparison" data-gym-comparison hidden>
@@ -1857,13 +1858,42 @@ function dx_shortcode_gym_table($atts) {
 					<p>Compare up to 3 reviewed branches side by side.</p>
 				</div>
 
-				<button type="button" class="dx-gym-comparison__close" data-gym-compare-close>
-					Close
-				</button>
+				<div class="dx-gym-comparison__header-actions">
+					<button type="button" class="dx-gym-comparison__share" data-gym-compare-share disabled>
+						Share comparison
+					</button>
+					<button type="button" class="dx-gym-comparison__close" data-gym-compare-close>
+						Close
+					</button>
+				</div>
+			</div>
+
+			<div class="dx-gym-comparison__map-wrap">
+				<div class="dx-gym-comparison__map" data-gym-comparison-map hidden></div>
 			</div>
 
 			<div class="dx-gym-comparison__table-wrap" data-gym-comparison-table></div>
 		</section>
+
+		<div class="dx-share-panel" data-gym-share-panel hidden>
+			<div class="dx-share-panel__overlay" data-gym-share-close></div>
+
+			<div class="dx-share-panel__content">
+				<button class="dx-share-panel__close" data-gym-share-close>×</button>
+
+				<h3>Share Comparison</h3>
+
+				<div class="dx-share-panel__field">
+					<input type="text" readonly data-gym-share-input />
+				</div>
+
+				<div class="dx-share-panel__actions">
+					<button type="button" data-gym-share-copy>Copy Link</button>
+				</div>
+
+				<div class="dx-share-panel__status" data-gym-share-status></div>
+			</div>
+		</div>
 	';
 
 	echo '<div class="dx-gyms-grid" data-gyms-grid>';
@@ -1871,10 +1901,10 @@ function dx_shortcode_gym_table($atts) {
 	while ($q->have_posts()) {
 		$q->the_post();
 
-		$branch     = get_the_title();
-
-		$chain_val  = get_field('gym_chain');
-		$chain_lbl  = dx_gym_chain_label($chain_val);
+		$post_id   = get_the_ID();
+		$branch    = get_the_title();
+		$chain_val = get_field('gym_chain');
+		$chain_lbl = dx_gym_chain_label($chain_val);
 
 		$date_raw   = get_field('visited_date');
 		$visited    = '—';
@@ -1884,14 +1914,12 @@ function dx_shortcode_gym_table($atts) {
 			$ts = strtotime($date_raw);
 			if ($ts) {
 				$visited_ts = $ts;
-				$visited = date_i18n('F Y', $ts);
+				$visited    = date_i18n('F Y', $ts);
 			}
 		}
 
 		$visit_type_val = get_field('visit_type');
 		$visit_type_lbl = dx_visit_type_label($visit_type_val);
-
-		$post_id = get_the_ID();
 
 		$sGym   = dx_normalise_facility_score(get_field('score_gym', $post_id));
 		$sSwim  = dx_normalise_facility_score(get_field('score_swim', $post_id));
@@ -1909,13 +1937,8 @@ function dx_shortcode_gym_table($atts) {
 			'parking' => $sPark,
 		]);
 
-		$overall_percentage = ($overall === null) ? null : round($overall * 10);
-		$overall_score = ($overall === null) ? -1 : round($overall, 1);
 		$overall_emoji = ($overall === null) ? '—' : dx_score_to_emoji($overall);
 
-		// -----------------------------
-		// Best / Worst badges
-		// -----------------------------
 		$badge_html = '';
 
 		if ($chain_val === 'davidlloyds' && $overall !== null) {
@@ -1950,27 +1973,12 @@ function dx_shortcode_gym_table($atts) {
 		}
 
 		$category_badges_html = implode('', $category_badges);
-
-		$notes = (string) get_field('notes');
-
-		$location_text = trim((string) get_field('gym_location'));
-		$maps_url      = trim((string) get_field('google_maps_url'));
-
-		$location_html = '';
-
-		if ($location_text && $maps_url) {
-			$location_html = '
-				<span class="dx-badge dx-badge--location">
-					<a href="' . esc_url($maps_url) . '" target="_blank" rel="noopener noreferrer">
-						📍 ' . esc_html($location_text) . '
-					</a>
-				</span>';
-		} elseif ($location_text) {
-			$location_html = '
-				<span class="dx-badge dx-badge--location">
-					📍 ' . esc_html($location_text) . '
-				</span>';
-		}
+		$notes                = (string) get_field('notes');
+		$location_text        = trim((string) get_field('gym_location'));
+		$maps_url             = trim((string) get_field('google_maps_url'));
+		$coords               = function_exists('dx_extract_lat_lng_from_google_maps_url') ? dx_extract_lat_lng_from_google_maps_url($maps_url) : ['lat' => '', 'lng' => ''];
+		$gym_lat              = $coords['lat'];
+		$gym_lng              = $coords['lng'];
 
 		$search_blob = strtolower(trim($branch . ' ' . $chain_lbl . ' ' . $visited . ' ' . $location_text . ' ' . $notes));
 
@@ -1978,93 +1986,94 @@ function dx_shortcode_gym_table($atts) {
 			<article
 				class="dx-gym-card"
 				data-gym-card
-				data-gym-id="'.esc_attr($post_id).'"
-				data-chain="'.esc_attr($chain_val ?: 'unknown').'"
-				data-chain-label="'.esc_attr($chain_lbl).'"
-				data-search="'.esc_attr($search_blob).'"
-				data-branch="'.esc_attr(strtolower($branch)).'"
-				data-branch-label="'.esc_attr($branch).'"
-				data-link="'.esc_url(get_permalink()).'"
-				data-visited-ts="'.esc_attr($visited_ts).'"
-				data-visited-label="'.esc_attr($visited).'"
-				data-overall="'.esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1).'"
-				data-overall-label="'.esc_attr($overall !== null ? rtrim(rtrim(number_format($overall * 10, 1), '0'), '.') . '%' : 'No rating').'"
-				data-gym-score="'.esc_attr(is_numeric($sGym) ? $sGym : '').'"
-				data-swim-score="'.esc_attr(is_numeric($sSwim) ? $sSwim : '').'"
-				data-spa-score="'.esc_attr(is_numeric($sSpa) ? $sSpa : '').'"
-				data-cafe-score="'.esc_attr(is_numeric($sCafe) ? $sCafe : '').'"
-				data-clean-score="'.esc_attr(is_numeric($sClean) ? $sClean : '').'"
-				data-parking-score="'.esc_attr(is_numeric($sPark) ? $sPark : '').'"
-				data-membership="'.esc_attr($visit_type_lbl ?: '—').'"
+				data-gym-id="' . esc_attr($post_id) . '"
+				data-chain="' . esc_attr($chain_val ?: 'unknown') . '"
+				data-chain-label="' . esc_attr($chain_lbl) . '"
+				data-search="' . esc_attr($search_blob) . '"
+				data-branch="' . esc_attr(strtolower($branch)) . '"
+				data-branch-label="' . esc_attr($branch) . '"
+				data-link="' . esc_url(get_permalink()) . '"
+				data-visited-ts="' . esc_attr($visited_ts) . '"
+				data-visited-label="' . esc_attr($visited) . '"
+				data-overall="' . esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1) . '"
+				data-overall-label="' . esc_attr($overall !== null ? rtrim(rtrim(number_format($overall * 10, 1), '0'), '.') . '%' : 'No rating') . '"
+				data-gym-score="' . esc_attr(is_numeric($sGym) ? $sGym : '') . '"
+				data-swim-score="' . esc_attr(is_numeric($sSwim) ? $sSwim : '') . '"
+				data-spa-score="' . esc_attr(is_numeric($sSpa) ? $sSpa : '') . '"
+				data-cafe-score="' . esc_attr(is_numeric($sCafe) ? $sCafe : '') . '"
+				data-clean-score="' . esc_attr(is_numeric($sClean) ? $sClean : '') . '"
+				data-parking-score="' . esc_attr(is_numeric($sPark) ? $sPark : '') . '"
+				data-membership="' . esc_attr($visit_type_lbl ?: '—') . '"
+				data-lat="' . esc_attr($gym_lat) . '"
+				data-lng="' . esc_attr($gym_lng) . '"
 			>
 
+				<div class="dx-gym-card__header">
+					<h3 class="dx-gym-card__branch">
+						<a href="' . esc_url(get_permalink()) . '">' . esc_html($branch) . '</a>
+					</h3>
+					' . ($location_text
+						? '<div class="dx-gym-card__subtitle">' .
+							($maps_url
+								? '📍<a href="' . esc_url($maps_url) . '" target="_blank" rel="noopener noreferrer"> ' . esc_html($location_text) . '</a>'
+								: ' ' . esc_html($location_text)
+							) .
+						'</div>'
+						: ''
+					) . '
 
-			<div class="dx-gym-card__header">
-				<h3 class="dx-gym-card__branch">
-					<a href="'.esc_url(get_permalink()).'">'.esc_html($branch).'</a>
-				</h3>
-			'.($location_text
-				? '<div class="dx-gym-card__subtitle">' .
-					($maps_url
-						? '📍' . '<a href="'.esc_url($maps_url).'" target="_blank" rel="noopener noreferrer"> '.esc_html($location_text).'</a>'
-						: ' '.esc_html($location_text)
-					) .
-					'</div>'
-				: ''
-			).'
+					<div class="dx-gym-card__meta">
+						<span class="dx-badge dx-badge--chain">' . esc_html($chain_lbl) . '</span>
+						<span class="dx-badge dx-badge--date">' . esc_html($visited) . '</span>
+						' . $badge_html . '
+						' . $category_badges_html . '
+						' . (
+							$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
+							? '<span class="dx-badge dx-badge--membership">' . esc_html($visit_type_lbl) . '</span>'
+							: ''
+						) . '
 
-			<div class="dx-gym-card__meta">
-				<span class="dx-badge dx-badge--chain">'.esc_html($chain_lbl).'</span>
-				<span class="dx-badge dx-badge--date">'.esc_html($visited).'</span>
-				'.$badge_html.'
-				'.$category_badges_html.'
-				'.(
-					$chain_val === 'davidlloyds' && $visit_type_val && $visit_type_val !== 'didnt_use'
-					? '<span class="dx-badge dx-badge--membership">'.esc_html($visit_type_lbl).'</span>'
-					: ''
-				).'
-
-				<span class="dx-badge dx-badge--overall '.esc_attr(dx_overall_score_class($overall)).'" '.($overall !== null ? 'data-score="'.esc_attr(number_format($overall, 1, '.', '')).'"' : 'data-score="na"').'>
-					<span class="emoji">'.esc_html($overall_emoji).'</span>
-					<span class="text">
-						'.($overall !== null
-							? esc_html(rtrim(rtrim(number_format($overall * 10, 1), '0'), '.')).'%'
-							: 'No rating'
-						).'
-					</span>
-				</span>
-			</div>
-
-			<div class="dx-gym-card__actions">
-				<button type="button" class="dx-gym-card__compare" data-gym-compare-toggle aria-pressed="false">
-					<span class="label-add">Add to compare</span>
-					<span class="label-remove">Remove</span>
-				</button>
-			</div>
-
-			<div class="dx-gym-card__scores">
-				'.dx_render_facility_score_block('Gym', get_field('score_gym')).'
-				'.dx_render_facility_score_block('Wetside Facilities', get_field('score_swim')).'
-				'.dx_render_facility_score_block('Spa Retreat', get_field('score_spa')).'
-				'.dx_render_facility_score_block('Café & Work Area', get_field('score_cafe')).'
-				'.dx_render_facility_score_block('Cleanliness & Maintenance', get_field('cleanliness_maintenance')).'
-				'.dx_render_facility_score_block('Parking', get_field('parking')).'
-			</div>
-
-			<div class="dx-notes">
-				<button class="dx-notes__toggle" type="button" data-notes-toggle aria-expanded="false">
-					Expand Notes
-					<span class="chev" aria-hidden="true">▾</span>
-				</button>
-
-				<div class="dx-notes__panel" data-notes-panel>
-					'.($notes ? wp_kses_post(nl2br(esc_html($notes))) : '<span class="dx-notes__empty">No notes for this visit.</span>').'
+						<span class="dx-badge dx-badge--overall ' . esc_attr(dx_overall_score_class($overall)) . '" ' . ($overall !== null ? 'data-score="' . esc_attr(number_format($overall, 1, '.', '')) . '"' : 'data-score="na"') . '>
+							<span class="emoji">' . esc_html($overall_emoji) . '</span>
+							<span class="text">' . (
+								$overall !== null
+								? esc_html(rtrim(rtrim(number_format($overall * 10, 1), '0'), '.')) . '%'
+								: 'No rating'
+							) . '</span>
+						</span>
+					</div>
 				</div>
-			</div>
-		</article>';
+
+				<div class="dx-gym-card__actions">
+					<button type="button" class="dx-gym-card__compare" data-gym-compare-toggle aria-pressed="false">
+						<span class="label-add">Add to compare</span>
+						<span class="label-remove">Remove</span>
+					</button>
+				</div>
+
+				<div class="dx-gym-card__scores">
+					' . dx_render_facility_score_block('Gym', get_field('score_gym')) . '
+					' . dx_render_facility_score_block('Wetside Facilities', get_field('score_swim')) . '
+					' . dx_render_facility_score_block('Spa Retreat', get_field('score_spa')) . '
+					' . dx_render_facility_score_block('Café & Work Area', get_field('score_cafe')) . '
+					' . dx_render_facility_score_block('Cleanliness & Maintenance', get_field('cleanliness_maintenance')) . '
+					' . dx_render_facility_score_block('Parking', get_field('parking')) . '
+				</div>
+
+				<div class="dx-notes">
+					<button class="dx-notes__toggle" type="button" data-notes-toggle aria-expanded="false">
+						Expand Notes
+						<span class="chev" aria-hidden="true">▾</span>
+					</button>
+
+					<div class="dx-notes__panel" data-notes-panel>
+						' . ($notes ? wp_kses_post(nl2br(esc_html($notes))) : '<span class="dx-notes__empty">No notes for this visit.</span>') . '
+					</div>
+				</div>
+			</article>';
 	}
 
-	echo '</div>'; // grid
+	echo '</div>';
 
 	echo '
 		<div class="gym-pagination">
@@ -2072,7 +2081,7 @@ function dx_shortcode_gym_table($atts) {
 		</div>
 	';
 
-	echo '</div>'; // archive
+	echo '</div>';
 
 	return ob_get_clean();
 }
