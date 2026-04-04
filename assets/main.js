@@ -2296,5 +2296,105 @@ import * as bootstrap from 'bootstrap';
 		});
 	});
 
+	/* ==========================
+	GEO RESTRICTION
+	========================== */
+
+	(() => {
+		'use strict';
+
+		const BLOCKED_COUNTRIES = [
+			'IL',
+		];
+
+		const RESTRICTED_PATH = '/access-restricted/';
+		const BODY_CLASS = 'error405';
+		const DEV_PARAM = 'geo';
+
+		const normaliseCountryCode = (value) => {
+			if (!value || typeof value !== 'string') return '';
+			return value.trim().toUpperCase();
+		};
+
+		const getCountryCode = () => {
+			const params = new URLSearchParams(window.location.search);
+			const override = normaliseCountryCode(params.get(DEV_PARAM));
+
+			// Local/dev testing: ?geo=US
+			if (override) {
+				return override;
+			}
+
+			// Optional global value if you expose it elsewhere
+			if (typeof window.CF_IPCountry !== 'undefined') {
+				return normaliseCountryCode(window.CF_IPCountry);
+			}
+
+			// Cloudflare header values are not directly readable in frontend JS
+			// unless you expose them yourself server-side.
+			const bodyCountry = normaliseCountryCode(document.body?.dataset?.country);
+			if (bodyCountry) {
+				return bodyCountry;
+			}
+
+			return '';
+		};
+
+		const isRestrictedPage = () => {
+			const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+			const restrictedPath = RESTRICTED_PATH.replace(/\/+$/, '') || '/';
+			return currentPath === restrictedPath;
+		};
+
+		const shouldBlockCountry = (countryCode) => {
+			if (!countryCode) return false;
+			return BLOCKED_COUNTRIES.includes(countryCode);
+		};
+
+		const applyBlockedState = () => {
+			document.body.classList.add(BODY_CLASS);
+			document.documentElement.classList.add(BODY_CLASS);
+		};
+
+		const redirectToRestrictedPage = (countryCode) => {
+			const url = new URL(RESTRICTED_PATH, window.location.origin);
+
+			// Optional: pass through debug info for testing/inspection
+			url.searchParams.set('geo', countryCode);
+
+			window.location.replace(url.toString());
+		};
+
+		const initGeoRestriction = () => {
+			const countryCode = getCountryCode();
+			const blocked = shouldBlockCountry(countryCode);
+			const onRestrictedPage = isRestrictedPage();
+
+			// Debug helpers
+			window.DX_GEO_DEBUG = {
+				countryCode,
+				blocked,
+				onRestrictedPage,
+				blockedCountries: [...BLOCKED_COUNTRIES],
+			};
+
+			if (!blocked) {
+				return;
+			}
+
+			applyBlockedState();
+
+			if (!onRestrictedPage) {
+				redirectToRestrictedPage(countryCode);
+			}
+		};
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initGeoRestriction);
+		} else {
+			initGeoRestriction();
+		}
+	})();
+
 })();
 

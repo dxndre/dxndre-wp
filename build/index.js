@@ -2072,6 +2072,91 @@ __webpack_require__.r(__webpack_exports__);
       });
     });
   });
+
+  /* ==========================
+  GEO RESTRICTION
+  ========================== */
+
+  (function () {
+    'use strict';
+
+    var BLOCKED_COUNTRIES = ['IL'];
+    var RESTRICTED_PATH = '/access-restricted/';
+    var BODY_CLASS = 'error405';
+    var DEV_PARAM = 'geo';
+    var normaliseCountryCode = function normaliseCountryCode(value) {
+      if (!value || typeof value !== 'string') return '';
+      return value.trim().toUpperCase();
+    };
+    var getCountryCode = function getCountryCode() {
+      var _document$body;
+      var params = new URLSearchParams(window.location.search);
+      var override = normaliseCountryCode(params.get(DEV_PARAM));
+
+      // Local/dev testing: ?geo=US
+      if (override) {
+        return override;
+      }
+
+      // Optional global value if you expose it elsewhere
+      if (typeof window.CF_IPCountry !== 'undefined') {
+        return normaliseCountryCode(window.CF_IPCountry);
+      }
+
+      // Cloudflare header values are not directly readable in frontend JS
+      // unless you expose them yourself server-side.
+      var bodyCountry = normaliseCountryCode((_document$body = document.body) === null || _document$body === void 0 || (_document$body = _document$body.dataset) === null || _document$body === void 0 ? void 0 : _document$body.country);
+      if (bodyCountry) {
+        return bodyCountry;
+      }
+      return '';
+    };
+    var isRestrictedPage = function isRestrictedPage() {
+      var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+      var restrictedPath = RESTRICTED_PATH.replace(/\/+$/, '') || '/';
+      return currentPath === restrictedPath;
+    };
+    var shouldBlockCountry = function shouldBlockCountry(countryCode) {
+      if (!countryCode) return false;
+      return BLOCKED_COUNTRIES.includes(countryCode);
+    };
+    var applyBlockedState = function applyBlockedState() {
+      document.body.classList.add(BODY_CLASS);
+      document.documentElement.classList.add(BODY_CLASS);
+    };
+    var redirectToRestrictedPage = function redirectToRestrictedPage(countryCode) {
+      var url = new URL(RESTRICTED_PATH, window.location.origin);
+
+      // Optional: pass through debug info for testing/inspection
+      url.searchParams.set('geo', countryCode);
+      window.location.replace(url.toString());
+    };
+    var initGeoRestriction = function initGeoRestriction() {
+      var countryCode = getCountryCode();
+      var blocked = shouldBlockCountry(countryCode);
+      var onRestrictedPage = isRestrictedPage();
+
+      // Debug helpers
+      window.DX_GEO_DEBUG = {
+        countryCode: countryCode,
+        blocked: blocked,
+        onRestrictedPage: onRestrictedPage,
+        blockedCountries: [].concat(BLOCKED_COUNTRIES)
+      };
+      if (!blocked) {
+        return;
+      }
+      applyBlockedState();
+      if (!onRestrictedPage) {
+        redirectToRestrictedPage(countryCode);
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initGeoRestriction);
+    } else {
+      initGeoRestriction();
+    }
+  })();
 })();
 
 /***/ }),

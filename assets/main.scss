@@ -3381,7 +3381,8 @@ body.is-frontend {
 		}
 	}
 
-	&.error404 {
+	&.error404,
+	&.error405 {
 		background-image: url(img/404bg.png);
 		background-size: 100% 100%;
 		background-repeat: no-repeat;
@@ -3391,7 +3392,8 @@ body.is-frontend {
 		#main {
 			overflow: hidden;
 
-			.content-404 {
+			.content-404,
+			.content-405 {
 				min-width: 500px;
 				position: relative;
 				z-index: 1;
@@ -3451,7 +3453,48 @@ body.is-frontend {
 				min-height: 50vh;
 				display: flex;
 				align-items: center;
-				flex-direction: colurowmn;
+				flex-direction: column;
+				margin-top: 15vh;
+
+				@include media-breakpoint-up(md) {
+					flex-direction: row;
+					margin-top: 0;
+					min-height: 100vh;
+				}
+
+				h1 {
+					font-size: 48px;
+					color: white;
+				}
+			}
+		}
+	}
+
+	&.error405 {
+		background-image: url(img/405bg.png);
+		background-size: cover;
+		background-position: bottom;
+
+		#main {
+			overflow: hidden;
+
+			.content-405 {
+				min-width: 500px;
+				position: relative;
+				z-index: 1;
+
+				p {
+					color: white;
+					font-size: 1.5em;
+					font-weight: 300;
+				}	
+			}
+
+			section {
+				min-height: 50vh;
+				display: flex;
+				align-items: center;
+				flex-direction: column;
 				margin-top: 15vh;
 
 				@include media-breakpoint-up(md) {

@@ -17690,34 +17690,46 @@ body.is-frontend.page-template-page-ticket .ticket-reply-form button:hover {
   background: transparent;
   color: white;
 }
-body.is-frontend.error404 {
+body.is-frontend.error404, body.is-frontend.error405 {
   background-image: url(images/404bg.950fe3c5.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: bottom;
   overflow-x: hidden;
 }
-body.is-frontend.error404 #main {
+body.is-frontend.error404 #main, body.is-frontend.error405 #main {
   overflow: hidden;
 }
-body.is-frontend.error404 #main .content-404 {
+body.is-frontend.error404 #main .content-404,
+body.is-frontend.error404 #main .content-405, body.is-frontend.error405 #main .content-404,
+body.is-frontend.error405 #main .content-405 {
   min-width: 500px;
   position: relative;
   z-index: 1;
 }
-body.is-frontend.error404 #main .content-404 p {
+body.is-frontend.error404 #main .content-404 p,
+body.is-frontend.error404 #main .content-405 p, body.is-frontend.error405 #main .content-404 p,
+body.is-frontend.error405 #main .content-405 p {
   color: white;
   font-size: 1.5em;
   font-weight: 300;
 }
-body.is-frontend.error404 #main .content-404 .buttons-container {
+body.is-frontend.error404 #main .content-404 .buttons-container,
+body.is-frontend.error404 #main .content-405 .buttons-container, body.is-frontend.error405 #main .content-404 .buttons-container,
+body.is-frontend.error405 #main .content-405 .buttons-container {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   gap: 12px;
   margin-top: 2em;
 }
-body.is-frontend.error404 #main .content-404 .buttons-container .btn, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-button__link {
+body.is-frontend.error404 #main .content-404 .buttons-container .btn, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-button__link,
+body.is-frontend.error404 #main .content-405 .buttons-container .btn,
+body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-button__link, body.is-frontend.error405 #main .content-404 .buttons-container .btn, body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-button__link,
+body.is-frontend.error405 #main .content-405 .buttons-container .btn,
+body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-button__link {
   border-radius: 0;
   min-height: 60px;
   min-width: 250px;
@@ -17737,28 +17749,46 @@ body.is-frontend.error404 #main .content-404 .buttons-container .btn, body.is-fr
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
-body.is-frontend.error404 #main .content-404 .buttons-container .btn:hover, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-button__link:hover {
+body.is-frontend.error404 #main .content-404 .buttons-container .btn:hover, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-button__link:hover,
+body.is-frontend.error404 #main .content-405 .buttons-container .btn:hover,
+body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-button__link:hover, body.is-frontend.error405 #main .content-404 .buttons-container .btn:hover, body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-button__link:hover,
+body.is-frontend.error405 #main .content-405 .buttons-container .btn:hover,
+body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-button__link:hover {
   background: transparent;
   color: white;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
-body.is-frontend.error404 #main .content-404 .buttons-container .btn.alternative, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .alternative.wp-block-button__link {
+body.is-frontend.error404 #main .content-404 .buttons-container .btn.alternative, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .alternative.wp-block-button__link,
+body.is-frontend.error404 #main .content-405 .buttons-container .btn.alternative,
+body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-405 .buttons-container .alternative.wp-block-button__link, body.is-frontend.error405 #main .content-404 .buttons-container .btn.alternative, body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-404 .buttons-container .alternative.wp-block-button__link,
+body.is-frontend.error405 #main .content-405 .buttons-container .btn.alternative,
+body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+.wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-405 .buttons-container .alternative.wp-block-button__link {
   background: transparent;
   color: white;
 }
-body.is-frontend.error404 #main .content-404 .buttons-container .btn.alternative:hover, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .alternative.wp-block-button__link:hover {
+body.is-frontend.error404 #main .content-404 .buttons-container .btn.alternative:hover, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .alternative.wp-block-button__link:hover,
+body.is-frontend.error404 #main .content-405 .buttons-container .btn.alternative:hover,
+body.is-frontend.error404 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-405 .buttons-container .alternative.wp-block-button__link:hover, body.is-frontend.error405 #main .content-404 .buttons-container .btn.alternative:hover, body.is-frontend.error405 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, .wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-404 .buttons-container .alternative.wp-block-button__link:hover,
+body.is-frontend.error405 #main .content-405 .buttons-container .btn.alternative:hover,
+body.is-frontend.error405 #main .content-405 .buttons-container .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+.wp-block-buttons .wp-block-button body.is-frontend.error405 #main .content-405 .buttons-container .alternative.wp-block-button__link:hover {
   background: white;
   color: black;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
 }
-body.is-frontend.error404 #main .graphic-content img {
+body.is-frontend.error404 #main .graphic-content img, body.is-frontend.error405 #main .graphic-content img {
   max-width: 100%;
   -webkit-transform: scale(1.75);
           transform: scale(1.75);
 }
-body.is-frontend.error404 #main section {
+body.is-frontend.error404 #main section, body.is-frontend.error405 #main section {
   min-height: 50vh;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -17766,14 +17796,14 @@ body.is-frontend.error404 #main section {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-orient: horizontal;
+  -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: colurowmn;
-          flex-direction: colurowmn;
+      -ms-flex-direction: column;
+          flex-direction: column;
   margin-top: 15vh;
 }
 @media (min-width: 768px) {
-  body.is-frontend.error404 #main section {
+  body.is-frontend.error404 #main section, body.is-frontend.error405 #main section {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
@@ -17782,7 +17812,53 @@ body.is-frontend.error404 #main section {
     min-height: 100vh;
   }
 }
-body.is-frontend.error404 #main section h1, body.is-frontend.error404 #main section .h1 {
+body.is-frontend.error404 #main section h1, body.is-frontend.error404 #main section .h1, body.is-frontend.error405 #main section h1, body.is-frontend.error405 #main section .h1 {
+  font-size: 48px;
+  color: white;
+}
+body.is-frontend.error405 {
+  background-image: url(images/405bg.3ccffd34.png);
+  background-size: cover;
+  background-position: bottom;
+}
+body.is-frontend.error405 #main {
+  overflow: hidden;
+}
+body.is-frontend.error405 #main .content-405 {
+  min-width: 500px;
+  position: relative;
+  z-index: 1;
+}
+body.is-frontend.error405 #main .content-405 p {
+  color: white;
+  font-size: 1.5em;
+  font-weight: 300;
+}
+body.is-frontend.error405 #main section {
+  min-height: 50vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-top: 15vh;
+}
+@media (min-width: 768px) {
+  body.is-frontend.error405 #main section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    margin-top: 0;
+    min-height: 100vh;
+  }
+}
+body.is-frontend.error405 #main section h1, body.is-frontend.error405 #main section .h1 {
   font-size: 48px;
   color: white;
 }
