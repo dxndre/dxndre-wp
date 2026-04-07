@@ -2619,10 +2619,6 @@ body.is-frontend {
 		}
 	}
 
-	/* ==========================
-	CLIENT DASHBOARD
-	========================== */
-
 	&.page-dashboard {
 
 		.modal {
@@ -3151,10 +3147,6 @@ body.is-frontend {
 		}
 	}
 
-	/* ==========================
-	SUBMIT TICKET PAGE
-	========================== */
-
 	&.page-submit-ticket {
 
 		.submit-ticket {
@@ -3243,10 +3235,6 @@ body.is-frontend {
 			}
 		}
 	}
-
-	/* ==========================
-	TICKET VIEW PAGE
-	========================== */
 
 	&.page-template-page-ticket {
 
@@ -3508,6 +3496,18 @@ body.is-frontend {
 					color: white;
 				}
 			}
+		}
+	}
+
+	&.page-template-page-cv {
+		background-image: url(img/405bg.png);
+		background-size: cover;
+		background-position: bottom;
+		background-attachment: fixed;
+
+		#main {
+			overflow: hidden;
+			margin: 250px 0;
 		}
 	}
 
@@ -4253,7 +4253,9 @@ img {
 		&.viewport-active {
 			opacity: 1;
 			transform: translateY(0);
+		}
 
+		&.hue-effect {
 			.hero-background {
 				& > img {
 					animation: brightness-pulse 40s ease-out infinite;
@@ -6637,14 +6639,30 @@ img {
 
 			form {
 				width: 100%;
-				max-width: 992px;
+				// max-width: 992px;
+				padding: 3em;
+				// background-color: black;
+				// background-color: rgb(0 0 0 / 50%);
+  				// backdrop-filter: blur(18px);
+				border: 1px solid rgba(255,255,255,0.125);
+
+				.contact-form-container {
+					gap: 3em;
+
+					.ff-t-cell {
+						gap: 2em;
+					}
+				}
 
 				label {
-					display: none;
+					color: white;
 				}
 
 				input,
-				textarea {
+				textarea,
+				select {
+					// margin-bottom: 12px;
+
 					&:focus,
 					&:focus-visible,
 					&:focus-within {
@@ -6655,11 +6673,32 @@ img {
 					}
 				}
 
+				textarea,
+				select,
+				.choices {
+					// margin-top: 12px;
+				}
+
+				.choices__inner {
+					background-color: transparent;
+					border-radius: 0;
+					margin-top: 1em;
+
+					input {
+						border: none;
+					}
+				}
+
+				textarea {
+					margin-top: 12px;
+				}
+
 				.contact-form-inner-container {
 					flex-direction: column;
 					display: flex;
 					align-items: stretch;
 					padding: 0 1em;
+					gap: 3em;
 
 					@include media-breakpoint-up(md) {
 						flex-direction: row;
@@ -6715,10 +6754,12 @@ img {
 
 					label {
 						gap: 12px;
+
 						p {
-							font-size: 16px;
+							font-size: 14px;
 							line-height: 20px;
 							font-weight: lighter;
+							font-family: 'Space Grotesk', 'Outfit';
 
 							a {
 								color: white;
@@ -6757,7 +6798,8 @@ img {
 				}
 
 				input,
-				textarea {
+				textarea,
+				select {
 					font-weight: lighter;
 					background-color: transparent;
 					color: white;

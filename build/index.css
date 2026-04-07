@@ -16841,11 +16841,6 @@ body.is-frontend.search-results::before {
 body.is-frontend.search-no-results::before {
   background-image: linear-gradient(298deg, #a90000 0%, #621c70 100%);
 }
-body.is-frontend {
-  /* ==========================
-  CLIENT DASHBOARD
-  ========================== */
-}
 body.is-frontend.page-dashboard .modal.show {
   backdrop-filter: blur(25px);
 }
@@ -17430,11 +17425,6 @@ body.is-frontend.page-dashboard .dashboard-empty {
   font-weight: 300;
   text-align: center;
 }
-body.is-frontend {
-  /* ==========================
-  SUBMIT TICKET PAGE
-  ========================== */
-}
 body.is-frontend.page-submit-ticket .submit-ticket {
   min-height: 100vh;
   padding: 14vh 0 6vh;
@@ -17530,11 +17520,6 @@ body.is-frontend.page-submit-ticket {
   body.is-frontend.page-submit-ticket .submit-ticket h1, body.is-frontend.page-submit-ticket .submit-ticket .h1 {
     font-size: 34px;
   }
-}
-body.is-frontend {
-  /* ==========================
-  TICKET VIEW PAGE
-  ========================== */
 }
 body.is-frontend.page-template-page-ticket .ticket-view {
   padding: 12vh 0 6vh;
@@ -17861,6 +17846,16 @@ body.is-frontend.error405 #main section {
 body.is-frontend.error405 #main section h1, body.is-frontend.error405 #main section .h1 {
   font-size: 48px;
   color: white;
+}
+body.is-frontend.page-template-page-cv {
+  background-image: url(images/405bg.3ccffd34.png);
+  background-size: cover;
+  background-position: bottom;
+  background-attachment: fixed;
+}
+body.is-frontend.page-template-page-cv #main {
+  overflow: hidden;
+  margin: 250px 0;
 }
 body.is-frontend {
   /* If WP-Adminbar is visible */
@@ -18725,7 +18720,7 @@ img {
   -webkit-transform: translateY(0);
           transform: translateY(0);
 }
-#main section.viewport-active .hero-background > img {
+#main section.hue-effect .hero-background > img {
   -webkit-animation: brightness-pulse 40s ease-out infinite;
           animation: brightness-pulse 40s ease-out infinite;
 }
@@ -21298,21 +21293,42 @@ img {
 }
 #main section.contact form {
   width: 100%;
-  max-width: 992px;
+  padding: 3em;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+#main section.contact form .contact-form-container {
+  gap: 3em;
+}
+#main section.contact form .contact-form-container .ff-t-cell {
+  gap: 2em;
 }
 #main section.contact form label {
-  display: none;
+  color: white;
 }
 #main section.contact form input:focus, #main section.contact form input:focus-visible, #main section.contact form input:focus-within,
 #main section.contact form textarea:focus,
 #main section.contact form textarea:focus-visible,
-#main section.contact form textarea:focus-within {
+#main section.contact form textarea:focus-within,
+#main section.contact form select:focus,
+#main section.contact form select:focus-visible,
+#main section.contact form select:focus-within {
   outline: none;
   -webkit-box-shadow: none;
           box-shadow: none;
   border-color: white;
   -webkit-transition: 0.3s all ease;
   transition: 0.3s all ease;
+}
+#main section.contact form .choices__inner {
+  background-color: transparent;
+  border-radius: 0;
+  margin-top: 1em;
+}
+#main section.contact form .choices__inner input {
+  border: none;
+}
+#main section.contact form textarea {
+  margin-top: 12px;
 }
 #main section.contact form .contact-form-inner-container {
   -webkit-box-orient: vertical;
@@ -21326,6 +21342,7 @@ img {
       -ms-flex-align: stretch;
           align-items: stretch;
   padding: 0 1em;
+  gap: 3em;
 }
 @media (min-width: 768px) {
   #main section.contact form .contact-form-inner-container {
@@ -21390,9 +21407,10 @@ img {
   gap: 12px;
 }
 #main section.contact form .bottom-container label p {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 20px;
   font-weight: lighter;
+  font-family: "Space Grotesk", "Outfit";
 }
 #main section.contact form .bottom-container label p a {
   color: white;
@@ -21430,7 +21448,8 @@ img {
   font-weight: lighter;
 }
 #main section.contact form input,
-#main section.contact form textarea {
+#main section.contact form textarea,
+#main section.contact form select {
   font-weight: lighter;
   background-color: transparent;
   color: white;
@@ -21440,24 +21459,25 @@ img {
   -webkit-transition: 0.7s all ease;
   transition: 0.7s all ease;
 }
-#main section.contact form input::-webkit-input-placeholder, #main section.contact form textarea::-webkit-input-placeholder {
+#main section.contact form input::-webkit-input-placeholder, #main section.contact form textarea::-webkit-input-placeholder, #main section.contact form select::-webkit-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
   font-weight: lighter;
 }
-#main section.contact form input::-moz-placeholder, #main section.contact form textarea::-moz-placeholder {
+#main section.contact form input::-moz-placeholder, #main section.contact form textarea::-moz-placeholder, #main section.contact form select::-moz-placeholder {
   color: rgba(255, 255, 255, 0.5);
   font-weight: lighter;
 }
-#main section.contact form input:-ms-input-placeholder, #main section.contact form textarea:-ms-input-placeholder {
+#main section.contact form input:-ms-input-placeholder, #main section.contact form textarea:-ms-input-placeholder, #main section.contact form select:-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
   font-weight: lighter;
 }
-#main section.contact form input::-ms-input-placeholder, #main section.contact form textarea::-ms-input-placeholder {
+#main section.contact form input::-ms-input-placeholder, #main section.contact form textarea::-ms-input-placeholder, #main section.contact form select::-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
   font-weight: lighter;
 }
 #main section.contact form input::placeholder,
-#main section.contact form textarea::placeholder {
+#main section.contact form textarea::placeholder,
+#main section.contact form select::placeholder {
   color: rgba(255, 255, 255, 0.5);
   font-weight: lighter;
 }
