@@ -155,6 +155,18 @@ body.is-frontend {
 		background: black;
 	}
 
+	.calendly-overlay {
+		background-color: rgba(0,0,0,0.5);
+		backdrop-filter: blur(25px);
+
+		.calendly-popup-close {
+			@include media-breakpoint-up(lg) {
+				right: 3em;
+				top: 3em;
+			}
+		}
+	}
+
 	&.page-template-page-full {
 		#main {
 			max-width: 100%;
@@ -6687,6 +6699,10 @@ img {
 					input {
 						border: none;
 					}
+				}
+
+				.choices__input {
+					// padding: 0;
 				}
 
 				textarea {

@@ -14109,6 +14109,16 @@ body.is-frontend p {
 body.is-frontend #wpadminbar {
   background: black;
 }
+body.is-frontend .calendly-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(25px);
+}
+@media (min-width: 992px) {
+  body.is-frontend .calendly-overlay .calendly-popup-close {
+    right: 3em;
+    top: 3em;
+  }
+}
 body.is-frontend.page-template-page-full #main {
   max-width: 100%;
 }

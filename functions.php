@@ -2436,3 +2436,23 @@ function dx_bus_diary_enqueue_assets() {
 	]);
 }
 add_action('wp_enqueue_scripts', 'dx_bus_diary_enqueue_assets', 20);
+
+// Calendly Popup Widget
+
+function dx_enqueue_calendly_widget() {
+	wp_enqueue_style(
+		'calendly-widget-css',
+		'https://assets.calendly.com/assets/external/widget.css',
+		[],
+		null
+	);
+
+	wp_enqueue_script(
+		'calendly-widget-js',
+		'https://assets.calendly.com/assets/external/widget.js',
+		[],
+		null,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'dx_enqueue_calendly_widget' );

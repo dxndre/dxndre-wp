@@ -2157,6 +2157,28 @@ __webpack_require__.r(__webpack_exports__);
       initGeoRestriction();
     }
   })();
+
+  /* ==========================
+  CALENDLY POPUP
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendlyButtons = document.querySelectorAll('.js-calendly-popup');
+    if (!calendlyButtons.length) return;
+    calendlyButtons.forEach(function (button) {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (typeof Calendly === 'undefined' || typeof Calendly.initPopupWidget !== 'function') {
+          console.warn('Calendly widget script is not loaded yet.');
+          return;
+        }
+        Calendly.initPopupWidget({
+          url: 'https://calendly.com/dxndre/30min'
+        });
+      });
+    });
+    console.log('Calendly popup initialized for buttons:', calendlyButtons);
+  });
 })();
 
 /***/ }),
