@@ -17698,9 +17698,15 @@ body.is-frontend.error404 #main, body.is-frontend.error405 #main {
 body.is-frontend.error404 #main .content-404,
 body.is-frontend.error404 #main .content-405, body.is-frontend.error405 #main .content-404,
 body.is-frontend.error405 #main .content-405 {
-  min-width: 500px;
   position: relative;
   z-index: 1;
+}
+@media (min-width: 768px) {
+  body.is-frontend.error404 #main .content-404,
+  body.is-frontend.error404 #main .content-405, body.is-frontend.error405 #main .content-404,
+  body.is-frontend.error405 #main .content-405 {
+    min-width: 500px;
+  }
 }
 body.is-frontend.error404 #main .content-404 p,
 body.is-frontend.error404 #main .content-405 p, body.is-frontend.error405 #main .content-404 p,
@@ -17717,6 +17723,20 @@ body.is-frontend.error405 #main .content-405 .buttons-container {
   display: flex;
   gap: 12px;
   margin-top: 2em;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+@media (min-width: 768px) {
+  body.is-frontend.error404 #main .content-404 .buttons-container,
+  body.is-frontend.error404 #main .content-405 .buttons-container, body.is-frontend.error405 #main .content-404 .buttons-container,
+  body.is-frontend.error405 #main .content-405 .buttons-container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
 }
 body.is-frontend.error404 #main .content-404 .buttons-container .btn, body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-buttons .wp-block-button .wp-block-button__link, .wp-block-buttons .wp-block-button body.is-frontend.error404 #main .content-404 .buttons-container .wp-block-button__link,
 body.is-frontend.error404 #main .content-405 .buttons-container .btn,

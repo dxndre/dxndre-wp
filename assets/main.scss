@@ -3394,9 +3394,12 @@ body.is-frontend {
 
 			.content-404,
 			.content-405 {
-				min-width: 500px;
 				position: relative;
 				z-index: 1;
+
+				@include media-breakpoint-up(md) {
+					min-width: 500px;
+				}
 
 				p {
 					color: white;
@@ -3408,6 +3411,11 @@ body.is-frontend {
 					display: flex;
 					gap: 12px;
 					margin-top: 2em;
+					flex-direction: column;
+
+					@include media-breakpoint-up(md) {
+						flex-direction: row;
+					}
 
 					.btn {
 						border-radius: 0;
