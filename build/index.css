@@ -15890,34 +15890,320 @@ body.is-frontend.single-service::after {
           filter: contrast(1.5) brightness(0.5) blur(20px);
   opacity: 0;
 }
-body.is-frontend.single-bus-diary-entry #main {
+body.is-frontend.page-buses #main, body.is-frontend.single-bus-diary-entry #main {
   max-width: 100%;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry {
+body.is-frontend.page-buses #main .bus-nfs-archive, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive {
+  position: relative;
+  height: 100vh;
+  min-height: 720px;
+  overflow: hidden;
+  background: #020202;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero {
+body.is-frontend.page-buses #main .bus-nfs-archive__topbar, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__topbar {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  z-index: 20;
+  width: min(90vw, 1200px);
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__topbar::before, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__topbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: -webkit-gradient(linear, left top, right top, from(transparent), color-stop(rgba(255, 255, 255, 0.35)), to(transparent));
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  z-index: -1;
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__topbar span, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__topbar span {
+  background: #020202;
+  padding: 0 1.25rem;
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__slides, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__slides {
+  position: relative;
+  height: 100%;
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__nav, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__nav {
+  position: absolute;
+  left: 50%;
+  bottom: 48px;
+  z-index: 30;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(20px);
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__nav button, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__nav button {
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  -webkit-transition: opacity 0.25s ease, -webkit-transform 0.25s ease;
+  transition: opacity 0.25s ease, -webkit-transform 0.25s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease, -webkit-transform 0.25s ease;
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__nav button:hover, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__nav button:hover {
+  -webkit-transform: scale(1.18);
+          transform: scale(1.18);
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__nav span, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__nav span {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+body.is-frontend.page-buses #main .bus-nfs-archive__nav span strong, body.is-frontend.single-bus-diary-entry #main .bus-nfs-archive__nav span strong {
+  color: white;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transform: scale(1.04);
+          transform: scale(1.04);
+  -webkit-transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 1s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.75s ease;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 1s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.75s ease;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease, -webkit-transform 1s cubic-bezier(0.16, 1, 0.3, 1), -webkit-filter 0.75s ease;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide.is-active, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  -webkit-transform: scale(1);
+          transform: scale(1);
+  -webkit-filter: blur(0);
+          filter: blur(0);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide.is-before, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide.is-before {
+  -webkit-transform: translateX(-4%) scale(1.04);
+          transform: translateX(-4%) scale(1.04);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide.is-after, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide.is-after {
+  -webkit-transform: translateX(4%) scale(1.04);
+          transform: translateX(4%) scale(1.04);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__image, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  -webkit-filter: contrast(1.12) brightness(0.72) saturate(0.9);
+          filter: contrast(1.12) brightness(0.72) saturate(0.9);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__shade, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 68% 45%, rgba(255, 255, 255, 0.08), transparent 28%), -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.92)), color-stop(45%, rgba(0, 0, 0, 0.25)), to(rgba(0, 0, 0, 0.84))), -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.82)), color-stop(32%, transparent), to(rgba(0, 0, 0, 0.92)));
+  background: radial-gradient(circle at 68% 45%, rgba(255, 255, 255, 0.08), transparent 28%), linear-gradient(90deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0.84)), linear-gradient(180deg, rgba(0, 0, 0, 0.82), transparent 32%, rgba(0, 0, 0, 0.92));
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__content, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__content {
+  position: relative;
+  z-index: 10;
+  width: min(90vw, 1200px);
+  height: 100%;
+  margin: 0 auto;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr;
+  grid-template-columns: 1fr;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: end;
+  gap: 2rem;
+  padding: 8rem 0 8rem;
+}
+@media (min-width: 992px) {
+  body.is-frontend.page-buses #main .bus-nfs-slide__content, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__content {
+    -ms-grid-columns: 0.8fr 1fr;
+    grid-template-columns: 0.8fr 1fr;
+    -webkit-box-align: end;
+        -ms-flex-align: end;
+            align-items: end;
+  }
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__identity, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__identity {
+  -webkit-transform: translateY(20px);
+          transform: translateY(20px);
+  opacity: 1;
+  -webkit-transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bus-nfs-slide.is-active body.is-frontend.page-buses #main .bus-nfs-slide__identity, .bus-nfs-slide.is-active body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__identity {
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  opacity: 1;
+  -webkit-transition-delay: 0.18s;
+          transition-delay: 0.18s;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__identity h2, body.is-frontend.page-buses #main .bus-nfs-slide__identity .h2, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__identity h2, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__identity .h2 {
+  font-size: clamp(5rem, 13vw, 13rem);
+  line-height: 0.8;
+  margin: 0;
+  letter-spacing: -0.08em;
+  font-weight: 800;
+  font-style: italic;
+  text-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__identity p, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__identity p {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.2rem, 3vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.78);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__operator, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__operator {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  margin-bottom: 1rem;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs {
+  -ms-grid-column-align: end;
+      justify-self: end;
+  width: min(100%, 460px);
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(22px);
+  -webkit-transform: translateY(24px);
+          transform: translateY(24px);
+  opacity: 0;
+  -webkit-transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bus-nfs-slide.is-active body.is-frontend.page-buses #main .bus-nfs-slide__specs, .bus-nfs-slide.is-active body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs {
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  opacity: 1;
+  -webkit-transition-delay: 0.32s;
+          transition-delay: 0.32s;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs h3, body.is-frontend.page-buses #main .bus-nfs-slide__specs .h3, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs h3, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs .h3 {
+  margin: 0 0 1.25rem;
+  font-size: 28px;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs ul, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs li, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs li {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs li span, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs li span {
+  color: rgba(255, 255, 255, 0.5);
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__specs li strong, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__specs li strong {
+  font-weight: 500;
+  color: white;
+  text-align: right;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__cta, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__cta {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 0.75rem;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__cta i, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__cta i {
+  -webkit-transition: -webkit-transform 0.25s ease;
+  transition: -webkit-transform 0.25s ease;
+  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, -webkit-transform 0.25s ease;
+}
+body.is-frontend.page-buses #main .bus-nfs-slide__cta:hover i, body.is-frontend.single-bus-diary-entry #main .bus-nfs-slide__cta:hover i {
+  -webkit-transform: translateX(6px);
+          transform: translateX(6px);
+}
+body.is-frontend.page-buses .bus-diary-entry, body.is-frontend.single-bus-diary-entry .bus-diary-entry {
+  color: white;
+}
+body.is-frontend.page-buses .bus-diary-entry__hero, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero {
   position: relative;
   overflow: hidden;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .overlay {
+body.is-frontend.page-buses .bus-diary-entry__hero .overlay, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .overlay {
   position: absolute;
   inset: 0;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .overlay .wp-block-cover__image-background {
+body.is-frontend.page-buses .bus-diary-entry__hero .overlay .wp-block-cover__image-background, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .overlay .wp-block-cover__image-background {
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .wp-block-cover__background {
+body.is-frontend.page-buses .bus-diary-entry__hero .wp-block-cover__background, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero .wp-block-cover__background {
   opacity: 1;
   position: absolute;
   inset: 0;
   background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), color-stop(75%, rgba(0, 0, 0, 0.5)), to(rgb(0, 0, 0)));
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 75%, rgb(0, 0, 0) 100%);
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner {
+body.is-frontend.page-buses .bus-diary-entry__hero-inner, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner {
   position: relative;
   z-index: 2;
   max-width: 760px;
@@ -15926,20 +16212,20 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner {
   text-align: center;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner {
+  body.is-frontend.page-buses .bus-diary-entry__hero-inner, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner {
     padding: 8rem 0 4rem;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner .h1 {
+body.is-frontend.page-buses .bus-diary-entry__hero-inner h1, body.is-frontend.page-buses .bus-diary-entry__hero-inner .h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner .h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner .h1 {
+  body.is-frontend.page-buses .bus-diary-entry__hero-inner h1, body.is-frontend.page-buses .bus-diary-entry__hero-inner .h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner h1, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-inner .h1 {
     font-size: 4.75rem;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-subtitle {
+body.is-frontend.page-buses .bus-diary-entry__hero-subtitle, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-subtitle {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -15955,38 +16241,38 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-subtitle {
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 1rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__excerpt {
+body.is-frontend.page-buses .bus-diary-entry__excerpt, body.is-frontend.single-bus-diary-entry .bus-diary-entry__excerpt {
   max-width: 680px;
   margin: 0 auto 1.5rem;
   color: rgba(255, 255, 255, 0.9);
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-actions {
+body.is-frontend.page-buses .bus-diary-entry__hero-actions, body.is-frontend.single-bus-diary-entry .bus-diary-entry__hero-actions {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
   margin-top: 1.5rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__content {
+body.is-frontend.page-buses .bus-diary-entry__content, body.is-frontend.single-bus-diary-entry .bus-diary-entry__content {
   background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.15)), to(rgba(0, 0, 0, 0.5)));
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
+body.is-frontend.page-buses .bus-diary-entry__map-stage, body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
   padding: 1rem;
 }
 @media (min-width: 992px) {
-  body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
+  body.is-frontend.page-buses .bus-diary-entry__map-stage, body.is-frontend.single-bus-diary-entry .bus-diary-entry__map-stage {
     padding: 2rem;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__body {
+body.is-frontend.page-buses .bus-diary-entry__body, body.is-frontend.single-bus-diary-entry .bus-diary-entry__body {
   font-weight: 300;
   line-height: 1.9;
   color: rgba(255, 255, 255, 0.88);
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__body p:last-child {
+body.is-frontend.page-buses .bus-diary-entry__body p:last-child, body.is-frontend.single-bus-diary-entry .bus-diary-entry__body p:last-child {
   margin-bottom: 0;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image {
+body.is-frontend.page-buses .bus-diary-entry__split-image, body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image {
   position: relative;
   min-height: 320px;
   height: 100%;
@@ -15997,7 +16283,7 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image {
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image img {
+body.is-frontend.page-buses .bus-diary-entry__split-image img, body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image img {
   display: block;
   width: 100%;
   height: 100%;
@@ -16008,11 +16294,11 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image img {
   transition: transform 0.8s ease;
   transition: transform 0.8s ease, -webkit-transform 0.8s ease;
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image:hover img {
+body.is-frontend.page-buses .bus-diary-entry__split-image:hover img, body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image:hover img {
   -webkit-transform: scale(1.03);
           transform: scale(1.03);
 }
-body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image--empty {
+body.is-frontend.page-buses .bus-diary-entry__split-image--empty, body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image--empty {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16026,21 +16312,21 @@ body.is-frontend.single-bus-diary-entry .bus-diary-entry__split-image--empty {
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
 }
-body.is-frontend.single-bus-diary-entry .bus-panel {
+body.is-frontend.page-buses .bus-panel, body.is-frontend.single-bus-diary-entry .bus-panel {
   backdrop-filter: blur(18px);
   -webkit-box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
           box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
   padding: 1.25rem;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry .bus-panel {
+  body.is-frontend.page-buses .bus-panel, body.is-frontend.single-bus-diary-entry .bus-panel {
     padding: 1.5rem;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-panel h2, body.is-frontend.single-bus-diary-entry .bus-panel .h2 {
+body.is-frontend.page-buses .bus-panel h2, body.is-frontend.page-buses .bus-panel .h2, body.is-frontend.single-bus-diary-entry .bus-panel h2, body.is-frontend.single-bus-diary-entry .bus-panel .h2 {
   margin-bottom: 1rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-panel--map {
+body.is-frontend.page-buses .bus-panel--map, body.is-frontend.single-bus-diary-entry .bus-panel--map {
   height: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -16053,24 +16339,24 @@ body.is-frontend.single-bus-diary-entry .bus-panel--map {
       -ms-flex: 1 1 auto;
           flex: 1 1 auto;
 }
-body.is-frontend.single-bus-diary-entry .bus-panel--story, body.is-frontend.single-bus-diary-entry .bus-panel--departures, body.is-frontend.single-bus-diary-entry .bus-panel--mood {
+body.is-frontend.page-buses .bus-panel--story, body.is-frontend.page-buses .bus-panel--departures, body.is-frontend.page-buses .bus-panel--mood, body.is-frontend.single-bus-diary-entry .bus-panel--story, body.is-frontend.single-bus-diary-entry .bus-panel--departures, body.is-frontend.single-bus-diary-entry .bus-panel--mood {
   margin: 0;
   min-height: 100%;
   background: rgba(10, 10, 10, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
 }
-body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
+body.is-frontend.page-buses .bus-panel--map-primary, body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
   padding-bottom: 1rem;
   width: 100%;
   min-height: 78vh;
 }
 @media (min-width: 1200px) {
-  body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
+  body.is-frontend.page-buses .bus-panel--map-primary, body.is-frontend.single-bus-diary-entry .bus-panel--map-primary {
     min-height: calc(100vh - 4rem);
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
+body.is-frontend.page-buses .bus-panel__topbar, body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16082,7 +16368,7 @@ body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
   margin-bottom: 1.25rem;
 }
 @media (min-width: 992px) {
-  body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
+  body.is-frontend.page-buses .bus-panel__topbar, body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
@@ -16095,7 +16381,7 @@ body.is-frontend.single-bus-diary-entry .bus-panel__topbar {
             align-items: flex-end;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-panel__route-meta {
+body.is-frontend.page-buses .bus-panel__route-meta, body.is-frontend.single-bus-diary-entry .bus-panel__route-meta {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16103,7 +16389,9 @@ body.is-frontend.single-bus-diary-entry .bus-panel__route-meta {
       flex-wrap: wrap;
   gap: 0.5rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-pill,
+body.is-frontend.page-buses .bus-pill,
+body.is-frontend.page-buses .bus-badge,
+body.is-frontend.page-buses .bus-dock .stat, body.is-frontend.single-bus-diary-entry .bus-pill,
 body.is-frontend.single-bus-diary-entry .bus-badge,
 body.is-frontend.single-bus-diary-entry .bus-dock .stat {
   display: -webkit-inline-box;
@@ -16121,13 +16409,13 @@ body.is-frontend.single-bus-diary-entry .bus-dock .stat {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-shell {
+body.is-frontend.page-buses .bus-map-shell, body.is-frontend.single-bus-diary-entry .bus-map-shell {
   position: relative;
   border-radius: 28px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-body.is-frontend.single-bus-diary-entry .bus-map {
+body.is-frontend.page-buses .bus-map, body.is-frontend.single-bus-diary-entry .bus-map {
   width: 100%;
   min-height: 620px;
   background: rgba(255, 255, 255, 0.02);
@@ -16135,35 +16423,36 @@ body.is-frontend.single-bus-diary-entry .bus-map {
   position: relative;
 }
 @media (min-width: 1200px) {
-  body.is-frontend.single-bus-diary-entry .bus-map {
+  body.is-frontend.page-buses .bus-map, body.is-frontend.single-bus-diary-entry .bus-map {
     min-height: calc(100vh - 12rem);
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-map .leaflet-container {
+body.is-frontend.page-buses .bus-map .leaflet-container, body.is-frontend.single-bus-diary-entry .bus-map .leaflet-container {
   font-family: "Outfit", sans-serif;
 }
-body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-content {
+body.is-frontend.page-buses .bus-map .leaflet-popup-content, body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-content {
   line-height: 1.5;
 }
-body.is-frontend.single-bus-diary-entry .bus-map .leaflet-control-zoom a {
+body.is-frontend.page-buses .bus-map .leaflet-control-zoom a, body.is-frontend.single-bus-diary-entry .bus-map .leaflet-control-zoom a {
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
-body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-content-wrapper,
+body.is-frontend.page-buses .bus-map .leaflet-popup-content-wrapper,
+body.is-frontend.page-buses .bus-map .leaflet-popup-tip, body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-content-wrapper,
 body.is-frontend.single-bus-diary-entry .bus-map .leaflet-popup-tip {
   background: #111;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-stage-ui {
+body.is-frontend.page-buses .bus-map-stage-ui, body.is-frontend.single-bus-diary-entry .bus-map-stage-ui {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 450;
 }
-body.is-frontend.single-bus-diary-entry .bus-floating-pane {
+body.is-frontend.page-buses .bus-floating-pane, body.is-frontend.single-bus-diary-entry .bus-floating-pane {
   position: absolute;
   left: 1rem;
   bottom: 6.5rem;
@@ -16173,16 +16462,16 @@ body.is-frontend.single-bus-diary-entry .bus-floating-pane {
   z-index: 520;
 }
 @media (min-width: 992px) {
-  body.is-frontend.single-bus-diary-entry .bus-floating-pane {
+  body.is-frontend.page-buses .bus-floating-pane, body.is-frontend.single-bus-diary-entry .bus-floating-pane {
     left: 1.5rem;
     bottom: 7rem;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-pane-stage {
+body.is-frontend.page-buses .bus-pane-stage, body.is-frontend.single-bus-diary-entry .bus-pane-stage {
   position: relative;
   min-height: 320px;
 }
-body.is-frontend.single-bus-diary-entry .bus-pane-view {
+body.is-frontend.page-buses .bus-pane-view, body.is-frontend.single-bus-diary-entry .bus-pane-view {
   display: none;
   opacity: 0;
   -webkit-transform: translateY(16px);
@@ -16193,17 +16482,18 @@ body.is-frontend.single-bus-diary-entry .bus-pane-view {
   transition: opacity 0.35s ease, transform 0.35s ease, -webkit-transform 0.35s ease;
   height: 100%;
 }
-body.is-frontend.single-bus-diary-entry .bus-pane-view.is-active {
+body.is-frontend.page-buses .bus-pane-view.is-active, body.is-frontend.single-bus-diary-entry .bus-pane-view.is-active {
   display: block;
   opacity: 1;
   -webkit-transform: translateY(0);
           transform: translateY(0);
 }
-body.is-frontend.single-bus-diary-entry .bus-pane-view > .bus-panel,
+body.is-frontend.page-buses .bus-pane-view > .bus-panel,
+body.is-frontend.page-buses .bus-pane-view > .bus-diary-entry__split-image, body.is-frontend.single-bus-diary-entry .bus-pane-view > .bus-panel,
 body.is-frontend.single-bus-diary-entry .bus-pane-view > .bus-diary-entry__split-image {
   height: 100%;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-card {
+body.is-frontend.page-buses .bus-map-overlay-card, body.is-frontend.single-bus-diary-entry .bus-map-overlay-card {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -16217,7 +16507,7 @@ body.is-frontend.single-bus-diary-entry .bus-map-overlay-card {
   z-index: 500;
   pointer-events: auto;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .eyebrow {
+body.is-frontend.page-buses .bus-map-overlay-card .eyebrow, body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .eyebrow {
   display: block;
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -16225,11 +16515,11 @@ body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .eyebrow {
   color: rgba(255, 255, 255, 0.55);
   margin-bottom: 0.5rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-card h3, body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .h3 {
+body.is-frontend.page-buses .bus-map-overlay-card h3, body.is-frontend.page-buses .bus-map-overlay-card .h3, body.is-frontend.single-bus-diary-entry .bus-map-overlay-card h3, body.is-frontend.single-bus-diary-entry .bus-map-overlay-card .h3 {
   margin-bottom: 0.85rem;
   font-size: 1.2rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-list {
+body.is-frontend.page-buses .bus-map-overlay-list, body.is-frontend.single-bus-diary-entry .bus-map-overlay-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -16237,7 +16527,7 @@ body.is-frontend.single-bus-diary-entry .bus-map-overlay-list {
   display: grid;
   gap: 0.65rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-list li {
+body.is-frontend.page-buses .bus-map-overlay-list li, body.is-frontend.single-bus-diary-entry .bus-map-overlay-list li {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16247,14 +16537,14 @@ body.is-frontend.single-bus-diary-entry .bus-map-overlay-list li {
   gap: 1rem;
   font-size: 0.9rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-list span {
+body.is-frontend.page-buses .bus-map-overlay-list span, body.is-frontend.single-bus-diary-entry .bus-map-overlay-list span {
   color: rgba(255, 255, 255, 0.62);
 }
-body.is-frontend.single-bus-diary-entry .bus-map-overlay-list strong {
+body.is-frontend.page-buses .bus-map-overlay-list strong, body.is-frontend.single-bus-diary-entry .bus-map-overlay-list strong {
   text-align: right;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-meta {
+body.is-frontend.page-buses .bus-map-meta, body.is-frontend.single-bus-diary-entry .bus-map-meta {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16265,11 +16555,11 @@ body.is-frontend.single-bus-diary-entry .bus-map-meta {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.72);
 }
-body.is-frontend.single-bus-diary-entry .bus-map-marker {
+body.is-frontend.page-buses .bus-map-marker, body.is-frontend.single-bus-diary-entry .bus-map-marker {
   background: transparent !important;
   border: none !important;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-marker span {
+body.is-frontend.page-buses .bus-map-marker span, body.is-frontend.single-bus-diary-entry .bus-map-marker span {
   display: block;
   width: 18px;
   height: 18px;
@@ -16277,13 +16567,13 @@ body.is-frontend.single-bus-diary-entry .bus-map-marker span {
   -webkit-box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
           box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
-body.is-frontend.single-bus-diary-entry .bus-map-marker--start span {
+body.is-frontend.page-buses .bus-map-marker--start span, body.is-frontend.single-bus-diary-entry .bus-map-marker--start span {
   background: #66ffe0;
 }
-body.is-frontend.single-bus-diary-entry .bus-map-marker--end span {
+body.is-frontend.page-buses .bus-map-marker--end span, body.is-frontend.single-bus-diary-entry .bus-map-marker--end span {
   background: #ff6b6b;
 }
-body.is-frontend.single-bus-diary-entry .bus-dock {
+body.is-frontend.page-buses .bus-dock, body.is-frontend.single-bus-diary-entry .bus-dock {
   position: absolute;
   left: 50%;
   bottom: 1rem;
@@ -16313,7 +16603,7 @@ body.is-frontend.single-bus-diary-entry .bus-dock {
   max-width: 760px;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry .bus-dock {
+  body.is-frontend.page-buses .bus-dock, body.is-frontend.single-bus-diary-entry .bus-dock {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
@@ -16323,7 +16613,7 @@ body.is-frontend.single-bus-diary-entry .bus-dock {
             justify-content: space-between;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-dock__stats {
+body.is-frontend.page-buses .bus-dock__stats, body.is-frontend.single-bus-diary-entry .bus-dock__stats {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16334,7 +16624,7 @@ body.is-frontend.single-bus-diary-entry .bus-dock__stats {
           justify-content: center;
   gap: 0.5rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-dock__controls {
+body.is-frontend.page-buses .bus-dock__controls, body.is-frontend.single-bus-diary-entry .bus-dock__controls {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16343,7 +16633,7 @@ body.is-frontend.single-bus-diary-entry .bus-dock__controls {
           align-items: center;
   gap: 0.5rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-dock__controls button {
+body.is-frontend.page-buses .bus-dock__controls button, body.is-frontend.single-bus-diary-entry .bus-dock__controls button {
   width: 42px;
   height: 42px;
   border-radius: 999px;
@@ -16354,11 +16644,11 @@ body.is-frontend.single-bus-diary-entry .bus-dock__controls button {
   -webkit-transition: 0.25s ease;
   transition: 0.25s ease;
 }
-body.is-frontend.single-bus-diary-entry .bus-dock__controls button.is-active, body.is-frontend.single-bus-diary-entry .bus-dock__controls button:hover {
+body.is-frontend.page-buses .bus-dock__controls button.is-active, body.is-frontend.page-buses .bus-dock__controls button:hover, body.is-frontend.single-bus-diary-entry .bus-dock__controls button.is-active, body.is-frontend.single-bus-diary-entry .bus-dock__controls button:hover {
   background: white;
   color: black;
 }
-body.is-frontend.single-bus-diary-entry .bus-badge-row {
+body.is-frontend.page-buses .bus-badge-row, body.is-frontend.single-bus-diary-entry .bus-badge-row {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16367,7 +16657,7 @@ body.is-frontend.single-bus-diary-entry .bus-badge-row {
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-spotify-mini iframe {
+body.is-frontend.page-buses .bus-spotify-mini iframe, body.is-frontend.single-bus-diary-entry .bus-spotify-mini iframe {
   display: block;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -16375,12 +16665,12 @@ body.is-frontend.single-bus-diary-entry .bus-spotify-mini iframe {
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   background: rgba(255, 255, 255, 0.03);
 }
-body.is-frontend.single-bus-diary-entry .bus-departures {
+body.is-frontend.page-buses .bus-departures, body.is-frontend.single-bus-diary-entry .bus-departures {
   display: -ms-grid;
   display: grid;
   gap: 1.25rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__actions {
+body.is-frontend.page-buses .bus-departures__actions, body.is-frontend.single-bus-diary-entry .bus-departures__actions {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16391,7 +16681,7 @@ body.is-frontend.single-bus-diary-entry .bus-departures__actions {
   gap: 0.75rem;
 }
 @media (min-width: 768px) {
-  body.is-frontend.single-bus-diary-entry .bus-departures__actions {
+  body.is-frontend.page-buses .bus-departures__actions, body.is-frontend.single-bus-diary-entry .bus-departures__actions {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
         -ms-flex-direction: row;
@@ -16401,7 +16691,7 @@ body.is-frontend.single-bus-diary-entry .bus-departures__actions {
             align-items: center;
   }
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__locate {
+body.is-frontend.page-buses .bus-departures__locate, body.is-frontend.single-bus-diary-entry .bus-departures__locate {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -16419,20 +16709,21 @@ body.is-frontend.single-bus-diary-entry .bus-departures__locate {
   -webkit-transition: 0.25s ease;
   transition: 0.25s ease;
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__locate:hover {
+body.is-frontend.page-buses .bus-departures__locate:hover, body.is-frontend.single-bus-diary-entry .bus-departures__locate:hover {
   background: transparent;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__status {
+body.is-frontend.page-buses .bus-departures__status, body.is-frontend.single-bus-diary-entry .bus-departures__status {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__grid {
+body.is-frontend.page-buses .bus-departures__grid, body.is-frontend.single-bus-diary-entry .bus-departures__grid {
   display: -ms-grid;
   display: grid;
   gap: 1rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-departures__stops,
+body.is-frontend.page-buses .bus-departures__stops,
+body.is-frontend.page-buses .bus-departures__results, body.is-frontend.single-bus-diary-entry .bus-departures__stops,
 body.is-frontend.single-bus-diary-entry .bus-departures__results {
   display: -ms-grid;
   display: grid;
@@ -16440,32 +16731,33 @@ body.is-frontend.single-bus-diary-entry .bus-departures__results {
   -ms-flex-line-pack: start;
       align-content: start;
 }
-body.is-frontend.single-bus-diary-entry .bus-stop-card,
+body.is-frontend.page-buses .bus-stop-card,
+body.is-frontend.page-buses .bus-arrival-card, body.is-frontend.single-bus-diary-entry .bus-stop-card,
 body.is-frontend.single-bus-diary-entry .bus-arrival-card {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-body.is-frontend.single-bus-diary-entry .bus-stop-card {
+body.is-frontend.page-buses .bus-stop-card, body.is-frontend.single-bus-diary-entry .bus-stop-card {
   cursor: pointer;
   -webkit-transition: 0.25s ease;
   transition: 0.25s ease;
 }
-body.is-frontend.single-bus-diary-entry .bus-stop-card:hover, body.is-frontend.single-bus-diary-entry .bus-stop-card.is-active {
+body.is-frontend.page-buses .bus-stop-card:hover, body.is-frontend.page-buses .bus-stop-card.is-active, body.is-frontend.single-bus-diary-entry .bus-stop-card:hover, body.is-frontend.single-bus-diary-entry .bus-stop-card.is-active {
   border-color: rgba(255, 255, 255, 0.22);
   background: rgba(255, 255, 255, 0.06);
 }
-body.is-frontend.single-bus-diary-entry .bus-stop-card h4, body.is-frontend.single-bus-diary-entry .bus-stop-card .h4 {
+body.is-frontend.page-buses .bus-stop-card h4, body.is-frontend.page-buses .bus-stop-card .h4, body.is-frontend.single-bus-diary-entry .bus-stop-card h4, body.is-frontend.single-bus-diary-entry .bus-stop-card .h4 {
   font-size: 1rem;
   margin-bottom: 0.4rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-stop-card p {
+body.is-frontend.page-buses .bus-stop-card p, body.is-frontend.single-bus-diary-entry .bus-stop-card p {
   margin: 0;
   font-size: 0.88rem;
   color: rgba(255, 255, 255, 0.68);
   line-height: 1.55;
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card {
+body.is-frontend.page-buses .bus-arrival-card, body.is-frontend.single-bus-diary-entry .bus-arrival-card {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -16474,24 +16766,24 @@ body.is-frontend.single-bus-diary-entry .bus-arrival-card {
           justify-content: space-between;
   gap: 1rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-main {
+body.is-frontend.page-buses .bus-arrival-card .bus-arrival-main, body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-main {
   display: -ms-grid;
   display: grid;
   gap: 0.25rem;
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-line {
+body.is-frontend.page-buses .bus-arrival-card .bus-arrival-line, body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-line {
   font-size: 1.15rem;
   font-weight: 700;
   color: white;
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-destination {
+body.is-frontend.page-buses .bus-arrival-card .bus-arrival-destination, body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-destination {
   color: rgba(255, 255, 255, 0.86);
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-meta {
+body.is-frontend.page-buses .bus-arrival-card .bus-arrival-meta, body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-meta {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.58);
 }
-body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-time {
+body.is-frontend.page-buses .bus-arrival-card .bus-arrival-time, body.is-frontend.single-bus-diary-entry .bus-arrival-card .bus-arrival-time {
   font-size: 1.15rem;
   font-weight: 700;
   white-space: nowrap;

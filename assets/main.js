@@ -2423,5 +2423,77 @@ import * as bootstrap from 'bootstrap';
 		console.log('Calendly popup initialized for buttons:', calendlyButtons);
 	});
 
+	/* ==========================
+		BUS NFS ARCHIVE
+	========================== */
+
+	(() => {
+		const archive = document.querySelector('[data-bus-nfs]');
+		if (!archive) return;
+
+		const slides = [...archive.querySelectorAll('[data-bus-slide]')];
+		const prevBtn = archive.querySelector('[data-bus-prev]');
+		const nextBtn = archive.querySelector('[data-bus-next]');
+		const currentEl = archive.querySelector('[data-bus-current]');
+
+		if (!slides.length) return;
+
+		let currentIndex = 0;
+		let locked = false;
+
+		const pad = (number) => String(number).padStart(2, '0');
+
+		const setActiveSlide = (index) => {
+			currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+
+			slides.forEach((slide, slideIndex) => {
+				slide.classList.toggle('is-active', slideIndex === currentIndex);
+				slide.classList.toggle('is-before', slideIndex < currentIndex);
+				slide.classList.toggle('is-after', slideIndex > currentIndex);
+			});
+
+			if (currentEl) {
+				currentEl.textContent = pad(currentIndex + 1);
+			}
+		};
+
+		const next = () => {
+			if (currentIndex >= slides.length - 1) return;
+			setActiveSlide(currentIndex + 1);
+		};
+
+		const prev = () => {
+			if (currentIndex <= 0) return;
+			setActiveSlide(currentIndex - 1);
+		};
+
+		nextBtn?.addEventListener('click', next);
+		prevBtn?.addEventListener('click', prev);
+
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+			if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+		});
+
+		archive.addEventListener('wheel', (e) => {
+			e.preventDefault();
+
+			if (locked) return;
+			locked = true;
+
+			if (e.deltaY > 0) {
+				next();
+			} else {
+				prev();
+			}
+
+			setTimeout(() => {
+				locked = false;
+			}, 850);
+		}, { passive: false });
+
+		setActiveSlide(0);
+	})();
+
 })();
 

@@ -2456,3 +2456,135 @@ function dx_enqueue_calendly_widget() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'dx_enqueue_calendly_widget' );
+
+// Need for Speed Style Bus Journeys Archive
+function dx_shortcode_bus_journeys_archive() {
+    $journeys = new WP_Query([
+        'post_type'      => 'bus-diary-entry',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+    ]);
+
+    if (!$journeys->have_posts()) {
+        return '<p>No bus journeys found.</p>';
+    }
+
+    ob_start();
+    ?>
+    <section class="bus-nfs-archive" data-bus-nfs>
+        <div class="bus-nfs-archive__topbar">
+            <span>Select Journey</span>
+            <span>Bus Journeys</span>
+        </div>
+
+        <div class="bus-nfs-archive__slides">
+            <?php
+            $index = 0;
+            while ($journeys->have_posts()) :
+                $journeys->the_post();
+                $post_id = get_the_ID();
+
+                $route       = get_field('primary_route', $post_id) ?: '—';
+                $operator    = get_field('operator', $post_id) ?: 'Unknown Operator';
+                $destination = get_field('journey_end_name', $post_id) ?: '';
+                $start       = get_field('journey_start_name', $post_id) ?: '';
+                $mood        = get_field('mood_label', $post_id) ?: 'Journey';
+                $time        = get_field('time_of_day', $post_id) ?: '—';
+                $spotify     = get_field('spotify_url', $post_id);
+
+                $bus_used = get_field('bus_used', $post_id);
+                $bus_id   = $bus_used ? (is_object($bus_used) ? $bus_used->ID : (int) $bus_used) : 0;
+
+                $bus_model    = $bus_id ? (get_field('bus_model', $bus_id) ?: get_the_title($bus_id)) : 'Bus not linked';
+                $fleet_number = $bus_id ? (get_field('fleet_number', $bus_id) ?: '—') : '—';
+                $engine_type  = $bus_id ? (get_field('engine_type', $bus_id) ?: '—') : '—';
+                $capacity     = $bus_id ? (get_field('capacity', $bus_id) ?: '—') : '—';
+                $rarity       = $bus_id ? (get_field('rarity', $bus_id) ?: 'Standard') : '—';
+                $bus_link     = $bus_id ? get_permalink($bus_id) : '';
+
+                $image_url = has_post_thumbnail($post_id) ? get_the_post_thumbnail_url($post_id, 'full') : '';
+                ?>
+                <article
+                    class="bus-nfs-slide <?php echo $index === 0 ? 'is-active' : ''; ?>"
+                    data-bus-slide
+                    data-index="<?php echo esc_attr($index); ?>"
+                >
+                    <?php if ($image_url) : ?>
+                        <img
+                            src="<?php echo esc_url($image_url); ?>"
+                            alt="<?php echo esc_attr(get_the_title()); ?>"
+                            class="bus-nfs-slide__image"
+                        >
+                    <?php endif; ?>
+
+                    <div class="bus-nfs-slide__shade"></div>
+
+                    <div class="bus-nfs-slide__content">
+                        <div class="bus-nfs-slide__identity">
+                            <span class="bus-nfs-slide__operator">
+                                <?php echo esc_html($operator); ?> · <?php echo esc_html($mood); ?>
+                            </span>
+                            <h2>
+                                <?php echo esc_html($route); ?>
+                            </h2>
+                            <p>
+                                <?php echo esc_html($start && $destination ? $start . ' → ' . $destination : $destination); ?>
+                            </p>
+                        </div>
+                        <div class="bus-nfs-slide__specs">
+                            <h3><?php echo esc_html($bus_model); ?></h3>
+                            <ul>
+                                <li><span>Fleet No.</span><strong><?php echo esc_html($fleet_number); ?></strong></li>
+                                <li><span>Time</span><strong><?php echo esc_html(ucwords(str_replace('_', ' ', $time))); ?></strong></li>
+                                <li><span>Capacity</span><strong><?php echo esc_html($capacity); ?></strong></li>
+                                <li><span>Powertrain</span><strong><?php echo esc_html($engine_type); ?></strong></li>
+                                <li><span>Rarity</span><strong><?php echo esc_html($rarity); ?></strong></li>
+                            </ul>
+                            <div class="bus-nfs-slide__actions">
+                                <a href="<?php the_permalink(); ?>" class="bus-nfs-slide__cta">
+                                    View Journey
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                                <?php if ($bus_link) : ?>
+                                    <a href="<?php echo esc_url($bus_link); ?>" class="bus-nfs-slide__cta">
+                                        View Bus Specs
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </a>
+                                <?php endif; ?>
+                                <?php if ($spotify) : ?>
+                                    <a href="<?php echo esc_url($spotify); ?>" class="bus-nfs-slide__cta" target="_blank" rel="noopener noreferrer">
+                                        Soundtrack
+                                        <i class="fa-brands fa-spotify"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <?php
+                $index++;
+            endwhile;
+            wp_reset_postdata();
+            ?>
+        </div>
+        <div class="bus-nfs-archive__nav">
+            <button type="button" data-bus-prev>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span>
+                <strong data-bus-current>01</strong>
+                /
+                <span data-bus-total><?php echo esc_html(str_pad($index, 2, '0', STR_PAD_LEFT)); ?></span>
+            </span>
+            <button type="button" data-bus-next>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('bus_nfs_archive', 'dx_shortcode_bus_journeys_archive');
+add_shortcode('bus_journeys_archive', 'dx_shortcode_bus_journeys_archive');

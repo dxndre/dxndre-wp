@@ -2179,6 +2179,66 @@ __webpack_require__.r(__webpack_exports__);
     });
     console.log('Calendly popup initialized for buttons:', calendlyButtons);
   });
+
+  /* ==========================
+  	BUS NFS ARCHIVE
+  ========================== */
+
+  (function () {
+    var archive = document.querySelector('[data-bus-nfs]');
+    if (!archive) return;
+    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(archive.querySelectorAll('[data-bus-slide]'));
+    var prevBtn = archive.querySelector('[data-bus-prev]');
+    var nextBtn = archive.querySelector('[data-bus-next]');
+    var currentEl = archive.querySelector('[data-bus-current]');
+    if (!slides.length) return;
+    var currentIndex = 0;
+    var locked = false;
+    var pad = function pad(number) {
+      return String(number).padStart(2, '0');
+    };
+    var setActiveSlide = function setActiveSlide(index) {
+      currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach(function (slide, slideIndex) {
+        slide.classList.toggle('is-active', slideIndex === currentIndex);
+        slide.classList.toggle('is-before', slideIndex < currentIndex);
+        slide.classList.toggle('is-after', slideIndex > currentIndex);
+      });
+      if (currentEl) {
+        currentEl.textContent = pad(currentIndex + 1);
+      }
+    };
+    var next = function next() {
+      if (currentIndex >= slides.length - 1) return;
+      setActiveSlide(currentIndex + 1);
+    };
+    var prev = function prev() {
+      if (currentIndex <= 0) return;
+      setActiveSlide(currentIndex - 1);
+    };
+    nextBtn === null || nextBtn === void 0 || nextBtn.addEventListener('click', next);
+    prevBtn === null || prevBtn === void 0 || prevBtn.addEventListener('click', prev);
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+    });
+    archive.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      if (locked) return;
+      locked = true;
+      if (e.deltaY > 0) {
+        next();
+      } else {
+        prev();
+      }
+      setTimeout(function () {
+        locked = false;
+      }, 850);
+    }, {
+      passive: false
+    });
+    setActiveSlide(0);
+  })();
 })();
 
 /***/ }),
