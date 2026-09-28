@@ -19110,6 +19110,155 @@ img {
   font-weight: 300;
   margin-bottom: 24px;
 }
+#main section.text-image .section-content .centered-content {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center;
+}
+#main section.text-image .section-content form {
+  font-family: inherit;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 12px;
+  margin-top: 2em;
+  color: white;
+  width: 100%;
+  max-width: 768px;
+  margin-right: auto;
+  margin-left: auto;
+}
+#main section.text-image .section-content form input[type=text], #main section.text-image .section-content form input[type=email], #main section.text-image .section-content form input[type=password] {
+  color: white;
+  width: 400px;
+  background: transparent;
+  border: none;
+  padding-right: 0 !important;
+  padding-left: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+#main section.text-image .section-content form input[type=text]::-webkit-input-placeholder, #main section.text-image .section-content form input[type=email]::-webkit-input-placeholder, #main section.text-image .section-content form input[type=password]::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+#main section.text-image .section-content form input[type=text]::-moz-placeholder, #main section.text-image .section-content form input[type=email]::-moz-placeholder, #main section.text-image .section-content form input[type=password]::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+#main section.text-image .section-content form input[type=text]:-ms-input-placeholder, #main section.text-image .section-content form input[type=email]:-ms-input-placeholder, #main section.text-image .section-content form input[type=password]:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+#main section.text-image .section-content form input[type=text]::-ms-input-placeholder, #main section.text-image .section-content form input[type=email]::-ms-input-placeholder, #main section.text-image .section-content form input[type=password]::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+#main section.text-image .section-content form input[type=text]::placeholder, #main section.text-image .section-content form input[type=email]::placeholder, #main section.text-image .section-content form input[type=password]::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+#main section.text-image .section-content form input[type=text]:hover, #main section.text-image .section-content form input[type=email]:hover, #main section.text-image .section-content form input[type=password]:hover {
+  border-bottom: 1px solid rgb(255, 255, 255);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form input[type=text]:active, #main section.text-image .section-content form input[type=text]:focus, #main section.text-image .section-content form input[type=text]:focus-within, #main section.text-image .section-content form input[type=email]:active, #main section.text-image .section-content form input[type=email]:focus, #main section.text-image .section-content form input[type=email]:focus-within, #main section.text-image .section-content form input[type=password]:active, #main section.text-image .section-content form input[type=password]:focus, #main section.text-image .section-content form input[type=password]:focus-within {
+  outline: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  border-bottom: 1px solid white;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form input[type=submit] {
+  color: white;
+  background: #bb0000;
+  color: white;
+  width: 250px;
+  height: 60px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-top: 2em;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form input[type=submit]:hover {
+  background-color: white;
+  color: #bb0000;
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form select {
+  width: 100%;
+  background: transparent;
+  color: white;
+  padding-left: 12px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  padding-right: 0 !important;
+}
+#main section.text-image .section-content form label {
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+}
+#main section.text-image .section-content form .headline {
+  font-family: "Outfit", sans-serif;
+  text-transform: uppercase;
+  font-weight: lighter;
+  color: rgba(255, 255, 255, 0.6666);
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 1.5em 0;
+}
+#main section.text-image .section-content form .legal-text {
+  font-family: "Outfit", sans-serif;
+  margin-bottom: 0;
+  line-height: 16px;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 1em;
+}
+#main section.text-image .section-content form .legal-text a {
+  color: inherit;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form .legal-text a:hover {
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.875);
+  -webkit-transition: 0.3s all ease;
+  transition: 0.3s all ease;
+}
+#main section.text-image .section-content form .row-variant {
+  margin-top: 1.5em;
+}
+#main section.text-image .section-content form .row-variant .mailpoet_checkbox_label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 0;
+  gap: 12px;
+}
+#main section.text-image .section-content form .row-variant .submit-column {
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: end;
+}
+#main section.text-image .section-content form .parsley-required {
+  font-family: "Outfit", sans-serif;
+  color: #bb0000;
+  font-size: 12px;
+}
 #main section.text-image .section-content {
   /* =========================================================
   ARCHIVE CONTROLS

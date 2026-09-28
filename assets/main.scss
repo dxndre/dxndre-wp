@@ -4631,6 +4631,144 @@ img {
 					margin-bottom: 24px;
 				}
 
+				.centered-content {
+					justify-content: center;
+					text-align: center;
+				}
+
+				form {
+					font-family: inherit;
+					display: flex;
+					flex-direction: column;
+					gap: 12px;
+					margin-top: 2em;
+					color: white;
+					width: 100%;
+					max-width: 768px;
+					margin-left: auto;
+					margin-right: auto;
+
+					input {
+						&[type="text"],
+						&[type="email"],
+						&[type="password"] {
+							color: white;
+							width: 400px;
+							background: transparent;
+							border: none;
+							padding-left: 0 !important;
+							padding-right: 0;
+							border-bottom: 1px solid rgba(255,255,255,0.75);
+							transition: 0.7s all ease;
+
+							&::placeholder {
+								color: rgba(255,255,255,0.75);
+							}
+
+							&:hover {
+								border-bottom: 1px solid rgba(255,255,255,1);
+								transition: 0.3s all ease;
+							}
+
+							&:active,
+							&:focus,
+							&:focus-within {
+								outline: none;
+								box-shadow: none;
+								border-bottom: 1px solid white;
+								transition: 0.3s all ease;
+							}
+							
+						}
+
+						&[type="submit"] {
+							color: white;
+							background: #bb0000;
+							color: white;
+							width: 250px;
+							height: 60px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							margin-top: 2em;
+							transition: 0.3s all ease;
+
+							&:hover {
+								background-color: white;
+								color: #bb0000;
+								transition: 0.3s all ease;
+							}
+						}
+					}
+
+					select {
+						width: 100%;
+						background: transparent;
+						color: white;
+						padding-right: 12px;
+						border: none;
+						border-bottom: 1px solid rgba(255,255,255,0.75);
+						padding-left: 0 !important;
+					}
+
+					label {
+						font-family: "Outfit", sans-serif;
+						font-size: 14px;
+					}
+
+					.headline {
+						font-family: "Outfit", sans-serif;
+						text-transform: uppercase;
+						font-weight: lighter;
+						color: rgba(255, 255, 255, 0.6666);
+						letter-spacing: 1px;
+						text-align: center;
+						margin: 1.5em 0;
+
+					}
+
+					.legal-text {
+						font-family: "Outfit", sans-serif;
+						margin-bottom: 0;
+						line-height: 16px;
+						font-size: 12px;
+						text-align: center;
+						margin-top: 1em;
+
+						a {
+							color: inherit;
+							border-bottom: 1px solid rgba(255,255,255,0.5);
+							transition: 0.3s all ease;
+
+							&:hover {
+								color: white;
+								border-bottom: 1px solid rgba(255,255,255,0.875);
+								transition: 0.3s all ease;
+							}
+						}
+					}
+
+					.row-variant {
+						margin-top: 1.5em;
+
+						.mailpoet_checkbox_label {
+							display: flex;
+							margin-bottom: 0;
+							gap: 12px;
+						}
+
+						.submit-column {
+							align-items: end;
+						}
+					}
+
+					.parsley-required {
+						font-family: "Outfit", sans-serif;
+						color: #bb0000;
+						font-size: 12px;
+					}
+				}
+
 				/* =========================================================
 				ARCHIVE CONTROLS
 				========================================================= */
