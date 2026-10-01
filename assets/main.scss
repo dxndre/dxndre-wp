@@ -183,6 +183,40 @@ body.is-frontend {
 		}
 	}
 
+	&.page-template-page-legal {
+		#main {
+			margin-top: 150px;
+
+			> .content {
+				overflow: hidden;
+				color: white;
+
+				.legal-banner {
+					padding: 2em 0; 
+				}
+
+				.legal-content {
+					p {
+						font-weight: 300;
+					}
+
+					a {
+						font-weight: 300;
+						color: white;
+						border-bottom: 1px solid rgba(255,255,255,0.5);
+						transition: 0.3s all ease;
+					
+						&:hover {
+							color: white;
+							border-bottom: 1px solid rgba(255,255,255,1);
+							transition: 0.3s all ease;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	&.page-template-page-homepage {
 		#hireMeModal,
 		#clientModal,
@@ -8159,4 +8193,168 @@ footer {
 	#sidebar {
 		margin-top: 60px;
 	}
+}
+
+/* N118 waitlist: scoped to its MailPoet form so other text-image sections stay unchanged. */
+#main section.text-image:has(#mailpoet_form_1) {
+  pre.headline {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #mailpoet_form_1 {
+    min-width: 0;
+
+    .mailpoet_text,
+    .mailpoet_select {
+      min-width: 0;
+      max-width: 100%;
+      min-height: 48px;
+      font-size: 16px;
+      border-radius: 0;
+    }
+
+    // Reset Safari's native select chrome without replacing its accessible picker.
+    select.mailpoet_select {
+      -webkit-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+      width: 100%;
+      height: 49px;
+      padding: 12px 32px 12px 0 !important; // MailPoet supplies inline padding.
+      font-family: inherit;
+      line-height: 24px;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 0;
+      box-shadow: none;
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 16px;
+      color-scheme: dark;
+
+      @media (forced-colors: active) {
+        appearance: auto;
+        background-image: none;
+      }
+    }
+
+    .mailpoet_checkbox_label {
+      align-items: flex-start;
+      min-height: 44px;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .mailpoet_checkbox {
+      flex: 0 0 20px;
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+    }
+
+    fieldset { min-width: 0; }
+
+    :is(input, select, a):focus-visible {
+      outline: 2px solid white;
+      outline-offset: 4px;
+    }
+
+    .mailpoet_message,
+    .parsley-errors-list {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @media (max-width: 1199.98px) {
+    .hero-background {
+      height: auto;
+      min-height: 100svh !important; // Override the Cover block's inline 100vh.
+      padding: 120px 0 64px;
+    }
+
+    .hero-background > .wp-block-cover__inner-container {
+      width: 100%;
+      max-width: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 864px;
+      padding-inline: 32px;
+      margin-inline: auto;
+    }
+
+    .section-content { padding: 0; }
+
+    .centered-content {
+      margin: 0;
+      gap: 0;
+
+      > .wp-block-column {
+        min-width: 0;
+        flex-basis: 100% !important; // Override editor-generated 50% / 66% columns.
+      }
+    }
+
+    .section-content h2 {
+      font-size: clamp(30px, 4.5vw, 44px) !important;
+      line-height: 1.15;
+    }
+
+    #mailpoet_form_1 {
+      .mailpoet_form_columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        width: 100%;
+      }
+
+      .mailpoet_form_column,
+      .mailpoet_form_column:not(:first-child) {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+      }
+
+      .mailpoet_submit { max-width: 100%; }
+      .legal-text { font-size: 14px; line-height: 1.6; }
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .hero-background { padding: 104px 0 48px; }
+    .hero-background > img { object-position: 50% top; }
+    .container { padding-inline: 20px; }
+    .section-content p { line-height: 1.6; }
+    pre.headline { font-size: 12px; line-height: 1.6; }
+
+    #mailpoet_form_1 {
+      form.mailpoet_form { margin-top: 24px; gap: 16px; }
+
+      .mailpoet_form_columns {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        margin-bottom: 0;
+      }
+
+      .mailpoet_form_column .mailpoet_paragraph { margin-bottom: 0; }
+      .row-variant { margin-top: 8px; }
+      .submit-column { align-items: stretch; }
+      .submit-column .mailpoet_paragraph { width: 100%; }
+
+      .mailpoet_submit {
+        width: 100%;
+        min-height: 52px;
+        margin: 0 !important; // Override MailPoet's inline alignment.
+      }
+
+      .headline { margin: 16px 0 0; }
+      .headline pre { margin: 0; }
+      .legal-text { margin-top: 8px; }
+      .mailpoet_message { padding-inline: 0; }
+    }
+  }
 }
