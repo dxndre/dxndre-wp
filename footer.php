@@ -123,6 +123,9 @@
 					<a href="<?php echo esc_url( site_url('/terms-of-service/') ); ?>">
 					Terms of Service
 					</a>
+					<a href="<?php echo esc_url( site_url('/cookie-policy-uk/') ); ?>">
+					Cookie Policy (UK)
+					</a>
 				</div>
 
 				<div class="site-footer-copyright">
@@ -132,10 +135,10 @@
 				</div>
 
 				<div class="site-footer-social" aria-label="Social links">
-					<a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-					<a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-					<a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
-					<a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+					<a href="https://www.instagram.com/d.xndre_" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+					<a href="https://github.com/dxndre" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+					<a href="https://x.com/dxndre1" target="_blank" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+					<a href="https://www.linkedin.com/in/dxndre/" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
 				</div>
 			</div>
 		</div>
