@@ -22943,6 +22943,42 @@ footer.site-footer .site-footer-social a:hover {
   outline: 2px solid white;
   outline-offset: 4px;
 }
+#main section.text-image:has(#mailpoet_form_1) #mailpoet_form_1 .mailpoet_validate_success {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  margin: 24px auto;
+  padding: clamp(24px, 5vw, 44px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 3px solid #bb0000;
+  border-radius: 16px;
+  background: rgba(8, 8, 8, 0.82);
+  -webkit-box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 300;
+  line-height: 1.65;
+  text-align: center;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+#main section.text-image:has(#mailpoet_form_1) #mailpoet_form_1 .mailpoet_validate_success::before {
+  content: "🚌";
+  content: "🚌"/"";
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  background: rgba(187, 0, 0, 0.16);
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-size: 40px;
+  line-height: 80px;
+  white-space: normal;
+}
 #main section.text-image:has(#mailpoet_form_1) #mailpoet_form_1 .mailpoet_message,
 #main section.text-image:has(#mailpoet_form_1) #mailpoet_form_1 .parsley-errors-list {
   overflow-wrap: anywhere;
@@ -23059,5 +23095,349 @@ footer.site-footer .site-footer-social a:hover {
   }
   #main section.text-image:has(#mailpoet_form_1) #mailpoet_form_1 .mailpoet_message {
     padding-inline: 0;
+  }
+}
+
+/* Subscription preferences share the N118 waitlist's form styling. */
+#main .mailpoet-manage-subscription {
+  --n118-red: #bb0000;
+  --n118-text: #f5f5f5;
+  --n118-muted: #b0b0b0;
+  --n118-line: rgba(255, 255, 255, 0.18);
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 100%;
+  max-width: 880px;
+  margin: 40px auto 72px;
+  padding: clamp(24px, 5vw, 56px);
+  border: 1px solid var(--n118-line);
+  border-radius: 12px;
+  background: linear-gradient(-145deg, #111111, #080808);
+  color: var(--n118-text);
+  font-family: "Outfit", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+#main .mailpoet-manage-subscription *,
+#main .mailpoet-manage-subscription *::before,
+#main .mailpoet-manage-subscription *::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(0, 1fr))[2];
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 1;
+  -webkit-transform: none;
+          transform: none;
+  -webkit-transition: none;
+  transition: none;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section > * {
+  grid-column: 1/-1;
+  min-width: 0;
+  margin: 0;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section > .mailpoet_paragraph:has(input[autocomplete=given-name]),
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section > .mailpoet_paragraph:has(input[autocomplete=family-name]) {
+  grid-column: auto;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section + .mailpoet-manage-subscription-section {
+  margin-top: 36px;
+  padding-top: 36px;
+  border-top: 1px solid var(--n118-line);
+}
+#main .mailpoet-manage-subscription h2, #main .mailpoet-manage-subscription .h2 {
+  margin: 0;
+  color: var(--n118-text);
+  font-size: clamp(26px, 3.5vw, 34px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+#main .mailpoet-manage-subscription p {
+  font-size: inherit;
+  line-height: inherit;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section-description {
+  margin-top: -12px;
+  color: var(--n118-muted);
+  max-width: 60ch;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-email {
+  padding: 24px 0;
+  border-block: 1px solid var(--n118-line);
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-email strong {
+  display: block;
+  margin: 4px 0 8px;
+  color: var(--n118-text);
+  font-size: clamp(17px, 2.5vw, 20px);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+#main .mailpoet-manage-subscription .mailpoet_text_label,
+#main .mailpoet-manage-subscription .mailpoet_select_label,
+#main .mailpoet-manage-subscription legend {
+  display: block;
+  float: none;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 0;
+  color: #dddddd;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+#main .mailpoet-manage-subscription .mailpoet-change-email-info,
+#main .mailpoet-manage-subscription .mailpoet_field_description,
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-no-lists {
+  display: block;
+  color: var(--n118-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+#main .mailpoet-manage-subscription .mailpoet_field_description {
+  margin: 0 0 16px;
+  max-width: 65ch;
+}
+#main .mailpoet-manage-subscription a {
+  color: var(--n118-text);
+  text-decoration: underline;
+  text-decoration-color: #777777;
+  text-underline-offset: 4px;
+}
+#main .mailpoet-manage-subscription a:hover {
+  text-decoration-color: white;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text,
+#main .mailpoet-manage-subscription textarea.mailpoet_textarea,
+#main .mailpoet-manage-subscription select.mailpoet_select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid #777777;
+  border-radius: 0;
+  background: transparent;
+  color: var(--n118-text);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text::-webkit-input-placeholder, #main .mailpoet-manage-subscription textarea.mailpoet_textarea::-webkit-input-placeholder, #main .mailpoet-manage-subscription select.mailpoet_select::-webkit-input-placeholder {
+  color: var(--n118-muted);
+  opacity: 1;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text::-moz-placeholder, #main .mailpoet-manage-subscription textarea.mailpoet_textarea::-moz-placeholder, #main .mailpoet-manage-subscription select.mailpoet_select::-moz-placeholder {
+  color: var(--n118-muted);
+  opacity: 1;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text:-ms-input-placeholder, #main .mailpoet-manage-subscription textarea.mailpoet_textarea:-ms-input-placeholder, #main .mailpoet-manage-subscription select.mailpoet_select:-ms-input-placeholder {
+  color: var(--n118-muted);
+  opacity: 1;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text::-ms-input-placeholder, #main .mailpoet-manage-subscription textarea.mailpoet_textarea::-ms-input-placeholder, #main .mailpoet-manage-subscription select.mailpoet_select::-ms-input-placeholder {
+  color: var(--n118-muted);
+  opacity: 1;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text::placeholder,
+#main .mailpoet-manage-subscription textarea.mailpoet_textarea::placeholder,
+#main .mailpoet-manage-subscription select.mailpoet_select::placeholder {
+  color: var(--n118-muted);
+  opacity: 1;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text:focus,
+#main .mailpoet-manage-subscription textarea.mailpoet_textarea:focus,
+#main .mailpoet-manage-subscription select.mailpoet_select:focus {
+  border-color: white;
+}
+#main .mailpoet-manage-subscription input.mailpoet_text:disabled,
+#main .mailpoet-manage-subscription textarea.mailpoet_textarea:disabled,
+#main .mailpoet-manage-subscription select.mailpoet_select:disabled {
+  color: #aaaaaa;
+  -webkit-text-fill-color: #aaaaaa;
+  opacity: 1;
+  border-bottom-style: dashed;
+  cursor: not-allowed;
+}
+#main .mailpoet-manage-subscription textarea.mailpoet_textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+#main .mailpoet-manage-subscription select.mailpoet_select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  padding: 14px 18px 14px 48px;
+  border: 1px solid #555555;
+  border-radius: 5px;
+  background-color: #101010;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27m3 6 5 5 5-5%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 18px center;
+  background-size: 16px;
+  color-scheme: dark;
+  cursor: pointer;
+}
+#main .mailpoet-manage-subscription select.mailpoet_select option {
+  background: #101010;
+  color: white;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-status,
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-section > .mailpoet_paragraph:has(fieldset) {
+  padding-top: 28px;
+  border-top: 1px solid var(--n118-line);
+}
+#main .mailpoet-manage-subscription fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#main .mailpoet-manage-subscription legend {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 500;
+}
+#main .mailpoet-manage-subscription label.mailpoet_radio_label,
+#main .mailpoet-manage-subscription label.mailpoet_checkbox_label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  gap: 12px;
+  min-height: 48px;
+  margin: 0 0 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--n118-line);
+  border-radius: 5px;
+  color: var(--n118-text);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+}
+#main .mailpoet-manage-subscription label.mailpoet_radio_label:hover,
+#main .mailpoet-manage-subscription label.mailpoet_checkbox_label:hover {
+  border-color: #777777;
+  background: rgba(255, 255, 255, 0.025);
+}
+#main .mailpoet-manage-subscription label.mailpoet_radio_label:has(input:checked),
+#main .mailpoet-manage-subscription label.mailpoet_checkbox_label:has(input:checked) {
+  border-color: #c84545;
+  background: rgba(187, 0, 0, 0.08);
+}
+#main .mailpoet-manage-subscription input.mailpoet_radio,
+#main .mailpoet-manage-subscription input.mailpoet_checkbox {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 20px;
+          flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  margin: 2px 0 0;
+  accent-color: var(--n118-red);
+  cursor: pointer;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-actions {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--n118-line);
+  text-align: left;
+}
+#main .mailpoet-manage-subscription .mailpoet-manage-subscription-actions .mailpoet_paragraph {
+  margin: 0;
+}
+#main .mailpoet-manage-subscription input.mailpoet_submit,
+#main .mailpoet-manage-subscription button.mailpoet_submit {
+  display: inline-block;
+  width: 280px;
+  max-width: 100%;
+  min-height: 56px;
+  margin: 0;
+  padding: 16px 24px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: var(--n118-red);
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+}
+#main .mailpoet-manage-subscription input.mailpoet_submit:hover:not(:disabled),
+#main .mailpoet-manage-subscription button.mailpoet_submit:hover:not(:disabled) {
+  background: #d00000;
+}
+#main .mailpoet-manage-subscription input.mailpoet_submit:disabled,
+#main .mailpoet-manage-subscription button.mailpoet_submit:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+#main .mailpoet-manage-subscription input:focus-visible,
+#main .mailpoet-manage-subscription select:focus-visible,
+#main .mailpoet-manage-subscription textarea:focus-visible,
+#main .mailpoet-manage-subscription button:focus-visible,
+#main .mailpoet-manage-subscription a:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+#main .mailpoet-manage-subscription .parsley-errors-list {
+  margin: 8px 0 0;
+  padding-right: 20px;
+  color: #ffb4b4;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+#main .mailpoet-manage-subscription .mailpoet_message {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767.98px) {
+  #main .mailpoet-manage-subscription {
+    margin-block: 24px 40px;
+    padding: 24px 20px;
+  }
+  #main .mailpoet-manage-subscription .mailpoet-manage-subscription-section {
+    -ms-grid-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  #main .mailpoet-manage-subscription .mailpoet-manage-subscription-actions {
+    margin-top: 28px;
+  }
+  #main .mailpoet-manage-subscription input.mailpoet_submit,
+  #main .mailpoet-manage-subscription button.mailpoet_submit {
+    width: 100%;
+  }
+}
+@media (forced-colors: active) {
+  #main .mailpoet-manage-subscription select.mailpoet_select {
+    -webkit-appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
+    background-image: none;
+  }
+  #main .mailpoet-manage-subscription input.mailpoet_submit,
+  #main .mailpoet-manage-subscription button.mailpoet_submit {
+    border-color: ButtonText;
   }
 }
