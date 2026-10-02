@@ -1624,6 +1624,45 @@ function dx_visit_type_label($value) {
 	return $map[$value] ?? ($value ?: '—');
 }
 
+// A return visit is a separate review; link it to the original instead of overwriting it.
+add_action('acf/init', function () {
+ if (!function_exists('acf_add_local_field_group')) return;
+ acf_add_local_field_group([
+  'key' => 'group_dx_gym_repeat_visit', 'title' => 'Repeat visit',
+  'fields' => [[
+   'key' => 'field_dx_gym_original_review', 'label' => 'Original branch review',
+   'name' => 'gym_original_review', 'type' => 'post_object',
+   'post_type' => ['gym-review'], 'post_status' => ['publish'],
+   'return_format' => 'id', 'allow_null' => 1, 'multiple' => 0, 'ui' => 1,
+   'instructions' => 'For a return visit, select the first review of this exact branch. Leave blank for the first visit. Create a separate review with its own visited date, scores and notes. The latest dated visit sets the league rating.',
+  ]],
+  'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 'gym-review']]],
+ ]);
+});
+
+function dx_gym_visit_root($id) {
+ $seen = [];
+ $chain = get_field('gym_chain', $id);
+ while ($id && !isset($seen[$id])) {
+  $seen[$id] = true;
+  $parent = (int) get_post_meta($id, 'gym_original_review', true);
+  if (!$parent || get_post_type($parent) !== 'gym-review' || get_post_status($parent) !== 'publish' || get_field('gym_chain', $parent) !== $chain) return $id;
+  $id = $parent;
+ }
+ // A malformed cycle still resolves consistently rather than looping indefinitely.
+ return min(array_keys($seen));
+}
+
+function dx_gym_visit_snapshot($id) {
+ $fields = ['Gym' => 'score_gym', 'Wetside' => 'score_swim', 'Spa' => 'score_spa', 'Café / work' => 'score_cafe', 'Cleanliness' => 'cleanliness_maintenance', 'Parking' => 'parking'];
+ $scores = [];
+ foreach ($fields as $label => $field) $scores[$label] = dx_normalise_facility_score(get_field($field, $id));
+ $weighted = array_combine(['gym', 'swim', 'spa', 'cafe', 'clean', 'parking'], array_values($scores));
+ $date = strtotime((string) get_field('visited_date', $id));
+ return ['date' => $date ? date_i18n('F Y', $date) : 'Date not recorded', 'scores' => $scores,
+  'overall' => dx_calc_overall_score($weighted), 'notes' => (string) get_field('notes', $id), 'url' => get_permalink($id)];
+}
+
 function dx_shortcode_gym_table($atts) {
 	$atts = shortcode_atts([
 		'chain' => '',
@@ -1632,7 +1671,7 @@ function dx_shortcode_gym_table($atts) {
 
 	$args = [
 		'post_type'      => 'gym-review',
-		'posts_per_page' => (int) $atts['limit'],
+		'posts_per_page' => -1,
 		'post_status'    => 'publish',
 		'orderby'        => 'date',
 		'order'          => 'DESC',
@@ -1649,6 +1688,24 @@ function dx_shortcode_gym_table($atts) {
 	}
 
 	$q = new WP_Query($args);
+ $visit_groups = [];
+ foreach ($q->posts as $visit) $visit_groups[dx_gym_visit_root($visit->ID)][] = $visit;
+ $visit_histories = [];
+ $latest_posts = [];
+ foreach ($visit_groups as $visits) {
+  usort($visits, function ($a, $b) {
+   $a_date = strtotime((string) get_field('visited_date', $a->ID)) ?: 0;
+   $b_date = strtotime((string) get_field('visited_date', $b->ID)) ?: 0;
+   return ($b_date <=> $a_date) ?: (strcmp($b->post_date, $a->post_date) ?: ($b->ID <=> $a->ID));
+  });
+  $latest = array_shift($visits);
+  $latest_posts[] = $latest;
+  $visit_histories[$latest->ID] = array_map(function ($visit) { return dx_gym_visit_snapshot($visit->ID); }, $visits);
+ }
+ if ((int) $atts['limit'] > 0) $latest_posts = array_slice($latest_posts, 0, (int) $atts['limit']);
+ $q->posts = $latest_posts;
+ $q->post_count = count($latest_posts);
+
 
 	$best_dl_score  = null;
 	$worst_dl_score = null;
@@ -1876,25 +1933,6 @@ function dx_shortcode_gym_table($atts) {
 			<div class="dx-gym-comparison__table-wrap" data-gym-comparison-table></div>
 		</section>
 
-		<div class="dx-share-panel" data-gym-share-panel hidden>
-			<div class="dx-share-panel__overlay" data-gym-share-close></div>
-
-			<div class="dx-share-panel__content">
-				<button class="dx-share-panel__close" data-gym-share-close>×</button>
-
-				<h3>Share Comparison</h3>
-
-				<div class="dx-share-panel__field">
-					<input type="text" readonly data-gym-share-input />
-				</div>
-
-				<div class="dx-share-panel__actions">
-					<button type="button" data-gym-share-copy>Copy Link</button>
-				</div>
-
-				<div class="dx-share-panel__status" data-gym-share-status></div>
-			</div>
-		</div>
 	';
 
 	echo '<div class="dx-gyms-grid" data-gyms-grid>';
@@ -1987,6 +2025,7 @@ function dx_shortcode_gym_table($atts) {
 			<article
 				class="dx-gym-card"
 				data-gym-card
+                data-visit-history="' . esc_attr(wp_json_encode($visit_histories[$post_id] ?? [])) . '"
 				data-gym-id="' . esc_attr($post_id) . '"
 				data-chain="' . esc_attr($chain_val ?: 'unknown') . '"
 				data-chain-label="' . esc_attr($chain_lbl) . '"

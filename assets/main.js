@@ -1,3 +1,146 @@
+// Progressive enhancement: original review content remains usable without JavaScript.
+function initGymLeague(archive, cards) {
+ const make = (tag, cls, text) => { const el=document.createElement(tag); el.className=cls; if(text) el.textContent=text; return el; };
+ const tone = value => { const n=Number(value); return value==='' || !Number.isFinite(n) || n<0 ? 'unrated' : n>=9?'diamond':n>=7?'green':n>=5?'amber':n>=3?'red':'maroon'; };
+ const grid=archive.querySelector('[data-gyms-grid]');
+ const header=make('header','league-heading');
+ header.append(make('p','league-eyebrow',`THE GYM LEAGUE · ${cards.length} BRANCHES LOGGED`),make('h2','','The full field.'),make('p','league-intro','Personally visited. Honestly rated. Find your next place to train.'));
+ const watermark=make('span','league-watermark',String(cards.length)); watermark.setAttribute('aria-hidden','true'); header.append(watermark);
+ const legend=make('div','league-legend');
+ [['diamond','9–10 Exceptional'],['green','7–8.9 Positive'],['amber','5–6.9 Mixed'],['red','3–4.9 Poor'],['maroon','0–2.9 Diabolical'],['unrated','— Not assessed / N/A Unavailable']].forEach(([t,label])=>{const item=make('span','',label);item.dataset.tone=t;legend.append(item);});
+ header.append(legend);
+ const method=make('details','league-method'); method.append(make('summary','','How I score gyms'));
+ method.append(make('p','','Overall ratings are weighted: gym ×2, wetside ×1.5, spa ×1.5, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded. Ratings reflect my visit and membership tier; a zero is a scored result.'));
+ header.append(method); archive.prepend(header);
+ archive.querySelector('.gym-view-toggle')?.remove();
+ archive.querySelectorAll('.gym-filter-buttons button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('is-active'))));
+ const tray=archive.querySelector('[data-gym-compare-bar]'); if(tray)archive.append(tray);
+ const layout=make('div','league-layout'); grid.before(layout);
+ const left=make('div','league-list-pane'); layout.append(left); left.append(grid);
+ archive.querySelector('.gym-pagination')?.remove();
+ const panel=make('aside','league-detail'); panel.id='gym-branch-detail'; panel.setAttribute('aria-label','Selected branch details');
+ layout.append(panel);
+ const count=make('p','league-result-count'); count.setAttribute('role','status'); layout.before(count);
+ const columns=make('div','league-columns'); columns.setAttribute('aria-hidden','true'); ['POS','BRANCH','OVERALL','COMPARE'].forEach(s=>columns.append(make('span','',s))); grid.prepend(columns);
+ let selected=null;
+ const media=window.matchMedia('(min-width: 992px)');
+ const details=new Map();
+ const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+ let animationFrame=0;
+ let pendingAnimation=null;
+ const animationObserver=new IntersectionObserver(entries=>{
+  if(entries.some(entry=>entry.isIntersecting)&&pendingAnimation){
+   animationObserver.disconnect();
+   const start=pendingAnimation; pendingAnimation=null; start();
+  }
+ },{threshold:0.15});
+ function stopAnimation(){cancelAnimationFrame(animationFrame);animationObserver.disconnect();pendingAnimation=null;}
+ function animateDetails(card){
+  stopAnimation();
+  const total=panel.querySelector('.league-total');
+  const target=Number(card.dataset.overall);
+  const rated=card.dataset.overall!==''&&Number.isFinite(target)&&target>=0;
+  const bars=[...panel.querySelectorAll('.dx-score-block[data-score] .dx-score-bar span')];
+  const paint=progress=>{
+   if(rated){
+    const current=target*progress;
+    total.textContent=progress===1?card.dataset.overallLabel:`${(current*10).toFixed(1)}%`;
+    total.dataset.tone=tone(current);
+   }
+   bars.forEach(bar=>{
+    const block=bar.closest('[data-score]');
+    const value=Number(block.dataset.score);
+    block.dataset.tone=tone(value*progress);
+    bar.style.transform=`scaleX(${Math.max(0,Math.min(1,value/10))*progress})`;
+   });
+  };
+  if(reducedMotion.matches){paint(1);return;}
+  paint(0);
+  pendingAnimation=()=>{
+   let started;
+   const tick=now=>{
+    if(reducedMotion.matches){paint(1);return;}
+    started??=now;
+    const fraction=Math.min(1,(now-started)/1200);
+    paint(1-Math.pow(1-fraction,3));
+    if(fraction<1)animationFrame=requestAnimationFrame(tick);
+   };
+   animationFrame=requestAnimationFrame(tick);
+  };
+  animationObserver.observe(total);
+ }
+ // Hidden overflow on WordPress cover wrappers would otherwise capture sticky positioning.
+ for(let parent=archive.parentElement;parent&&parent!==document.documentElement;parent=parent.parentElement){
+  const style=getComputedStyle(parent);
+  if(style.overflowX==='hidden'||style.overflowY==='hidden')parent.classList.add('league-sticky-ancestor');
+ }
+ const stickyHeaders=[...document.querySelectorAll('.navbar, #wpadminbar')];
+ const updateStickyOffset=()=>{
+  const bottom=stickyHeaders.reduce((offset,el)=>{
+   const position=getComputedStyle(el).position;
+   return position==='fixed'||position==='sticky'?Math.max(offset,el.getBoundingClientRect().bottom):offset;
+  },0);
+  const safeTop=Math.max(16,bottom+16);
+  archive.style.setProperty('--league-sticky-safe-top',`${safeTop}px`);
+  const height=panel.getBoundingClientRect().height;
+  const available=Math.max(0,window.innerHeight-safeTop-16);
+  const centered=safeTop+Math.max(0,(available-height)/2);
+  archive.style.setProperty('--league-sticky-top',`${centered}px`);
+ };
+ const headerObserver=new ResizeObserver(updateStickyOffset);
+ stickyHeaders.forEach(el=>headerObserver.observe(el));
+ headerObserver.observe(panel);
+ window.addEventListener('resize',updateStickyOffset,{passive:true});
+ updateStickyOffset();
+ const ranks=new Map([...cards].sort((a,b)=>Number(b.dataset.overall)-Number(a.dataset.overall)||a.dataset.branch.localeCompare(b.dataset.branch)).map((c,i)=>[c,i+1]));
+ cards.forEach(card=>{
+  const content=make('div','league-detail-content');
+  content.append(make('p','league-eyebrow','BRANCH DETAILS'),make('h3','',card.dataset.branchLabel),make('p','league-detail-chain',card.dataset.chainLabel));
+  const loc=card.querySelector('.dx-gym-card__subtitle'); if(loc)content.append(loc.cloneNode(true));
+  const score=make('div','league-total',card.dataset.overallLabel);score.dataset.tone=tone(card.dataset.overall);score.setAttribute('role','img');score.setAttribute('aria-label',`${card.dataset.overallLabel} overall rating`);content.append(score,make('p','league-total-label','OVERALL RATING'));
+  const awards=make('div','league-awards'); card.querySelectorAll('.dx-badge--rank,.dx-badge--category').forEach(b=>awards.append(b.cloneNode(true)));content.append(awards);
+  const scores=card.querySelector('.dx-gym-card__scores')?.cloneNode(true);
+  if(scores){scores.querySelectorAll('.dx-score-block').forEach(block=>{block.dataset.tone=tone(block.dataset.score??'');});content.append(scores);}
+  content.append(make('h4','league-notes-title','Field notes'));
+  const notes=make('div','league-notes');const original=card.querySelector('[data-notes-panel]');if(original)notes.innerHTML=original.innerHTML; content.append(notes);
+  content.append(make('p','league-visit',`Visited ${card.dataset.visitedLabel} · ${card.dataset.membership}`));
+  let history=[];
+  try { history=JSON.parse(card.dataset.visitHistory||'[]'); } catch { history=[]; }
+  if(history.length){
+   const visits=make('details','league-history');
+   visits.append(make('summary','',`Visit history · ${history.length+1} reviews`));
+   visits.append(make('p','league-visit','The latest dated visit sets the league rating. Earlier visits are retained below.'));
+   history.forEach(visit=>{
+    const entry=make('article','league-history-entry');
+    entry.append(make('h4','',visit.date||'Date not recorded'));
+    const overall=make('strong','',visit.overall===null?'Not assessed':`${Math.round(visit.overall*100)/10}%`);
+    overall.dataset.tone=tone(visit.overall===null?'':visit.overall);entry.append(overall);
+    const list=make('dl','league-history-scores');
+    Object.entries(visit.scores).forEach(([label,value])=>{
+     list.append(make('dt','',label),make('dd','',value===null?'Not assessed':value==='unavailable'?'Unavailable':`${value}/10`));
+    });
+    entry.append(list,make('p','',visit.notes));
+    const link=make('a','','Read this visit ↗');link.href=visit.url;entry.append(link);visits.append(entry);
+   });
+   content.append(visits);
+  }
+  const review=make('a','league-review','Read full review ↗');review.href=card.dataset.link;content.append(review);details.set(card,content);
+  const btn=make('button','league-select');btn.type='button';btn.setAttribute('aria-controls',panel.id);btn.setAttribute('aria-expanded','false');
+  const info=make('span','league-row-info');info.append(make('strong','',card.dataset.branchLabel),make('small','',`${card.dataset.chainLabel}${loc?' · '+loc.textContent.replace('📍','').trim():''}`));
+  const value=make('strong','league-row-score',card.dataset.overallLabel);value.dataset.tone=tone(card.dataset.overall);
+  btn.append(make('span','league-rank',String(ranks.get(card)).padStart(2,'0')),info,value);
+  btn.addEventListener('click',()=>{if(selected===card&&!media.matches){stopAnimation();selected=null;panel.hidden=true;syncSelection();}else select(card);});
+  const compare=card.querySelector('[data-gym-compare-toggle]');if(compare){compare.setAttribute('aria-label',`Compare ${card.dataset.branchLabel}`);compare.querySelector('.label-add').textContent='+';compare.querySelector('.label-remove').textContent='✓';}
+  card.prepend(btn);
+ });
+ function syncSelection(){cards.forEach(c=>{c.classList.toggle('is-current',c===selected);c.querySelector('.league-select').setAttribute('aria-expanded',String(c===selected&&!panel.hidden));});}
+ function place(){if(selected&&!panel.hidden){if(media.matches)layout.append(panel);else selected.after(panel);}else layout.append(panel);}
+ function select(card){selected=card;panel.replaceChildren(details.get(card));panel.hidden=false;panel.scrollTop=0;syncSelection();place();updateStickyOffset();animateDetails(card);}
+ media.addEventListener('change',place);
+ archive.classList.add('is-premium-league');
+ return { update(ordered, visibleCount){ const shown=ordered.slice(0,visibleCount);count.textContent=`${shown.length} of ${ordered.length} branches shown`; if(!shown.length){stopAnimation();selected=null;panel.hidden=true;syncSelection();place();}else if(!selected||!shown.includes(selected))select(shown[0]);else place(); } };
+}
+
 // Webpack Imports
 import * as bootstrap from 'bootstrap';
 
@@ -1231,6 +1374,7 @@ import * as bootstrap from 'bootstrap';
 		};
 
 
+
 		const update = () => {
 			const q = (search?.value || '').trim().toLowerCase();
 
@@ -1315,6 +1459,7 @@ import * as bootstrap from 'bootstrap';
 		if (!grid) return;
 
 		const allCards = [...grid.querySelectorAll('[data-gym-card]')];
+		const league = initGymLeague(archive, allCards);
 
 		const LABELS = {
 			all: 'All',
@@ -1327,7 +1472,7 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		let activeChain = buttons.find((btn) => btn.classList.contains('is-active'))?.dataset.chain || 'all';
-		let visibleCount = 6;
+		let visibleCount = 10;
 		let selectedGyms = [];
 		let compareMap = null;
 		let compareMarkers = [];
@@ -1452,6 +1597,7 @@ import * as bootstrap from 'bootstrap';
 
 		const openSharePanel = () => {
 			if (!sharePanel || selectedGyms.length < 2) return;
+			sharePanel.hidden = false;
 
 			if (shareInput) {
 				shareInput.value = getShareUrl();
@@ -1681,7 +1827,10 @@ import * as bootstrap from 'bootstrap';
 			compareSelected.innerHTML = selectedGyms.map((id) => {
 				const card = allCards.find((item) => item.getAttribute('data-gym-id') === id);
 				const label = card?.getAttribute('data-branch-label') || 'Gym';
-				return `<span class="dx-gym-compare-chip">${label}</span>`;
+				const chip = document.createElement('button');
+				chip.type = 'button'; chip.className = 'dx-gym-compare-chip'; chip.dataset.removeGym = id;
+				chip.textContent = label + ' ×'; chip.setAttribute('aria-label', 'Remove ' + label + ' from comparison');
+				return chip.outerHTML;
 			}).join('');
 
 			allCards.forEach((card) => {
@@ -1705,12 +1854,21 @@ import * as bootstrap from 'bootstrap';
 			syncShareUrl();
 		};
 
+        let observedLast = null;
+        const moreObserver = new IntersectionObserver(entries => {
+            if (!entries.some(entry => entry.isIntersecting && entry.target === observedLast)) return;
+            moreObserver.disconnect();
+            observedLast = null;
+            visibleCount += 10;
+            update();
+        }, { rootMargin: '0px 0px 180px 0px', threshold: 0 });
+
 		const update = () => {
 			const q = (search?.value || '').trim().toLowerCase();
 
 			const eligible = allCards.filter((card) => {
 				const chain = card.getAttribute('data-chain') || 'unknown';
-				const chainOk = activeChain === 'all' || chain === activeChain;
+				const chainOk = activeChain === 'all' || chain === activeChain || (activeChain === 'other' && !Object.prototype.hasOwnProperty.call(LABELS, chain));
 
 				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
 				const searchOk = !q || haystack.includes(q);
@@ -1734,38 +1892,37 @@ import * as bootstrap from 'bootstrap';
 				emptyEl.hidden = ordered.length !== 0;
 			}
 
-			if (loadMore) {
-				loadMore.hidden = ordered.length <= visibleCount;
-			}
+			moreObserver.disconnect();
+            observedLast = ordered.length > visibleCount ? ordered[Math.min(visibleCount, ordered.length)-1] : null;
+            if (observedLast) moreObserver.observe(observedLast);
 
 			updateTitle();
+			league.update(ordered, visibleCount);
 		};
 
 		buttons.forEach((btn) => {
 			btn.addEventListener('click', () => {
-				buttons.forEach((b) => b.classList.remove('is-active'));
+				buttons.forEach((b) => { b.classList.remove('is-active'); b.setAttribute('aria-pressed', 'false'); });
+				btn.setAttribute('aria-pressed', 'true');
 				btn.classList.add('is-active');
 
 				activeChain = btn.dataset.chain || 'all';
-				visibleCount = 6;
+				visibleCount = 10;
 				update();
 			});
 		});
 
 		search?.addEventListener('input', () => {
-			visibleCount = 6;
+			visibleCount = 10;
 			update();
 		});
 
 		sortSel?.addEventListener('change', () => {
-			visibleCount = 6;
+			visibleCount = 10;
 			update();
 		});
 
-		loadMore?.addEventListener('click', () => {
-			visibleCount += 6;
-			update();
-		});
+
 
 		viewBtns.forEach((btn) => {
 			btn.addEventListener('click', () => {
@@ -1815,6 +1972,13 @@ import * as bootstrap from 'bootstrap';
 			renderComparison();
 			comparison?.removeAttribute('hidden');
 			comparison?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		});
+
+		compareSelected?.addEventListener('click', (event) => {
+			const button = event.target.closest('[data-remove-gym]');
+			if (!button) return;
+			selectedGyms = selectedGyms.filter(id => id !== button.dataset.removeGym);
+			updateCompareBar(); renderComparison();
 		});
 
 		compareClear?.addEventListener('click', () => {
