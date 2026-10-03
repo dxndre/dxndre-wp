@@ -1604,6 +1604,7 @@ function dx_render_facility_score($value) {
 // Keep chain choices available even when an existing ACF group is stored in the database.
 add_filter('acf/load_field/key=field_dx_gym_chain', function ($field) {
 	$field['choices']['fitnessfirst'] = 'Fitness First';
+	$field['choices']['gymbox'] = 'Gymbox';
 	$field['choices']['thegymgroup'] = 'The Gym Group';
 	return $field;
 });
@@ -1613,6 +1614,7 @@ function dx_gym_chain_label($value) {
 		'davidlloyds'  => 'David Lloyds',
 		'puregym'      => 'PureGym',
 		'fitnessfirst' => 'Fitness First',
+		'gymbox'       => 'Gymbox',
 		'virginactive' => 'Virgin Active',
 		'bodyworks'    => 'Bodyworks Gym',
 		'thegymgroup'  => 'The Gym Group',
@@ -1801,6 +1803,7 @@ function dx_shortcode_gym_table($atts) {
 		'davidlloyds'  => 0,
 		'puregym'      => 0,
 		'fitnessfirst' => 0,
+		'gymbox'       => 0,
 		'virginactive' => 0,
 		'bodyworks'    => 0,
 		'thegymgroup'  => 0,
@@ -1845,6 +1848,7 @@ function dx_shortcode_gym_table($atts) {
 				<button data-chain="bodyworks">Bodyworks Gym (' . intval($chain_counts['bodyworks']) . ')</button>
 				<button data-chain="thegymgroup">The Gym Group (' . intval($chain_counts['thegymgroup']) . ')</button>
 				<button data-chain="fitnessfirst">Fitness First (' . intval($chain_counts['fitnessfirst']) . ')</button>
+				<button data-chain="gymbox">Gymbox (' . intval($chain_counts['gymbox']) . ')</button>
 				<button data-chain="other">Other (' . intval($chain_counts['other']) . ')</button>
 			</div>
 
@@ -2046,7 +2050,7 @@ function dx_shortcode_gym_table($atts) {
 				data-visited-ts="' . esc_attr($visited_ts) . '"
 				data-visited-label="' . esc_attr($visited) . '"
 				data-overall="' . esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1) . '"
-				data-overall-label="' . esc_attr($overall !== null ? rtrim(rtrim(number_format($overall * 10, 1), '0'), '.') . '%' : 'No rating') . '"
+				data-overall-label="' . esc_attr($overall !== null ? number_format($overall * 10, 1, '.', '') . '%' : 'No rating') . '"
 				data-gym-score="' . esc_attr(is_numeric($sGym) ? $sGym : '') . '"
 				data-swim-score="' . esc_attr(is_numeric($sSwim) ? $sSwim : '') . '"
 				data-spa-score="' . esc_attr(is_numeric($sSpa) ? $sSpa : '') . '"
@@ -2087,7 +2091,7 @@ function dx_shortcode_gym_table($atts) {
 							<span class="emoji">' . esc_html($overall_emoji) . '</span>
 							<span class="text">' . (
 								$overall !== null
-								? esc_html(rtrim(rtrim(number_format($overall * 10, 1), '0'), '.')) . '%'
+								? esc_html(number_format($overall * 10, 1, '.', '')) . '%'
 								: 'No rating'
 							) . '</span>
 						</span>

@@ -2,15 +2,48 @@
 function initGymLeague(archive, cards) {
  const make = (tag, cls, text) => { const el=document.createElement(tag); el.className=cls; if(text) el.textContent=text; return el; };
  const tone = value => { const n=Number(value); return value==='' || !Number.isFinite(n) || n<0 ? 'unrated' : n>=9?'diamond':n>=7?'green':n>=5?'amber':n>=3?'red':'maroon'; };
+ // Twelve equal units: one unit at either extreme, two for each middle band.
+ const bands=[
+  {tone:'maroon',label:'Diabolical',range:'0–<8⅓%',min:0,width:100/12,color:'#8c354b',emoji:'💩'},
+  {tone:'bad',label:'Bad',range:'8⅓–<25%',min:10/12,width:100/6,color:'#d85b70',emoji:'😡'},
+  {tone:'red',label:'Poor',range:'25–<41⅔%',min:2.5,width:100/6,color:'#ef8585',emoji:'👎🏾'},
+  {tone:'amber',label:'Mixed',range:'41⅔–<58⅓%',min:50/12,width:100/6,color:'#e5a653',emoji:'🤷🏽‍♂️'},
+  {tone:'green',label:'Positive',range:'58⅓–<75%',min:70/12,width:100/6,color:'#82c995',emoji:'👍🏾'},
+  {tone:'great',label:'Great',range:'75–<91⅔%',min:7.5,width:100/6,color:'#6ed9c5',emoji:'🤩'},
+  {tone:'diamond',label:'Exceptional',range:'91⅔–100%',min:110/12,width:100/12,color:'#b9eaff',emoji:'💎'}
+ ];
+ const overallBand = value => { const n=Number(value); return value==='' || !Number.isFinite(n) || n<0 ? {tone:'unrated',label:'Not assessed',emoji:''} : [...bands].reverse().find(band=>n>=band.min); };
+ const overallTone = value => overallBand(value).tone;
+ const ratingEmoji = Object.fromEntries(bands.map(band=>[band.tone,band.emoji]));
+ ratingEmoji.unrated='';
  const grid=archive.querySelector('[data-gyms-grid]');
  const header=make('header','league-heading');
  header.append(make('p','league-eyebrow',`THE GYM LEAGUE · ${cards.length} BRANCHES LOGGED`),make('h2','','The full field.'),make('p','league-intro','Personally visited. Honestly rated. Find your next place to train.'));
  const watermark=make('span','league-watermark',String(cards.length)); watermark.setAttribute('aria-hidden','true'); header.append(watermark);
  const legend=make('div','league-legend');
- [['diamond','9–10 Exceptional'],['green','7–8.9 Positive'],['amber','5–6.9 Mixed'],['red','3–4.9 Poor'],['maroon','0–2.9 Diabolical'],['unrated','— Not assessed / N/A Unavailable']].forEach(([t,label])=>{const item=make('span','',label);item.dataset.tone=t;legend.append(item);});
+ [...bands].reverse().forEach(band=>{const item=make('span','',`${band.range} ${band.label}`);item.dataset.tone=band.tone;legend.append(item);});
+ legend.append(make('span','','— Not assessed / N/A Unavailable'));
  header.append(legend);
- const method=make('details','league-method'); method.append(make('summary','','How I score gyms'));
- method.append(make('p','','Overall ratings are weighted: gym ×2, wetside ×1.5, spa ×1.5, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded. Ratings reflect my visit and membership tier; a zero is a scored result.'));
+ const method=make('button','league-method-trigger','How I score gyms');
+ method.type='button';method.setAttribute('aria-haspopup','dialog');method.setAttribute('aria-controls','league-scoring-guide');
+ const guide=make('dialog','league-scoring-guide');guide.id='league-scoring-guide';guide.setAttribute('aria-labelledby','league-scoring-title');
+ const close=make('button','league-scoring-close','Close ×');close.type='button';close.setAttribute('aria-label','Close scoring guide');
+ const title=make('h2','','How I score gyms');title.id='league-scoring-title';
+ guide.append(close,title,make('p','','Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.'));
+ guide.append(make('p','','The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×1.5, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.'));
+ guide.append(make('h3','','Overall rating scale'));
+ const scale=make('div','league-scale');scale.setAttribute('aria-hidden','true');
+ bands.forEach(band=>{const segment=make('span','');segment.style.width=`${band.width}%`;segment.style.backgroundColor=band.color;scale.append(segment);});
+ const axis=make('div','league-scale-axis');axis.setAttribute('aria-hidden','true');
+ [0,25,50,75,100].forEach(value=>{const tick=make('span','',`${value}%`);tick.style.left=`${value}%`;axis.append(tick);});
+ const key=make('ul','league-scale-key');
+ [...bands].reverse().forEach(band=>{const row=make('li','');const swatch=make('span','league-scale-swatch');swatch.style.backgroundColor=band.color;swatch.setAttribute('aria-hidden','true');row.append(swatch,make('span','',`${band.emoji} ${band.label}`),make('span','league-scale-range',band.range));key.append(row);});
+ guide.append(scale,axis,key,make('p','league-scoring-note','Individual category scores retain their own scale: Exceptional 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.'));
+ document.body.append(guide);
+ method.addEventListener('click',()=>guide.showModal());
+ close.addEventListener('click',()=>guide.close());
+ guide.addEventListener('click',event=>{if(event.target!==guide)return;const bounds=guide.getBoundingClientRect();if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)guide.close();});
+ guide.addEventListener('close',()=>method.focus({preventScroll:true}));
  header.append(method); archive.prepend(header);
  archive.querySelector('.gym-view-toggle')?.remove();
  archive.querySelectorAll('.gym-filter-buttons button').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('is-active'))));
@@ -44,8 +77,10 @@ function initGymLeague(archive, cards) {
   const paint=progress=>{
    if(rated){
     const current=target*progress;
-    total.textContent=progress===1?card.dataset.overallLabel:`${(current*10).toFixed(1)}%`;
-    total.dataset.tone=tone(current);
+    total.querySelector('.league-total-number').textContent=progress===1?card.dataset.overallLabel:`${(current*10).toFixed(1)}%`;
+    total.dataset.tone=overallTone(current);
+    total.querySelector('.league-total-emoji').textContent=overallBand(current).emoji;
+    total.querySelector('.league-total-rating-label').textContent=overallBand(current).label;
    }
    bars.forEach(bar=>{
     const block=bar.closest('[data-score]');
@@ -97,7 +132,9 @@ function initGymLeague(archive, cards) {
   const content=make('div','league-detail-content');
   content.append(make('p','league-eyebrow','BRANCH DETAILS'),make('h3','',card.dataset.branchLabel),make('p','league-detail-chain',card.dataset.chainLabel));
   const loc=card.querySelector('.dx-gym-card__subtitle'); if(loc)content.append(loc.cloneNode(true));
-  const score=make('div','league-total',card.dataset.overallLabel);score.dataset.tone=tone(card.dataset.overall);score.setAttribute('role','img');score.setAttribute('aria-label',`${card.dataset.overallLabel} overall rating`);content.append(score,make('p','league-total-label','OVERALL RATING'));
+  const score=make('div','league-total');score.dataset.tone=overallTone(card.dataset.overall);
+  const number=make('span','league-total-number',card.dataset.overallLabel);
+  const emoji=make('span','league-total-emoji',ratingEmoji[overallTone(card.dataset.overall)]);emoji.setAttribute('aria-hidden','true');const badge=make('span','league-total-rating');badge.setAttribute('aria-hidden','true');badge.append(emoji,make('span','league-total-rating-label',overallBand(card.dataset.overall).label));score.append(number,badge);score.setAttribute('role','img');score.setAttribute('aria-label',`${card.dataset.overallLabel} overall rating, ${overallBand(card.dataset.overall).label}`);content.append(score,make('p','league-total-label','OVERALL RATING'));
   const awards=make('div','league-awards'); card.querySelectorAll('.dx-badge--rank,.dx-badge--category').forEach(b=>awards.append(b.cloneNode(true)));content.append(awards);
   const scores=card.querySelector('.dx-gym-card__scores')?.cloneNode(true);
   if(scores){scores.querySelectorAll('.dx-score-block').forEach(block=>{block.dataset.tone=tone(block.dataset.score??'');});content.append(scores);}
@@ -113,8 +150,8 @@ function initGymLeague(archive, cards) {
    history.forEach(visit=>{
     const entry=make('article','league-history-entry');
     entry.append(make('h4','',visit.date||'Date not recorded'));
-    const overall=make('strong','',visit.overall===null?'Not assessed':`${Math.round(visit.overall*100)/10}%`);
-    overall.dataset.tone=tone(visit.overall===null?'':visit.overall);entry.append(overall);
+    const overall=make('strong','',visit.overall===null?'Not assessed':`${(visit.overall*10).toFixed(1)}%`);
+    overall.dataset.tone=overallTone(visit.overall===null?'':visit.overall);entry.append(overall);
     const list=make('dl','league-history-scores');
     Object.entries(visit.scores).forEach(([label,value])=>{
      list.append(make('dt','',label),make('dd','',value===null?'Not assessed':value==='unavailable'?'Unavailable':`${value}/10`));
@@ -127,7 +164,7 @@ function initGymLeague(archive, cards) {
   const review=make('a','league-review','Read full review ↗');review.href=card.dataset.link;content.append(review);details.set(card,content);
   const btn=make('button','league-select');btn.type='button';btn.setAttribute('aria-controls',panel.id);btn.setAttribute('aria-expanded','false');
   const info=make('span','league-row-info');info.append(make('strong','',card.dataset.branchLabel),make('small','',`${card.dataset.chainLabel}${loc?' · '+loc.textContent.replace('📍','').trim():''}`));
-  const value=make('strong','league-row-score',card.dataset.overallLabel);value.dataset.tone=tone(card.dataset.overall);
+  const value=make('strong','league-row-score',card.dataset.overallLabel);value.dataset.tone=overallTone(card.dataset.overall);
   btn.append(make('span','league-rank',String(ranks.get(card)).padStart(2,'0')),info,value);
   btn.addEventListener('click',()=>{if(selected===card&&!media.matches){stopAnimation();selected=null;panel.hidden=true;syncSelection();}else select(card);});
   const compare=card.querySelector('[data-gym-compare-toggle]');if(compare){compare.setAttribute('aria-label',`Compare ${card.dataset.branchLabel}`);compare.querySelector('.label-add').textContent='+';compare.querySelector('.label-remove').textContent='✓';}
@@ -1466,6 +1503,7 @@ import * as bootstrap from 'bootstrap';
 			davidlloyds: 'David Lloyd',
 			puregym: 'PureGym',
 			fitnessfirst: 'Fitness First',
+			gymbox: 'Gymbox',
 			virginactive: 'Virgin Active',
 			bodyworks: 'Bodyworks Gym',
 			thegymgroup: 'The Gym Group',

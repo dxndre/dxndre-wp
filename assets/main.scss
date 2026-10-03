@@ -9368,6 +9368,8 @@ body.league-sticky-ancestor:not(.nav-open) {
 		$color
 			in (
 				diamond: #b9eaff,
+		great: #6ed9c5,
+		bad: #d85b70,
 				green: #82c995,
 				amber: #e5a653,
 				red: #ef8585,
@@ -9745,7 +9747,7 @@ body.league-sticky-ancestor:not(.nav-open) {
 			height: 5px;
 			margin-top: 0.65rem;
 			background: #ffffff12;
-			overflow: hidden;
+			overflow: visible;
 			span {
 				display: block;
 				width: 100%;
@@ -9759,6 +9761,27 @@ body.league-sticky-ancestor:not(.nav-open) {
 				opacity: 1;
 			}
 		}
+		.dx-score-block[data-score='10'][data-tone='diamond'] .dx-score-bar span {
+			animation: league-diamond-glow 2.4s ease-in-out infinite;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+				box-shadow: 0 0 6px rgba(185, 234, 255, 0.35);
+			}
+		}
+
+		// Zero is a scored result: animate the track because its fill is empty.
+		.dx-score-block[data-score='0'] .dx-score-bar {
+			background-color: #35101a;
+			animation: league-zero-glow 2.4s ease-in-out infinite;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+				background-color: #5b1e2e;
+				box-shadow: 0 0 6px rgba(140, 53, 75, 0.35);
+			}
+		}
+
 		.is-unavailable .dx-score-bar,
 		.is-didnt-use .dx-score-bar {
 			display: none;
@@ -9774,6 +9797,10 @@ body.league-sticky-ancestor:not(.nav-open) {
 		font-size: 0.8rem;
 	}
 	.league-total {
+		flex-wrap: wrap;
+		display: flex;
+		align-items: center;
+		gap: 0.25em;
 		transition: color 120ms linear;
 		@media (prefers-reduced-motion: reduce) {
 			transition: none;
@@ -9784,6 +9811,27 @@ body.league-sticky-ancestor:not(.nav-open) {
 		margin-top: 1.5rem;
 		font-variant-numeric: tabular-nums;
 	}
+	.league-total-rating {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-size: 1rem;
+		min-width: 0;
+	}
+
+	.league-total-rating-label {
+		font-size: 0.65rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		font-weight: 500;
+	}
+
+	.league-total-emoji {
+		font-size: 1.75rem;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
 	.league-total-label {
 		font-size: 0.65rem;
 		letter-spacing: 0.15em;
@@ -9862,5 +9910,76 @@ body.league-sticky-ancestor:not(.nav-open) {
 		margin-top: 2rem;
 		background: #15120ff5;
 		border-color: #514330;
+	}
+}
+
+@keyframes league-diamond-glow {
+	0%, 100% {
+		box-shadow: 0 0 3px rgba(185, 234, 255, 0.3), 0 0 7px rgba(185, 234, 255, 0.15);
+	}
+	50% {
+		box-shadow: 0 0 8px rgba(185, 234, 255, 0.75), 0 0 18px rgba(185, 234, 255, 0.4);
+	}
+}
+
+// Scoring guide is mounted under body to avoid clipped or transformed page wrappers.
+#main .gym-archive.is-premium-league .league-method-trigger {
+	position: relative;
+	padding: 0.5rem 0;
+	border: 0;
+	background: transparent;
+	color: #eeeae2;
+	font: inherit;
+	text-decoration: underline;
+	text-underline-offset: 0.3em;
+	cursor: pointer;
+}
+
+dialog.league-scoring-guide {
+	box-sizing: border-box;
+	width: calc(100% - 2rem);
+	max-width: 720px;
+	max-height: calc(100dvh - 2rem);
+	margin: auto;
+	padding: 1.25rem;
+	border: 1px solid #514330;
+	background: #15120f;
+	color: #eeeae2;
+	font-family: inherit;
+	overflow-y: auto;
+
+	@include media-breakpoint-up(md) {
+		padding: 2.5rem;
+	}
+
+	&::backdrop { background: rgba(0, 0, 0, 0.78); }
+	&:not([open]) { display: none; }
+	:focus-visible { outline: 2px solid #b9eaff; outline-offset: 4px; }
+	h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 1rem; clear: both; }
+	h3 { font-size: 1.1rem; margin: 1.5rem 0 1rem; }
+	p { font-size: 0.95rem; line-height: 1.7; color: #c1b7aa; }
+	.league-scoring-close { display: block; margin: 0 0 1rem auto; min-height: 44px; padding: 0.5rem; border: 0; background: transparent; color: #eeeae2; font: inherit; cursor: pointer; }
+	.league-scale { display: flex; height: 28px; margin-bottom: 0.5rem; }
+	.league-scale-axis { position: relative; height: 2rem; font-size: 0.7rem; font-variant-numeric: tabular-nums;
+		span { position: absolute; transform: translateX(-50%); }
+		span:first-child { transform: none; }
+		span:last-child { transform: translateX(-100%); }
+	}
+	.league-scale-key { list-style: none; padding: 0; margin: 0;
+		li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 0.5rem; align-items: center; padding: 0.6rem 0; font-size: 0.85rem; }
+	}
+	.league-scale-swatch { width: 14px; height: 14px; }
+	.league-scale-range { font-variant-numeric: tabular-nums; }
+	.league-scoring-note { margin-top: 1.5rem; font-size: 0.8rem; }
+}
+
+@keyframes league-zero-glow {
+	0%, 100% {
+		background-color: #35101a;
+		box-shadow: 0 0 3px rgba(140, 53, 75, 0.2);
+	}
+	50% {
+		background-color: #8c354b;
+		box-shadow: 0 0 8px rgba(140, 53, 75, 0.65), 0 0 16px rgba(140, 53, 75, 0.3);
 	}
 }
