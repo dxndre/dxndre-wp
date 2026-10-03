@@ -1601,10 +1601,18 @@ function dx_render_facility_score($value) {
 	);
 }
 
+// Keep chain choices available even when an existing ACF group is stored in the database.
+add_filter('acf/load_field/key=field_dx_gym_chain', function ($field) {
+	$field['choices']['fitnessfirst'] = 'Fitness First';
+	$field['choices']['thegymgroup'] = 'The Gym Group';
+	return $field;
+});
+
 function dx_gym_chain_label($value) {
 	$map = [
 		'davidlloyds'  => 'David Lloyds',
 		'puregym'      => 'PureGym',
+		'fitnessfirst' => 'Fitness First',
 		'virginactive' => 'Virgin Active',
 		'bodyworks'    => 'Bodyworks Gym',
 		'thegymgroup'  => 'The Gym Group',
@@ -1792,6 +1800,7 @@ function dx_shortcode_gym_table($atts) {
 		'all'          => 0,
 		'davidlloyds'  => 0,
 		'puregym'      => 0,
+		'fitnessfirst' => 0,
 		'virginactive' => 0,
 		'bodyworks'    => 0,
 		'thegymgroup'  => 0,
@@ -1835,6 +1844,7 @@ function dx_shortcode_gym_table($atts) {
 				<button data-chain="virginactive">Virgin Active (' . intval($chain_counts['virginactive']) . ')</button>
 				<button data-chain="bodyworks">Bodyworks Gym (' . intval($chain_counts['bodyworks']) . ')</button>
 				<button data-chain="thegymgroup">The Gym Group (' . intval($chain_counts['thegymgroup']) . ')</button>
+				<button data-chain="fitnessfirst">Fitness First (' . intval($chain_counts['fitnessfirst']) . ')</button>
 				<button data-chain="other">Other (' . intval($chain_counts['other']) . ')</button>
 			</div>
 

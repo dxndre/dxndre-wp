@@ -19,6 +19,7 @@
             "choices": {
                 "davidlloyds": "David Lloyds",
                 "puregym": "PureGym",
+                "fitnessfirst": "Fitness First",
                 "virginactive": "Virgin Active",
                 "bodyworks": "Bodyworks Gym",
                 "thegymgroup": "The Gym Group",
@@ -416,5 +417,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1774407266
+    "modified": 1790985986
 }

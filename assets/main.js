@@ -1465,6 +1465,7 @@ import * as bootstrap from 'bootstrap';
 			all: 'All',
 			davidlloyds: 'David Lloyd',
 			puregym: 'PureGym',
+			fitnessfirst: 'Fitness First',
 			virginactive: 'Virgin Active',
 			bodyworks: 'Bodyworks Gym',
 			thegymgroup: 'The Gym Group',
