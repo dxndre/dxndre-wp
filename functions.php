@@ -2046,6 +2046,7 @@ function dx_shortcode_gym_table($atts) {
 				data-search="' . esc_attr($search_blob) . '"
 				data-branch="' . esc_attr(strtolower($branch)) . '"
 				data-branch-label="' . esc_attr($branch) . '"
+				data-featured-image="' . esc_url(get_the_post_thumbnail_url($post_id, 'large') ?: '') . '"
 				data-link="' . esc_url(get_permalink()) . '"
 				data-visited-ts="' . esc_attr($visited_ts) . '"
 				data-visited-label="' . esc_attr($visited) . '"
@@ -2642,3 +2643,7 @@ function dx_shortcode_bus_journeys_archive() {
 }
 add_shortcode('bus_nfs_archive', 'dx_shortcode_bus_journeys_archive');
 add_shortcode('bus_journeys_archive', 'dx_shortcode_bus_journeys_archive');
+// Make featured images available in the gym review editor.
+add_action('init', function () {
+	add_post_type_support('gym-review', 'thumbnail');
+}, 100);

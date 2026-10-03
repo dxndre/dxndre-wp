@@ -130,6 +130,17 @@ function initGymLeague(archive, cards) {
  const ranks=new Map([...cards].sort((a,b)=>Number(b.dataset.overall)-Number(a.dataset.overall)||a.dataset.branch.localeCompare(b.dataset.branch)).map((c,i)=>[c,i+1]));
  cards.forEach(card=>{
   const content=make('div','league-detail-content');
+		if (card.dataset.featuredImage) {
+			const image = make('img', 'league-detail-image');
+			image.alt = '';
+			image.setAttribute('aria-hidden', 'true');
+			image.loading = 'lazy';
+			image.decoding = 'async';
+			image.src = card.dataset.featuredImage;
+			const frame = make('div', 'league-detail-image-frame');
+			frame.append(image);
+			content.append(frame);
+		}
   content.append(make('p','league-eyebrow','BRANCH DETAILS'),make('h3','',card.dataset.branchLabel),make('p','league-detail-chain',card.dataset.chainLabel));
   const loc=card.querySelector('.dx-gym-card__subtitle'); if(loc)content.append(loc.cloneNode(true));
   const score=make('div','league-total');score.dataset.tone=overallTone(card.dataset.overall);
@@ -172,7 +183,29 @@ function initGymLeague(archive, cards) {
  });
  function syncSelection(){cards.forEach(c=>{c.classList.toggle('is-current',c===selected);c.querySelector('.league-select').setAttribute('aria-expanded',String(c===selected&&!panel.hidden));});}
  function place(){if(selected&&!panel.hidden){if(media.matches)layout.append(panel);else selected.after(panel);}else layout.append(panel);}
- function select(card){selected=card;panel.replaceChildren(details.get(card));panel.hidden=false;panel.scrollTop=0;syncSelection();place();updateStickyOffset();animateDetails(card);}
+	// Wait for the photograph before fading it in, including cached images.
+	function revealDetailImage() {
+		const image = panel.querySelector('.league-detail-image');
+		if (!image) return;
+		image.getAnimations().forEach(animation => animation.cancel());
+		image.style.opacity = '0';
+		image.decode().then(() => {
+			if (!panel.contains(image)) return;
+			image.style.removeProperty('opacity');
+			if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				image.animate(
+					[
+						{ opacity: 0, transform: 'scale(1)' },
+						{ opacity: 0.66, transform: 'scale(1.04)' }
+					],
+					{ duration: 400, easing: 'ease-out' }
+				);
+			}
+		}).catch(() => {
+			// Keep the gold background when the photograph cannot load.
+		});
+	}
+ function select(card){selected=card;panel.replaceChildren(details.get(card));panel.hidden=false;panel.scrollTop=0;syncSelection();place();updateStickyOffset();animateDetails(card);revealDetailImage();}
  media.addEventListener('change',place);
  archive.classList.add('is-premium-league');
  return { update(ordered, visibleCount){ const shown=ordered.slice(0,visibleCount);count.textContent=`${shown.length} of ${ordered.length} branches shown`; if(!shown.length){stopAnimation();selected=null;panel.hidden=true;syncSelection();place();}else if(!selected||!shown.includes(selected))select(shown[0]);else place(); } };
