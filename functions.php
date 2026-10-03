@@ -2046,7 +2046,7 @@ function dx_shortcode_gym_table($atts) {
 				data-search="' . esc_attr($search_blob) . '"
 				data-branch="' . esc_attr(strtolower($branch)) . '"
 				data-branch-label="' . esc_attr($branch) . '"
-				data-featured-image="' . esc_url(get_the_post_thumbnail_url($post_id, 'large') ?: '') . '"
+				data-featured-image="' . esc_url(get_the_post_thumbnail_url($post_id, 'thumbnail') ?: '') . '"
 				data-link="' . esc_url(get_permalink()) . '"
 				data-visited-ts="' . esc_attr($visited_ts) . '"
 				data-visited-label="' . esc_attr($visited) . '"
