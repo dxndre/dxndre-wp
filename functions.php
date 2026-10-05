@@ -1634,6 +1634,52 @@ function dx_visit_type_label($value) {
 	return $map[$value] ?? ($value ?: '—');
 }
 
+// Five optional text fields per list keep this compatible with ACF Free.
+add_action( 'acf/init', function () {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$fields = [];
+	// Pair each row so Likes stays on the left and Dislikes on the right.
+	for ( $number = 1; $number <= 5; $number++ ) {
+		foreach ( [ 'likes' => 'What I Like', 'dislikes' => "What I Don't Like" ] as $list => $label ) {
+			$fields[] = [
+				'key' => "field_dx_gym_{$list}_{$number}",
+				'name' => "gym_{$list}_{$number}",
+				'wrapper' => [ 'width' => '50' ],
+				'label' => "{$label} — Point {$number}",
+				'type' => 'text',
+				'required' => 0,
+				'instructions' => 'One point per field. Leave blank to omit it from the review.',
+			];
+		}
+	}
+
+	acf_add_local_field_group( [
+		'key' => 'group_dx_gym_review_opinions',
+		'title' => 'Gym Review — Likes & Dislikes',
+		'fields' => $fields,
+		'location' => [ [ [ 'param' => 'post_type', 'operator' => '==', 'value' => 'gym-review' ] ] ],
+		'menu_order' => 10,
+	] );
+} );
+
+function dx_gym_review_points( $post_id, $list ) {
+	if ( ! in_array( $list, [ 'likes', 'dislikes' ], true ) ) {
+		return [];
+	}
+
+	$points = [];
+	for ( $number = 1; $number <= 5; $number++ ) {
+		$value = get_field( "gym_{$list}_{$number}", $post_id );
+		if ( is_string( $value ) && trim( $value ) !== '' ) {
+			$points[] = trim( $value );
+		}
+	}
+	return $points;
+}
+
 // A return visit is a separate review; link it to the original instead of overwriting it.
 add_action('acf/init', function () {
  if (!function_exists('acf_add_local_field_group')) return;
@@ -1664,13 +1710,35 @@ function dx_gym_visit_root($id) {
 }
 
 function dx_gym_visit_snapshot($id) {
- $fields = ['Gym' => 'score_gym', 'Wetside' => 'score_swim', 'Spa' => 'score_spa', 'Café / work' => 'score_cafe', 'Cleanliness' => 'cleanliness_maintenance', 'Parking' => 'parking'];
+ $spa_label = get_field('gym_chain', $id) === 'gymbox' ? 'Sauna Facilities' : 'Spa Retreat';
+ $fields = ['Gym' => 'score_gym', 'Swimming & Wetside Facilities' => 'score_swim', $spa_label => 'score_spa', (get_field('gym_chain', $id) === 'davidlloyds' ? 'Clubroom' : 'Café / work') => 'score_cafe', 'Cleanliness' => 'cleanliness_maintenance', 'Parking' => 'parking'];
  $scores = [];
  foreach ($fields as $label => $field) $scores[$label] = dx_normalise_facility_score(get_field($field, $id));
  $weighted = array_combine(['gym', 'swim', 'spa', 'cafe', 'clean', 'parking'], array_values($scores));
  $date = strtotime((string) get_field('visited_date', $id));
  return ['date' => $date ? date_i18n('F Y', $date) : 'Date not recorded', 'scores' => $scores,
   'overall' => dx_calc_overall_score($weighted), 'notes' => (string) get_field('notes', $id), 'url' => get_permalink($id)];
+}
+
+// Use place coordinates, not the @lat,lng camera centre in Maps URLs.
+function dx_gym_map_coordinates($url) {
+	$url = rawurldecode(html_entity_decode((string) $url, ENT_QUOTES));
+	$pair = [];
+	if (preg_match('/!3d(-?[0-9.]+)!4d(-?[0-9.]+)/', $url, $match)) {
+		$pair = [$match[1], $match[2]];
+	} else {
+		parse_str((string) wp_parse_url($url, PHP_URL_QUERY), $query);
+		foreach (['query', 'q', 'destination'] as $key) {
+			if (isset($query[$key]) && is_string($query[$key]) && preg_match('/^(-?[0-9.]+),\s*(-?[0-9.]+)$/', $query[$key], $match)) {
+				$pair = [$match[1], $match[2]];
+				break;
+			}
+		}
+	}
+	if (count($pair) === 2 && is_numeric($pair[0]) && is_numeric($pair[1]) && abs((float) $pair[0]) <= 90 && abs((float) $pair[1]) <= 180) {
+		return ['lat' => (float) $pair[0], 'lng' => (float) $pair[1]];
+	}
+	return ['lat' => '', 'lng' => ''];
 }
 
 function dx_shortcode_gym_table($atts) {
@@ -1833,6 +1901,26 @@ function dx_shortcode_gym_table($atts) {
 	}
 
 	echo '<div class="gym-archive" data-gyms-archive>';
+	echo '<div class="league-loading" role="status" hidden>
+		<p>Loading gym reviews…</p>
+		<div class="league-loading-layout" aria-hidden="true">
+			<div class="league-loading-rows"><span></span><span></span><span></span><span></span><span></span></div>
+			<div class="league-loading-detail"><span></span><span></span><span></span></div>
+		</div>
+	</div>';
+	// Enable the placeholder early, with a fallback if the main bundle fails.
+	echo '<script>(function(){
+		const archive=document.currentScript.parentElement;
+		archive.classList.add("is-loading");
+		archive.setAttribute("aria-busy","true");
+		archive.querySelector(".league-loading").hidden=false;
+		window.setTimeout(function(){
+			archive.classList.remove("is-loading");
+			archive.removeAttribute("aria-busy");
+			archive.querySelector(".league-loading")?.remove();
+		},8000);
+	})();</script>';
+
 
 	echo '
 		<div class="filter-inputs">
@@ -2029,7 +2117,7 @@ function dx_shortcode_gym_table($atts) {
 		$notes                = (string) get_field('notes');
 		$location_text        = trim((string) get_field('gym_location'));
 		$maps_url             = trim((string) get_field('google_maps_url'));
-		$coords               = function_exists('dx_extract_lat_lng_from_google_maps_url') ? dx_extract_lat_lng_from_google_maps_url($maps_url) : ['lat' => '', 'lng' => ''];
+		$coords               = dx_gym_map_coordinates($maps_url);
 		$gym_lat              = $coords['lat'];
 		$gym_lng              = $coords['lng'];
 
@@ -2046,7 +2134,8 @@ function dx_shortcode_gym_table($atts) {
 				data-search="' . esc_attr($search_blob) . '"
 				data-branch="' . esc_attr(strtolower($branch)) . '"
 				data-branch-label="' . esc_attr($branch) . '"
-				data-featured-image="' . esc_url(get_the_post_thumbnail_url($post_id, 'thumbnail') ?: '') . '"
+				data-maps-url="' . esc_url($maps_url) . '"
+				data-featured-image="' . esc_url(get_the_post_thumbnail_url($post_id, 'large') ?: '') . '"
 				data-link="' . esc_url(get_permalink()) . '"
 				data-visited-ts="' . esc_attr($visited_ts) . '"
 				data-visited-label="' . esc_attr($visited) . '"
@@ -2108,9 +2197,9 @@ function dx_shortcode_gym_table($atts) {
 
 				<div class="dx-gym-card__scores">
 					' . dx_render_facility_score_block('Gym', get_field('score_gym')) . '
-					' . dx_render_facility_score_block('Wetside Facilities', get_field('score_swim')) . '
-					' . dx_render_facility_score_block('Spa Retreat', get_field('score_spa')) . '
-					' . dx_render_facility_score_block('Café & Work Area', get_field('score_cafe')) . '
+					' . dx_render_facility_score_block('Swimming & Wetside Facilities', get_field('score_swim')) . '
+					' . dx_render_facility_score_block($chain_val === 'gymbox' ? 'Sauna Facilities' : 'Spa Retreat', get_field('score_spa')) . '
+					' . dx_render_facility_score_block($chain_val === 'davidlloyds' ? 'Clubroom' : 'Café & Work Area', get_field('score_cafe')) . '
 					' . dx_render_facility_score_block('Cleanliness & Maintenance', get_field('cleanliness_maintenance')) . '
 					' . dx_render_facility_score_block('Parking', get_field('parking')) . '
 				</div>
@@ -2191,7 +2280,7 @@ function dx_calc_overall_score( $scores ) {
 	$weights = [
 		'gym'        => 2.0,
 		'swim'       => 1.5,
-		'spa'        => 1.5,
+		'spa'        => 2.0,
 		'cafe'       => 1.0,
 		'clean'      => 2.5,
 		'parking'    => 1.0,

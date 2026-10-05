@@ -1,17 +1,21 @@
+// Overall scores use /10 internally; the five middle bands span 14% each.
+const gymOverallBands = [
+	{tone:'maroon', label:'Diabolical', range:'0–<15%', min:0, width:15, color:'#8c354b', emoji:'💩'},
+	{tone:'bad', label:'Bad', range:'15–<29%', min:1.5, width:14, color:'#d85b70', emoji:'😡'},
+	{tone:'red', label:'Poor', range:'29–<43%', min:2.9, width:14, color:'#ef8585', emoji:'👎🏾'},
+	{tone:'amber', label:'Mixed', range:'43–<57%', min:4.3, width:14, color:'#e5a653', emoji:'🤷🏽‍♂️'},
+	{tone:'green', label:'Positive', range:'57–<71%', min:5.7, width:14, color:'#82c995', emoji:'👍🏾'},
+	{tone:'great', label:'Excellent', range:'71–<85%', min:7.1, width:14, color:'#6ed9c5', emoji:'🤩'},
+	{tone:'diamond', label:'Outstanding', range:'85–100%', min:8.5, width:15, color:'#b9eaff', emoji:'💎'}
+];
+
+const gymOverallBand = percentage => [...gymOverallBands].reverse().find(band => percentage >= band.min * 10) || gymOverallBands[0];
+
 // Progressive enhancement: original review content remains usable without JavaScript.
 function initGymLeague(archive, cards) {
  const make = (tag, cls, text) => { const el=document.createElement(tag); el.className=cls; if(text) el.textContent=text; return el; };
  const tone = value => { const n=Number(value); return value==='' || !Number.isFinite(n) || n<0 ? 'unrated' : n>=9?'diamond':n>=7?'green':n>=5?'amber':n>=3?'red':'maroon'; };
- // Twelve equal units: one unit at either extreme, two for each middle band.
- const bands=[
-  {tone:'maroon',label:'Diabolical',range:'0–<8⅓%',min:0,width:100/12,color:'#8c354b',emoji:'💩'},
-  {tone:'bad',label:'Bad',range:'8⅓–<25%',min:10/12,width:100/6,color:'#d85b70',emoji:'😡'},
-  {tone:'red',label:'Poor',range:'25–<41⅔%',min:2.5,width:100/6,color:'#ef8585',emoji:'👎🏾'},
-  {tone:'amber',label:'Mixed',range:'41⅔–<58⅓%',min:50/12,width:100/6,color:'#e5a653',emoji:'🤷🏽‍♂️'},
-  {tone:'green',label:'Positive',range:'58⅓–<75%',min:70/12,width:100/6,color:'#82c995',emoji:'👍🏾'},
-  {tone:'great',label:'Great',range:'75–<91⅔%',min:7.5,width:100/6,color:'#6ed9c5',emoji:'🤩'},
-  {tone:'diamond',label:'Exceptional',range:'91⅔–100%',min:110/12,width:100/12,color:'#b9eaff',emoji:'💎'}
- ];
+ const bands = gymOverallBands;
  const overallBand = value => { const n=Number(value); return value==='' || !Number.isFinite(n) || n<0 ? {tone:'unrated',label:'Not assessed',emoji:''} : [...bands].reverse().find(band=>n>=band.min); };
  const overallTone = value => overallBand(value).tone;
  const ratingEmoji = Object.fromEntries(bands.map(band=>[band.tone,band.emoji]));
@@ -30,7 +34,7 @@ function initGymLeague(archive, cards) {
  const close=make('button','league-scoring-close','Close ×');close.type='button';close.setAttribute('aria-label','Close scoring guide');
  const title=make('h2','','How I score gyms');title.id='league-scoring-title';
  guide.append(close,title,make('p','','Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.'));
- guide.append(make('p','','The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×1.5, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.'));
+ guide.append(make('p','','The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×2, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.'));
  guide.append(make('h3','','Overall rating scale'));
  const scale=make('div','league-scale');scale.setAttribute('aria-hidden','true');
  bands.forEach(band=>{const segment=make('span','');segment.style.width=`${band.width}%`;segment.style.backgroundColor=band.color;scale.append(segment);});
@@ -38,7 +42,7 @@ function initGymLeague(archive, cards) {
  [0,25,50,75,100].forEach(value=>{const tick=make('span','',`${value}%`);tick.style.left=`${value}%`;axis.append(tick);});
  const key=make('ul','league-scale-key');
  [...bands].reverse().forEach(band=>{const row=make('li','');const swatch=make('span','league-scale-swatch');swatch.style.backgroundColor=band.color;swatch.setAttribute('aria-hidden','true');row.append(swatch,make('span','',`${band.emoji} ${band.label}`),make('span','league-scale-range',band.range));key.append(row);});
- guide.append(scale,axis,key,make('p','league-scoring-note','Individual category scores retain their own scale: Exceptional 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.'));
+ guide.append(scale,axis,key,make('p','league-scoring-note','Individual category scores retain their own scale: Outstanding 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.'));
  document.body.append(guide);
  method.addEventListener('click',()=>guide.showModal());
  close.addEventListener('click',()=>guide.close());
@@ -53,6 +57,100 @@ function initGymLeague(archive, cards) {
  archive.querySelector('.gym-pagination')?.remove();
  const panel=make('aside','league-detail'); panel.id='gym-branch-detail'; panel.setAttribute('aria-label','Selected branch details');
  layout.append(panel);
+ // Map assets load only when requested; list browsing needs no external map requests.
+ const mapPane = make('div', 'league-map-pane');
+ const mapStatus = make('p', 'league-map-status');
+ mapStatus.setAttribute('role', 'status');
+ const mapCanvas = make('div', 'league-map-canvas');
+ mapCanvas.setAttribute('aria-label', 'Gym review locations');
+ const mapChoices = make('div', 'league-map-choices');
+ const mapChoiceCards = new Map();
+ mapChoices.setAttribute('aria-label', 'Matching gym reviews');
+ mapPane.append(mapStatus, mapCanvas, mapChoices);
+ mapPane.hidden = true;
+ left.append(mapPane);
+ const switcher = make('div', 'league-view-switch');
+ switcher.setAttribute('role', 'group');
+ switcher.setAttribute('aria-label', 'Gym view');
+ const listButton = make('button', '', 'List');
+ const mapButton = make('button', '', 'Map');
+ [listButton, mapButton].forEach(button => { button.type = 'button'; switcher.append(button); });
+ archive.querySelector('.filter-inputs').append(switcher);
+ let mapView = false, mapInstance, mapMarkers, mapAssets, mapCards = [];
+ const coordinates = card => {
+  const lat = Number(card.dataset.lat), lng = Number(card.dataset.lng);
+  return card.dataset.lat?.trim() && card.dataset.lng?.trim() && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? [lat, lng] : null;
+ };
+ const loadMapAssets = () => {
+  if (window.L) return Promise.resolve();
+  if (mapAssets) return mapAssets;
+  mapAssets = new Promise((resolve, reject) => {
+   const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.append(css);
+   const script = document.createElement('script'); script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+   script.onload = resolve; script.onerror = reject; document.head.append(script);
+  });
+  return mapAssets;
+ };
+ function renderLeagueMap() {
+  if (!mapView) return;
+  mapStatus.textContent = 'Loading map…';
+  return loadMapAssets().then(() => {
+   if (!mapView) return;
+   if (!mapInstance) {
+    mapInstance = window.L.map(mapCanvas, {scrollWheelZoom: false}).setView([54, -2], 5);
+    const baseTiles = window.L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
+     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', maxZoom: 19
+    }).addTo(mapInstance);
+    baseTiles.on('tileerror', () => {
+     mapStatus.textContent = 'Map background could not load. Check the CARTO key’s website restrictions; gym pins and reviews are still available.';
+    });
+    mapMarkers = window.L.layerGroup().addTo(mapInstance);
+   }
+   mapMarkers.clearLayers(); mapChoices.replaceChildren(); mapChoiceCards.clear();
+   const points = [];
+   mapCards.forEach(card => {
+    const point = coordinates(card);
+    const choice = make('button', 'league-map-choice');
+    const info = make('span', 'league-map-choice-info');
+    info.append(make('strong', '', card.dataset.branchLabel), make('small', '', `${card.dataset.chainLabel}${point ? '' : ' · Pin unavailable'}`));
+    const score = make('span', 'league-map-choice-score', card.dataset.overallLabel);
+    score.dataset.tone = overallTone(card.dataset.overall);
+    choice.append(info, score);
+    choice.setAttribute('aria-pressed', String(card === selected));
+    mapChoiceCards.set(choice, card);
+    choice.type = 'button';
+    choice.addEventListener('click', () => { select(card); if (point) mapInstance.setView(point, 13); });
+    mapChoices.append(choice);
+    if (!point) return;
+    points.push(point);
+    const pin = make('span', 'league-map-pin', card.dataset.overallLabel);
+    pin.dataset.tone = overallTone(card.dataset.overall);
+    const marker = window.L.marker(point, {
+     title: `${card.dataset.chainLabel} · ${card.dataset.branchLabel}: ${card.dataset.overallLabel}`,
+     icon: window.L.divIcon({className: 'league-map-marker', html: pin.outerHTML, iconSize: [66, 30], iconAnchor: [33, 30]})
+    }).addTo(mapMarkers);
+    marker.bindTooltip(document.createTextNode(`${card.dataset.chainLabel} · ${card.dataset.branchLabel}`));
+    marker.on('click', () => { select(card); if (!media.matches) panel.scrollIntoView({block: 'start', behavior: reducedMotion.matches ? 'instant' : 'smooth'}); });
+   });
+   const missing = mapCards.length - points.length;
+   mapStatus.textContent = `${points.length} gyms on the map${missing ? ` · ${missing} without a pin` : ''}. Select a pin or branch below.`;
+   mapInstance.invalidateSize();
+   if (points.length) mapInstance.fitBounds(points, {padding: [35, 35], maxZoom: 13});
+  }).catch(() => {
+   mapStatus.textContent = 'The map could not load. Please use List view and try again later.';
+   mapAssets = null;
+  });
+ }
+ function setLeagueView(useMap) {
+  mapView = useMap;
+  archive.classList.toggle('is-map-view', mapView);
+  listButton.setAttribute('aria-pressed', String(!mapView)); mapButton.setAttribute('aria-pressed', String(mapView));
+  grid.hidden = mapView; mapPane.hidden = !mapView;
+  place(); renderLeagueMap();
+ }
+ listButton.addEventListener('click', () => { setLeagueView(false); archive.dispatchEvent(new Event('league-view-change')); });
+ mapButton.addEventListener('click', () => { setLeagueView(true); archive.dispatchEvent(new Event('league-view-change')); });
+ listButton.setAttribute('aria-pressed', 'true'); mapButton.setAttribute('aria-pressed', 'false');
  const count=make('p','league-result-count'); count.setAttribute('role','status'); layout.before(count);
  const columns=make('div','league-columns'); columns.setAttribute('aria-hidden','true'); ['POS','BRANCH','OVERALL','COMPARE'].forEach(s=>columns.append(make('span','',s))); grid.prepend(columns);
  let selected=null;
@@ -86,6 +184,11 @@ function initGymLeague(archive, cards) {
     const block=bar.closest('[data-score]');
     const value=Number(block.dataset.score);
     block.dataset.tone=tone(value*progress);
+				const label = block.querySelector('.dx-score-value');
+				if (label) {
+					label.setAttribute('aria-label', `${value}/10`);
+					label.textContent = `${progress === 1 ? value : Math.floor(value * progress)}/10`;
+				}
     bar.style.transform=`scaleX(${Math.max(0,Math.min(1,value/10))*progress})`;
    });
   };
@@ -142,7 +245,18 @@ function initGymLeague(archive, cards) {
 			content.append(frame);
 		}
   content.append(make('p','league-eyebrow','BRANCH DETAILS'),make('h3','',card.dataset.branchLabel),make('p','league-detail-chain',card.dataset.chainLabel));
-  const loc=card.querySelector('.dx-gym-card__subtitle'); if(loc)content.append(loc.cloneNode(true));
+  const loc=card.querySelector('.dx-gym-card__subtitle');
+		if (loc) {
+			const location = loc.cloneNode(true);
+			const link = location.querySelector('a');
+			if (link) {
+				link.href = card.dataset.mapsUrl || link.href;
+				link.target = '_blank';
+				link.rel = 'noopener noreferrer';
+				link.addEventListener('click', event => event.stopPropagation());
+			}
+			content.append(location);
+		}
   const score=make('div','league-total');score.dataset.tone=overallTone(card.dataset.overall);
   const number=make('span','league-total-number',card.dataset.overallLabel);
   const emoji=make('span','league-total-emoji',ratingEmoji[overallTone(card.dataset.overall)]);emoji.setAttribute('aria-hidden','true');const badge=make('span','league-total-rating');badge.setAttribute('aria-hidden','true');badge.append(emoji,make('span','league-total-rating-label',overallBand(card.dataset.overall).label));score.append(number,badge);score.setAttribute('role','img');score.setAttribute('aria-label',`${card.dataset.overallLabel} overall rating, ${overallBand(card.dataset.overall).label}`);content.append(score,make('p','league-total-label','OVERALL RATING'));
@@ -181,8 +295,8 @@ function initGymLeague(archive, cards) {
   const compare=card.querySelector('[data-gym-compare-toggle]');if(compare){compare.setAttribute('aria-label',`Compare ${card.dataset.branchLabel}`);compare.querySelector('.label-add').textContent='+';compare.querySelector('.label-remove').textContent='✓';}
   card.prepend(btn);
  });
- function syncSelection(){cards.forEach(c=>{c.classList.toggle('is-current',c===selected);c.querySelector('.league-select').setAttribute('aria-expanded',String(c===selected&&!panel.hidden));});}
- function place(){if(selected&&!panel.hidden){if(media.matches)layout.append(panel);else selected.after(panel);}else layout.append(panel);}
+ function syncSelection(){mapChoiceCards.forEach((card, button) => button.setAttribute('aria-pressed', String(card === selected)));cards.forEach(c=>{c.classList.toggle('is-current',c===selected);c.querySelector('.league-select').setAttribute('aria-expanded',String(c===selected&&!panel.hidden));});}
+ function place(){if(selected&&!panel.hidden){if(media.matches||mapView)layout.append(panel);else selected.after(panel);}else layout.append(panel);}
 	// Wait for the photograph before fading it in, including cached images.
 	function revealDetailImage() {
 		const image = panel.querySelector('.league-detail-image');
@@ -208,7 +322,7 @@ function initGymLeague(archive, cards) {
  function select(card){selected=card;panel.replaceChildren(details.get(card));panel.hidden=false;panel.scrollTop=0;syncSelection();place();updateStickyOffset();animateDetails(card);revealDetailImage();}
  media.addEventListener('change',place);
  archive.classList.add('is-premium-league');
- return { update(ordered, visibleCount){ const shown=ordered.slice(0,visibleCount);count.textContent=`${shown.length} of ${ordered.length} branches shown`; if(!shown.length){stopAnimation();selected=null;panel.hidden=true;syncSelection();place();}else if(!selected||!shown.includes(selected))select(shown[0]);else place(); } };
+ return { update(ordered, visibleCount){ mapCards=ordered;renderLeagueMap();const shown=mapView?ordered:ordered.slice(0,visibleCount);count.textContent=`${shown.length} of ${ordered.length} branches shown`; if(!shown.length){stopAnimation();selected=null;panel.hidden=true;syncSelection();place();}else if(!selected||!shown.includes(selected))select(shown[0]);else place(); } };
 }
 
 // Webpack Imports
@@ -1543,6 +1657,59 @@ import * as bootstrap from 'bootstrap';
 			other: 'Other',
 		};
 
+		const assessedAmenities = new Set();
+		const amenities = document.createElement('fieldset');
+		amenities.className = 'league-amenity-filters';
+		const amenityLegend = document.createElement('legend');
+		amenityLegend.textContent = 'Assessed amenities';
+		amenities.append(amenityLegend);
+		const amenityOptions = [
+			['gymScore', 'Gym'],
+			['swimScore', 'Swimming & Wetside Facilities'],
+			['cafeScore', 'Café & Work Area'],
+			['spaScore', 'Spa Retreat / Sauna Facilities'],
+		];
+		amenityOptions.forEach(([key, label]) => {
+			const option = document.createElement('label');
+			const input = document.createElement('input');
+			input.type = 'checkbox';
+			input.value = key;
+			input.addEventListener('change', () => {
+				if (input.checked) assessedAmenities.add(key);
+				else assessedAmenities.delete(key);
+				visibleCount = 10;
+				update();
+			});
+			option.append(input, document.createTextNode(label));
+			amenities.append(option);
+		});
+		const toolbar = archive.querySelector('.filter-inputs');
+		const filterDisclosure = document.createElement('details');
+		filterDisclosure.className = 'league-filter-disclosure';
+		const filterSummary = document.createElement('summary');
+		filterSummary.textContent = 'Filters';
+		const filterPanel = document.createElement('div');
+		filterPanel.className = 'league-filter-panel';
+		const chainTitle = document.createElement('p');
+		chainTitle.textContent = 'Gym chains';
+		const resetFilters = document.createElement('button');
+		resetFilters.type = 'button';
+		resetFilters.textContent = 'Clear filters';
+		resetFilters.addEventListener('click', () => {
+			assessedAmenities.clear();
+			amenities.querySelectorAll('input').forEach(input => { input.checked = false; });
+			buttons.find(button => button.dataset.chain === 'all')?.click();
+		});
+		filterPanel.append(chainTitle, archive.querySelector('.gym-filter-buttons'), amenities, resetFilters);
+		filterDisclosure.append(filterSummary, filterPanel);
+		toolbar.append(filterDisclosure);
+		filterDisclosure.addEventListener('keydown', event => {
+			if (event.key === 'Escape') { filterDisclosure.open = false; filterSummary.focus(); }
+		});
+		document.addEventListener('click', event => {
+			if (!filterDisclosure.contains(event.target)) filterDisclosure.open = false;
+		});
+
 		let activeChain = buttons.find((btn) => btn.classList.contains('is-active'))?.dataset.chain || 'all';
 		let visibleCount = 10;
 		let selectedGyms = [];
@@ -1555,7 +1722,15 @@ import * as bootstrap from 'bootstrap';
 
 		const updateTitle = () => {
 			if (!titleEl) return;
-			titleEl.textContent = LABELS[activeChain] || 'All';
+			const label = LABELS[activeChain] || 'All';
+			const signature = `${label}|${search?.value || ''}|${[...assessedAmenities].join(',')}`;
+			if (titleEl.dataset.filterSignature !== signature) {
+				titleEl.textContent = label;
+				titleEl.dataset.filterSignature = signature;
+				if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+					titleEl.animate([{backgroundSize: '0% 2px'}, {backgroundSize: '100% 2px'}], {duration: 450, easing: 'ease-out'});
+				}
+			} 
 		};
 
 		const sortCards = (cards) => {
@@ -1772,7 +1947,7 @@ import * as bootstrap from 'bootstrap';
 				zoomControl: true,
 			});
 
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+			L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
 				attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
 				subdomains: 'abcd',
 				maxZoom: 20,
@@ -1844,9 +2019,9 @@ import * as bootstrap from 'bootstrap';
 			const rows = [
 				{ label: 'Overall', format: (item) => item.overallLabel, winners: getWinnerIdsForMetric(items, (item) => item.overall) },
 				{ label: 'Gym', format: (item) => scoreLabel(item.scores.gym), winners: getWinnerIdsForMetric(items, (item) => item.scores.gym) },
-				{ label: 'Wetside Facilities', format: (item) => scoreLabel(item.scores.swim), winners: getWinnerIdsForMetric(items, (item) => item.scores.swim) },
-				{ label: 'Spa Retreat', format: (item) => scoreLabel(item.scores.spa), winners: getWinnerIdsForMetric(items, (item) => item.scores.spa) },
-				{ label: 'Café & Work Area', format: (item) => scoreLabel(item.scores.cafe), winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe) },
+				{ label: 'Swimming & Wetside Facilities', format: (item) => scoreLabel(item.scores.swim), winners: getWinnerIdsForMetric(items, (item) => item.scores.swim) },
+				{ label: 'Spa Retreat', format: (item) => `${item.chain.toLowerCase() === 'gymbox' ? 'Sauna Facilities: ' : ''}${scoreLabel(item.scores.spa)}`, winners: getWinnerIdsForMetric(items, (item) => item.scores.spa) },
+				{ label: 'Café & Work Area', format: (item) => `${item.chain.toLowerCase().startsWith('david lloyd') ? 'Clubroom: ' : ''}${scoreLabel(item.scores.cafe)}`, winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe) },
 				{ label: 'Cleanliness & Maintenance', format: (item) => scoreLabel(item.scores.clean), winners: getWinnerIdsForMetric(items, (item) => item.scores.clean) },
 				{ label: 'Parking', format: (item) => scoreLabel(item.scores.parking), winners: getWinnerIdsForMetric(items, (item) => item.scores.parking) },
 				{ label: 'Membership', format: (item) => item.membership || '—', winners: [] },
@@ -1936,6 +2111,8 @@ import * as bootstrap from 'bootstrap';
         }, { rootMargin: '0px 0px 180px 0px', threshold: 0 });
 
 		const update = () => {
+			const activeFilters = assessedAmenities.size + (activeChain === 'all' ? 0 : 1);
+			filterSummary.textContent = activeFilters ? `Filters (${activeFilters})` : 'Filters';
 			const q = (search?.value || '').trim().toLowerCase();
 
 			const eligible = allCards.filter((card) => {
@@ -1945,7 +2122,11 @@ import * as bootstrap from 'bootstrap';
 				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
 				const searchOk = !q || haystack.includes(q);
 
-				return chainOk && searchOk;
+				const amenitiesOk = [...assessedAmenities].every(key => {
+					const value = card.dataset[key];
+					return value !== undefined && value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0;
+				});
+				return chainOk && searchOk && amenitiesOk;
 			});
 
 			const ordered = sortCards(eligible);
@@ -1984,6 +2165,7 @@ import * as bootstrap from 'bootstrap';
 			});
 		});
 
+		archive.addEventListener('league-view-change', update);
 		search?.addEventListener('input', () => {
 			visibleCount = 10;
 			update();
@@ -2138,31 +2320,17 @@ import * as bootstrap from 'bootstrap';
 		updateCompareBar();
 		renderComparison();
 		update();
+		archive.classList.remove('is-loading');
+		archive.removeAttribute('aria-busy');
+		archive.querySelector('.league-loading')?.remove();
 	})();
 
 	/* ==========================
 	GYM VIEWPORT-ACTIVE (DEDICATED)
 	========================== */
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const archive = document.querySelector('[data-gyms-archive]');
-		if (!archive) return;
-
-		// Use nearest section as the thing we toggle
-		const section = archive.closest('section') || archive;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				section.classList.toggle('viewport-active', entry.isIntersecting);
-			},
-			{
-				threshold: 0.05,
-				rootMargin: '-10% 0px -10% 0px'
-			}
-		);
-
-		observer.observe(archive);
-	});
+	// The league can be taller than the viewport; do not gate it on scroll ratios.
+	document.querySelector('[data-gyms-archive]')?.closest('section')?.classList.add('viewport-active');
 
 	/* ==========================
 	BUS DIARY
@@ -2210,7 +2378,7 @@ import * as bootstrap from 'bootstrap';
 						zoomControl: true
 					});
 
-					L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+					L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
 						attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
 						subdomains: 'abcd',
 						maxZoom: 20
@@ -2730,6 +2898,1292 @@ import * as bootstrap from 'bootstrap';
 
 		setActiveSlide(0);
 	})();
+
+	(() => {
+
+	'use strict';
+
+
+	// ================================================================
+	// GUARD
+	// ================================================================
+
+	const body = document.body;
+
+	if (!body || !body.classList.contains('single-gym-review')) {
+		return;
+	}
+
+
+	const reduceMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
+
+
+	// ================================================================
+	// HELPERS
+	// ================================================================
+
+	const clamp = (value, min, max) => {
+		return Math.min(Math.max(value, min), max);
+	};
+
+
+	const parseScore = (value) => {
+
+		if (
+			value === null ||
+			value === undefined ||
+			value === '' ||
+			value === 'unavailable'
+		) {
+			return null;
+		}
+
+		const parsed = parseFloat(value);
+
+		return Number.isFinite(parsed)
+			? parsed
+			: null;
+	};
+
+
+	const escapeAttribute = (value = '') => {
+
+		return String(value)
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;');
+	};
+
+
+	// ================================================================
+	// SCROLL REVEAL
+	// ================================================================
+
+	const initialiseRevealAnimations = () => {
+
+		const selectors = [
+
+			'.gym-review-overview__grid',
+			'.gym-review-section-heading',
+			'.gym-review-score',
+			'.gym-review-panel',
+			'.gym-review-gallery figure',
+			'.gym-review-content__grid',
+			'.gym-review-final .container'
+
+		];
+
+		const elements = document.querySelectorAll(
+			selectors.join(',')
+		);
+
+
+		elements.forEach((element) => {
+
+			if (!element.hasAttribute('data-gym-reveal')) {
+
+				element.setAttribute(
+					'data-gym-reveal',
+					''
+				);
+			}
+		});
+
+
+		if (
+			reduceMotion ||
+			!('IntersectionObserver' in window)
+		) {
+
+			elements.forEach((element) => {
+
+				element.classList.add(
+					'is-visible'
+				);
+			});
+
+			return;
+		}
+
+
+		const observer = new IntersectionObserver(
+
+			(entries) => {
+
+				entries.forEach((entry) => {
+
+					if (!entry.isIntersecting) {
+						return;
+					}
+
+					entry.target.classList.add(
+						'is-visible'
+					);
+
+					observer.unobserve(
+						entry.target
+					);
+				});
+			},
+
+			{
+				threshold: 0.12,
+				rootMargin: '0px 0px -40px 0px'
+			}
+
+		);
+
+
+		elements.forEach((element) => {
+
+			observer.observe(element);
+		});
+	};
+
+
+	// ================================================================
+	// HERO PARALLAX
+	// ================================================================
+
+	const initialiseHeroParallax = () => {
+
+		if (reduceMotion) {
+			return;
+		}
+
+
+		const hero = document.querySelector(
+			'.gym-review-hero'
+		);
+
+		const image = document.querySelector(
+			'.gym-review-hero__image'
+		);
+
+
+		if (!hero || !image) {
+			return;
+		}
+
+
+		let ticking = false;
+
+
+		const update = () => {
+
+			const rect =
+				hero.getBoundingClientRect();
+
+			const viewportHeight =
+				window.innerHeight;
+
+			if (
+				rect.bottom < 0 ||
+				rect.top > viewportHeight
+			) {
+
+				ticking = false;
+				return;
+			}
+
+
+			const progress = clamp(
+				-window.scrollY / 1200,
+				-1,
+				0
+			);
+
+
+			const translate =
+				window.scrollY * 0.08;
+
+
+			image.style.transform =
+				`translate3d(0, ${translate}px, 0) scale(1.035)`;
+
+
+			ticking = false;
+		};
+
+
+		const requestUpdate = () => {
+
+			if (ticking) {
+				return;
+			}
+
+			ticking = true;
+
+			window.requestAnimationFrame(
+				update
+			);
+		};
+
+
+		window.addEventListener(
+			'scroll',
+			requestUpdate,
+			{
+				passive: true
+			}
+		);
+
+		requestUpdate();
+	};
+
+
+	// ================================================================
+	// SCORE BARS
+	// ================================================================
+
+	const initialiseScores = () => {
+
+		const scoreItems =
+			document.querySelectorAll(
+				'.gym-review-score'
+			);
+
+
+		if (!scoreItems.length) {
+			return;
+		}
+
+
+		scoreItems.forEach((item) => {
+
+			const scoreValue =
+				parseScore(
+					item.dataset.score
+				);
+
+			const fill =
+				item.querySelector(
+					'.gym-review-score__fill'
+				);
+
+			const display =
+				item.querySelector(
+					'.gym-review-score__value'
+				) ||
+				item.querySelector(
+					'.gym-review-score__meta strong'
+				);
+
+
+			if (scoreValue === null) {
+
+				item.classList.add(
+					'is-unavailable'
+				);
+
+				if (display) {
+
+					display.textContent =
+						'Unavailable';
+				}
+
+				return;
+			}
+
+
+			const percentage =
+				clamp(
+					scoreValue * 10,
+					0,
+					100
+				);
+
+
+			if (fill) {
+
+				fill.dataset.width =
+					`${percentage}%`;
+
+				fill.style.width =
+					'0';
+			}
+
+
+			if (display) {
+
+				display.textContent =
+					`${scoreValue}/10`;
+			}
+		});
+
+
+		const animate = (item) => {
+
+			const fill =
+				item.querySelector(
+					'.gym-review-score__fill'
+				);
+
+			if (!fill) {
+				return;
+			}
+
+
+			const width =
+				fill.dataset.width;
+
+			if (!width) {
+				return;
+			}
+
+
+			requestAnimationFrame(() => {
+
+				fill.style.width =
+					width;
+			});
+		};
+
+
+		if (
+			reduceMotion ||
+			!('IntersectionObserver' in window)
+		) {
+
+			scoreItems.forEach(animate);
+
+			return;
+		}
+
+
+		const observer =
+			new IntersectionObserver(
+
+				(entries) => {
+
+					entries.forEach(
+						(entry) => {
+
+							if (
+								!entry.isIntersecting
+							) {
+								return;
+							}
+
+
+							animate(
+								entry.target
+							);
+
+							observer.unobserve(
+								entry.target
+							);
+						}
+					);
+				},
+
+				{
+					threshold: 0.35
+				}
+			);
+
+
+		scoreItems.forEach((item) => {
+
+			if (
+				!item.classList.contains(
+					'is-unavailable'
+				)
+			) {
+
+				observer.observe(item);
+			}
+		});
+	};
+
+
+	// ================================================================
+	// OVERALL SCORE COUNT-UP
+	// ================================================================
+
+	const initialiseOverallScore = () => {
+
+		const scoreElements =
+			document.querySelectorAll(
+				'[data-overall-score]'
+			);
+
+
+		if (!scoreElements.length) {
+			return;
+		}
+
+
+		const animateScore = (element) => {
+
+			const target =
+				parseFloat(
+					element.dataset.overallScore
+				);
+
+
+			if (!Number.isFinite(target)) {
+				return;
+			}
+
+
+			element.style.color = gymOverallBand(target).color;
+
+			if (reduceMotion) {
+
+				element.textContent =
+					`${target.toFixed(1)}%`;
+
+				return;
+			}
+
+
+			const duration =
+				1100;
+
+			const start =
+				performance.now();
+
+
+			const frame = (time) => {
+
+				const elapsed =
+					time - start;
+
+				const progress =
+					clamp(
+						elapsed / duration,
+						0,
+						1
+					);
+
+
+				const eased =
+					1 -
+					Math.pow(
+						1 - progress,
+						3
+					);
+
+
+				const current =
+					target * eased;
+
+
+				element.textContent =
+					`${current.toFixed(1)}%`;
+				element.style.color = gymOverallBand(current).color;
+
+
+				if (progress < 1) {
+
+					requestAnimationFrame(
+						frame
+					);
+				}
+			};
+
+
+			requestAnimationFrame(frame);
+		};
+
+
+		if (
+			!('IntersectionObserver' in window)
+		) {
+
+			scoreElements.forEach(
+				animateScore
+			);
+
+			return;
+		}
+
+
+		const observer =
+			new IntersectionObserver(
+
+				(entries) => {
+
+					entries.forEach(
+						(entry) => {
+
+							if (
+								!entry.isIntersecting
+							) {
+								return;
+							}
+
+
+							animateScore(
+								entry.target
+							);
+
+							observer.unobserve(
+								entry.target
+							);
+						}
+					);
+				},
+
+				{
+					threshold: 0.4
+				}
+			);
+
+
+		scoreElements.forEach(
+			(element) => {
+
+				observer.observe(element);
+			}
+		);
+	};
+
+
+	// ================================================================
+	// MAP
+	//
+	// Expected markup:
+	//
+	// <div
+	//   class="gym-review-map"
+	//   data-location="Notting Hill, London"
+	// ></div>
+	//
+	// Your ACF gym_location can populate data-location.
+	// ================================================================
+
+	const initialiseMap = () => {
+
+		const maps =
+			document.querySelectorAll(
+				'.gym-review-map'
+			);
+
+
+		if (!maps.length) {
+			return;
+		}
+
+
+		maps.forEach((map) => {
+
+			const location =
+				map.dataset.location ||
+				map.dataset.address ||
+				'';
+
+
+			if (!location) {
+				return;
+			}
+
+
+			const loading =
+				document.createElement(
+					'div'
+				);
+
+			loading.className =
+				'gym-review-map__loading';
+
+			loading.textContent =
+				'Loading map';
+
+
+			map.appendChild(
+				loading
+			);
+
+
+			const iframe =
+				document.createElement(
+					'iframe'
+				);
+
+
+			iframe.title =
+				`Map showing ${location}`;
+
+			iframe.loading =
+				'lazy';
+
+			iframe.referrerPolicy =
+				'no-referrer-when-downgrade';
+
+			iframe.setAttribute(
+				'allowfullscreen',
+				''
+			);
+
+
+			iframe.src =
+				'https://www.google.com/maps?' +
+				'q=' +
+				encodeURIComponent(location) +
+				'&output=embed';
+
+
+			iframe.addEventListener(
+				'load',
+				() => {
+
+					loading.remove();
+				}
+			);
+
+
+			map.appendChild(
+				iframe
+			);
+		});
+	};
+
+
+	// ================================================================
+	// GOOGLE MAPS / DIRECTIONS LINK
+	//
+	// Existing ACF google_maps_url can be output as:
+	//
+	// <a
+	//   class="gym-review-location__directions"
+	//   data-map-url="..."
+	// >
+	// ================================================================
+
+	const initialiseDirections = () => {
+
+		const links =
+			document.querySelectorAll(
+				'[data-map-url]'
+			);
+
+
+		links.forEach((link) => {
+
+			const url =
+				link.dataset.mapUrl;
+
+
+			if (!url) {
+				return;
+			}
+
+
+			link.href =
+				url;
+
+			link.target =
+				'_blank';
+
+			link.rel =
+				'noopener noreferrer';
+		});
+	};
+
+
+	// ================================================================
+	// GALLERY LIGHTBOX
+	// ================================================================
+
+	const initialiseGalleryLightbox = () => {
+
+		const images =
+			Array.from(
+				document.querySelectorAll(
+					'.gym-review-gallery figure img'
+				)
+			);
+
+
+		if (!images.length) {
+			return;
+		}
+
+
+		const lightbox =
+			document.createElement(
+				'div'
+			);
+
+		lightbox.className =
+			'gym-review-lightbox';
+
+		lightbox.setAttribute(
+			'aria-hidden',
+			'true'
+		);
+
+		lightbox.setAttribute(
+			'role',
+			'dialog'
+		);
+
+		lightbox.setAttribute(
+			'aria-modal',
+			'true'
+		);
+
+
+		lightbox.innerHTML = `
+			<button
+				type="button"
+				class="gym-review-lightbox__close"
+				aria-label="Close image"
+			>
+				×
+			</button>
+
+			<button
+				type="button"
+				class="gym-review-lightbox__prev"
+				aria-label="Previous image"
+			>
+				←
+			</button>
+
+			<img
+				class="gym-review-lightbox__image"
+				src=""
+				alt=""
+			>
+
+			<button
+				type="button"
+				class="gym-review-lightbox__next"
+				aria-label="Next image"
+			>
+				→
+			</button>
+		`;
+
+
+		document.body.appendChild(
+			lightbox
+		);
+
+
+		const lightboxImage =
+			lightbox.querySelector(
+				'.gym-review-lightbox__image'
+			);
+
+		const closeButton =
+			lightbox.querySelector(
+				'.gym-review-lightbox__close'
+			);
+
+		const previousButton =
+			lightbox.querySelector(
+				'.gym-review-lightbox__prev'
+			);
+
+		const nextButton =
+			lightbox.querySelector(
+				'.gym-review-lightbox__next'
+			);
+
+
+		let currentIndex =
+			0;
+
+
+		const getFullSource = (image) => {
+
+			return (
+				image.dataset.full ||
+				image.currentSrc ||
+				image.src
+			);
+		};
+
+
+		const render = () => {
+
+			const image =
+				images[currentIndex];
+
+
+			lightboxImage.src =
+				getFullSource(image);
+
+			lightboxImage.alt =
+				image.alt || '';
+		};
+
+
+		const open = (index) => {
+
+			currentIndex =
+				index;
+
+			render();
+
+
+			lightbox.classList.add(
+				'is-open'
+			);
+
+			lightbox.setAttribute(
+				'aria-hidden',
+				'false'
+			);
+
+			body.classList.add(
+				'gym-lightbox-open'
+			);
+
+
+			closeButton.focus();
+		};
+
+
+		const close = () => {
+
+			lightbox.classList.remove(
+				'is-open'
+			);
+
+			lightbox.setAttribute(
+				'aria-hidden',
+				'true'
+			);
+
+			body.classList.remove(
+				'gym-lightbox-open'
+			);
+		};
+
+
+		const previous = () => {
+
+			currentIndex =
+				(
+					currentIndex -
+					1 +
+					images.length
+				) %
+				images.length;
+
+			render();
+		};
+
+
+		const next = () => {
+
+			currentIndex =
+				(
+					currentIndex +
+					1
+				) %
+				images.length;
+
+			render();
+		};
+
+
+		images.forEach(
+			(image, index) => {
+
+				const figure =
+					image.closest(
+						'figure'
+					);
+
+
+				if (!figure) {
+					return;
+				}
+
+
+				figure.tabIndex =
+					0;
+
+				figure.setAttribute(
+					'role',
+					'button'
+				);
+
+				figure.setAttribute(
+					'aria-label',
+					`View image ${index + 1} of ${images.length}`
+				);
+
+
+				figure.addEventListener(
+					'click',
+					() => {
+
+						open(index);
+					}
+				);
+
+
+				figure.addEventListener(
+					'keydown',
+					(event) => {
+
+						if (
+							event.key === 'Enter' ||
+							event.key === ' '
+						) {
+
+							event.preventDefault();
+
+							open(index);
+						}
+					}
+				);
+			}
+		);
+
+
+		closeButton.addEventListener(
+			'click',
+			close
+		);
+
+		previousButton.addEventListener(
+			'click',
+			previous
+		);
+
+		nextButton.addEventListener(
+			'click',
+			next
+		);
+
+
+		lightbox.addEventListener(
+			'click',
+			(event) => {
+
+				if (
+					event.target ===
+					lightbox
+				) {
+
+					close();
+				}
+			}
+		);
+
+
+		document.addEventListener(
+			'keydown',
+			(event) => {
+
+				if (
+					!lightbox.classList.contains(
+						'is-open'
+					)
+				) {
+					return;
+				}
+
+
+				switch (
+					event.key
+				) {
+
+					case 'Escape':
+
+						close();
+
+						break;
+
+
+					case 'ArrowLeft':
+
+						previous();
+
+						break;
+
+
+					case 'ArrowRight':
+
+						next();
+
+						break;
+				}
+			}
+		);
+	};
+
+
+	// ================================================================
+	// MOBILE GALLERY DOTS
+	// ================================================================
+
+	const initialiseGalleryProgress = () => {
+
+		const viewport =
+			document.querySelector(
+				'.gym-review-gallery__viewport'
+			);
+
+
+		if (!viewport) {
+			return;
+		}
+
+
+		const slides =
+			Array.from(
+				viewport.querySelectorAll(
+					'figure'
+				)
+			);
+
+
+		if (slides.length < 2) {
+			return;
+		}
+
+
+		let controls =
+			document.querySelector(
+				'.gym-review-gallery__controls'
+			);
+
+
+		if (!controls) {
+
+			controls =
+				document.createElement(
+					'div'
+				);
+
+			controls.className =
+				'gym-review-gallery__controls';
+
+			viewport.insertAdjacentElement(
+				'afterend',
+				controls
+			);
+		}
+
+
+		controls.innerHTML =
+			'';
+
+
+		const dots =
+			slides.map(
+				(_, index) => {
+
+					const button =
+						document.createElement(
+							'button'
+						);
+
+					button.type =
+						'button';
+
+					button.className =
+						'gym-review-gallery__dot';
+
+					button.setAttribute(
+						'aria-label',
+						`Go to image ${index + 1}`
+					);
+
+
+					if (index === 0) {
+
+						button.classList.add(
+							'is-active'
+						);
+					}
+
+
+					button.addEventListener(
+						'click',
+						() => {
+
+							slides[index]
+								.scrollIntoView(
+									{
+										behavior:
+											reduceMotion
+												? 'auto'
+												: 'smooth',
+
+										inline:
+											'start',
+
+										block:
+											'nearest'
+									}
+								);
+						}
+					);
+
+
+					controls.appendChild(
+						button
+					);
+
+
+					return button;
+				}
+			);
+
+
+		if (
+			!('IntersectionObserver' in window)
+		) {
+			return;
+		}
+
+
+		const observer =
+			new IntersectionObserver(
+
+				(entries) => {
+
+					const visible =
+						entries
+							.filter(
+								(entry) =>
+									entry.isIntersecting
+							)
+							.sort(
+								(a, b) =>
+									b.intersectionRatio -
+									a.intersectionRatio
+							);
+
+
+					if (!visible.length) {
+						return;
+					}
+
+
+					const index =
+						slides.indexOf(
+							visible[0].target
+						);
+
+
+					dots.forEach(
+						(dot, dotIndex) => {
+
+							dot.classList.toggle(
+								'is-active',
+								dotIndex === index
+							);
+						}
+					);
+				},
+
+				{
+					root: viewport,
+					threshold: [
+						0.45,
+						0.6,
+						0.75
+					]
+				}
+			);
+
+
+		slides.forEach(
+			(slide) => {
+
+				observer.observe(slide);
+			}
+		);
+	};
+
+
+	// ================================================================
+	// SCORE LABELS
+	// ================================================================
+
+	const getScoreLabel = score => gymOverallBand(score).label;
+
+
+	const initialiseScoreLabels = () => {
+
+		const containers =
+			document.querySelectorAll(
+				'[data-score-label-source]'
+			);
+
+
+		containers.forEach(
+			(element) => {
+
+				const score =
+					parseFloat(
+						element.dataset
+							.scoreLabelSource
+					);
+
+
+				if (!Number.isFinite(score)) {
+					return;
+				}
+
+
+				element.textContent =
+					getScoreLabel(score);
+				element.style.color = gymOverallBand(score).color;
+			}
+		);
+	};
+
+
+	// ================================================================
+	// INITIALISE
+	// ================================================================
+
+	const initialise = () => {
+
+		initialiseRevealAnimations();
+
+		initialiseHeroParallax();
+
+		initialiseScores();
+
+		initialiseOverallScore();
+
+		initialiseMap();
+
+		initialiseDirections();
+
+		initialiseGalleryLightbox();
+
+		initialiseGalleryProgress();
+
+		initialiseScoreLabels();
+	};
+
+
+	if (
+		document.readyState ===
+		'loading'
+	) {
+
+		document.addEventListener(
+			'DOMContentLoaded',
+			initialise,
+			{
+				once: true
+			}
+		);
+
+	} else {
+
+		initialise();
+	}
+
+})();
 
 })();
 
