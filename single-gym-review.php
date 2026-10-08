@@ -249,6 +249,8 @@ while ( have_posts() ) :
 					'full',
 					[
 						'class'         => 'gym-review-hero__image',
+						'srcset'        => false,
+						'sizes'         => false,
 						'loading'       => 'eager',
 						'decoding'      => 'async',
 						'fetchpriority' => 'high',

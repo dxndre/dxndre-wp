@@ -2736,3 +2736,6 @@ add_shortcode('bus_journeys_archive', 'dx_shortcode_bus_journeys_archive');
 add_action('init', function () {
 	add_post_type_support('gym-review', 'thumbnail');
 }, 100);
+
+// Services page card presentation.
+require_once __DIR__ . '/inc/services-cards.php';

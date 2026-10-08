@@ -291,7 +291,7 @@ function initGymLeague(archive, cards) {
   const info=make('span','league-row-info');info.append(make('strong','',card.dataset.branchLabel),make('small','',`${card.dataset.chainLabel}${loc?' · '+loc.textContent.replace('📍','').trim():''}`));
   const value=make('strong','league-row-score',card.dataset.overallLabel);value.dataset.tone=overallTone(card.dataset.overall);
   btn.append(make('span','league-rank',String(ranks.get(card)).padStart(2,'0')),info,value);
-  btn.addEventListener('click',()=>{if(selected===card&&!media.matches){stopAnimation();selected=null;panel.hidden=true;syncSelection();}else select(card);});
+  btn.addEventListener('click',()=>{if(selected===card&&!media.matches){stopAnimation();selected=null;panel.hidden=true;syncSelection();}else select(card, true);});
   const compare=card.querySelector('[data-gym-compare-toggle]');if(compare){compare.setAttribute('aria-label',`Compare ${card.dataset.branchLabel}`);compare.querySelector('.label-add').textContent='+';compare.querySelector('.label-remove').textContent='✓';}
   card.prepend(btn);
  });
@@ -319,7 +319,29 @@ function initGymLeague(archive, cards) {
 			// Keep the gold background when the photograph cannot load.
 		});
 	}
- function select(card){selected=card;panel.replaceChildren(details.get(card));panel.hidden=false;panel.scrollTop=0;syncSelection();place();updateStickyOffset();animateDetails(card);revealDetailImage();}
+ function select(card, scrollToRow = false) {
+		selected = card;
+		panel.replaceChildren(details.get(card));
+		panel.hidden = false;
+		panel.scrollTop = 0;
+		syncSelection();
+		place();
+		updateStickyOffset();
+		animateDetails(card);
+		revealDetailImage();
+
+		if (scrollToRow && !media.matches && !mapView) {
+			requestAnimationFrame(() => {
+				if (selected !== card || panel.hidden) return;
+				updateStickyOffset();
+				const offset = parseFloat(archive.style.getPropertyValue('--league-sticky-safe-top')) || 16;
+				window.scrollTo({
+					top: Math.max(0, window.scrollY + card.getBoundingClientRect().top - offset),
+					behavior: reducedMotion.matches ? 'instant' : 'smooth'
+				});
+			});
+		}
+	}
  media.addEventListener('change',place);
  archive.classList.add('is-premium-league');
  return { update(ordered, visibleCount){ mapCards=ordered;renderLeagueMap();const shown=mapView?ordered:ordered.slice(0,visibleCount);count.textContent=`${shown.length} of ${ordered.length} branches shown`; if(!shown.length){stopAnimation();selected=null;panel.hidden=true;syncSelection();place();}else if(!selected||!shown.includes(selected))select(shown[0]);else place(); } };
@@ -1218,286 +1240,195 @@ import * as bootstrap from 'bootstrap';
 	CASE STUDY: STORY CONTROLLER (SIMPLIFIED)
 	========================== */
 
-	function initStoryController() {
-		// Prevent double-init (bfcache / partial reload)
-		if (document.body.dataset.storyInit === 'true') return;
-		document.body.dataset.storyInit = 'true';
+function initStoryController() {
+  const wrapper = document.querySelector('.chapters-wrapper');
+  const sections = [...document.querySelectorAll('.story-section')];
+  const nav = document.querySelector('.chapter-selector');
+  const list = nav?.querySelector('ul');
+  if (!wrapper || !sections.length || !list) return;
+  // Only mark successful initialisation; pageshow reuses the existing listeners.
+  if (document.body.dataset.storyInit === 'true') return;
+  const chapters = sections.map(section => {
+    const chapter = section.querySelector('.cs-chapter[id]');
+    const title = chapter?.querySelector('h2.chapter-title');
+    return chapter && title ? {section, id: chapter.id, title: title.textContent.trim()} : null;
+  }).filter(Boolean);
+  if (!chapters.length) return;
+  document.body.dataset.storyInit = 'true';
+  document.documentElement.classList.add('case-study-document');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let frame = 0;
+  let activeIndex = -1;
+  let entered = false;
+  let pendingIndex = null;
+  let userInteracted = false;
+  let settleTimer = 0;
+  // CSS and explicit navigation share exactly the same landing offset.
+  const offset = () => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const destination = index => Math.max(0, window.scrollY + chapters[index].section.getBoundingClientRect().top - offset());
+  const readHash = () => {
+    try { return decodeURIComponent(window.location.hash.slice(1)); }
+    catch { return ''; }
+  };
+  const initialIndex = chapters.findIndex(chapter => chapter.id === readHash());
+  const links = chapters.map(({id, title}) => {
+    const li = document.createElement('li');
+    li.dataset.target = id;
+    const link = document.createElement('a');
+    link.href = '#' + encodeURIComponent(id);
+    const label = document.createElement('span');
+    label.textContent = title;
+    link.appendChild(label);
+    li.appendChild(link);
+    return {li, link};
+  });
+  list.replaceChildren(...links.map(item => item.li));
+  let progress = nav.querySelector('.chapter-progress span');
+  if (!progress) {
+    const track = document.createElement('div');
+    track.className = 'chapter-progress';
+    progress = document.createElement('span');
+    track.appendChild(progress);
+    nav.appendChild(track);
+  }
+  const controls = document.createElement('div');
+  controls.className = 'chapter-step-controls';
+  const previous = document.createElement('button');
+  const next = document.createElement('button');
+  previous.type = next.type = 'button';
+  previous.textContent = '← Previous';
+  next.textContent = 'Next →';
+  previous.setAttribute('aria-label', 'Previous chapter');
+  next.setAttribute('aria-label', 'Next chapter');
+  controls.append(previous, next);
+  nav.appendChild(controls);
+  const backgrounds = [...document.querySelectorAll('.story-backgrounds .bg')];
+  const setActive = index => {
+    if (index === activeIndex) return;
+    activeIndex = index;
+    previous.disabled = index === 0;
+    next.disabled = index === chapters.length - 1;
+    const chapter = chapters[index];
+    sections.forEach(section => section.classList.toggle('viewport-active', section === chapter.section));
+    links.forEach(({li, link}, i) => {
+      li.classList.toggle('is-active', i === index);
+      if (i === index) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    backgrounds.forEach(bg => bg.classList.toggle('is-active', bg.dataset.bg === chapter.id));
+    progress.style.transform = 'scaleY(' + ((index + 1) / chapters.length) + ')';
+  };
+  const update = () => {
+    frame = 0;
+    const top = 0;
+    const height = window.innerHeight;
+    if (!height) return;
+    const rect = wrapper.getBoundingClientRect();
+    const line = height * .35;
+    // Controls only appear once the hero has cleared their reading position.
+    const inChapters = rect.top <= offset() + 1 && rect.bottom > height * .5;
+    document.body.classList.toggle('is-in-chapters', inChapters);
+    nav.inert = !inChapters || chapters.length < 2;
+    nav.setAttribute('aria-hidden', String(!inChapters || chapters.length < 2));
+    if (!inChapters) return;
+    // Use a viewport reading line, not a percentage of the entire chapter.
+    // A very tall chapter can never meet a high intersection-ratio threshold.
 
-		const chaptersWrapper = document.querySelector('.chapters-wrapper');
-		const storySections   = [...document.querySelectorAll('.story-section')];
-		const chapterWrap     = document.querySelector('.chapter-selector');
-		const chapterNav      = chapterWrap?.querySelector('ul');
-
-		// Safety exit
-		if (!chaptersWrapper || !storySections.length || !chapterNav) return;
-
-		// -----------------------------
-		// URL hash control (prevents auto #chapter-1 on load)
-		// -----------------------------
-		let hasUserEnteredStory = false;
-		const hadInitialHash = !!window.location.hash;
-
-		// -----------------------------
-		// 1) Build chapter selector
-		// -----------------------------
-		chapterNav.innerHTML = '';
-
-		const chapterMeta = storySections
-			.map(section => {
-				const chapterEl = section.querySelector('.cs-chapter[id]');
-				const titleEl   = chapterEl?.querySelector('h2.chapter-title');
-				if (!chapterEl || !titleEl) return null;
-				return { section, id: chapterEl.id, title: titleEl.textContent.trim() };
-			})
-			.filter(Boolean);
-
-		// If only 1 chapter, remove selector UI
-		if (chapterMeta.length <= 1) {
-			chapterWrap?.remove();
-			return;
-		}
-
-		chapterMeta.forEach(({ id, title }) => {
-			const li = document.createElement('li');
-			li.dataset.target = id;
-			li.innerHTML = `<span>${title}</span>`;
-			chapterNav.appendChild(li);
-		});
-
-		const chapterLinks = [...chapterNav.querySelectorAll('li')];
-
-		// Progress bar (optional)
-		let progressBar = chapterWrap.querySelector('.chapter-progress span');
-		if (!progressBar) {
-			const progress = document.createElement('div');
-			progress.className = 'chapter-progress';
-			progress.innerHTML = `<span></span>`;
-			chapterWrap.appendChild(progress);
-			progressBar = progress.querySelector('span');
-		}
-
-		// -----------------------------
-		// Helpers
-		// -----------------------------
-		const getBgLayers = () => [...document.querySelectorAll('.story-backgrounds .bg')];
-
-		const setActiveBackground = (id) => {
-			if (!id) return;
-			const layers = getBgLayers();
-			if (!layers.length) return;
-
-			layers.forEach(bg => {
-				bg.classList.toggle('is-active', bg.dataset.bg === id);
-			});
-		};
-
-		const setActive = (index) => {
-			const item = chapterMeta[index];
-			if (!item) return;
-
-			// section highlight
-			storySections.forEach(s => s.classList.remove('viewport-active'));
-			item.section.classList.add('viewport-active');
-
-			// selector highlight
-			chapterLinks.forEach(link => {
-				link.classList.toggle('is-active', link.dataset.target === item.id);
-			});
-
-			document.body.classList.add('is-in-chapters');
-
-			// URL hash (only update after the user reaches the story,
-			// OR if they landed directly on a hash)
-			if ((hasUserEnteredStory || hadInitialHash) && window.location.hash !== `#${item.id}`) {
-				history.replaceState(null, '', `#${item.id}`);
-			}
-
-			// backgrounds
-			setActiveBackground(item.id);
-
-			// progress
-			const pct = ((index + 1) / chapterMeta.length);
-			progressBar.style.transform = `scaleY(${pct})`;
-		};
-
-		const snapTo = (index) => {
-			const item = chapterMeta[index];
-			if (!item) return;
-			item.section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		};
-
-		// -----------------------------
-		// 2) Simple "in story" state (10vh scroll trigger)
-		// Uses #main as the scroll container on single project pages
-		// -----------------------------
-		const scrollContainer = document.querySelector('#main') || window;
-
-		const getScrollTop = () => {
-			if (scrollContainer === window) {
-				return window.scrollY || window.pageYOffset || 0;
-			}
-
-			return scrollContainer.scrollTop || 0;
-		};
-
-		const getViewportHeight = () => {
-			if (scrollContainer === window) {
-				return window.innerHeight;
-			}
-
-			return scrollContainer.clientHeight || window.innerHeight;
-		};
-
-		const updateStoryState = () => {
-			const threshold = getViewportHeight() * 0.10; // 10vh
-			const inStory = getScrollTop() >= threshold;
-
-			document.body.classList.toggle('is-in-story', inStory);
-
-			if (inStory) {
-				hasUserEnteredStory = true;
-			}
-		};
-
-		scrollContainer.addEventListener('scroll', updateStoryState, { passive: true });
-		window.addEventListener('resize', updateStoryState, { passive: true });
-
-		// Run once on load
-		updateStoryState();
-
-				// -----------------------------
-				// 2b) Chapter selector visibility
-				// -----------------------------
-				const updateChapterSelectorState = () => {
-					const rect = chaptersWrapper.getBoundingClientRect();
-					const viewportH = window.innerHeight;
-
-					const isVisible =
-						rect.top < viewportH * 0.85 &&
-						rect.bottom > viewportH * 0.15;
-
-					document.body.classList.toggle('is-in-chapters', isVisible);
-				};
-
-				window.addEventListener('scroll', updateChapterSelectorState, { passive: true });
-				window.addEventListener('resize', updateChapterSelectorState, { passive: true });
-
-				// Run once on load
-				updateChapterSelectorState();
-
-		// -----------------------------
-		// 3) Active section detection (single observer)
-		// -----------------------------
-		let activeIndex = 0;
-
-		const ratioMap = new Map();
-
-		const activeObserver = new IntersectionObserver(
-			(entries) => {
-				entries.forEach(entry => {
-					ratioMap.set(entry.target, entry.intersectionRatio);
-				});
-
-				let best = null;
-				let bestRatio = 0;
-
-				ratioMap.forEach((ratio, el) => {
-					if (ratio > bestRatio) {
-						bestRatio = ratio;
-						best = el;
-					}
-				});
-
-				if (!best || bestRatio < 0.35) return;
-
-				const idx = chapterMeta.findIndex(x => x.section === best);
-				if (idx !== -1 && idx !== activeIndex) {
-					activeIndex = idx;
-					setActive(activeIndex);
-				}
-			},
-			{ threshold: [0, 0.25, 0.35, 0.5, 0.75] }
-		);
-
-		storySections.forEach(section => activeObserver.observe(section));
-
-		// -----------------------------
-		// 4) Click navigation
-		// -----------------------------
-		chapterLinks.forEach((link, idx) => {
-			link.addEventListener('click', () => {
-				activeIndex = idx;
-				setActive(activeIndex);
-				snapTo(activeIndex);
-			});
-		});
-
-		// -----------------------------
-		// 5) Optional wheel/keyboard snapping (kept simple)
-		// -----------------------------
-		let isSnapping = false;
-
-		const doSnap = (nextIdx) => {
-			if (isSnapping) return;
-			if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
-
-			isSnapping = true;
-			activeIndex = nextIdx;
-			setActive(activeIndex);
-			snapTo(activeIndex);
-
-			setTimeout(() => { isSnapping = false; }, 700);
-		};
-
-		window.addEventListener('wheel', (e) => {
-			if (!document.body.classList.contains('is-in-story')) return;
-			if (Math.abs(e.deltaY) < 40) return;
-			if (isSnapping) return;
-
-			const rect = chaptersWrapper.getBoundingClientRect();
-			if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
-
-			const nextIdx = e.deltaY > 0 ? activeIndex + 1 : activeIndex - 1;
-
-			// Let normal page scrolling continue if we're at the boundaries
-			if (nextIdx < 0 || nextIdx >= chapterMeta.length) return;
-
-			e.preventDefault();
-			doSnap(nextIdx);
-		}, { passive: false });
-
-		window.addEventListener('keydown', (e) => {
-			if (!document.body.classList.contains('is-in-story')) return;
-
-			const tag = document.activeElement?.tagName;
-			if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
-
-			if (['ArrowDown', 'PageDown'].includes(e.key)) {
-				e.preventDefault();
-				doSnap(activeIndex + 1);
-			}
-			if (['ArrowUp', 'PageUp'].includes(e.key)) {
-				e.preventDefault();
-				doSnap(activeIndex - 1);
-			}
-		});
-
-		// -----------------------------
-		// 6) Initial state
-		// -----------------------------
-		// If you land on a hash, start there.
-		// Otherwise: do NOT force-set active (prevents #chapter-1 on load).
-		const startId = window.location.hash?.replace('#', '');
-		const startIdx = startId
-			? chapterMeta.findIndex(x => x.id === startId)
-			: 0;
-
-		activeIndex = startIdx >= 0 ? startIdx : 0;
-
-		if (hadInitialHash) {
-			setActive(activeIndex);
-		}
-	}
+    let index = 0;
+    chapters.forEach((chapter, i) => {
+      if (chapter.section.getBoundingClientRect().top <= line) index = i;
+    });
+    backgrounds.forEach(bg => bg.classList.toggle('is-active', bg.dataset.bg === chapters[index].id));
+    if (pendingIndex === null) setActive(index);
+    // Do not rewrite the URL merely because chapter 1 peeks under the hero.
+    if (rect.top <= line) entered = true;
+  };
+  const finishScroll = () => {
+    clearTimeout(settleTimer);
+    // If interrupted, settle on the chapter actually reached.
+    pendingIndex = null;
+    update();
+    const currentHash = readHash();
+    const isChapterHash = chapters.some(chapter => chapter.id === currentHash);
+    if (entered && document.body.classList.contains('is-in-chapters') &&
+        (!currentHash || isChapterHash) && currentHash !== chapters[activeIndex].id) {
+      const url = new URL(window.location.href);
+      url.hash = chapters[activeIndex].id;
+      history.replaceState(history.state, '', url);
+    }
+  };
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+  const goTo = (index, smooth = true) => {
+    pendingIndex = index;
+    setActive(index);
+    const top = destination(index);
+    window.scrollTo({top: Math.max(0, top),
+      behavior: smooth && !reducedMotion.matches ? 'smooth' : 'instant'});
+    schedule();
+    clearTimeout(settleTimer);
+    // Also handles clicking the current chapter (no scroll event).
+    settleTimer = setTimeout(finishScroll, 220);
+  };
+  previous.addEventListener('click', () => { userInteracted = true; entered = true; goTo(Math.max(0, activeIndex - 1)); });
+  next.addEventListener('click', () => { userInteracted = true; entered = true; goTo(Math.min(chapters.length - 1, activeIndex + 1)); });
+  links.forEach(({link}, index) => link.addEventListener('click', event => {
+    // Preserve modified clicks and opening a chapter in a new tab.
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    userInteracted = true;
+    entered = true;
+    goTo(index);
+    // Selection stays on the destination; backgrounds follow the visible chapter.
+  }));
+  const onHashChange = () => {
+    const index = chapters.findIndex(chapter => chapter.id === readHash());
+    if (index >= 0) { entered = true; goTo(index, false); }
+  };
+  window.addEventListener('scroll', () => {
+    schedule();
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(finishScroll, 180);
+  }, {passive: true});
+  // Native completion where available; the debounce remains a fallback.
+  document.addEventListener('scrollend', finishScroll);
+  const releaseNavigation = () => { userInteracted = true; pendingIndex = null; schedule(); };
+  window.addEventListener('wheel', releaseNavigation, {passive: true});
+  window.addEventListener('touchstart', releaseNavigation, {passive: true});
+  window.addEventListener('keydown', event => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) releaseNavigation();
+  });
+  window.addEventListener('resize', schedule, {passive: true});
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted && initialIndex >= 0 && !userInteracted) goTo(initialIndex, false);
+    else schedule();
+  });
+  window.addEventListener('hashchange', onHashChange);
+  // Native wheel, touch and keyboard scrolling remain uninterrupted.
+  if (typeof ResizeObserver !== 'undefined') {
+    const observer = new ResizeObserver(schedule);
+    observer.observe(wrapper);
+    chapters.forEach(chapter => observer.observe(chapter.section));
+  }
+  wrapper.addEventListener('load', schedule, true);
+  document.fonts?.ready.then(schedule);
+  setActive(initialIndex >= 0 ? initialIndex : 0);
+  if (chapters.length < 2) nav.hidden = true;
+  update();
+  if (initialIndex >= 0) {
+    entered = true;
+    requestAnimationFrame(() => goTo(initialIndex, false));
+    const eagerImages = [...document.querySelectorAll('.story-hero img')].map(img =>
+      img.complete ? Promise.resolve() : new Promise(resolve => {
+        img.addEventListener('load', resolve, {once: true});
+        img.addEventListener('error', resolve, {once: true});
+      }));
+    Promise.all([document.fonts?.ready, ...eagerImages]).then(() => {
+      if (!userInteracted) goTo(initialIndex, false);
+    });
+  }
+}
 
 	document.addEventListener('DOMContentLoaded', initStoryController);
 	window.addEventListener('pageshow', initStoryController);
@@ -4187,3 +4118,126 @@ import * as bootstrap from 'bootstrap';
 
 })();
 
+
+// Homepage only: one entrance, then gentle pointer depth while in view.
+function initHomepageHeroMotion() {
+  if (!document.body.matches('.is-frontend.page-template-page-homepage')) return;
+  const hero = document.querySelector('#main .hero-background');
+  const background = hero?.querySelector(':scope > img');
+  const portrait = hero?.querySelector('.hero-foreground > img');
+  if (!hero || !background || !portrait || hero.dataset.motionInit) return;
+  hero.dataset.motionInit = 'true';
+
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const desktop = matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)');
+  let visible = false;
+  let entered = false;
+  let frame = 0;
+  let lastTime = 0;
+  let scrollFrame = 0;
+  let x = 0, y = 0, targetX = 0, targetY = 0;
+  const animations = new Set();
+
+  const enabled = () => entered && visible && !document.hidden && !reduced.matches && desktop.matches;
+  const paint = () => {
+    background.style.setProperty('--hero-depth-x', `${(x * 6).toFixed(3)}px`);
+    background.style.setProperty('--hero-depth-y', `${(y * 6).toFixed(3)}px`);
+    portrait.style.setProperty('--hero-depth-x', `${(x * 2).toFixed(3)}px`);
+    portrait.style.setProperty('--hero-depth-y', `${(y * 2).toFixed(3)}px`);
+  };
+  const paintScroll = () => {
+    scrollFrame = 0;
+    const rect = hero.getBoundingClientRect();
+    const progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height)));
+    const offset = visible && !document.hidden && !reduced.matches
+      ? -progress * (desktop.matches ? 160 : 36) : 0;
+    portrait.style.setProperty('--hero-scroll-y', `${offset.toFixed(3)}px`);
+    const glowOffset = visible && !document.hidden && !reduced.matches
+      ? progress * (desktop.matches ? 70 : 24) : 0;
+    hero.style.setProperty('--hero-glow-y', `${glowOffset.toFixed(3)}px`);
+  };
+  const scheduleScroll = () => {
+    if (!scrollFrame) scrollFrame = requestAnimationFrame(paintScroll);
+  };
+  const reset = () => {
+    cancelAnimationFrame(frame);
+    frame = lastTime = 0;
+    x = y = targetX = targetY = 0;
+    paint();
+    hero.classList.remove('hero-depth-active');
+  };
+  const tick = time => {
+    frame = 0;
+    if (!enabled()) { reset(); return; }
+    const dt = lastTime ? Math.min(64, time - lastTime) : 16;
+    lastTime = time;
+    const smoothing = 1 - Math.exp(-dt / 160);
+    x += (targetX - x) * smoothing;
+    y += (targetY - y) * smoothing;
+    paint();
+    if (Math.abs(targetX - x) + Math.abs(targetY - y) > .001) {
+      frame = requestAnimationFrame(tick);
+    } else {
+      x = targetX; y = targetY; paint(); lastTime = 0;
+      if (!targetX && !targetY) hero.classList.remove('hero-depth-active');
+    }
+  };
+  const schedule = () => {
+    if (enabled() && !frame) frame = requestAnimationFrame(tick);
+  };
+  const stopEntrance = () => {
+    animations.forEach(animation => animation.cancel());
+    animations.clear();
+    entered = true;
+    hero.classList.remove('hero-entering');
+    scheduleScroll();
+  };
+  const entrance = () => {
+    if (entered || hero.classList.contains('hero-entering')) return;
+    if (reduced.matches || typeof portrait.animate !== 'function') { entered = true; return; }
+    hero.classList.add('hero-entering');
+    const opacity = getComputedStyle(portrait).opacity;
+    const bgAnimation = background.animate([
+      {filter: 'brightness(.38)'}, {filter: 'brightness(.55)'}
+    ], {duration: 1800, easing: 'cubic-bezier(.22,1,.36,1)'});
+    const portraitAnimation = portrait.animate([
+      {opacity: 0, translate: '0 12px'},
+      {opacity, translate: '0 0'}
+    ], {duration: 1200, delay: 100, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)'});
+    animations.add(bgAnimation); animations.add(portraitAnimation);
+    Promise.allSettled([bgAnimation.finished, portraitAnimation.finished]).then(stopEntrance);
+  };
+
+  // Wait for actual image pixels, without ever hiding essential hero copy.
+  Promise.allSettled([background, portrait].map(img => img.decode?.())).then(() => {
+    hero.classList.add('hero-motion-ready');
+    if (visible && !document.hidden) entrance();
+  });
+  hero.addEventListener('pointermove', event => {
+    if (!enabled() || event.pointerType !== 'mouse') return;
+    const rect = hero.getBoundingClientRect();
+    targetX = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+    targetY = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
+    hero.classList.add('hero-depth-active');
+    schedule();
+  }, {passive: true});
+  hero.addEventListener('pointerleave', () => { targetX = targetY = 0; schedule(); }, {passive: true});
+  const refresh = () => {
+    scheduleScroll();
+    if (!enabled()) reset();
+    if (reduced.matches || document.hidden) stopEntrance();
+    if (visible && !document.hidden && hero.classList.contains('hero-motion-ready')) entrance();
+  };
+  reduced.addEventListener('change', refresh);
+  desktop.addEventListener('change', refresh);
+  document.addEventListener('visibilitychange', refresh);
+  window.addEventListener('scroll', scheduleScroll, {passive: true});
+  window.addEventListener('resize', () => { reset(); scheduleScroll(); }, {passive: true});
+  window.addEventListener('pagehide', () => { reset(); stopEntrance(); cancelAnimationFrame(scrollFrame); scrollFrame = 0; portrait.style.setProperty('--hero-scroll-y', '0px'); hero.style.setProperty('--hero-glow-y', '0px'); });
+  const observer = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    refresh();
+  }, {threshold: 0});
+  observer.observe(hero);
+}
+document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
