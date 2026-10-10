@@ -2,6 +2,8 @@
 /** Shared service detail shell. The main sections remain editable post content. */
 $slug = get_post_field('post_name', get_the_ID());
 $is_fixes = $slug === 'one-time-fixes';
+$enquiry_service = ['one-time-fixes' => 'fixes', 'retainer' => 'support', 'design' => 'design-build', 'comprehensive' => 'design-build', 'wordpress-development' => 'wordpress', 'development' => 'custom-web'][$slug] ?? 'unsure';
+$enquiry_url = add_query_arg('enquiry_service', $enquiry_service, home_url('/start-a-project/'));
 $facts = [
     'one-time-fixes' => ['Targeted technical support', 'Targeted improvements', 'Existing websites', 'One-off engagement', 'Share your issue'],
     'retainer' => ['Ongoing website support', 'Continuous improvements', 'Existing websites', 'Ongoing engagement', 'Discuss your needs'],
@@ -28,7 +30,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
         <p class="service-lead"><?php echo esc_html(get_the_excerpt()); ?></p>
       <?php endif; ?>
       <div class="service-detail-actions">
-        <a class="service-outline-button" href="#service-enquiry"><?php echo $is_fixes ? 'Tell me about the issue' : 'Tell me about your project'; ?> <span aria-hidden="true">↗</span></a>
+        <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_fixes ? 'Tell me about the issue' : 'Tell me about your project'; ?> <span aria-hidden="true">↗</span></a>
         <a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
       </div>
     </div>
@@ -55,7 +57,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
           $form = str_replace('https://jarvisbrownassociates.co.uk/privacy-policy/', esc_url(home_url('/privacy-policy/')), $form);
           echo $form; // Trusted output from the installed form plugin.
       } else {
-          echo '<a class="service-outline-button" href="' . esc_url(home_url('/contact/')) . '">Send an enquiry <span aria-hidden="true">↗</span></a>';
+          echo '<a class="service-outline-button" href="' . esc_url($enquiry_url) . '">Send an enquiry <span aria-hidden="true">↗</span></a>';
       }
       ?>
     </div>

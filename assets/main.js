@@ -1512,6 +1512,11 @@ function initStoryController() {
 				emptyEl.hidden = visibleCount !== 0;
 			}
 
+			const count = archive.querySelector('[data-projects-count]');
+			if (count) count.textContent = String(visibleCount);
+			const countLabel = archive.querySelector('[data-projects-count-label]');
+			if (countLabel) countLabel.textContent = visibleCount === 1 ? 'project' : 'projects';
+			filterButtons.forEach(button => button.setAttribute('aria-pressed', String(button.classList.contains('is-active'))));
 			updateTitle();
 		};
 
