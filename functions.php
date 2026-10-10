@@ -2583,3 +2583,6 @@ require_once get_template_directory() . '/inc/portfolio-editorial.php';
 
 // Guided project enquiry flow.
 require_once get_template_directory() . '/inc/project-enquiry.php';
+
+// Best-match search experience.
+require_once get_template_directory() . '/inc/search-experience.php';
