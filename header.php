@@ -24,7 +24,7 @@
 		<nav id="header" class="navbar <?php if ( isset( $navbar_position ) && 'fixed_top' === $navbar_position ) : echo ' fixed-top'; elseif ( isset( $navbar_position ) && 'fixed_bottom' === $navbar_position ) : echo ' fixed-bottom'; endif; if ( is_home() || is_front_page() ) : echo ' home'; endif; ?>">
 			<div class="container position-relative">
 				<div class="dxndre-nav-left">
-					<button class="btn btn-primary header-search" type="button" data-bs-toggle="collapse" data-bs-target="#headerSearch" aria-expanded="false" aria-controls="headerSearch">
+					<button id="dxndre-search-toggle" class="header-search" type="button" data-bs-toggle="collapse" data-bs-target="#headerSearch" aria-expanded="false" aria-controls="headerSearch" aria-label="<?php esc_attr_e( 'Toggle search', 'dxndre' ); ?>">
 						<!-- Magnifier SVG -->
 						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 							<path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -57,76 +57,157 @@
 					?>
 				</a>
 				<div class="dxndre-nav-right">
-					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php esc_attr_e( 'Toggle navigation', 'dxndre' ); ?>">
+					<button id="dx-menu-toggle" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php esc_attr_e( 'Toggle navigation', 'dxndre' ); ?>">
 						<span class="navbar-toggler-line"></span>
 						<span class="navbar-toggler-line"></span>
 						<span class="navbar-toggler-line"></span>
 					</button>
 				</div>
 
-				<div id="navbar" class="navbar-collapse">
-					<div class="container">
-						<div class="menu-content-wrapper">
-							<div class="menu-content">
-								<span class="headline">Navigation</span>
-								<h3>Menu</h3>
+				<?php
+					// Navigation assets.
+					$menu_bus = get_template_directory_uri() . '/assets/img/bus.png';
 
-								<?php
-								// Loading WordPress Custom Menu (theme_location).
-								wp_nav_menu(
-									array(
-										'menu_class'     => 'navbar-nav me-auto',
-										'container'      => '',
-										'fallback_cb'    => 'WP_Bootstrap_Navwalker::fallback',
-										'walker'         => new WP_Bootstrap_Navwalker(),
-										'theme_location' => 'main-menu',
-									)
-								);
+					// Optional social URLs.
+					$menu_socials = array(
+						'Instagram' => get_theme_mod( 'social_instagram_url', '' ),
+						'LinkedIn'  => get_theme_mod( 'social_linkedin_url', '' ),
+						'GitHub'    => get_theme_mod( 'social_github_url', '' ),
+					);
 
-								if ( '1' === $search_enabled ) :
-								?>
-										<!-- <form class="search-form my-2 my-lg-0" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-											<div class="input-group">
-												<input type="text" name="s" class="form-control" placeholder="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" title="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" />
-												<button type="submit" name="submit" class="btn btn-outline-secondary"><?php esc_html_e( 'Search', 'dxndre' ); ?></button>
-											</div>
-										</form> -->
-								<?php
-									endif;
-								?>
-							</div>
-							<div class="graphic-side">
-								<img src="<?php echo get_template_directory_uri(); ?>/assets/img/bus.png" alt="Bus graphic">
-							</div>
-						</div>
+					// Only display configured social profiles.
+					$menu_socials = array_filter( $menu_socials );
+
+					// Portfolio destination.
+					$portfolio_page = get_page_by_path( 'portfolio' );
+
+					$portfolio_url = $portfolio_page
+						? get_permalink( $portfolio_page )
+						: home_url( '/portfolio/' );
+				?>
+
+				<div id="navbar" class="navbar-collapse collapse dx-menu" aria-label="<?php esc_attr_e( 'Main navigation', 'dxndre' ); ?>">
+					<div class="dx-menu__background" aria-hidden="true">
+						<div class="dx-menu__ambient"></div>
+						<div class="dx-menu__glow"></div>
 					</div>
 
-				</div><!-- /.navbar-collapse -->
+					<div class="dx-menu__inner container">
+
+						<div class="dx-menu__layout">
+
+							<!-- NAVIGATION CONTENT -->
+							<div class="dx-menu__content">
+
+								<div class="dx-menu__heading">
+									<span class="dx-menu__eyebrow">
+										<?php esc_html_e( 'Navigation', 'dxndre' ); ?>
+									</span>
+								</div>
+
+								<div class="dx-menu__navigation">
+
+									<?php
+										wp_nav_menu(
+											array(
+												'theme_location' => 'main-menu',
+												'menu_class'     => 'navbar-nav dx-menu__list',
+												'container'      => false,
+												'fallback_cb'    => 'WP_Bootstrap_Navwalker::fallback',
+												'walker'         => new WP_Bootstrap_Navwalker(),
+												'depth'          => 2,
+											)
+										);
+									?>
+
+								</div>
+
+								<!-- FOOTER -->
+								<div class="dx-menu__footer">
+
+									<div class="dx-menu__footer-top">
+
+										<?php if ( ! empty( $menu_socials ) ) : ?>
+
+											<div class="dx-menu__socials">
+
+												<span class="dx-menu__eyebrow">
+													<?php esc_html_e( "Let's connect", 'dxndre' ); ?>
+												</span>
+
+												<div class="dx-menu__social-links">
+
+													<?php foreach ( $menu_socials as $name => $url ) : ?>
+
+														<a
+															href="<?php echo esc_url( $url ); ?>"
+															target="_blank"
+															rel="noopener noreferrer"
+															aria-label="<?php echo esc_attr( $name ); ?>"
+														>
+															<?php echo esc_html( $name ); ?>
+														</a>
+
+													<?php endforeach; ?>
+
+												</div>
+
+											</div>
+
+										<?php endif; ?>
+
+									</div>
+
+									<a
+										href="<?php echo esc_url( $portfolio_url ); ?>"
+										class="dx-menu__cta"
+									>
+										<span>
+											<?php esc_html_e( 'View my work', 'dxndre' ); ?>
+										</span>
+
+										<svg
+											width="18"
+											height="18"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											aria-hidden="true"
+										>
+											<path d="M7 17L17 7"></path>
+											<path d="M8 7h9v9"></path>
+										</svg>
+									</a>
+
+								</div>
+
+							</div>
+
+							<!-- CINEMATIC BUS VISUAL -->
+							<div class="dx-menu__visual" aria-hidden="true">
+
+								<div class="dx-menu__visual-glow"></div>
+
+								<img
+									src="<?php echo esc_url( $menu_bus ); ?>"
+									alt=""
+									class="dx-menu__bus"
+									decoding="async"
+								>
+
+								<div class="dx-menu__visual-floor"></div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div><!-- /#navbar -->
 			</div><!-- /.container -->
-				<script>
-					(function() {
-						var btn = document.getElementById('dxndre-search-toggle');
-						var box = document.getElementById('dxndre-search-form');
-
-						if (!btn || !box) return;
-
-						btn.addEventListener('click', function(e) {
-							e.preventDefault();
-							box.classList.toggle('open');
-
-							if (box.classList.contains('open')) {
-								var input = box.querySelector('input[name="s"]');
-								if (input) input.focus();
-							}
-						});
-
-						document.addEventListener('click', function(e) {
-							if (!box.contains(e.target) && !btn.contains(e.target)) {
-								box.classList.remove('open');
-							}
-						});
-					})();
-				</script>
 		</nav><!-- /#header -->
 	</header>
 

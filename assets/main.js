@@ -391,21 +391,6 @@ import * as bootstrap from 'bootstrap';
 	document.addEventListener('DOMContentLoaded', () => {
 
 		/* ==========================
-		   NAVBAR OPEN STATE
-		========================== */
-		const navbar = document.getElementById('navbar');
-
-		if (navbar) {
-			navbar.addEventListener('shown.bs.collapse', () => {
-				document.body.classList.add('nav-open');
-			});
-
-			navbar.addEventListener('hidden.bs.collapse', () => {
-				document.body.classList.remove('nav-open');
-			});
-		}
-
-		/* ==========================
 		   VIEWPORT-ACTIVE SECTIONS
 		========================== */
 
@@ -582,18 +567,260 @@ import * as bootstrap from 'bootstrap';
 		});
 	});
 
-	// Remove 'collapsing' class from navbar 
+	/* ==========================================================
+	DXNDRE — CINEMATIC NAVIGATION CONTROLLER
+	========================================================== */
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const navbar = document.getElementById('navbar');
-		if (!navbar) return;
+	function initDxndreNavigation() {
 
-		navbar.addEventListener('show.bs.collapse', () => {
-			requestAnimationFrame(() => {
-				navbar.classList.remove('collapsing');
+		const menu = document.getElementById('navbar');
+		const toggle = document.getElementById('dx-menu-toggle');
+
+		if (!menu || !toggle) return;
+
+		// Prevent duplicate initialisation.
+		if (menu.dataset.dxInitialized === 'true') return;
+
+		menu.dataset.dxInitialized = 'true';
+
+		const body = document.body;
+
+		const focusableSelector = [
+			'a[href]',
+			'button:not([disabled])',
+			'input:not([disabled])',
+			'select:not([disabled])',
+			'textarea:not([disabled])',
+			'[tabindex]:not([tabindex="-1"])'
+		].join(',');
+
+		let previouslyFocused = null;
+		let isOpen = false;
+
+		const getFocusable = () => {
+
+			const controls = [
+				...menu.querySelectorAll(focusableSelector),
+				...document.querySelectorAll(
+					'#header .dxndre-nav-left a, ' +
+					'#header .dxndre-nav-left button, ' +
+					'#header .dxndre-nav-left input, ' +
+					'#header .dxndre-navbar-brand-centered'
+				),
+				toggle
+			];
+
+			return [...new Set(controls)].filter(element => {
+
+				const style = window.getComputedStyle(element);
+
+				return (
+					element.getClientRects().length > 0 &&
+					style.visibility !== 'hidden' &&
+					style.display !== 'none' &&
+					!element.closest('[inert]')
+				);
+			});
+		};
+
+		const lockScroll = () => {
+			body.classList.add('nav-open');
+		};
+
+		const unlockScroll = () => {
+			body.classList.remove('nav-open');
+		};
+
+		// Bootstrap starts opening.
+		menu.addEventListener('show.bs.collapse', () => {
+
+			previouslyFocused = document.activeElement;
+
+			isOpen = true;
+
+			lockScroll();
+
+			menu.removeAttribute('inert');
+			menu.setAttribute('aria-hidden', 'false');
+
+		});
+
+		// Bootstrap completes opening.
+		menu.addEventListener('shown.bs.collapse', () => {
+
+			isOpen = true;
+
+			const currentLink = menu.querySelector(
+				'.current-menu-item > a, ' +
+				'.current_page_item > a'
+			);
+
+			const firstLink = menu.querySelector(
+				'.dx-menu__list > li > a'
+			);
+
+			const target = currentLink || firstLink;
+
+			if (target) {
+				target.focus({ preventScroll: true });
+			}
+
+		});
+
+		// Bootstrap starts closing.
+		menu.addEventListener('hide.bs.collapse', () => {
+
+			isOpen = false;
+
+			// Keep focus away from disappearing menu items.
+			if (menu.contains(document.activeElement)) {
+				toggle.focus({ preventScroll: true });
+			}
+
+		});
+
+		// Bootstrap completes closing.
+		menu.addEventListener('hidden.bs.collapse', () => {
+
+			isOpen = false;
+
+			unlockScroll();
+
+			menu.setAttribute('inert', '');
+			menu.setAttribute('aria-hidden', 'true');
+
+			const restoreFocus = previouslyFocused;
+
+			if (
+				restoreFocus &&
+				restoreFocus.isConnected &&
+				typeof restoreFocus.focus === 'function'
+			) {
+				restoreFocus.focus({ preventScroll: true });
+			} else {
+				toggle.focus({ preventScroll: true });
+			}
+
+			previouslyFocused = null;
+
+		});
+
+		// Handle keyboard accessibility.
+		document.addEventListener('keydown', event => {
+
+			if (!isOpen) return;
+
+			// Escape closes the menu.
+			if (event.key === 'Escape') {
+
+				event.preventDefault();
+
+				const instance = bootstrap.Collapse.getOrCreateInstance(
+					menu,
+					{ toggle: false }
+				);
+
+				instance.hide();
+
+				return;
+			}
+
+			// Trap focus inside navigation controls.
+			if (event.key !== 'Tab') return;
+
+			const focusable = getFocusable();
+
+			if (!focusable.length) return;
+
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+
+			const currentIndex = focusable.indexOf(
+				document.activeElement
+			);
+
+			if (event.shiftKey) {
+
+				if (currentIndex <= 0) {
+					event.preventDefault();
+					last.focus();
+				}
+
+			} else {
+
+				if (currentIndex === focusable.length - 1) {
+					event.preventDefault();
+					first.focus();
+				}
+			}
+
+		});
+
+		// Close when navigating to a section on the same page.
+		menu.querySelectorAll('a[href]').forEach(link => {
+
+			link.addEventListener('click', () => {
+
+				const destination = new URL(
+					link.href,
+					window.location.href
+				);
+
+				const current = new URL(window.location.href);
+
+				const samePage = (
+					destination.origin === current.origin &&
+					destination.pathname === current.pathname &&
+					destination.search === current.search
+				);
+
+				if (!samePage) return;
+
+				const instance = bootstrap.Collapse.getOrCreateInstance(
+					menu,
+					{ toggle: false }
+				);
+
+				instance.hide();
+
 			});
 		});
-	});
+
+		// Ensure overlay is inaccessible while closed.
+		if (!menu.classList.contains('show')) {
+
+			menu.setAttribute('inert', '');
+			menu.setAttribute('aria-hidden', 'true');
+
+		} else {
+
+			isOpen = true;
+			lockScroll();
+
+			menu.removeAttribute('inert');
+			menu.setAttribute('aria-hidden', 'false');
+
+		}
+
+		// Safety net for returning from browser history.
+		window.addEventListener('pageshow', () => {
+
+			if (!menu.classList.contains('show')) {
+
+				isOpen = false;
+				unlockScroll();
+
+				menu.setAttribute('inert', '');
+				menu.setAttribute('aria-hidden', 'true');
+
+			}
+		});
+	}
+
+	document.addEventListener(
+		'DOMContentLoaded',
+		initDxndreNavigation
+	);
 
 	// Client Dashboard Loading Test
 

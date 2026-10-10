@@ -1,1 +1,11545 @@
-!function(){"use strict";var e={n:function(t){var n=t&&t.__esModule?function(){return t.default}:function(){return t};return e.d(n,{a:n}),n},d:function(t,n){for(var i in n)e.o(n,i)&&!e.o(t,i)&&Object.defineProperty(t,i,{enumerable:!0,get:n[i]})},o:function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},r:function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},t={};function n(e,t,n,i,r,o,a){try{var s=e[o](a),c=s.value}catch(e){return void n(e)}s.done?t(c):Promise.resolve(c).then(i,r)}function i(e){return function(){var t=this,i=arguments;return new Promise(function(r,o){var a=e.apply(t,i);function s(e){n(a,r,o,s,c,"next",e)}function c(e){n(a,r,o,s,c,"throw",e)}s(void 0)})}}function r(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,i=Array(t);n<t;n++)i[n]=e[n];return i}function o(e,t){if(e){if("string"==typeof e)return r(e,t);var n={}.toString.call(e).slice(8,-1);return"Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?r(e,t):void 0}}function a(e,t){return function(e){if(Array.isArray(e))return e}(e)||function(e,t){var n=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=n){var i,r,o,a,s=[],c=!0,l=!1;try{if(o=(n=n.call(e)).next,0===t){if(Object(n)!==n)return;c=!1}else for(;!(c=(i=o.call(n)).done)&&(s.push(i.value),s.length!==t);c=!0);}catch(e){l=!0,r=e}finally{try{if(!c&&null!=n.return&&(a=n.return(),Object(a)!==a))return}finally{if(l)throw r}}return s}}(e,t)||o(e,t)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function s(e){return function(e){if(Array.isArray(e))return r(e)}(e)||function(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||o(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}e.r(t),e.d(t,{afterMain:function(){return O},afterRead:function(){return x},afterWrite:function(){return I},applyStyles:function(){return R},arrow:function(){return ae},auto:function(){return p},basePlacements:function(){return m},beforeMain:function(){return C},beforeRead:function(){return S},beforeWrite:function(){return q},bottom:function(){return u},clippingParents:function(){return b},computeStyles:function(){return de},createPopper:function(){return Fe},createPopperBase:function(){return $e},createPopperLite:function(){return Re},detectOverflow:function(){return Se},end:function(){return v},eventListeners:function(){return he},flip:function(){return ke},hide:function(){return Te},left:function(){return f},main:function(){return T},modifierPhases:function(){return N},offset:function(){return Oe},placements:function(){return A},popper:function(){return _},popperGenerator:function(){return je},popperOffsets:function(){return qe},preventOverflow:function(){return Me},read:function(){return k},reference:function(){return w},right:function(){return h},start:function(){return g},top:function(){return d},variationPlacements:function(){return E},viewport:function(){return y},write:function(){return M}});var c=window.regeneratorRuntime,l=e.n(c),d="top",u="bottom",h="right",f="left",p="auto",m=[d,u,h,f],g="start",v="end",b="clippingParents",y="viewport",_="popper",w="reference",E=m.reduce(function(e,t){return e.concat([t+"-"+g,t+"-"+v])},[]),A=[].concat(m,[p]).reduce(function(e,t){return e.concat([t,t+"-"+g,t+"-"+v])},[]),S="beforeRead",k="read",x="afterRead",C="beforeMain",T="main",O="afterMain",q="beforeWrite",M="write",I="afterWrite",N=[S,k,x,C,T,O,q,M,I];function D(e){return e?(e.nodeName||"").toLowerCase():null}function P(e){if(null==e)return window;if("[object Window]"!==e.toString()){var t=e.ownerDocument;return t&&t.defaultView||window}return e}function j(e){return e instanceof P(e).Element||e instanceof Element}function $(e){return e instanceof P(e).HTMLElement||e instanceof HTMLElement}function F(e){return"undefined"!=typeof ShadowRoot&&(e instanceof P(e).ShadowRoot||e instanceof ShadowRoot)}var R={name:"applyStyles",enabled:!0,phase:"write",fn:function(e){var t=e.state;Object.keys(t.elements).forEach(function(e){var n=t.styles[e]||{},i=t.attributes[e]||{},r=t.elements[e];$(r)&&D(r)&&(Object.assign(r.style,n),Object.keys(i).forEach(function(e){var t=i[e];!1===t?r.removeAttribute(e):r.setAttribute(e,!0===t?"":t)}))})},effect:function(e){var t=e.state,n={popper:{position:t.options.strategy,left:"0",top:"0",margin:"0"},arrow:{position:"absolute"},reference:{}};return Object.assign(t.elements.popper.style,n.popper),t.styles=n,t.elements.arrow&&Object.assign(t.elements.arrow.style,n.arrow),function(){Object.keys(t.elements).forEach(function(e){var i=t.elements[e],r=t.attributes[e]||{},o=Object.keys(t.styles.hasOwnProperty(e)?t.styles[e]:n[e]).reduce(function(e,t){return e[t]="",e},{});$(i)&&D(i)&&(Object.assign(i.style,o),Object.keys(r).forEach(function(e){i.removeAttribute(e)}))})}},requires:["computeStyles"]};function H(e){return e.split("-")[0]}var B=Math.max,z=Math.min,W=Math.round;function U(){var e=navigator.userAgentData;return null!=e&&e.brands&&Array.isArray(e.brands)?e.brands.map(function(e){return e.brand+"/"+e.version}).join(" "):navigator.userAgent}function V(){return!/^((?!chrome|android).)*safari/i.test(U())}function X(e,t,n){void 0===t&&(t=!1),void 0===n&&(n=!1);var i=e.getBoundingClientRect(),r=1,o=1;t&&$(e)&&(r=e.offsetWidth>0&&W(i.width)/e.offsetWidth||1,o=e.offsetHeight>0&&W(i.height)/e.offsetHeight||1);var a=(j(e)?P(e):window).visualViewport,s=!V()&&n,c=(i.left+(s&&a?a.offsetLeft:0))/r,l=(i.top+(s&&a?a.offsetTop:0))/o,d=i.width/r,u=i.height/o;return{width:d,height:u,top:l,right:c+d,bottom:l+u,left:c,x:c,y:l}}function Y(e){var t=X(e),n=e.offsetWidth,i=e.offsetHeight;return Math.abs(t.width-n)<=1&&(n=t.width),Math.abs(t.height-i)<=1&&(i=t.height),{x:e.offsetLeft,y:e.offsetTop,width:n,height:i}}function G(e,t){var n=t.getRootNode&&t.getRootNode();if(e.contains(t))return!0;if(n&&F(n)){var i=t;do{if(i&&e.isSameNode(i))return!0;i=i.parentNode||i.host}while(i)}return!1}function K(e){return P(e).getComputedStyle(e)}function Q(e){return["table","td","th"].indexOf(D(e))>=0}function Z(e){return((j(e)?e.ownerDocument:e.document)||window.document).documentElement}function J(e){return"html"===D(e)?e:e.assignedSlot||e.parentNode||(F(e)?e.host:null)||Z(e)}function ee(e){return $(e)&&"fixed"!==K(e).position?e.offsetParent:null}function te(e){for(var t=P(e),n=ee(e);n&&Q(n)&&"static"===K(n).position;)n=ee(n);return n&&("html"===D(n)||"body"===D(n)&&"static"===K(n).position)?t:n||function(e){var t=/firefox/i.test(U());if(/Trident/i.test(U())&&$(e)&&"fixed"===K(e).position)return null;var n=J(e);for(F(n)&&(n=n.host);$(n)&&["html","body"].indexOf(D(n))<0;){var i=K(n);if("none"!==i.transform||"none"!==i.perspective||"paint"===i.contain||-1!==["transform","perspective"].indexOf(i.willChange)||t&&"filter"===i.willChange||t&&i.filter&&"none"!==i.filter)return n;n=n.parentNode}return null}(e)||t}function ne(e){return["top","bottom"].indexOf(e)>=0?"x":"y"}function ie(e,t,n){return B(e,z(t,n))}function re(e){return Object.assign({},{top:0,right:0,bottom:0,left:0},e)}function oe(e,t){return t.reduce(function(t,n){return t[n]=e,t},{})}var ae={name:"arrow",enabled:!0,phase:"main",fn:function(e){var t,n=e.state,i=e.name,r=e.options,o=n.elements.arrow,a=n.modifiersData.popperOffsets,s=H(n.placement),c=ne(s),l=[f,h].indexOf(s)>=0?"height":"width";if(o&&a){var p=function(e,t){return re("number"!=typeof(e="function"==typeof e?e(Object.assign({},t.rects,{placement:t.placement})):e)?e:oe(e,m))}(r.padding,n),g=Y(o),v="y"===c?d:f,b="y"===c?u:h,y=n.rects.reference[l]+n.rects.reference[c]-a[c]-n.rects.popper[l],_=a[c]-n.rects.reference[c],w=te(o),E=w?"y"===c?w.clientHeight||0:w.clientWidth||0:0,A=y/2-_/2,L=p[v],S=E-g[l]-p[b],k=E/2-g[l]/2+A,x=ie(L,k,S),C=c;n.modifiersData[i]=((t={})[C]=x,t.centerOffset=x-k,t)}},effect:function(e){var t=e.state,n=e.options.element,i=void 0===n?"[data-popper-arrow]":n;null!=i&&("string"!=typeof i||(i=t.elements.popper.querySelector(i)))&&G(t.elements.popper,i)&&(t.elements.arrow=i)},requires:["popperOffsets"],requiresIfExists:["preventOverflow"]};function se(e){return e.split("-")[1]}var ce={top:"auto",right:"auto",bottom:"auto",left:"auto"};function le(e){var t,n=e.popper,i=e.popperRect,r=e.placement,o=e.variation,a=e.offsets,s=e.position,c=e.gpuAcceleration,l=e.adaptive,p=e.roundOffsets,m=e.isFixed,g=a.x,b=void 0===g?0:g,y=a.y,_=void 0===y?0:y,w="function"==typeof p?p({x:b,y:_}):{x:b,y:_};b=w.x,_=w.y;var E=a.hasOwnProperty("x"),A=a.hasOwnProperty("y"),L=f,S=d,k=window;if(l){var x=te(n),C="clientHeight",T="clientWidth";x===P(n)&&"static"!==K(x=Z(n)).position&&"absolute"===s&&(C="scrollHeight",T="scrollWidth"),(r===d||(r===f||r===h)&&o===v)&&(S=u,_-=(m&&x===k&&k.visualViewport?k.visualViewport.height:x[C])-i.height,_*=c?1:-1),r!==f&&(r!==d&&r!==u||o!==v)||(L=h,b-=(m&&x===k&&k.visualViewport?k.visualViewport.width:x[T])-i.width,b*=c?1:-1)}var O,q=Object.assign({position:s},l&&ce),M=!0===p?function(e,t){var n=e.x,i=e.y,r=t.devicePixelRatio||1;return{x:W(n*r)/r||0,y:W(i*r)/r||0}}({x:b,y:_},P(n)):{x:b,y:_};return b=M.x,_=M.y,c?Object.assign({},q,((O={})[S]=A?"0":"",O[L]=E?"0":"",O.transform=(k.devicePixelRatio||1)<=1?"translate("+b+"px, "+_+"px)":"translate3d("+b+"px, "+_+"px, 0)",O)):Object.assign({},q,((t={})[S]=A?_+"px":"",t[L]=E?b+"px":"",t.transform="",t))}var de={name:"computeStyles",enabled:!0,phase:"beforeWrite",fn:function(e){var t=e.state,n=e.options,i=n.gpuAcceleration,r=void 0===i||i,o=n.adaptive,a=void 0===o||o,s=n.roundOffsets,c=void 0===s||s,l={placement:H(t.placement),variation:se(t.placement),popper:t.elements.popper,popperRect:t.rects.popper,gpuAcceleration:r,isFixed:"fixed"===t.options.strategy};null!=t.modifiersData.popperOffsets&&(t.styles.popper=Object.assign({},t.styles.popper,le(Object.assign({},l,{offsets:t.modifiersData.popperOffsets,position:t.options.strategy,adaptive:a,roundOffsets:c})))),null!=t.modifiersData.arrow&&(t.styles.arrow=Object.assign({},t.styles.arrow,le(Object.assign({},l,{offsets:t.modifiersData.arrow,position:"absolute",adaptive:!1,roundOffsets:c})))),t.attributes.popper=Object.assign({},t.attributes.popper,{"data-popper-placement":t.placement})},data:{}},ue={passive:!0},he={name:"eventListeners",enabled:!0,phase:"write",fn:function(){},effect:function(e){var t=e.state,n=e.instance,i=e.options,r=i.scroll,o=void 0===r||r,a=i.resize,s=void 0===a||a,c=P(t.elements.popper),l=[].concat(t.scrollParents.reference,t.scrollParents.popper);return o&&l.forEach(function(e){e.addEventListener("scroll",n.update,ue)}),s&&c.addEventListener("resize",n.update,ue),function(){o&&l.forEach(function(e){e.removeEventListener("scroll",n.update,ue)}),s&&c.removeEventListener("resize",n.update,ue)}},data:{}},fe={left:"right",right:"left",bottom:"top",top:"bottom"};function pe(e){return e.replace(/left|right|bottom|top/g,function(e){return fe[e]})}var me={start:"end",end:"start"};function ge(e){return e.replace(/start|end/g,function(e){return me[e]})}function ve(e){var t=P(e);return{scrollLeft:t.pageXOffset,scrollTop:t.pageYOffset}}function be(e){return X(Z(e)).left+ve(e).scrollLeft}function ye(e){var t=K(e),n=t.overflow,i=t.overflowX,r=t.overflowY;return/auto|scroll|overlay|hidden/.test(n+r+i)}function _e(e){return["html","body","#document"].indexOf(D(e))>=0?e.ownerDocument.body:$(e)&&ye(e)?e:_e(J(e))}function we(e,t){var n;void 0===t&&(t=[]);var i=_e(e),r=i===(null==(n=e.ownerDocument)?void 0:n.body),o=P(i),a=r?[o].concat(o.visualViewport||[],ye(i)?i:[]):i,s=t.concat(a);return r?s:s.concat(we(J(a)))}function Ee(e){return Object.assign({},e,{left:e.x,top:e.y,right:e.x+e.width,bottom:e.y+e.height})}function Ae(e,t,n){return t===y?Ee(function(e,t){var n=P(e),i=Z(e),r=n.visualViewport,o=i.clientWidth,a=i.clientHeight,s=0,c=0;if(r){o=r.width,a=r.height;var l=V();(l||!l&&"fixed"===t)&&(s=r.offsetLeft,c=r.offsetTop)}return{width:o,height:a,x:s+be(e),y:c}}(e,n)):j(t)?function(e,t){var n=X(e,!1,"fixed"===t);return n.top=n.top+e.clientTop,n.left=n.left+e.clientLeft,n.bottom=n.top+e.clientHeight,n.right=n.left+e.clientWidth,n.width=e.clientWidth,n.height=e.clientHeight,n.x=n.left,n.y=n.top,n}(t,n):Ee(function(e){var t,n=Z(e),i=ve(e),r=null==(t=e.ownerDocument)?void 0:t.body,o=B(n.scrollWidth,n.clientWidth,r?r.scrollWidth:0,r?r.clientWidth:0),a=B(n.scrollHeight,n.clientHeight,r?r.scrollHeight:0,r?r.clientHeight:0),s=-i.scrollLeft+be(e),c=-i.scrollTop;return"rtl"===K(r||n).direction&&(s+=B(n.clientWidth,r?r.clientWidth:0)-o),{width:o,height:a,x:s,y:c}}(Z(e)))}function Le(e){var t,n=e.reference,i=e.element,r=e.placement,o=r?H(r):null,a=r?se(r):null,s=n.x+n.width/2-i.width/2,c=n.y+n.height/2-i.height/2;switch(o){case d:t={x:s,y:n.y-i.height};break;case u:t={x:s,y:n.y+n.height};break;case h:t={x:n.x+n.width,y:c};break;case f:t={x:n.x-i.width,y:c};break;default:t={x:n.x,y:n.y}}var l=o?ne(o):null;if(null!=l){var p="y"===l?"height":"width";switch(a){case g:t[l]=t[l]-(n[p]/2-i[p]/2);break;case v:t[l]=t[l]+(n[p]/2-i[p]/2)}}return t}function Se(e,t){void 0===t&&(t={});var n=t,i=n.placement,r=void 0===i?e.placement:i,o=n.strategy,a=void 0===o?e.strategy:o,s=n.boundary,c=void 0===s?b:s,l=n.rootBoundary,f=void 0===l?y:l,p=n.elementContext,g=void 0===p?_:p,v=n.altBoundary,E=void 0!==v&&v,A=n.padding,L=void 0===A?0:A,S=re("number"!=typeof L?L:oe(L,m)),k=g===_?w:_,x=e.rects.popper,C=e.elements[E?k:g],T=function(e,t,n,i){var r="clippingParents"===t?function(e){var t=we(J(e)),n=["absolute","fixed"].indexOf(K(e).position)>=0&&$(e)?te(e):e;return j(n)?t.filter(function(e){return j(e)&&G(e,n)&&"body"!==D(e)}):[]}(e):[].concat(t),o=[].concat(r,[n]),a=o[0],s=o.reduce(function(t,n){var r=Ae(e,n,i);return t.top=B(r.top,t.top),t.right=z(r.right,t.right),t.bottom=z(r.bottom,t.bottom),t.left=B(r.left,t.left),t},Ae(e,a,i));return s.width=s.right-s.left,s.height=s.bottom-s.top,s.x=s.left,s.y=s.top,s}(j(C)?C:C.contextElement||Z(e.elements.popper),c,f,a),O=X(e.elements.reference),q=Le({reference:O,element:x,strategy:"absolute",placement:r}),M=Ee(Object.assign({},x,q)),I=g===_?M:O,N={top:T.top-I.top+S.top,bottom:I.bottom-T.bottom+S.bottom,left:T.left-I.left+S.left,right:I.right-T.right+S.right},P=e.modifiersData.offset;if(g===_&&P){var F=P[r];Object.keys(N).forEach(function(e){var t=[h,u].indexOf(e)>=0?1:-1,n=[d,u].indexOf(e)>=0?"y":"x";N[e]+=F[n]*t})}return N}var ke={name:"flip",enabled:!0,phase:"main",fn:function(e){var t=e.state,n=e.options,i=e.name;if(!t.modifiersData[i]._skip){for(var r=n.mainAxis,o=void 0===r||r,a=n.altAxis,s=void 0===a||a,c=n.fallbackPlacements,l=n.padding,v=n.boundary,b=n.rootBoundary,y=n.altBoundary,_=n.flipVariations,w=void 0===_||_,L=n.allowedAutoPlacements,S=t.options.placement,k=H(S),x=c||(k!==S&&w?function(e){if(H(e)===p)return[];var t=pe(e);return[ge(e),t,ge(t)]}(S):[pe(S)]),C=[S].concat(x).reduce(function(e,n){return e.concat(H(n)===p?function(e,t){void 0===t&&(t={});var n=t,i=n.placement,r=n.boundary,o=n.rootBoundary,a=n.padding,s=n.flipVariations,c=n.allowedAutoPlacements,l=void 0===c?A:c,d=se(i),u=d?s?E:E.filter(function(e){return se(e)===d}):m,h=u.filter(function(e){return l.indexOf(e)>=0});0===h.length&&(h=u);var f=h.reduce(function(t,n){return t[n]=Se(e,{placement:n,boundary:r,rootBoundary:o,padding:a})[H(n)],t},{});return Object.keys(f).sort(function(e,t){return f[e]-f[t]})}(t,{placement:n,boundary:v,rootBoundary:b,padding:l,flipVariations:w,allowedAutoPlacements:L}):n)},[]),T=t.rects.reference,O=t.rects.popper,q=new Map,M=!0,I=C[0],N=0;N<C.length;N++){var D=C[N],P=H(D),j=se(D)===g,$=[d,u].indexOf(P)>=0,F=$?"width":"height",R=Se(t,{placement:D,boundary:v,rootBoundary:b,altBoundary:y,padding:l}),B=$?j?h:f:j?u:d;T[F]>O[F]&&(B=pe(B));var z=pe(B),W=[];if(o&&W.push(R[P]<=0),s&&W.push(R[B]<=0,R[z]<=0),W.every(function(e){return e})){I=D,M=!1;break}q.set(D,W)}if(M)for(var U=function(e){var t=C.find(function(t){var n=q.get(t);if(n)return n.slice(0,e).every(function(e){return e})});if(t)return I=t,"break"},V=w?3:1;V>0&&"break"!==U(V);V--);t.placement!==I&&(t.modifiersData[i]._skip=!0,t.placement=I,t.reset=!0)}},requiresIfExists:["offset"],data:{_skip:!1}};function xe(e,t,n){return void 0===n&&(n={x:0,y:0}),{top:e.top-t.height-n.y,right:e.right-t.width+n.x,bottom:e.bottom-t.height+n.y,left:e.left-t.width-n.x}}function Ce(e){return[d,h,u,f].some(function(t){return e[t]>=0})}var Te={name:"hide",enabled:!0,phase:"main",requiresIfExists:["preventOverflow"],fn:function(e){var t=e.state,n=e.name,i=t.rects.reference,r=t.rects.popper,o=t.modifiersData.preventOverflow,a=Se(t,{elementContext:"reference"}),s=Se(t,{altBoundary:!0}),c=xe(a,i),l=xe(s,r,o),d=Ce(c),u=Ce(l);t.modifiersData[n]={referenceClippingOffsets:c,popperEscapeOffsets:l,isReferenceHidden:d,hasPopperEscaped:u},t.attributes.popper=Object.assign({},t.attributes.popper,{"data-popper-reference-hidden":d,"data-popper-escaped":u})}},Oe={name:"offset",enabled:!0,phase:"main",requires:["popperOffsets"],fn:function(e){var t=e.state,n=e.options,i=e.name,r=n.offset,o=void 0===r?[0,0]:r,a=A.reduce(function(e,n){return e[n]=function(e,t,n){var i=H(e),r=[f,d].indexOf(i)>=0?-1:1,o="function"==typeof n?n(Object.assign({},t,{placement:e})):n,a=o[0],s=o[1];return a=a||0,s=(s||0)*r,[f,h].indexOf(i)>=0?{x:s,y:a}:{x:a,y:s}}(n,t.rects,o),e},{}),s=a[t.placement],c=s.x,l=s.y;null!=t.modifiersData.popperOffsets&&(t.modifiersData.popperOffsets.x+=c,t.modifiersData.popperOffsets.y+=l),t.modifiersData[i]=a}},qe={name:"popperOffsets",enabled:!0,phase:"read",fn:function(e){var t=e.state,n=e.name;t.modifiersData[n]=Le({reference:t.rects.reference,element:t.rects.popper,strategy:"absolute",placement:t.placement})},data:{}},Me={name:"preventOverflow",enabled:!0,phase:"main",fn:function(e){var t=e.state,n=e.options,i=e.name,r=n.mainAxis,o=void 0===r||r,a=n.altAxis,s=void 0!==a&&a,c=n.boundary,l=n.rootBoundary,p=n.altBoundary,m=n.padding,v=n.tether,b=void 0===v||v,y=n.tetherOffset,_=void 0===y?0:y,w=Se(t,{boundary:c,rootBoundary:l,padding:m,altBoundary:p}),E=H(t.placement),A=se(t.placement),L=!A,S=ne(E),k="x"===S?"y":"x",x=t.modifiersData.popperOffsets,C=t.rects.reference,T=t.rects.popper,O="function"==typeof _?_(Object.assign({},t.rects,{placement:t.placement})):_,q="number"==typeof O?{mainAxis:O,altAxis:O}:Object.assign({mainAxis:0,altAxis:0},O),M=t.modifiersData.offset?t.modifiersData.offset[t.placement]:null,I={x:0,y:0};if(x){if(o){var N,D="y"===S?d:f,P="y"===S?u:h,j="y"===S?"height":"width",$=x[S],F=$+w[D],R=$-w[P],W=b?-T[j]/2:0,U=A===g?C[j]:T[j],V=A===g?-T[j]:-C[j],X=t.elements.arrow,G=b&&X?Y(X):{width:0,height:0},K=t.modifiersData["arrow#persistent"]?t.modifiersData["arrow#persistent"].padding:{top:0,right:0,bottom:0,left:0},Q=K[D],Z=K[P],J=ie(0,C[j],G[j]),ee=L?C[j]/2-W-J-Q-q.mainAxis:U-J-Q-q.mainAxis,re=L?-C[j]/2+W+J+Z+q.mainAxis:V+J+Z+q.mainAxis,oe=t.elements.arrow&&te(t.elements.arrow),ae=oe?"y"===S?oe.clientTop||0:oe.clientLeft||0:0,ce=null!=(N=null==M?void 0:M[S])?N:0,le=$+re-ce,de=ie(b?z(F,$+ee-ce-ae):F,$,b?B(R,le):R);x[S]=de,I[S]=de-$}if(s){var ue,he="x"===S?d:f,fe="x"===S?u:h,pe=x[k],me="y"===k?"height":"width",ge=pe+w[he],ve=pe-w[fe],be=-1!==[d,f].indexOf(E),ye=null!=(ue=null==M?void 0:M[k])?ue:0,_e=be?ge:pe-C[me]-T[me]-ye+q.altAxis,we=be?pe+C[me]+T[me]-ye-q.altAxis:ve,Ee=b&&be?function(e,t,n){var i=ie(e,t,n);return i>n?n:i}(_e,pe,we):ie(b?_e:ge,pe,b?we:ve);x[k]=Ee,I[k]=Ee-pe}t.modifiersData[i]=I}},requiresIfExists:["offset"]};function Ie(e,t,n){void 0===n&&(n=!1);var i,r,o=$(t),a=$(t)&&function(e){var t=e.getBoundingClientRect(),n=W(t.width)/e.offsetWidth||1,i=W(t.height)/e.offsetHeight||1;return 1!==n||1!==i}(t),s=Z(t),c=X(e,a,n),l={scrollLeft:0,scrollTop:0},d={x:0,y:0};return(o||!o&&!n)&&(("body"!==D(t)||ye(s))&&(l=(i=t)!==P(i)&&$(i)?{scrollLeft:(r=i).scrollLeft,scrollTop:r.scrollTop}:ve(i)),$(t)?((d=X(t,!0)).x+=t.clientLeft,d.y+=t.clientTop):s&&(d.x=be(s))),{x:c.left+l.scrollLeft-d.x,y:c.top+l.scrollTop-d.y,width:c.width,height:c.height}}function Ne(e){var t=new Map,n=new Set,i=[];function r(e){n.add(e.name),[].concat(e.requires||[],e.requiresIfExists||[]).forEach(function(e){if(!n.has(e)){var i=t.get(e);i&&r(i)}}),i.push(e)}return e.forEach(function(e){t.set(e.name,e)}),e.forEach(function(e){n.has(e.name)||r(e)}),i}var De={placement:"bottom",modifiers:[],strategy:"absolute"};function Pe(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];return!t.some(function(e){return!(e&&"function"==typeof e.getBoundingClientRect)})}function je(e){void 0===e&&(e={});var t=e,n=t.defaultModifiers,i=void 0===n?[]:n,r=t.defaultOptions,o=void 0===r?De:r;return function(e,t,n){void 0===n&&(n=o);var r,a,s={placement:"bottom",orderedModifiers:[],options:Object.assign({},De,o),modifiersData:{},elements:{reference:e,popper:t},attributes:{},styles:{}},c=[],l=!1,d={state:s,setOptions:function(n){var r="function"==typeof n?n(s.options):n;u(),s.options=Object.assign({},o,s.options,r),s.scrollParents={reference:j(e)?we(e):e.contextElement?we(e.contextElement):[],popper:we(t)};var a,l,h=function(e){var t=Ne(e);return N.reduce(function(e,n){return e.concat(t.filter(function(e){return e.phase===n}))},[])}((a=[].concat(i,s.options.modifiers),l=a.reduce(function(e,t){var n=e[t.name];return e[t.name]=n?Object.assign({},n,t,{options:Object.assign({},n.options,t.options),data:Object.assign({},n.data,t.data)}):t,e},{}),Object.keys(l).map(function(e){return l[e]})));return s.orderedModifiers=h.filter(function(e){return e.enabled}),s.orderedModifiers.forEach(function(e){var t=e.name,n=e.options,i=void 0===n?{}:n,r=e.effect;if("function"==typeof r){var o=r({state:s,name:t,instance:d,options:i});c.push(o||function(){})}}),d.update()},forceUpdate:function(){if(!l){var e=s.elements,t=e.reference,n=e.popper;if(Pe(t,n)){s.rects={reference:Ie(t,te(n),"fixed"===s.options.strategy),popper:Y(n)},s.reset=!1,s.placement=s.options.placement,s.orderedModifiers.forEach(function(e){return s.modifiersData[e.name]=Object.assign({},e.data)});for(var i=0;i<s.orderedModifiers.length;i++)if(!0!==s.reset){var r=s.orderedModifiers[i],o=r.fn,a=r.options,c=void 0===a?{}:a,u=r.name;"function"==typeof o&&(s=o({state:s,options:c,name:u,instance:d})||s)}else s.reset=!1,i=-1}}},update:(r=function(){return new Promise(function(e){d.forceUpdate(),e(s)})},function(){return a||(a=new Promise(function(e){Promise.resolve().then(function(){a=void 0,e(r())})})),a}),destroy:function(){u(),l=!0}};if(!Pe(e,t))return d;function u(){c.forEach(function(e){return e()}),c=[]}return d.setOptions(n).then(function(e){!l&&n.onFirstUpdate&&n.onFirstUpdate(e)}),d}}var $e=je(),Fe=je({defaultModifiers:[he,qe,de,R,Oe,ke,Me,ae,Te]}),Re=je({defaultModifiers:[he,qe,de,R]});const He=new Map,Be={set(e,t,n){He.has(e)||He.set(e,new Map);const i=He.get(e);i.has(t)||0===i.size?i.set(t,n):console.error(`Bootstrap doesn't allow more than one instance per element. Bound instance: ${Array.from(i.keys())[0]}.`)},get(e,t){return He.has(e)&&He.get(e).get(t)||null},remove(e,t){if(!He.has(e))return;const n=He.get(e);n.delete(t),0===n.size&&He.delete(e)}},ze="transitionend",We=e=>(e&&window.CSS&&window.CSS.escape&&(e=e.replace(/#([^\s"#']+)/g,(e,t)=>`#${CSS.escape(t)}`)),e),Ue=e=>null==e?`${e}`:Object.prototype.toString.call(e).match(/\s([a-z]+)/i)[1].toLowerCase(),Ve=e=>{e.dispatchEvent(new Event(ze))},Xe=e=>!(!e||"object"!=typeof e)&&(void 0!==e.jquery&&(e=e[0]),void 0!==e.nodeType),Ye=e=>Xe(e)?e.jquery?e[0]:e:"string"==typeof e&&e.length>0?document.querySelector(We(e)):null,Ge=e=>{if(!Xe(e)||0===e.getClientRects().length)return!1;const t="visible"===getComputedStyle(e).getPropertyValue("visibility"),n=e.closest("details:not([open])");if(!n)return t;if(n!==e){const t=e.closest("summary");if(t&&t.parentNode!==n)return!1;if(null===t)return!1}return t},Ke=e=>!e||e.nodeType!==Node.ELEMENT_NODE||!!e.classList.contains("disabled")||(void 0!==e.disabled?e.disabled:e.hasAttribute("disabled")&&"false"!==e.getAttribute("disabled")),Qe=e=>{if(!document.documentElement.attachShadow)return null;if("function"==typeof e.getRootNode){const t=e.getRootNode();return t instanceof ShadowRoot?t:null}return e instanceof ShadowRoot?e:e.parentNode?Qe(e.parentNode):null},Ze=()=>{},Je=e=>{e.offsetHeight},et=()=>window.jQuery&&!document.body.hasAttribute("data-bs-no-jquery")?window.jQuery:null,tt=[],nt=()=>"rtl"===document.documentElement.dir,it=e=>{var t;t=()=>{const t=et();if(t){const n=e.NAME,i=t.fn[n];t.fn[n]=e.jQueryInterface,t.fn[n].Constructor=e,t.fn[n].noConflict=()=>(t.fn[n]=i,e.jQueryInterface)}},"loading"===document.readyState?(tt.length||document.addEventListener("DOMContentLoaded",()=>{for(const e of tt)e()}),tt.push(t)):t()},rt=(e,t=[],n=e)=>"function"==typeof e?e.call(...t):n,ot=(e,t,n=!0)=>{if(!n)return void rt(e);const i=(e=>{if(!e)return 0;let{transitionDuration:t,transitionDelay:n}=window.getComputedStyle(e);const i=Number.parseFloat(t),r=Number.parseFloat(n);return i||r?(t=t.split(",")[0],n=n.split(",")[0],1e3*(Number.parseFloat(t)+Number.parseFloat(n))):0})(t)+5;let r=!1;const o=({target:n})=>{n===t&&(r=!0,t.removeEventListener(ze,o),rt(e))};t.addEventListener(ze,o),setTimeout(()=>{r||Ve(t)},i)},at=(e,t,n,i)=>{const r=e.length;let o=e.indexOf(t);return-1===o?!n&&i?e[r-1]:e[0]:(o+=n?1:-1,i&&(o=(o+r)%r),e[Math.max(0,Math.min(o,r-1))])},st=/[^.]*(?=\..*)\.|.*/,ct=/\..*/,lt=/::\d+$/,dt={};let ut=1;const ht={mouseenter:"mouseover",mouseleave:"mouseout"},ft=new Set(["click","dblclick","mouseup","mousedown","contextmenu","mousewheel","DOMMouseScroll","mouseover","mouseout","mousemove","selectstart","selectend","keydown","keypress","keyup","orientationchange","touchstart","touchmove","touchend","touchcancel","pointerdown","pointermove","pointerup","pointerleave","pointercancel","gesturestart","gesturechange","gestureend","focus","blur","change","reset","select","submit","focusin","focusout","load","unload","beforeunload","resize","move","DOMContentLoaded","readystatechange","error","abort","scroll"]);function pt(e,t){return t&&`${t}::${ut++}`||e.uidEvent||ut++}function mt(e){const t=pt(e);return e.uidEvent=t,dt[t]=dt[t]||{},dt[t]}function gt(e,t,n=null){return Object.values(e).find(e=>e.callable===t&&e.delegationSelector===n)}function vt(e,t,n){const i="string"==typeof t,r=i?n:t||n;let o=wt(e);return ft.has(o)||(o=e),[i,r,o]}function bt(e,t,n,i,r){if("string"!=typeof t||!e)return;let[o,a,s]=vt(t,n,i);if(t in ht){const e=e=>function(t){if(!t.relatedTarget||t.relatedTarget!==t.delegateTarget&&!t.delegateTarget.contains(t.relatedTarget))return e.call(this,t)};a=e(a)}const c=mt(e),l=c[s]||(c[s]={}),d=gt(l,a,o?n:null);if(d)return void(d.oneOff=d.oneOff&&r);const u=pt(a,t.replace(st,"")),h=o?function(e,t,n){return function i(r){const o=e.querySelectorAll(t);for(let{target:a}=r;a&&a!==this;a=a.parentNode)for(const s of o)if(s===a)return At(r,{delegateTarget:a}),i.oneOff&&Et.off(e,r.type,t,n),n.apply(a,[r])}}(e,n,a):function(e,t){return function n(i){return At(i,{delegateTarget:e}),n.oneOff&&Et.off(e,i.type,t),t.apply(e,[i])}}(e,a);h.delegationSelector=o?n:null,h.callable=a,h.oneOff=r,h.uidEvent=u,l[u]=h,e.addEventListener(s,h,o)}function yt(e,t,n,i,r){const o=gt(t[n],i,r);o&&(e.removeEventListener(n,o,Boolean(r)),delete t[n][o.uidEvent])}function _t(e,t,n,i){const r=t[n]||{};for(const[o,a]of Object.entries(r))o.includes(i)&&yt(e,t,n,a.callable,a.delegationSelector)}function wt(e){return e=e.replace(ct,""),ht[e]||e}const Et={on(e,t,n,i){bt(e,t,n,i,!1)},one(e,t,n,i){bt(e,t,n,i,!0)},off(e,t,n,i){if("string"!=typeof t||!e)return;const[r,o,a]=vt(t,n,i),s=a!==t,c=mt(e),l=c[a]||{},d=t.startsWith(".");if(void 0===o){if(d)for(const n of Object.keys(c))_t(e,c,n,t.slice(1));for(const[n,i]of Object.entries(l)){const r=n.replace(lt,"");s&&!t.includes(r)||yt(e,c,a,i.callable,i.delegationSelector)}}else{if(!Object.keys(l).length)return;yt(e,c,a,o,r?n:null)}},trigger(e,t,n){if("string"!=typeof t||!e)return null;const i=et();let r=null,o=!0,a=!0,s=!1;t!==wt(t)&&i&&(r=i.Event(t,n),i(e).trigger(r),o=!r.isPropagationStopped(),a=!r.isImmediatePropagationStopped(),s=r.isDefaultPrevented());const c=At(new Event(t,{bubbles:o,cancelable:!0}),n);return s&&c.preventDefault(),a&&e.dispatchEvent(c),c.defaultPrevented&&r&&r.preventDefault(),c}};function At(e,t={}){for(const[n,i]of Object.entries(t))try{e[n]=i}catch(t){Object.defineProperty(e,n,{configurable:!0,get(){return i}})}return e}function Lt(e){if("true"===e)return!0;if("false"===e)return!1;if(e===Number(e).toString())return Number(e);if(""===e||"null"===e)return null;if("string"!=typeof e)return e;try{return JSON.parse(decodeURIComponent(e))}catch(t){return e}}function St(e){return e.replace(/[A-Z]/g,e=>`-${e.toLowerCase()}`)}const kt={setDataAttribute(e,t,n){e.setAttribute(`data-bs-${St(t)}`,n)},removeDataAttribute(e,t){e.removeAttribute(`data-bs-${St(t)}`)},getDataAttributes(e){if(!e)return{};const t={},n=Object.keys(e.dataset).filter(e=>e.startsWith("bs")&&!e.startsWith("bsConfig"));for(const i of n){let n=i.replace(/^bs/,"");n=n.charAt(0).toLowerCase()+n.slice(1),t[n]=Lt(e.dataset[i])}return t},getDataAttribute(e,t){return Lt(e.getAttribute(`data-bs-${St(t)}`))}};class xt{static get Default(){return{}}static get DefaultType(){return{}}static get NAME(){throw new Error('You have to implement the static method "NAME", for each component!')}_getConfig(e){return e=this._mergeConfigObj(e),e=this._configAfterMerge(e),this._typeCheckConfig(e),e}_configAfterMerge(e){return e}_mergeConfigObj(e,t){const n=Xe(t)?kt.getDataAttribute(t,"config"):{};return{...this.constructor.Default,..."object"==typeof n?n:{},...Xe(t)?kt.getDataAttributes(t):{},..."object"==typeof e?e:{}}}_typeCheckConfig(e,t=this.constructor.DefaultType){for(const[n,i]of Object.entries(t)){const t=e[n],r=Xe(t)?"element":Ue(t);if(!new RegExp(i).test(r))throw new TypeError(`${this.constructor.NAME.toUpperCase()}: Option "${n}" provided type "${r}" but expected type "${i}".`)}}}class Ct extends xt{constructor(e,t){super(),(e=Ye(e))&&(this._element=e,this._config=this._getConfig(t),Be.set(this._element,this.constructor.DATA_KEY,this))}dispose(){Be.remove(this._element,this.constructor.DATA_KEY),Et.off(this._element,this.constructor.EVENT_KEY);for(const e of Object.getOwnPropertyNames(this))this[e]=null}_queueCallback(e,t,n=!0){ot(e,t,n)}_getConfig(e){return e=this._mergeConfigObj(e,this._element),e=this._configAfterMerge(e),this._typeCheckConfig(e),e}static getInstance(e){return Be.get(Ye(e),this.DATA_KEY)}static getOrCreateInstance(e,t={}){return this.getInstance(e)||new this(e,"object"==typeof t?t:null)}static get VERSION(){return"5.3.8"}static get DATA_KEY(){return`bs.${this.NAME}`}static get EVENT_KEY(){return`.${this.DATA_KEY}`}static eventName(e){return`${e}${this.EVENT_KEY}`}}const Tt=e=>{let t=e.getAttribute("data-bs-target");if(!t||"#"===t){let n=e.getAttribute("href");if(!n||!n.includes("#")&&!n.startsWith("."))return null;n.includes("#")&&!n.startsWith("#")&&(n=`#${n.split("#")[1]}`),t=n&&"#"!==n?n.trim():null}return t?t.split(",").map(e=>We(e)).join(","):null},Ot={find(e,t=document.documentElement){return[].concat(...Element.prototype.querySelectorAll.call(t,e))},findOne(e,t=document.documentElement){return Element.prototype.querySelector.call(t,e)},children(e,t){return[].concat(...e.children).filter(e=>e.matches(t))},parents(e,t){const n=[];let i=e.parentNode.closest(t);for(;i;)n.push(i),i=i.parentNode.closest(t);return n},prev(e,t){let n=e.previousElementSibling;for(;n;){if(n.matches(t))return[n];n=n.previousElementSibling}return[]},next(e,t){let n=e.nextElementSibling;for(;n;){if(n.matches(t))return[n];n=n.nextElementSibling}return[]},focusableChildren(e){const t=["a","button","input","textarea","select","details","[tabindex]",'[contenteditable="true"]'].map(e=>`${e}:not([tabindex^="-"])`).join(",");return this.find(t,e).filter(e=>!Ke(e)&&Ge(e))},getSelectorFromElement(e){const t=Tt(e);return t&&Ot.findOne(t)?t:null},getElementFromSelector(e){const t=Tt(e);return t?Ot.findOne(t):null},getMultipleElementsFromSelector(e){const t=Tt(e);return t?Ot.find(t):[]}},qt=(e,t="hide")=>{const n=`click.dismiss${e.EVENT_KEY}`,i=e.NAME;Et.on(document,n,`[data-bs-dismiss="${i}"]`,function(n){if(["A","AREA"].includes(this.tagName)&&n.preventDefault(),Ke(this))return;const r=Ot.getElementFromSelector(this)||this.closest(`.${i}`);e.getOrCreateInstance(r)[t]()})},Mt=".bs.alert",It=`close${Mt}`,Nt=`closed${Mt}`;class Dt extends Ct{static get NAME(){return"alert"}close(){if(Et.trigger(this._element,It).defaultPrevented)return;this._element.classList.remove("show");const e=this._element.classList.contains("fade");this._queueCallback(()=>this._destroyElement(),this._element,e)}_destroyElement(){this._element.remove(),Et.trigger(this._element,Nt),this.dispose()}static jQueryInterface(e){return this.each(function(){const t=Dt.getOrCreateInstance(this);if("string"==typeof e){if(void 0===t[e]||e.startsWith("_")||"constructor"===e)throw new TypeError(`No method named "${e}"`);t[e](this)}})}}qt(Dt,"close"),it(Dt);const Pt='[data-bs-toggle="button"]';class jt extends Ct{static get NAME(){return"button"}toggle(){this._element.setAttribute("aria-pressed",this._element.classList.toggle("active"))}static jQueryInterface(e){return this.each(function(){const t=jt.getOrCreateInstance(this);"toggle"===e&&t[e]()})}}Et.on(document,"click.bs.button.data-api",Pt,e=>{e.preventDefault();const t=e.target.closest(Pt);jt.getOrCreateInstance(t).toggle()}),it(jt);const $t=".bs.swipe",Ft=`touchstart${$t}`,Rt=`touchmove${$t}`,Ht=`touchend${$t}`,Bt=`pointerdown${$t}`,zt=`pointerup${$t}`,Wt={endCallback:null,leftCallback:null,rightCallback:null},Ut={endCallback:"(function|null)",leftCallback:"(function|null)",rightCallback:"(function|null)"};class Vt extends xt{constructor(e,t){super(),this._element=e,e&&Vt.isSupported()&&(this._config=this._getConfig(t),this._deltaX=0,this._supportPointerEvents=Boolean(window.PointerEvent),this._initEvents())}static get Default(){return Wt}static get DefaultType(){return Ut}static get NAME(){return"swipe"}dispose(){Et.off(this._element,$t)}_start(e){this._supportPointerEvents?this._eventIsPointerPenTouch(e)&&(this._deltaX=e.clientX):this._deltaX=e.touches[0].clientX}_end(e){this._eventIsPointerPenTouch(e)&&(this._deltaX=e.clientX-this._deltaX),this._handleSwipe(),rt(this._config.endCallback)}_move(e){this._deltaX=e.touches&&e.touches.length>1?0:e.touches[0].clientX-this._deltaX}_handleSwipe(){const e=Math.abs(this._deltaX);if(e<=40)return;const t=e/this._deltaX;this._deltaX=0,t&&rt(t>0?this._config.rightCallback:this._config.leftCallback)}_initEvents(){this._supportPointerEvents?(Et.on(this._element,Bt,e=>this._start(e)),Et.on(this._element,zt,e=>this._end(e)),this._element.classList.add("pointer-event")):(Et.on(this._element,Ft,e=>this._start(e)),Et.on(this._element,Rt,e=>this._move(e)),Et.on(this._element,Ht,e=>this._end(e)))}_eventIsPointerPenTouch(e){return this._supportPointerEvents&&("pen"===e.pointerType||"touch"===e.pointerType)}static isSupported(){return"ontouchstart"in document.documentElement||navigator.maxTouchPoints>0}}const Xt=".bs.carousel",Yt=".data-api",Gt="ArrowLeft",Kt="ArrowRight",Qt="next",Zt="prev",Jt="left",en="right",tn=`slide${Xt}`,nn=`slid${Xt}`,rn=`keydown${Xt}`,on=`mouseenter${Xt}`,an=`mouseleave${Xt}`,sn=`dragstart${Xt}`,cn=`load${Xt}${Yt}`,ln=`click${Xt}${Yt}`,dn="carousel",un="active",hn=".active",fn=".carousel-item",pn=hn+fn,mn={[Gt]:en,[Kt]:Jt},gn={interval:5e3,keyboard:!0,pause:"hover",ride:!1,touch:!0,wrap:!0},vn={interval:"(number|boolean)",keyboard:"boolean",pause:"(string|boolean)",ride:"(boolean|string)",touch:"boolean",wrap:"boolean"};class bn extends Ct{constructor(e,t){super(e,t),this._interval=null,this._activeElement=null,this._isSliding=!1,this.touchTimeout=null,this._swipeHelper=null,this._indicatorsElement=Ot.findOne(".carousel-indicators",this._element),this._addEventListeners(),this._config.ride===dn&&this.cycle()}static get Default(){return gn}static get DefaultType(){return vn}static get NAME(){return"carousel"}next(){this._slide(Qt)}nextWhenVisible(){!document.hidden&&Ge(this._element)&&this.next()}prev(){this._slide(Zt)}pause(){this._isSliding&&Ve(this._element),this._clearInterval()}cycle(){this._clearInterval(),this._updateInterval(),this._interval=setInterval(()=>this.nextWhenVisible(),this._config.interval)}_maybeEnableCycle(){this._config.ride&&(this._isSliding?Et.one(this._element,nn,()=>this.cycle()):this.cycle())}to(e){const t=this._getItems();if(e>t.length-1||e<0)return;if(this._isSliding)return void Et.one(this._element,nn,()=>this.to(e));const n=this._getItemIndex(this._getActive());if(n===e)return;const i=e>n?Qt:Zt;this._slide(i,t[e])}dispose(){this._swipeHelper&&this._swipeHelper.dispose(),super.dispose()}_configAfterMerge(e){return e.defaultInterval=e.interval,e}_addEventListeners(){this._config.keyboard&&Et.on(this._element,rn,e=>this._keydown(e)),"hover"===this._config.pause&&(Et.on(this._element,on,()=>this.pause()),Et.on(this._element,an,()=>this._maybeEnableCycle())),this._config.touch&&Vt.isSupported()&&this._addTouchEventListeners()}_addTouchEventListeners(){for(const e of Ot.find(".carousel-item img",this._element))Et.on(e,sn,e=>e.preventDefault());const e={leftCallback:()=>this._slide(this._directionToOrder(Jt)),rightCallback:()=>this._slide(this._directionToOrder(en)),endCallback:()=>{"hover"===this._config.pause&&(this.pause(),this.touchTimeout&&clearTimeout(this.touchTimeout),this.touchTimeout=setTimeout(()=>this._maybeEnableCycle(),500+this._config.interval))}};this._swipeHelper=new Vt(this._element,e)}_keydown(e){if(/input|textarea/i.test(e.target.tagName))return;const t=mn[e.key];t&&(e.preventDefault(),this._slide(this._directionToOrder(t)))}_getItemIndex(e){return this._getItems().indexOf(e)}_setActiveIndicatorElement(e){if(!this._indicatorsElement)return;const t=Ot.findOne(hn,this._indicatorsElement);t.classList.remove(un),t.removeAttribute("aria-current");const n=Ot.findOne(`[data-bs-slide-to="${e}"]`,this._indicatorsElement);n&&(n.classList.add(un),n.setAttribute("aria-current","true"))}_updateInterval(){const e=this._activeElement||this._getActive();if(!e)return;const t=Number.parseInt(e.getAttribute("data-bs-interval"),10);this._config.interval=t||this._config.defaultInterval}_slide(e,t=null){if(this._isSliding)return;const n=this._getActive(),i=e===Qt,r=t||at(this._getItems(),n,i,this._config.wrap);if(r===n)return;const o=this._getItemIndex(r),a=t=>Et.trigger(this._element,t,{relatedTarget:r,direction:this._orderToDirection(e),from:this._getItemIndex(n),to:o});if(a(tn).defaultPrevented)return;if(!n||!r)return;const s=Boolean(this._interval);this.pause(),this._isSliding=!0,this._setActiveIndicatorElement(o),this._activeElement=r;const c=i?"carousel-item-start":"carousel-item-end",l=i?"carousel-item-next":"carousel-item-prev";r.classList.add(l),Je(r),n.classList.add(c),r.classList.add(c),this._queueCallback(()=>{r.classList.remove(c,l),r.classList.add(un),n.classList.remove(un,l,c),this._isSliding=!1,a(nn)},n,this._isAnimated()),s&&this.cycle()}_isAnimated(){return this._element.classList.contains("slide")}_getActive(){return Ot.findOne(pn,this._element)}_getItems(){return Ot.find(fn,this._element)}_clearInterval(){this._interval&&(clearInterval(this._interval),this._interval=null)}_directionToOrder(e){return nt()?e===Jt?Zt:Qt:e===Jt?Qt:Zt}_orderToDirection(e){return nt()?e===Zt?Jt:en:e===Zt?en:Jt}static jQueryInterface(e){return this.each(function(){const t=bn.getOrCreateInstance(this,e);if("number"!=typeof e){if("string"==typeof e){if(void 0===t[e]||e.startsWith("_")||"constructor"===e)throw new TypeError(`No method named "${e}"`);t[e]()}}else t.to(e)})}}Et.on(document,ln,"[data-bs-slide], [data-bs-slide-to]",function(e){const t=Ot.getElementFromSelector(this);if(!t||!t.classList.contains(dn))return;e.preventDefault();const n=bn.getOrCreateInstance(t),i=this.getAttribute("data-bs-slide-to");return i?(n.to(i),void n._maybeEnableCycle()):"next"===kt.getDataAttribute(this,"slide")?(n.next(),void n._maybeEnableCycle()):(n.prev(),void n._maybeEnableCycle())}),Et.on(window,cn,()=>{const e=Ot.find('[data-bs-ride="carousel"]');for(const t of e)bn.getOrCreateInstance(t)}),it(bn);const yn=".bs.collapse",wn=`show${yn}`,En=`shown${yn}`,An=`hide${yn}`,Ln=`hidden${yn}`,Sn=`click${yn}.data-api`,kn="show",xn="collapse",Cn="collapsing",Tn=`:scope .${xn} .${xn}`,On='[data-bs-toggle="collapse"]',qn={parent:null,toggle:!0},Mn={parent:"(null|element)",toggle:"boolean"};class In extends Ct{constructor(e,t){super(e,t),this._isTransitioning=!1,this._triggerArray=[];const n=Ot.find(On);for(const e of n){const t=Ot.getSelectorFromElement(e),n=Ot.find(t).filter(e=>e===this._element);null!==t&&n.length&&this._triggerArray.push(e)}this._initializeChildren(),this._config.parent||this._addAriaAndCollapsedClass(this._triggerArray,this._isShown()),this._config.toggle&&this.toggle()}static get Default(){return qn}static get DefaultType(){return Mn}static get NAME(){return"collapse"}toggle(){this._isShown()?this.hide():this.show()}show(){if(this._isTransitioning||this._isShown())return;let e=[];if(this._config.parent&&(e=this._getFirstLevelChildren(".collapse.show, .collapse.collapsing").filter(e=>e!==this._element).map(e=>In.getOrCreateInstance(e,{toggle:!1}))),e.length&&e[0]._isTransitioning)return;if(Et.trigger(this._element,wn).defaultPrevented)return;for(const t of e)t.hide();const t=this._getDimension();this._element.classList.remove(xn),this._element.classList.add(Cn),this._element.style[t]=0,this._addAriaAndCollapsedClass(this._triggerArray,!0),this._isTransitioning=!0;const n=`scroll${t[0].toUpperCase()+t.slice(1)}`;this._queueCallback(()=>{this._isTransitioning=!1,this._element.classList.remove(Cn),this._element.classList.add(xn,kn),this._element.style[t]="",Et.trigger(this._element,En)},this._element,!0),this._element.style[t]=`${this._element[n]}px`}hide(){if(this._isTransitioning||!this._isShown())return;if(Et.trigger(this._element,An).defaultPrevented)return;const e=this._getDimension();this._element.style[e]=`${this._element.getBoundingClientRect()[e]}px`,Je(this._element),this._element.classList.add(Cn),this._element.classList.remove(xn,kn);for(const e of this._triggerArray){const t=Ot.getElementFromSelector(e);t&&!this._isShown(t)&&this._addAriaAndCollapsedClass([e],!1)}this._isTransitioning=!0,this._element.style[e]="",this._queueCallback(()=>{this._isTransitioning=!1,this._element.classList.remove(Cn),this._element.classList.add(xn),Et.trigger(this._element,Ln)},this._element,!0)}_isShown(e=this._element){return e.classList.contains(kn)}_configAfterMerge(e){return e.toggle=Boolean(e.toggle),e.parent=Ye(e.parent),e}_getDimension(){return this._element.classList.contains("collapse-horizontal")?"width":"height"}_initializeChildren(){if(!this._config.parent)return;const e=this._getFirstLevelChildren(On);for(const t of e){const e=Ot.getElementFromSelector(t);e&&this._addAriaAndCollapsedClass([t],this._isShown(e))}}_getFirstLevelChildren(e){const t=Ot.find(Tn,this._config.parent);return Ot.find(e,this._config.parent).filter(e=>!t.includes(e))}_addAriaAndCollapsedClass(e,t){if(e.length)for(const n of e)n.classList.toggle("collapsed",!t),n.setAttribute("aria-expanded",t)}static jQueryInterface(e){const t={};return"string"==typeof e&&/show|hide/.test(e)&&(t.toggle=!1),this.each(function(){const n=In.getOrCreateInstance(this,t);if("string"==typeof e){if(void 0===n[e])throw new TypeError(`No method named "${e}"`);n[e]()}})}}Et.on(document,Sn,On,function(e){("A"===e.target.tagName||e.delegateTarget&&"A"===e.delegateTarget.tagName)&&e.preventDefault();for(const e of Ot.getMultipleElementsFromSelector(this))In.getOrCreateInstance(e,{toggle:!1}).toggle()}),it(In);const Nn="dropdown",Dn=".bs.dropdown",Pn=".data-api",jn="ArrowUp",$n="ArrowDown",Fn=`hide${Dn}`,Rn=`hidden${Dn}`,Hn=`show${Dn}`,Bn=`shown${Dn}`,zn=`click${Dn}${Pn}`,Wn=`keydown${Dn}${Pn}`,Un=`keyup${Dn}${Pn}`,Vn="show",Xn='[data-bs-toggle="dropdown"]:not(.disabled):not(:disabled)',Yn=`${Xn}.${Vn}`,Gn=".dropdown-menu",Kn=nt()?"top-end":"top-start",Qn=nt()?"top-start":"top-end",Zn=nt()?"bottom-end":"bottom-start",Jn=nt()?"bottom-start":"bottom-end",ei=nt()?"left-start":"right-start",ti=nt()?"right-start":"left-start",ni={autoClose:!0,boundary:"clippingParents",display:"dynamic",offset:[0,2],popperConfig:null,reference:"toggle"},ii={autoClose:"(boolean|string)",boundary:"(string|element)",display:"string",offset:"(array|string|function)",popperConfig:"(null|object|function)",reference:"(string|element|object)"};class ri extends Ct{constructor(e,t){super(e,t),this._popper=null,this._parent=this._element.parentNode,this._menu=Ot.next(this._element,Gn)[0]||Ot.prev(this._element,Gn)[0]||Ot.findOne(Gn,this._parent),this._inNavbar=this._detectNavbar()}static get Default(){return ni}static get DefaultType(){return ii}static get NAME(){return Nn}toggle(){return this._isShown()?this.hide():this.show()}show(){if(Ke(this._element)||this._isShown())return;const e={relatedTarget:this._element};if(!Et.trigger(this._element,Hn,e).defaultPrevented){if(this._createPopper(),"ontouchstart"in document.documentElement&&!this._parent.closest(".navbar-nav"))for(const e of[].concat(...document.body.children))Et.on(e,"mouseover",Ze);this._element.focus(),this._element.setAttribute("aria-expanded",!0),this._menu.classList.add(Vn),this._element.classList.add(Vn),Et.trigger(this._element,Bn,e)}}hide(){if(Ke(this._element)||!this._isShown())return;const e={relatedTarget:this._element};this._completeHide(e)}dispose(){this._popper&&this._popper.destroy(),super.dispose()}update(){this._inNavbar=this._detectNavbar(),this._popper&&this._popper.update()}_completeHide(e){if(!Et.trigger(this._element,Fn,e).defaultPrevented){if("ontouchstart"in document.documentElement)for(const e of[].concat(...document.body.children))Et.off(e,"mouseover",Ze);this._popper&&this._popper.destroy(),this._menu.classList.remove(Vn),this._element.classList.remove(Vn),this._element.setAttribute("aria-expanded","false"),kt.removeDataAttribute(this._menu,"popper"),Et.trigger(this._element,Rn,e)}}_getConfig(e){if("object"==typeof(e=super._getConfig(e)).reference&&!Xe(e.reference)&&"function"!=typeof e.reference.getBoundingClientRect)throw new TypeError(`${Nn.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);return e}_createPopper(){let e=this._element;"parent"===this._config.reference?e=this._parent:Xe(this._config.reference)?e=Ye(this._config.reference):"object"==typeof this._config.reference&&(e=this._config.reference);const t=this._getPopperConfig();this._popper=Fe(e,this._menu,t)}_isShown(){return this._menu.classList.contains(Vn)}_getPlacement(){const e=this._parent;if(e.classList.contains("dropend"))return ei;if(e.classList.contains("dropstart"))return ti;if(e.classList.contains("dropup-center"))return"top";if(e.classList.contains("dropdown-center"))return"bottom";const t="end"===getComputedStyle(this._menu).getPropertyValue("--bs-position").trim();return e.classList.contains("dropup")?t?Qn:Kn:t?Jn:Zn}_detectNavbar(){return null!==this._element.closest(".navbar")}_getOffset(){const{offset:e}=this._config;return"string"==typeof e?e.split(",").map(e=>Number.parseInt(e,10)):"function"==typeof e?t=>e(t,this._element):e}_getPopperConfig(){const e={placement:this._getPlacement(),modifiers:[{name:"preventOverflow",options:{boundary:this._config.boundary}},{name:"offset",options:{offset:this._getOffset()}}]};return(this._inNavbar||"static"===this._config.display)&&(kt.setDataAttribute(this._menu,"popper","static"),e.modifiers=[{name:"applyStyles",enabled:!1}]),{...e,...rt(this._config.popperConfig,[void 0,e])}}_selectMenuItem({key:e,target:t}){const n=Ot.find(".dropdown-menu .dropdown-item:not(.disabled):not(:disabled)",this._menu).filter(e=>Ge(e));n.length&&at(n,t,e===$n,!n.includes(t)).focus()}static jQueryInterface(e){return this.each(function(){const t=ri.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e])throw new TypeError(`No method named "${e}"`);t[e]()}})}static clearMenus(e){if(2===e.button||"keyup"===e.type&&"Tab"!==e.key)return;const t=Ot.find(Yn);for(const n of t){const t=ri.getInstance(n);if(!t||!1===t._config.autoClose)continue;const i=e.composedPath(),r=i.includes(t._menu);if(i.includes(t._element)||"inside"===t._config.autoClose&&!r||"outside"===t._config.autoClose&&r)continue;if(t._menu.contains(e.target)&&("keyup"===e.type&&"Tab"===e.key||/input|select|option|textarea|form/i.test(e.target.tagName)))continue;const o={relatedTarget:t._element};"click"===e.type&&(o.clickEvent=e),t._completeHide(o)}}static dataApiKeydownHandler(e){const t=/input|textarea/i.test(e.target.tagName),n="Escape"===e.key,i=[jn,$n].includes(e.key);if(!i&&!n)return;if(t&&!n)return;e.preventDefault();const r=this.matches(Xn)?this:Ot.prev(this,Xn)[0]||Ot.next(this,Xn)[0]||Ot.findOne(Xn,e.delegateTarget.parentNode),o=ri.getOrCreateInstance(r);if(i)return e.stopPropagation(),o.show(),void o._selectMenuItem(e);o._isShown()&&(e.stopPropagation(),o.hide(),r.focus())}}Et.on(document,Wn,Xn,ri.dataApiKeydownHandler),Et.on(document,Wn,Gn,ri.dataApiKeydownHandler),Et.on(document,zn,ri.clearMenus),Et.on(document,Un,ri.clearMenus),Et.on(document,zn,Xn,function(e){e.preventDefault(),ri.getOrCreateInstance(this).toggle()}),it(ri);const oi="backdrop",ai="show",si=`mousedown.bs.${oi}`,ci={className:"modal-backdrop",clickCallback:null,isAnimated:!1,isVisible:!0,rootElement:"body"},li={className:"string",clickCallback:"(function|null)",isAnimated:"boolean",isVisible:"boolean",rootElement:"(element|string)"};class di extends xt{constructor(e){super(),this._config=this._getConfig(e),this._isAppended=!1,this._element=null}static get Default(){return ci}static get DefaultType(){return li}static get NAME(){return oi}show(e){if(!this._config.isVisible)return void rt(e);this._append();const t=this._getElement();this._config.isAnimated&&Je(t),t.classList.add(ai),this._emulateAnimation(()=>{rt(e)})}hide(e){this._config.isVisible?(this._getElement().classList.remove(ai),this._emulateAnimation(()=>{this.dispose(),rt(e)})):rt(e)}dispose(){this._isAppended&&(Et.off(this._element,si),this._element.remove(),this._isAppended=!1)}_getElement(){if(!this._element){const e=document.createElement("div");e.className=this._config.className,this._config.isAnimated&&e.classList.add("fade"),this._element=e}return this._element}_configAfterMerge(e){return e.rootElement=Ye(e.rootElement),e}_append(){if(this._isAppended)return;const e=this._getElement();this._config.rootElement.append(e),Et.on(e,si,()=>{rt(this._config.clickCallback)}),this._isAppended=!0}_emulateAnimation(e){ot(e,this._getElement(),this._config.isAnimated)}}const ui=".bs.focustrap",hi=`focusin${ui}`,fi=`keydown.tab${ui}`,pi="backward",mi={autofocus:!0,trapElement:null},gi={autofocus:"boolean",trapElement:"element"};class vi extends xt{constructor(e){super(),this._config=this._getConfig(e),this._isActive=!1,this._lastTabNavDirection=null}static get Default(){return mi}static get DefaultType(){return gi}static get NAME(){return"focustrap"}activate(){this._isActive||(this._config.autofocus&&this._config.trapElement.focus(),Et.off(document,ui),Et.on(document,hi,e=>this._handleFocusin(e)),Et.on(document,fi,e=>this._handleKeydown(e)),this._isActive=!0)}deactivate(){this._isActive&&(this._isActive=!1,Et.off(document,ui))}_handleFocusin(e){const{trapElement:t}=this._config;if(e.target===document||e.target===t||t.contains(e.target))return;const n=Ot.focusableChildren(t);0===n.length?t.focus():this._lastTabNavDirection===pi?n[n.length-1].focus():n[0].focus()}_handleKeydown(e){"Tab"===e.key&&(this._lastTabNavDirection=e.shiftKey?pi:"forward")}}const bi=".fixed-top, .fixed-bottom, .is-fixed, .sticky-top",yi=".sticky-top",_i="padding-right",wi="margin-right";class Ei{constructor(){this._element=document.body}getWidth(){const e=document.documentElement.clientWidth;return Math.abs(window.innerWidth-e)}hide(){const e=this.getWidth();this._disableOverFlow(),this._setElementAttributes(this._element,_i,t=>t+e),this._setElementAttributes(bi,_i,t=>t+e),this._setElementAttributes(yi,wi,t=>t-e)}reset(){this._resetElementAttributes(this._element,"overflow"),this._resetElementAttributes(this._element,_i),this._resetElementAttributes(bi,_i),this._resetElementAttributes(yi,wi)}isOverflowing(){return this.getWidth()>0}_disableOverFlow(){this._saveInitialAttribute(this._element,"overflow"),this._element.style.overflow="hidden"}_setElementAttributes(e,t,n){const i=this.getWidth();this._applyManipulationCallback(e,e=>{if(e!==this._element&&window.innerWidth>e.clientWidth+i)return;this._saveInitialAttribute(e,t);const r=window.getComputedStyle(e).getPropertyValue(t);e.style.setProperty(t,`${n(Number.parseFloat(r))}px`)})}_saveInitialAttribute(e,t){const n=e.style.getPropertyValue(t);n&&kt.setDataAttribute(e,t,n)}_resetElementAttributes(e,t){this._applyManipulationCallback(e,e=>{const n=kt.getDataAttribute(e,t);null!==n?(kt.removeDataAttribute(e,t),e.style.setProperty(t,n)):e.style.removeProperty(t)})}_applyManipulationCallback(e,t){if(Xe(e))t(e);else for(const n of Ot.find(e,this._element))t(n)}}const Ai=".bs.modal",Li=`hide${Ai}`,Si=`hidePrevented${Ai}`,ki=`hidden${Ai}`,xi=`show${Ai}`,Ci=`shown${Ai}`,Ti=`resize${Ai}`,Oi=`click.dismiss${Ai}`,qi=`mousedown.dismiss${Ai}`,Mi=`keydown.dismiss${Ai}`,Ii=`click${Ai}.data-api`,Ni="modal-open",Di="show",Pi="modal-static",ji={backdrop:!0,focus:!0,keyboard:!0},$i={backdrop:"(boolean|string)",focus:"boolean",keyboard:"boolean"};class Fi extends Ct{constructor(e,t){super(e,t),this._dialog=Ot.findOne(".modal-dialog",this._element),this._backdrop=this._initializeBackDrop(),this._focustrap=this._initializeFocusTrap(),this._isShown=!1,this._isTransitioning=!1,this._scrollBar=new Ei,this._addEventListeners()}static get Default(){return ji}static get DefaultType(){return $i}static get NAME(){return"modal"}toggle(e){return this._isShown?this.hide():this.show(e)}show(e){this._isShown||this._isTransitioning||Et.trigger(this._element,xi,{relatedTarget:e}).defaultPrevented||(this._isShown=!0,this._isTransitioning=!0,this._scrollBar.hide(),document.body.classList.add(Ni),this._adjustDialog(),this._backdrop.show(()=>this._showElement(e)))}hide(){this._isShown&&!this._isTransitioning&&(Et.trigger(this._element,Li).defaultPrevented||(this._isShown=!1,this._isTransitioning=!0,this._focustrap.deactivate(),this._element.classList.remove(Di),this._queueCallback(()=>this._hideModal(),this._element,this._isAnimated())))}dispose(){Et.off(window,Ai),Et.off(this._dialog,Ai),this._backdrop.dispose(),this._focustrap.deactivate(),super.dispose()}handleUpdate(){this._adjustDialog()}_initializeBackDrop(){return new di({isVisible:Boolean(this._config.backdrop),isAnimated:this._isAnimated()})}_initializeFocusTrap(){return new vi({trapElement:this._element})}_showElement(e){document.body.contains(this._element)||document.body.append(this._element),this._element.style.display="block",this._element.removeAttribute("aria-hidden"),this._element.setAttribute("aria-modal",!0),this._element.setAttribute("role","dialog"),this._element.scrollTop=0;const t=Ot.findOne(".modal-body",this._dialog);t&&(t.scrollTop=0),Je(this._element),this._element.classList.add(Di),this._queueCallback(()=>{this._config.focus&&this._focustrap.activate(),this._isTransitioning=!1,Et.trigger(this._element,Ci,{relatedTarget:e})},this._dialog,this._isAnimated())}_addEventListeners(){Et.on(this._element,Mi,e=>{"Escape"===e.key&&(this._config.keyboard?this.hide():this._triggerBackdropTransition())}),Et.on(window,Ti,()=>{this._isShown&&!this._isTransitioning&&this._adjustDialog()}),Et.on(this._element,qi,e=>{Et.one(this._element,Oi,t=>{this._element===e.target&&this._element===t.target&&("static"!==this._config.backdrop?this._config.backdrop&&this.hide():this._triggerBackdropTransition())})})}_hideModal(){this._element.style.display="none",this._element.setAttribute("aria-hidden",!0),this._element.removeAttribute("aria-modal"),this._element.removeAttribute("role"),this._isTransitioning=!1,this._backdrop.hide(()=>{document.body.classList.remove(Ni),this._resetAdjustments(),this._scrollBar.reset(),Et.trigger(this._element,ki)})}_isAnimated(){return this._element.classList.contains("fade")}_triggerBackdropTransition(){if(Et.trigger(this._element,Si).defaultPrevented)return;const e=this._element.scrollHeight>document.documentElement.clientHeight,t=this._element.style.overflowY;"hidden"===t||this._element.classList.contains(Pi)||(e||(this._element.style.overflowY="hidden"),this._element.classList.add(Pi),this._queueCallback(()=>{this._element.classList.remove(Pi),this._queueCallback(()=>{this._element.style.overflowY=t},this._dialog)},this._dialog),this._element.focus())}_adjustDialog(){const e=this._element.scrollHeight>document.documentElement.clientHeight,t=this._scrollBar.getWidth(),n=t>0;if(n&&!e){const e=nt()?"paddingLeft":"paddingRight";this._element.style[e]=`${t}px`}if(!n&&e){const e=nt()?"paddingRight":"paddingLeft";this._element.style[e]=`${t}px`}}_resetAdjustments(){this._element.style.paddingLeft="",this._element.style.paddingRight=""}static jQueryInterface(e,t){return this.each(function(){const n=Fi.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===n[e])throw new TypeError(`No method named "${e}"`);n[e](t)}})}}Et.on(document,Ii,'[data-bs-toggle="modal"]',function(e){const t=Ot.getElementFromSelector(this);["A","AREA"].includes(this.tagName)&&e.preventDefault(),Et.one(t,xi,e=>{e.defaultPrevented||Et.one(t,ki,()=>{Ge(this)&&this.focus()})});const n=Ot.findOne(".modal.show");n&&Fi.getInstance(n).hide(),Fi.getOrCreateInstance(t).toggle(this)}),qt(Fi),it(Fi);const Ri=".bs.offcanvas",Hi=".data-api",Bi=`load${Ri}${Hi}`,zi="show",Wi="showing",Ui="hiding",Vi=".offcanvas.show",Xi=`show${Ri}`,Yi=`shown${Ri}`,Gi=`hide${Ri}`,Ki=`hidePrevented${Ri}`,Qi=`hidden${Ri}`,Zi=`resize${Ri}`,Ji=`click${Ri}${Hi}`,er=`keydown.dismiss${Ri}`,tr={backdrop:!0,keyboard:!0,scroll:!1},nr={backdrop:"(boolean|string)",keyboard:"boolean",scroll:"boolean"};class ir extends Ct{constructor(e,t){super(e,t),this._isShown=!1,this._backdrop=this._initializeBackDrop(),this._focustrap=this._initializeFocusTrap(),this._addEventListeners()}static get Default(){return tr}static get DefaultType(){return nr}static get NAME(){return"offcanvas"}toggle(e){return this._isShown?this.hide():this.show(e)}show(e){this._isShown||Et.trigger(this._element,Xi,{relatedTarget:e}).defaultPrevented||(this._isShown=!0,this._backdrop.show(),this._config.scroll||(new Ei).hide(),this._element.setAttribute("aria-modal",!0),this._element.setAttribute("role","dialog"),this._element.classList.add(Wi),this._queueCallback(()=>{this._config.scroll&&!this._config.backdrop||this._focustrap.activate(),this._element.classList.add(zi),this._element.classList.remove(Wi),Et.trigger(this._element,Yi,{relatedTarget:e})},this._element,!0))}hide(){this._isShown&&(Et.trigger(this._element,Gi).defaultPrevented||(this._focustrap.deactivate(),this._element.blur(),this._isShown=!1,this._element.classList.add(Ui),this._backdrop.hide(),this._queueCallback(()=>{this._element.classList.remove(zi,Ui),this._element.removeAttribute("aria-modal"),this._element.removeAttribute("role"),this._config.scroll||(new Ei).reset(),Et.trigger(this._element,Qi)},this._element,!0)))}dispose(){this._backdrop.dispose(),this._focustrap.deactivate(),super.dispose()}_initializeBackDrop(){const e=Boolean(this._config.backdrop);return new di({className:"offcanvas-backdrop",isVisible:e,isAnimated:!0,rootElement:this._element.parentNode,clickCallback:e?()=>{"static"!==this._config.backdrop?this.hide():Et.trigger(this._element,Ki)}:null})}_initializeFocusTrap(){return new vi({trapElement:this._element})}_addEventListeners(){Et.on(this._element,er,e=>{"Escape"===e.key&&(this._config.keyboard?this.hide():Et.trigger(this._element,Ki))})}static jQueryInterface(e){return this.each(function(){const t=ir.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e]||e.startsWith("_")||"constructor"===e)throw new TypeError(`No method named "${e}"`);t[e](this)}})}}Et.on(document,Ji,'[data-bs-toggle="offcanvas"]',function(e){const t=Ot.getElementFromSelector(this);if(["A","AREA"].includes(this.tagName)&&e.preventDefault(),Ke(this))return;Et.one(t,Qi,()=>{Ge(this)&&this.focus()});const n=Ot.findOne(Vi);n&&n!==t&&ir.getInstance(n).hide(),ir.getOrCreateInstance(t).toggle(this)}),Et.on(window,Bi,()=>{for(const e of Ot.find(Vi))ir.getOrCreateInstance(e).show()}),Et.on(window,Zi,()=>{for(const e of Ot.find("[aria-modal][class*=show][class*=offcanvas-]"))"fixed"!==getComputedStyle(e).position&&ir.getOrCreateInstance(e).hide()}),qt(ir),it(ir);const rr={"*":["class","dir","id","lang","role",/^aria-[\w-]*$/i],a:["target","href","title","rel"],area:[],b:[],br:[],col:[],code:[],dd:[],div:[],dl:[],dt:[],em:[],hr:[],h1:[],h2:[],h3:[],h4:[],h5:[],h6:[],i:[],img:["src","srcset","alt","title","width","height"],li:[],ol:[],p:[],pre:[],s:[],small:[],span:[],sub:[],sup:[],strong:[],u:[],ul:[]},or=new Set(["background","cite","href","itemtype","longdesc","poster","src","xlink:href"]),ar=/^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i,sr=(e,t)=>{const n=e.nodeName.toLowerCase();return t.includes(n)?!or.has(n)||Boolean(ar.test(e.nodeValue)):t.filter(e=>e instanceof RegExp).some(e=>e.test(n))},cr={allowList:rr,content:{},extraClass:"",html:!1,sanitize:!0,sanitizeFn:null,template:"<div></div>"},lr={allowList:"object",content:"object",extraClass:"(string|function)",html:"boolean",sanitize:"boolean",sanitizeFn:"(null|function)",template:"string"},dr={entry:"(string|element|function|null)",selector:"(string|element)"};class ur extends xt{constructor(e){super(),this._config=this._getConfig(e)}static get Default(){return cr}static get DefaultType(){return lr}static get NAME(){return"TemplateFactory"}getContent(){return Object.values(this._config.content).map(e=>this._resolvePossibleFunction(e)).filter(Boolean)}hasContent(){return this.getContent().length>0}changeContent(e){return this._checkContent(e),this._config.content={...this._config.content,...e},this}toHtml(){const e=document.createElement("div");e.innerHTML=this._maybeSanitize(this._config.template);for(const[t,n]of Object.entries(this._config.content))this._setContent(e,n,t);const t=e.children[0],n=this._resolvePossibleFunction(this._config.extraClass);return n&&t.classList.add(...n.split(" ")),t}_typeCheckConfig(e){super._typeCheckConfig(e),this._checkContent(e.content)}_checkContent(e){for(const[t,n]of Object.entries(e))super._typeCheckConfig({selector:t,entry:n},dr)}_setContent(e,t,n){const i=Ot.findOne(n,e);i&&((t=this._resolvePossibleFunction(t))?Xe(t)?this._putElementInTemplate(Ye(t),i):this._config.html?i.innerHTML=this._maybeSanitize(t):i.textContent=t:i.remove())}_maybeSanitize(e){return this._config.sanitize?function(e,t,n){if(!e.length)return e;if(n&&"function"==typeof n)return n(e);const i=(new window.DOMParser).parseFromString(e,"text/html"),r=[].concat(...i.body.querySelectorAll("*"));for(const e of r){const n=e.nodeName.toLowerCase();if(!Object.keys(t).includes(n)){e.remove();continue}const i=[].concat(...e.attributes),r=[].concat(t["*"]||[],t[n]||[]);for(const t of i)sr(t,r)||e.removeAttribute(t.nodeName)}return i.body.innerHTML}(e,this._config.allowList,this._config.sanitizeFn):e}_resolvePossibleFunction(e){return rt(e,[void 0,this])}_putElementInTemplate(e,t){if(this._config.html)return t.innerHTML="",void t.append(e);t.textContent=e.textContent}}const hr=new Set(["sanitize","allowList","sanitizeFn"]),fr="fade",pr="show",mr=".tooltip-inner",gr=".modal",vr="hide.bs.modal",br="hover",yr="focus",_r="click",wr={AUTO:"auto",TOP:"top",RIGHT:nt()?"left":"right",BOTTOM:"bottom",LEFT:nt()?"right":"left"},Er={allowList:rr,animation:!0,boundary:"clippingParents",container:!1,customClass:"",delay:0,fallbackPlacements:["top","right","bottom","left"],html:!1,offset:[0,6],placement:"top",popperConfig:null,sanitize:!0,sanitizeFn:null,selector:!1,template:'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',title:"",trigger:"hover focus"},Ar={allowList:"object",animation:"boolean",boundary:"(string|element)",container:"(string|element|boolean)",customClass:"(string|function)",delay:"(number|object)",fallbackPlacements:"array",html:"boolean",offset:"(array|string|function)",placement:"(string|function)",popperConfig:"(null|object|function)",sanitize:"boolean",sanitizeFn:"(null|function)",selector:"(string|boolean)",template:"string",title:"(string|element|function)",trigger:"string"};class Lr extends Ct{constructor(e,t){super(e,t),this._isEnabled=!0,this._timeout=0,this._isHovered=null,this._activeTrigger={},this._popper=null,this._templateFactory=null,this._newContent=null,this.tip=null,this._setListeners(),this._config.selector||this._fixTitle()}static get Default(){return Er}static get DefaultType(){return Ar}static get NAME(){return"tooltip"}enable(){this._isEnabled=!0}disable(){this._isEnabled=!1}toggleEnabled(){this._isEnabled=!this._isEnabled}toggle(){this._isEnabled&&(this._isShown()?this._leave():this._enter())}dispose(){clearTimeout(this._timeout),Et.off(this._element.closest(gr),vr,this._hideModalHandler),this._element.getAttribute("data-bs-original-title")&&this._element.setAttribute("title",this._element.getAttribute("data-bs-original-title")),this._disposePopper(),super.dispose()}show(){if("none"===this._element.style.display)throw new Error("Please use show on visible elements");if(!this._isWithContent()||!this._isEnabled)return;const e=Et.trigger(this._element,this.constructor.eventName("show")),t=(Qe(this._element)||this._element.ownerDocument.documentElement).contains(this._element);if(e.defaultPrevented||!t)return;this._disposePopper();const n=this._getTipElement();this._element.setAttribute("aria-describedby",n.getAttribute("id"));const{container:i}=this._config;if(this._element.ownerDocument.documentElement.contains(this.tip)||(i.append(n),Et.trigger(this._element,this.constructor.eventName("inserted"))),this._popper=this._createPopper(n),n.classList.add(pr),"ontouchstart"in document.documentElement)for(const e of[].concat(...document.body.children))Et.on(e,"mouseover",Ze);this._queueCallback(()=>{Et.trigger(this._element,this.constructor.eventName("shown")),!1===this._isHovered&&this._leave(),this._isHovered=!1},this.tip,this._isAnimated())}hide(){if(this._isShown()&&!Et.trigger(this._element,this.constructor.eventName("hide")).defaultPrevented){if(this._getTipElement().classList.remove(pr),"ontouchstart"in document.documentElement)for(const e of[].concat(...document.body.children))Et.off(e,"mouseover",Ze);this._activeTrigger[_r]=!1,this._activeTrigger[yr]=!1,this._activeTrigger[br]=!1,this._isHovered=null,this._queueCallback(()=>{this._isWithActiveTrigger()||(this._isHovered||this._disposePopper(),this._element.removeAttribute("aria-describedby"),Et.trigger(this._element,this.constructor.eventName("hidden")))},this.tip,this._isAnimated())}}update(){this._popper&&this._popper.update()}_isWithContent(){return Boolean(this._getTitle())}_getTipElement(){return this.tip||(this.tip=this._createTipElement(this._newContent||this._getContentForTemplate())),this.tip}_createTipElement(e){const t=this._getTemplateFactory(e).toHtml();if(!t)return null;t.classList.remove(fr,pr),t.classList.add(`bs-${this.constructor.NAME}-auto`);const n=(e=>{do{e+=Math.floor(1e6*Math.random())}while(document.getElementById(e));return e})(this.constructor.NAME).toString();return t.setAttribute("id",n),this._isAnimated()&&t.classList.add(fr),t}setContent(e){this._newContent=e,this._isShown()&&(this._disposePopper(),this.show())}_getTemplateFactory(e){return this._templateFactory?this._templateFactory.changeContent(e):this._templateFactory=new ur({...this._config,content:e,extraClass:this._resolvePossibleFunction(this._config.customClass)}),this._templateFactory}_getContentForTemplate(){return{[mr]:this._getTitle()}}_getTitle(){return this._resolvePossibleFunction(this._config.title)||this._element.getAttribute("data-bs-original-title")}_initializeOnDelegatedTarget(e){return this.constructor.getOrCreateInstance(e.delegateTarget,this._getDelegateConfig())}_isAnimated(){return this._config.animation||this.tip&&this.tip.classList.contains(fr)}_isShown(){return this.tip&&this.tip.classList.contains(pr)}_createPopper(e){const t=rt(this._config.placement,[this,e,this._element]),n=wr[t.toUpperCase()];return Fe(this._element,e,this._getPopperConfig(n))}_getOffset(){const{offset:e}=this._config;return"string"==typeof e?e.split(",").map(e=>Number.parseInt(e,10)):"function"==typeof e?t=>e(t,this._element):e}_resolvePossibleFunction(e){return rt(e,[this._element,this._element])}_getPopperConfig(e){const t={placement:e,modifiers:[{name:"flip",options:{fallbackPlacements:this._config.fallbackPlacements}},{name:"offset",options:{offset:this._getOffset()}},{name:"preventOverflow",options:{boundary:this._config.boundary}},{name:"arrow",options:{element:`.${this.constructor.NAME}-arrow`}},{name:"preSetPlacement",enabled:!0,phase:"beforeMain",fn:e=>{this._getTipElement().setAttribute("data-popper-placement",e.state.placement)}}]};return{...t,...rt(this._config.popperConfig,[void 0,t])}}_setListeners(){const e=this._config.trigger.split(" ");for(const t of e)if("click"===t)Et.on(this._element,this.constructor.eventName("click"),this._config.selector,e=>{const t=this._initializeOnDelegatedTarget(e);t._activeTrigger[_r]=!(t._isShown()&&t._activeTrigger[_r]),t.toggle()});else if("manual"!==t){const e=t===br?this.constructor.eventName("mouseenter"):this.constructor.eventName("focusin"),n=t===br?this.constructor.eventName("mouseleave"):this.constructor.eventName("focusout");Et.on(this._element,e,this._config.selector,e=>{const t=this._initializeOnDelegatedTarget(e);t._activeTrigger["focusin"===e.type?yr:br]=!0,t._enter()}),Et.on(this._element,n,this._config.selector,e=>{const t=this._initializeOnDelegatedTarget(e);t._activeTrigger["focusout"===e.type?yr:br]=t._element.contains(e.relatedTarget),t._leave()})}this._hideModalHandler=()=>{this._element&&this.hide()},Et.on(this._element.closest(gr),vr,this._hideModalHandler)}_fixTitle(){const e=this._element.getAttribute("title");e&&(this._element.getAttribute("aria-label")||this._element.textContent.trim()||this._element.setAttribute("aria-label",e),this._element.setAttribute("data-bs-original-title",e),this._element.removeAttribute("title"))}_enter(){this._isShown()||this._isHovered?this._isHovered=!0:(this._isHovered=!0,this._setTimeout(()=>{this._isHovered&&this.show()},this._config.delay.show))}_leave(){this._isWithActiveTrigger()||(this._isHovered=!1,this._setTimeout(()=>{this._isHovered||this.hide()},this._config.delay.hide))}_setTimeout(e,t){clearTimeout(this._timeout),this._timeout=setTimeout(e,t)}_isWithActiveTrigger(){return Object.values(this._activeTrigger).includes(!0)}_getConfig(e){const t=kt.getDataAttributes(this._element);for(const e of Object.keys(t))hr.has(e)&&delete t[e];return e={...t,..."object"==typeof e&&e?e:{}},e=this._mergeConfigObj(e),e=this._configAfterMerge(e),this._typeCheckConfig(e),e}_configAfterMerge(e){return e.container=!1===e.container?document.body:Ye(e.container),"number"==typeof e.delay&&(e.delay={show:e.delay,hide:e.delay}),"number"==typeof e.title&&(e.title=e.title.toString()),"number"==typeof e.content&&(e.content=e.content.toString()),e}_getDelegateConfig(){const e={};for(const[t,n]of Object.entries(this._config))this.constructor.Default[t]!==n&&(e[t]=n);return e.selector=!1,e.trigger="manual",e}_disposePopper(){this._popper&&(this._popper.destroy(),this._popper=null),this.tip&&(this.tip.remove(),this.tip=null)}static jQueryInterface(e){return this.each(function(){const t=Lr.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e])throw new TypeError(`No method named "${e}"`);t[e]()}})}}it(Lr);const Sr=".popover-header",kr=".popover-body",xr={...Lr.Default,content:"",offset:[0,8],placement:"right",template:'<div class="popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',trigger:"click"},Cr={...Lr.DefaultType,content:"(null|string|element|function)"};class Tr extends Lr{static get Default(){return xr}static get DefaultType(){return Cr}static get NAME(){return"popover"}_isWithContent(){return this._getTitle()||this._getContent()}_getContentForTemplate(){return{[Sr]:this._getTitle(),[kr]:this._getContent()}}_getContent(){return this._resolvePossibleFunction(this._config.content)}static jQueryInterface(e){return this.each(function(){const t=Tr.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e])throw new TypeError(`No method named "${e}"`);t[e]()}})}}it(Tr);const Or=".bs.scrollspy",qr=`activate${Or}`,Mr=`click${Or}`,Ir=`load${Or}.data-api`,Nr="active",Dr="[href]",Pr=".nav-link",jr=`${Pr}, .nav-item > ${Pr}, .list-group-item`,$r={offset:null,rootMargin:"0px 0px -25%",smoothScroll:!1,target:null,threshold:[.1,.5,1]},Fr={offset:"(number|null)",rootMargin:"string",smoothScroll:"boolean",target:"element",threshold:"array"};class Rr extends Ct{constructor(e,t){super(e,t),this._targetLinks=new Map,this._observableSections=new Map,this._rootElement="visible"===getComputedStyle(this._element).overflowY?null:this._element,this._activeTarget=null,this._observer=null,this._previousScrollData={visibleEntryTop:0,parentScrollTop:0},this.refresh()}static get Default(){return $r}static get DefaultType(){return Fr}static get NAME(){return"scrollspy"}refresh(){this._initializeTargetsAndObservables(),this._maybeEnableSmoothScroll(),this._observer?this._observer.disconnect():this._observer=this._getNewObserver();for(const e of this._observableSections.values())this._observer.observe(e)}dispose(){this._observer.disconnect(),super.dispose()}_configAfterMerge(e){return e.target=Ye(e.target)||document.body,e.rootMargin=e.offset?`${e.offset}px 0px -30%`:e.rootMargin,"string"==typeof e.threshold&&(e.threshold=e.threshold.split(",").map(e=>Number.parseFloat(e))),e}_maybeEnableSmoothScroll(){this._config.smoothScroll&&(Et.off(this._config.target,Mr),Et.on(this._config.target,Mr,Dr,e=>{const t=this._observableSections.get(e.target.hash);if(t){e.preventDefault();const n=this._rootElement||window,i=t.offsetTop-this._element.offsetTop;if(n.scrollTo)return void n.scrollTo({top:i,behavior:"smooth"});n.scrollTop=i}}))}_getNewObserver(){const e={root:this._rootElement,threshold:this._config.threshold,rootMargin:this._config.rootMargin};return new IntersectionObserver(e=>this._observerCallback(e),e)}_observerCallback(e){const t=e=>this._targetLinks.get(`#${e.target.id}`),n=e=>{this._previousScrollData.visibleEntryTop=e.target.offsetTop,this._process(t(e))},i=(this._rootElement||document.documentElement).scrollTop,r=i>=this._previousScrollData.parentScrollTop;this._previousScrollData.parentScrollTop=i;for(const o of e){if(!o.isIntersecting){this._activeTarget=null,this._clearActiveClass(t(o));continue}const e=o.target.offsetTop>=this._previousScrollData.visibleEntryTop;if(r&&e){if(n(o),!i)return}else r||e||n(o)}}_initializeTargetsAndObservables(){this._targetLinks=new Map,this._observableSections=new Map;const e=Ot.find(Dr,this._config.target);for(const t of e){if(!t.hash||Ke(t))continue;const e=Ot.findOne(decodeURI(t.hash),this._element);Ge(e)&&(this._targetLinks.set(decodeURI(t.hash),t),this._observableSections.set(t.hash,e))}}_process(e){this._activeTarget!==e&&(this._clearActiveClass(this._config.target),this._activeTarget=e,e.classList.add(Nr),this._activateParents(e),Et.trigger(this._element,qr,{relatedTarget:e}))}_activateParents(e){if(e.classList.contains("dropdown-item"))Ot.findOne(".dropdown-toggle",e.closest(".dropdown")).classList.add(Nr);else for(const t of Ot.parents(e,".nav, .list-group"))for(const e of Ot.prev(t,jr))e.classList.add(Nr)}_clearActiveClass(e){e.classList.remove(Nr);const t=Ot.find(`${Dr}.${Nr}`,e);for(const e of t)e.classList.remove(Nr)}static jQueryInterface(e){return this.each(function(){const t=Rr.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e]||e.startsWith("_")||"constructor"===e)throw new TypeError(`No method named "${e}"`);t[e]()}})}}Et.on(window,Ir,()=>{for(const e of Ot.find('[data-bs-spy="scroll"]'))Rr.getOrCreateInstance(e)}),it(Rr);const Hr=".bs.tab",Br=`hide${Hr}`,zr=`hidden${Hr}`,Wr=`show${Hr}`,Ur=`shown${Hr}`,Vr=`click${Hr}`,Xr=`keydown${Hr}`,Yr=`load${Hr}`,Gr="ArrowLeft",Kr="ArrowRight",Qr="ArrowUp",Zr="ArrowDown",Jr="Home",eo="End",to="active",no="fade",io="show",ro=".dropdown-toggle",oo=`:not(${ro})`,ao='[data-bs-toggle="tab"], [data-bs-toggle="pill"], [data-bs-toggle="list"]',so=`.nav-link${oo}, .list-group-item${oo}, [role="tab"]${oo}, ${ao}`,co=`.${to}[data-bs-toggle="tab"], .${to}[data-bs-toggle="pill"], .${to}[data-bs-toggle="list"]`;class lo extends Ct{constructor(e){super(e),this._parent=this._element.closest('.list-group, .nav, [role="tablist"]'),this._parent&&(this._setInitialAttributes(this._parent,this._getChildren()),Et.on(this._element,Xr,e=>this._keydown(e)))}static get NAME(){return"tab"}show(){const e=this._element;if(this._elemIsActive(e))return;const t=this._getActiveElem(),n=t?Et.trigger(t,Br,{relatedTarget:e}):null;Et.trigger(e,Wr,{relatedTarget:t}).defaultPrevented||n&&n.defaultPrevented||(this._deactivate(t,e),this._activate(e,t))}_activate(e,t){e&&(e.classList.add(to),this._activate(Ot.getElementFromSelector(e)),this._queueCallback(()=>{"tab"===e.getAttribute("role")?(e.removeAttribute("tabindex"),e.setAttribute("aria-selected",!0),this._toggleDropDown(e,!0),Et.trigger(e,Ur,{relatedTarget:t})):e.classList.add(io)},e,e.classList.contains(no)))}_deactivate(e,t){e&&(e.classList.remove(to),e.blur(),this._deactivate(Ot.getElementFromSelector(e)),this._queueCallback(()=>{"tab"===e.getAttribute("role")?(e.setAttribute("aria-selected",!1),e.setAttribute("tabindex","-1"),this._toggleDropDown(e,!1),Et.trigger(e,zr,{relatedTarget:t})):e.classList.remove(io)},e,e.classList.contains(no)))}_keydown(e){if(![Gr,Kr,Qr,Zr,Jr,eo].includes(e.key))return;e.stopPropagation(),e.preventDefault();const t=this._getChildren().filter(e=>!Ke(e));let n;if([Jr,eo].includes(e.key))n=t[e.key===Jr?0:t.length-1];else{const i=[Kr,Zr].includes(e.key);n=at(t,e.target,i,!0)}n&&(n.focus({preventScroll:!0}),lo.getOrCreateInstance(n).show())}_getChildren(){return Ot.find(so,this._parent)}_getActiveElem(){return this._getChildren().find(e=>this._elemIsActive(e))||null}_setInitialAttributes(e,t){this._setAttributeIfNotExists(e,"role","tablist");for(const e of t)this._setInitialAttributesOnChild(e)}_setInitialAttributesOnChild(e){e=this._getInnerElement(e);const t=this._elemIsActive(e),n=this._getOuterElement(e);e.setAttribute("aria-selected",t),n!==e&&this._setAttributeIfNotExists(n,"role","presentation"),t||e.setAttribute("tabindex","-1"),this._setAttributeIfNotExists(e,"role","tab"),this._setInitialAttributesOnTargetPanel(e)}_setInitialAttributesOnTargetPanel(e){const t=Ot.getElementFromSelector(e);t&&(this._setAttributeIfNotExists(t,"role","tabpanel"),e.id&&this._setAttributeIfNotExists(t,"aria-labelledby",`${e.id}`))}_toggleDropDown(e,t){const n=this._getOuterElement(e);if(!n.classList.contains("dropdown"))return;const i=(e,i)=>{const r=Ot.findOne(e,n);r&&r.classList.toggle(i,t)};i(ro,to),i(".dropdown-menu",io),n.setAttribute("aria-expanded",t)}_setAttributeIfNotExists(e,t,n){e.hasAttribute(t)||e.setAttribute(t,n)}_elemIsActive(e){return e.classList.contains(to)}_getInnerElement(e){return e.matches(so)?e:Ot.findOne(so,e)}_getOuterElement(e){return e.closest(".nav-item, .list-group-item")||e}static jQueryInterface(e){return this.each(function(){const t=lo.getOrCreateInstance(this);if("string"==typeof e){if(void 0===t[e]||e.startsWith("_")||"constructor"===e)throw new TypeError(`No method named "${e}"`);t[e]()}})}}Et.on(document,Vr,ao,function(e){["A","AREA"].includes(this.tagName)&&e.preventDefault(),Ke(this)||lo.getOrCreateInstance(this).show()}),Et.on(window,Yr,()=>{for(const e of Ot.find(co))lo.getOrCreateInstance(e)}),it(lo);const uo=".bs.toast",ho=`mouseover${uo}`,fo=`mouseout${uo}`,po=`focusin${uo}`,mo=`focusout${uo}`,go=`hide${uo}`,vo=`hidden${uo}`,bo=`show${uo}`,yo=`shown${uo}`,_o="hide",wo="show",Eo="showing",Ao={animation:"boolean",autohide:"boolean",delay:"number"},Lo={animation:!0,autohide:!0,delay:5e3};class So extends Ct{constructor(e,t){super(e,t),this._timeout=null,this._hasMouseInteraction=!1,this._hasKeyboardInteraction=!1,this._setListeners()}static get Default(){return Lo}static get DefaultType(){return Ao}static get NAME(){return"toast"}show(){Et.trigger(this._element,bo).defaultPrevented||(this._clearTimeout(),this._config.animation&&this._element.classList.add("fade"),this._element.classList.remove(_o),Je(this._element),this._element.classList.add(wo,Eo),this._queueCallback(()=>{this._element.classList.remove(Eo),Et.trigger(this._element,yo),this._maybeScheduleHide()},this._element,this._config.animation))}hide(){this.isShown()&&(Et.trigger(this._element,go).defaultPrevented||(this._element.classList.add(Eo),this._queueCallback(()=>{this._element.classList.add(_o),this._element.classList.remove(Eo,wo),Et.trigger(this._element,vo)},this._element,this._config.animation)))}dispose(){this._clearTimeout(),this.isShown()&&this._element.classList.remove(wo),super.dispose()}isShown(){return this._element.classList.contains(wo)}_maybeScheduleHide(){this._config.autohide&&(this._hasMouseInteraction||this._hasKeyboardInteraction||(this._timeout=setTimeout(()=>{this.hide()},this._config.delay)))}_onInteraction(e,t){switch(e.type){case"mouseover":case"mouseout":this._hasMouseInteraction=t;break;case"focusin":case"focusout":this._hasKeyboardInteraction=t}if(t)return void this._clearTimeout();const n=e.relatedTarget;this._element===n||this._element.contains(n)||this._maybeScheduleHide()}_setListeners(){Et.on(this._element,ho,e=>this._onInteraction(e,!0)),Et.on(this._element,fo,e=>this._onInteraction(e,!1)),Et.on(this._element,po,e=>this._onInteraction(e,!0)),Et.on(this._element,mo,e=>this._onInteraction(e,!1))}_clearTimeout(){clearTimeout(this._timeout),this._timeout=null}static jQueryInterface(e){return this.each(function(){const t=So.getOrCreateInstance(this,e);if("string"==typeof e){if(void 0===t[e])throw new TypeError(`No method named "${e}"`);t[e](this)}})}}qt(So),it(So);var ko=[{tone:"maroon",label:"Diabolical",range:"0–<15%",min:0,width:15,color:"#8c354b",emoji:"💩"},{tone:"bad",label:"Bad",range:"15–<29%",min:1.5,width:14,color:"#d85b70",emoji:"😡"},{tone:"red",label:"Poor",range:"29–<43%",min:2.9,width:14,color:"#ef8585",emoji:"👎🏾"},{tone:"amber",label:"Mixed",range:"43–<57%",min:4.3,width:14,color:"#e5a653",emoji:"🤷🏽‍♂️"},{tone:"green",label:"Positive",range:"57–<71%",min:5.7,width:14,color:"#82c995",emoji:"👍🏾"},{tone:"great",label:"Excellent",range:"71–<85%",min:7.1,width:14,color:"#6ed9c5",emoji:"🤩"},{tone:"diamond",label:"Outstanding",range:"85–100%",min:8.5,width:15,color:"#b9eaff",emoji:"💎"}],xo=function(e){return[].concat(ko).reverse().find(function(t){return e>=10*t.min})||ko[0]};!function(e){document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector(".navbar");if(e){var t=function(){e.classList.toggle("scrolled",window.scrollY>10)};window.addEventListener("scroll",t,{passive:!0}),t()}}),[].forEach.call(document.querySelectorAll(".search-form"),function(e){e.addEventListener("submit",function(t){var n=e.querySelector("input");n.value.length<1&&(t.preventDefault(),n.focus())})}),[].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]')).map(function(e){return new Tr(e,{trigger:"focus"})}),document.addEventListener("DOMContentLoaded",function(){var e=document.getElementById("navbar");e&&(e.addEventListener("shown.bs.collapse",function(){document.body.classList.add("nav-open")}),e.addEventListener("hidden.bs.collapse",function(){document.body.classList.remove("nav-open")}));var t=document.querySelectorAll("section"),n=new IntersectionObserver(function(e){e.forEach(function(e){e.target.classList.contains("story-section")||e.target.classList.contains("story-hero")||e.target.querySelector("[data-gyms-archive]")||(e.isIntersecting?e.target.classList.add("viewport-active"):e.target.classList.remove("viewport-active"))})},{threshold:.1,rootMargin:"-20% 0px -20% 0px"});t.forEach(function(e){return n.observe(e)});var i=document.querySelectorAll(".stat-figure"),r=new IntersectionObserver(function(e,t){e.forEach(function(e){e.isIntersecting&&(function(e){var t=e.textContent.trim().match(/^(\d+(?:\.\d+)?)(.*)$/);if(t){var n=parseFloat(t[1]),i=t[2].trim(),r=null,o=function(t){r||(r=t);var a=Math.min((t-r)/1800,1),s=Math.floor(a*n);e.textContent="".concat(s).concat(i||""),a<1?requestAnimationFrame(o):e.textContent="".concat(n).concat(i||"")};requestAnimationFrame(o)}}(e.target),t.unobserve(e.target))})},{threshold:.4});i.forEach(function(e){return r.observe(e)});var o=document.body,s=document.querySelector(".client-journey"),c=document.querySelector(".tech-stack");s&&new IntersectionObserver(function(e){a(e,1)[0].isIntersecting?o.classList.add("client-journey-section"):o.classList.remove("client-journey-section")},{threshold:.35}).observe(s),c&&new IntersectionObserver(function(e){a(e,1)[0].isIntersecting?o.classList.add("tech-stack-section"):o.classList.remove("tech-stack-section")},{threshold:.35}).observe(c)});var t=document.querySelectorAll(".process-step");if(t.length){var n=0;t.forEach(function(e){return e.classList.remove("is-active")}),t[0].classList.add("is-active"),setInterval(function(){t[n].classList.remove("is-active"),n=(n+1)%t.length,t[n].classList.add("is-active")},5e3)}var r=document.querySelector(".process-area > .wp-block-group__inner-container");if(r&&t.length){var o=0;setInterval(function(){o=(o+1)%t.length,r.style.transform="translateX(-".concat(560*o,"px)")},5e3)}document.addEventListener("DOMContentLoaded",function(){var e=document.querySelectorAll(".footline-track");e.length&&e.forEach(function(e){var t=e.querySelector(".footline");if(t)for(var n=0;n<2;n++)e.appendChild(t.cloneNode(!0))})}),document.addEventListener("DOMContentLoaded",function(){var e=document.getElementById("navbar");e&&e.addEventListener("show.bs.collapse",function(){requestAnimationFrame(function(){e.classList.remove("collapsing")})})}),document.addEventListener("DOMContentLoaded",function(){document.body.classList.contains("page-dashboard")&&console.log("Client dashboard loaded")}),console.log("DX DASHBOARD JS LOADED"),document.addEventListener("DOMContentLoaded",function(){if(document.body.classList.contains("page-dashboard")){var e=document.querySelector('[data-bs-target="#newTicketModal"]');e&&void 0===window.bootstrap&&e.addEventListener("click",function(e){e.preventDefault(),window.location.href="/submit-ticket/"});var t=document.querySelector(".request-update");t&&t.addEventListener("click",function(){t.textContent="Request Sent ✓",t.disabled=!0,t.classList.add("is-disabled")})}});var c,d,u,h,f,p=document.querySelector(".ticket-reply-form");function m(){var e,t=document.querySelector(".chapters-wrapper"),n=s(document.querySelectorAll(".story-section")),i=document.querySelector(".chapter-selector"),r=null==i?void 0:i.querySelector("ul");if(t&&n.length&&r&&"true"!==document.body.dataset.storyInit){var o=n.map(function(e){var t=e.querySelector(".cs-chapter[id]"),n=null==t?void 0:t.querySelector("h2.chapter-title");return t&&n?{section:e,id:t.id,title:n.textContent.trim()}:null}).filter(Boolean);if(o.length){document.body.dataset.storyInit="true",document.documentElement.classList.add("case-study-document");var a=window.matchMedia("(prefers-reduced-motion: reduce)"),c=0,l=-1,d=!1,u=null,h=!1,f=0,p=function(){return parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)||0},m=function(){try{return decodeURIComponent(window.location.hash.slice(1))}catch(e){return""}},g=o.findIndex(function(e){return e.id===m()}),v=o.map(function(e){var t=e.id,n=e.title,i=document.createElement("li");i.dataset.target=t;var r=document.createElement("a");r.href="#"+encodeURIComponent(t);var o=document.createElement("span");return o.textContent=n,r.appendChild(o),i.appendChild(r),{li:i,link:r}});r.replaceChildren.apply(r,s(v.map(function(e){return e.li})));var b=i.querySelector(".chapter-progress span");if(!b){var y=document.createElement("div");y.className="chapter-progress",b=document.createElement("span"),y.appendChild(b),i.appendChild(y)}var _=document.createElement("div");_.className="chapter-step-controls";var w=document.createElement("button"),E=document.createElement("button");w.type=E.type="button",w.textContent="← Previous",E.textContent="Next →",w.setAttribute("aria-label","Previous chapter"),E.setAttribute("aria-label","Next chapter"),_.append(w,E),i.appendChild(_);var A=s(document.querySelectorAll(".story-backgrounds .bg")),L=function(e){if(e!==l){l=e,w.disabled=0===e,E.disabled=e===o.length-1;var t=o[e];n.forEach(function(e){return e.classList.toggle("viewport-active",e===t.section)}),v.forEach(function(t,n){var i=t.li,r=t.link;i.classList.toggle("is-active",n===e),n===e?r.setAttribute("aria-current","location"):r.removeAttribute("aria-current")}),A.forEach(function(e){return e.classList.toggle("is-active",e.dataset.bg===t.id)}),b.style.transform="scaleY("+(e+1)/o.length+")"}},S=function(){c=0;var e=window.innerHeight;if(e){var n=t.getBoundingClientRect(),r=.35*e,a=n.top<=p()+1&&n.bottom>.5*e;if(document.body.classList.toggle("is-in-chapters",a),i.inert=!a||o.length<2,i.setAttribute("aria-hidden",String(!a||o.length<2)),a){var s=0;o.forEach(function(e,t){e.section.getBoundingClientRect().top<=r&&(s=t)}),A.forEach(function(e){return e.classList.toggle("is-active",e.dataset.bg===o[s].id)}),null===u&&L(s),n.top<=r&&(d=!0)}}},k=function(){clearTimeout(f),u=null,S();var e=m(),t=o.some(function(t){return t.id===e});if(d&&document.body.classList.contains("is-in-chapters")&&(!e||t)&&e!==o[l].id){var n=new URL(window.location.href);n.hash=o[l].id,history.replaceState(history.state,"",n)}},x=function(){c||(c=requestAnimationFrame(S))},C=function(e){var t=!(arguments.length>1&&void 0!==arguments[1])||arguments[1];u=e,L(e);var n=function(e){return Math.max(0,window.scrollY+o[e].section.getBoundingClientRect().top-p())}(e);window.scrollTo({top:Math.max(0,n),behavior:t&&!a.matches?"smooth":"instant"}),x(),clearTimeout(f),f=setTimeout(k,220)};w.addEventListener("click",function(){h=!0,d=!0,C(Math.max(0,l-1))}),E.addEventListener("click",function(){h=!0,d=!0,C(Math.min(o.length-1,l+1))}),v.forEach(function(e,t){return e.link.addEventListener("click",function(e){0!==e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||(e.preventDefault(),h=!0,d=!0,C(t))})}),window.addEventListener("scroll",function(){x(),clearTimeout(f),f=setTimeout(k,180)},{passive:!0}),document.addEventListener("scrollend",k);var T=function(){h=!0,u=null,x()};if(window.addEventListener("wheel",T,{passive:!0}),window.addEventListener("touchstart",T,{passive:!0}),window.addEventListener("keydown",function(e){["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," "].includes(e.key)&&T()}),window.addEventListener("resize",x,{passive:!0}),window.addEventListener("pageshow",function(e){!e.persisted&&g>=0&&!h?C(g,!1):x()}),window.addEventListener("hashchange",function(){var e=o.findIndex(function(e){return e.id===m()});e>=0&&(d=!0,C(e,!1))}),"undefined"!=typeof ResizeObserver){var O=new ResizeObserver(x);O.observe(t),o.forEach(function(e){return O.observe(e.section)})}if(t.addEventListener("load",x,!0),null===(e=document.fonts)||void 0===e||e.ready.then(x),L(g>=0?g:0),o.length<2&&(i.hidden=!0),S(),g>=0){var q;d=!0,requestAnimationFrame(function(){return C(g,!1)});var M=s(document.querySelectorAll(".story-hero img")).map(function(e){return e.complete?Promise.resolve():new Promise(function(t){e.addEventListener("load",t,{once:!0}),e.addEventListener("error",t,{once:!0})})});Promise.all([null===(q=document.fonts)||void 0===q?void 0:q.ready].concat(s(M))).then(function(){h||C(g,!1)})}}}}p&&p.addEventListener("submit",function(){var e=i(l().mark(function e(t){var n,i,r;return l().wrap(function(e){for(;;)switch(e.prev=e.next){case 0:return t.preventDefault(),n=new FormData(p),e.next=1,fetch(p.action,{method:"POST",body:n});case 1:return i=e.sent,e.next=2,i.text();case 2:r=e.sent,document.querySelector(".ticket-thread").insertAdjacentHTML("beforeend",r),p.reset();case 3:case"end":return e.stop()}},e)}));return function(_x){return e.apply(this,arguments)}}()),document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector(".add-image-btn"),t=document.querySelectorAll(".ticket-image-field");if(e&&t.length){var n=1;e.addEventListener("click",function(){n<t.length&&(t[n].classList.remove("is-hidden"),n++),n>=t.length&&(e.disabled=!0,e.textContent="Maximum images added")})}}),document.addEventListener("click",function(e){var t=e.target.closest(".js-ticket-link");if(t){e.preventDefault(),console.log("Ticket clicked",t.dataset.ticketId);var n=t.dataset.ticketId,i=document.querySelector(".dashboard-panel");console.log("Sending AJAX for ticket",n),i.classList.add("is-loading");var r=new FormData;r.append("action","dx_load_ticket_panel"),r.append("ticket_id",n),r.append("nonce",DX_DASHBOARD.nonce),fetch(DX_DASHBOARD.ajax_url,{method:"POST",credentials:"same-origin",body:r}).then(function(e){return e.json()}).then(function(e){e.success&&e.data.html?(i.innerHTML=e.data.html,i.classList.remove("is-loading"),document.querySelectorAll(".ticket").forEach(function(e){return e.classList.remove("is-active")}),t.closest(".ticket").classList.add("is-active")):i.innerHTML="<p>Unable to load ticket.</p>"}).catch(function(e){console.error("FETCH FAILED",e),i.classList.remove("is-loading")})}}),document.addEventListener("click",function(e){var t=e.target.closest(".dashboard-tab[data-status]");if(t){var n=t.dataset.status;document.querySelectorAll(".dashboard-tab").forEach(function(e){return e.classList.remove("is-active")}),t.classList.add("is-active"),document.querySelectorAll(".ticket").forEach(function(e){var t=e.dataset.status;e.style.display="open"===n?"resolved"!==t&&"cancelled"!==t?"":"none":t===n?"":"none"})}}),document.addEventListener("click",function(e){var t=e.target.closest(".js-cancel-ticket");if(t){var n=t.dataset.ticketId,i=document.getElementById("cancel-ticket-id");i&&(i.value=n)}}),document.addEventListener("keydown",function(e){if(document.body.classList.contains("page-dashboard")){var t=s(document.querySelectorAll(".ticket")),n=document.querySelector(".ticket.is-active");if(n){var i=t.indexOf(n);"ArrowDown"===e.key&&(e.preventDefault(),t[i=Math.min(i+1,t.length-1)].querySelector(".js-ticket-link").click()),"ArrowUp"===e.key&&(e.preventDefault(),t[i=Math.max(i-1,0)].querySelector(".js-ticket-link").click())}}}),document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector(".js-ticket-link");e&&e.click()}),document.querySelectorAll(".wp-block-group.gallery").forEach(function(e){var t=e.querySelector(".wp-block-gallery");t&&(t.dataset.cloned||(t.dataset.cloned="true",s(t.children).forEach(function(e){t.appendChild(e.cloneNode(!0))})))}),document.querySelectorAll(".wp-block-group.gallery").forEach(function(e){var t=e.querySelector(".wp-block-gallery");if(t&&!e.querySelector(".gallery-backdrop")){var n=t.cloneNode(!0);n.classList.add("gallery-backdrop"),n.setAttribute("aria-hidden","true"),t.parentNode.insertBefore(n,t),e.style.position="relative"}}),document.querySelectorAll("#main section.about figure").forEach(function(e){var t=e.querySelector("img");if(t&&"true"!==e.dataset.backdrop){e.dataset.backdrop="true",e.style.position="relative";var n=t.cloneNode(!0);n.classList.add("image-backdrop"),n.setAttribute("aria-hidden","true"),e.insertBefore(n,t)}}),document.addEventListener("DOMContentLoaded",function(){var e,t,n=document.querySelector(".js-hire-me");if(n){var i=new Fi("#hireMeModal"),r=new Fi("#clientModal"),o=new Fi("#recruiterModal");n.addEventListener("click",function(e){e.preventDefault(),i.show()}),null===(e=document.querySelector(".js-client-path"))||void 0===e||e.addEventListener("click",function(){i.hide(),setTimeout(function(){return r.show()},200)}),null===(t=document.querySelector(".js-recruiter-path"))||void 0===t||t.addEventListener("click",function(){i.hide(),setTimeout(function(){return o.show()},200)})}}),document.addEventListener("DOMContentLoaded",function(){var e=document.querySelectorAll(".services-nav .nav-link");if(e.length){var t=0,n=null,i=function(){n=setInterval(function(){t=(t+1)%e.length,e[t].click()},8e3)},r=function(){clearInterval(n),n=null};i(),e.forEach(function(e,n){e.addEventListener("mouseenter",r),e.addEventListener("focus",r),e.addEventListener("mouseleave",function(){t=n,i()}),e.addEventListener("click",function(){t=n})}),document.querySelectorAll(".service-image.foreground").forEach(function(e){if(!e.dataset.hasBackdrop){var t=e.cloneNode(!0);t.classList.remove("foreground"),t.classList.add("background"),t.setAttribute("aria-hidden","true"),t.loading="eager",e.dataset.hasBackdrop="true",e.parentNode.insertBefore(t,e)}})}}),function(){var e=document.querySelector(".projects-marquee"),t=null==e?void 0:e.querySelector(".marquee-track");if(t){s(t.children).forEach(function(e){return t.appendChild(e.cloneNode(!0))});var n=0,i=.6,r=i;e.addEventListener("mouseenter",function(){i=.05}),e.addEventListener("mouseleave",function(){i=.6}),function e(){n-=r;var o=t.scrollWidth/2;Math.abs(n)>=o&&(n=0),t.style.transform="translate3d(".concat(n,"px,0,0)"),r+=.08*(i-r),requestAnimationFrame(e)}()}}(),document.addEventListener("click",function(e){var t=e.target.closest(".modal-back");if(t){var n=t.dataset.backTo,i=t.closest(".modal");if(n&&i){Fi.getInstance(i).hide();var r=document.querySelector(n);new Fi(r).show()}}}),document.addEventListener("DOMContentLoaded",function(){var e,t;function n(e){var t=document.querySelectorAll(".modal.show");if(t.length){var n=t.length;t.forEach(function(t){var r=Fi.getInstance(t);r?(t.addEventListener("hidden.bs.modal",function(){0===--n&&i(e)},{once:!0}),r.hide()):n--})}else i(e)}function i(e){var t=document.querySelector(e);if(t){var n=t.classList.contains("dx-gym-share-modal"),i=Fi.getOrCreateInstance(t,{backdrop:!n&&"static",focus:!0});if(n){var r=document.querySelector("[data-gyms-archive]");if(r){r.querySelectorAll(".modal-backdrop").forEach(function(e){return e.remove()});var o=document.createElement("div");o.className="modal-backdrop fade show",r.appendChild(o),o.addEventListener("click",function(){return i.hide()})}t.addEventListener("hidden.bs.modal",function(){document.querySelectorAll("[data-gyms-archive] .modal-backdrop").forEach(function(e){return e.remove()})},{once:!0})}i.show()}}null===(e=document.querySelector(".js-client-path"))||void 0===e||e.addEventListener("click",function(){n("#clientModal")}),null===(t=document.querySelector(".js-recruiter-path"))||void 0===t||t.addEventListener("click",function(){n("#recruiterModal")}),document.addEventListener("click",function(e){var t=e.target.closest(".modal-back");if(t){var i=t.dataset.backTo;i&&n(i)}}),document.addEventListener("hidden.bs.modal",function(){document.body.classList.remove("modal-open"),document.querySelectorAll(".modal-backdrop").forEach(function(e){return e.remove()})})}),document.querySelectorAll(".gallery-marquee").forEach(function(e){var t=e.querySelector(".gallery-track");if(t){var n=t.querySelectorAll(".wp-block-gallery");if(!(n.length<2)){var i=0,r=!1,o=n[0].offsetWidth;e.addEventListener("mouseenter",function(){return r=!0}),e.addEventListener("mouseleave",function(){return r=!1}),new IntersectionObserver(function(e){r=!e[0].isIntersecting},{threshold:.15}).observe(e),function e(){r||(i-=.5,Math.abs(i)>=o&&(i+=o),t.style.transform="translate3d(".concat(i,"px, 0, 0)")),requestAnimationFrame(e)}()}}}),document.addEventListener("DOMContentLoaded",function(){!function(){var e,t=document.querySelector(".search-suggestions");if(t&&"true"===t.dataset.enhance){var n=document.querySelector('input[type="search"]'),i=new URLSearchParams(window.location.search),r=(null==n?void 0:n.value.trim())||(null===(e=i.get("s"))||void 0===e?void 0:e.trim());r&&fetch("/wp-json/wp/v2/search?search=".concat(encodeURIComponent(r))).then(function(e){return e.json()}).then(function(e){if(Array.isArray(e)&&e.length){var n=new Set,i=document.createDocumentFragment();e.slice(0,6).forEach(function(e,t){if(e.title&&!n.has(e.title)){n.add(e.title);var r=document.createElement("li");r.style.setProperty("--delay",t),r.innerHTML='\n\t\t\t\t\t\t<a href="'.concat(e.url,'" class="search-suggestion">\n\t\t\t\t\t\t\t<span class="suggestion-type">\n\t\t\t\t\t\t\t\t').concat(e.subtype.replace("-"," "),'\n\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t<div class="suggestion-content">\n\t\t\t\t\t\t\t\t<span class="suggestion-label">').concat(e.title,'</span>\n\t\t\t\t\t\t\t\t<span class="suggestion-arrow">→</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t'),i.appendChild(r)}}),i.childNodes.length&&(t.innerHTML="",t.appendChild(i),t.classList.add("is-visible"))}}).catch(function(){})}}();var e=document.querySelector(".cover-content");e&&requestAnimationFrame(function(){e.classList.add("is-revealed")})}),document.addEventListener("DOMContentLoaded",m),window.addEventListener("pageshow",m),function(){var e=document.querySelector("[data-projects-archive]");if(e){var t=e.querySelector("[data-projects-grid]"),n=e.querySelector("[data-project-search]"),i=s(e.querySelectorAll(".project-filter-buttons button")),r=e.querySelector("[data-projects-state-title]"),o=e.querySelector("[data-projects-empty]");if(t){var a=s(t.querySelectorAll(".project-card")),c="filter",l="all",d={all:"All",design:"Design",development:"WordPress",static:"Static",shopify:"Shopify",freelance:"Freelance",commercial:"Commercial"},u=function(){var t=((null==n?void 0:n.value)||"").trim().toLowerCase(),s=0;a.forEach(function(e){var n=(e.getAttribute("data-search")||"").toLowerCase(),i=!t||n.includes(t),r=function(e){return"all"===l||("filter"===c?(e.getAttribute("data-type")||"").split(/\s+/).map(function(e){return e.trim()}).filter(Boolean).includes(l):"context"!==c||(e.getAttribute("data-context")||"")===l)}(e),o=i&&r;e.hidden=!o,o&&s++}),o&&(o.hidden=0!==s);var u=e.querySelector("[data-projects-count]");u&&(u.textContent=String(s));var h=e.querySelector("[data-projects-count-label]");h&&(h.textContent=1===s?"project":"projects"),i.forEach(function(e){return e.setAttribute("aria-pressed",String(e.classList.contains("is-active")))}),r&&(r.textContent=d[l]||"All")};i.forEach(function(e){e.addEventListener("click",function(){i.forEach(function(e){return e.classList.remove("is-active")}),e.classList.add("is-active"),e.hasAttribute("data-filter")?(c="filter",l=e.getAttribute("data-filter")||"all"):e.hasAttribute("data-context")&&(c="context",l=e.getAttribute("data-context")||"all"),u()})}),null==n||n.addEventListener("input",u),u()}}}(),function(e,t){var n=document.querySelector("[data-gyms-archive]");if(n){var i=n.querySelector("[data-gyms-grid]"),r=n.querySelector("[data-gym-search]"),o=n.querySelector("[data-gym-sort]"),c=s(n.querySelectorAll(".gym-filter-buttons button")),l=s(n.querySelectorAll("[data-gym-view]")),d=n.querySelector("[data-gyms-state-title]"),u=n.querySelector("[data-gyms-empty]"),h=(n.querySelector("[data-gyms-load-more]"),n.querySelector("[data-gym-compare-bar]")),f=n.querySelector("[data-gym-compare-count]"),p=n.querySelector("[data-gym-compare-selected]"),m=n.querySelector("[data-gym-compare-trigger]"),g=n.querySelector("[data-gym-compare-clear]"),v=s(n.querySelectorAll("[data-gym-compare-share]")),b=n.querySelector("[data-gym-comparison]"),y=n.querySelector("[data-gym-comparison-table]"),_=n.querySelector("[data-gym-compare-close]"),w=n.querySelector("[data-gym-comparison-map]"),E=n.querySelector("[data-gym-share-panel]"),A=n.querySelector("[data-gym-share-input]"),S=n.querySelector("[data-gym-share-status]"),k=n.querySelector("[data-gym-share-copy]"),x=n.querySelector("[data-gym-share-close]");if(i){var C=s(i.querySelectorAll("[data-gym-card]")),T=function(e,t){var n,i,r=function(e,t,n){var i=document.createElement(e);return i.className=t,n&&(i.textContent=n),i},o=function(e){var t=Number(e);return""===e||!Number.isFinite(t)||t<0?"unrated":t>=9?"diamond":t>=7?"green":t>=5?"amber":t>=3?"red":"maroon"},c=ko,l=function(e){var t=Number(e);return""===e||!Number.isFinite(t)||t<0?{tone:"unrated",label:"Not assessed",emoji:""}:[].concat(c).reverse().find(function(e){return t>=e.min})},d=function(e){return l(e).tone},u=Object.fromEntries(c.map(function(e){return[e.tone,e.emoji]}));u.unrated="";var h=e.querySelector("[data-gyms-grid]"),f=r("header","league-heading");f.append(r("p","league-eyebrow","THE GYM LEAGUE · ".concat(t.length," BRANCHES LOGGED")),r("h2","","The full field."),r("p","league-intro","Personally visited. Honestly rated. Find your next place to train."));var p=r("span","league-watermark",String(t.length));p.setAttribute("aria-hidden","true"),f.append(p);var m=r("div","league-legend");[].concat(c).reverse().forEach(function(e){var t=r("span","","".concat(e.range," ").concat(e.label));t.dataset.tone=e.tone,m.append(t)}),m.append(r("span","","— Not assessed / N/A Unavailable")),f.append(m);var g=r("button","league-method-trigger","How I score gyms");g.type="button",g.setAttribute("aria-haspopup","dialog"),g.setAttribute("aria-controls","league-scoring-guide");var v=r("dialog","league-scoring-guide");v.id="league-scoring-guide",v.setAttribute("aria-labelledby","league-scoring-title");var b=r("button","league-scoring-close","Close ×");b.type="button",b.setAttribute("aria-label","Close scoring guide");var y=r("h2","","How I score gyms");y.id="league-scoring-title",v.append(b,y,r("p","","Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.")),v.append(r("p","","The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×2, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.")),v.append(r("h3","","Overall rating scale"));var _=r("div","league-scale");_.setAttribute("aria-hidden","true"),c.forEach(function(e){var t=r("span","");t.style.width="".concat(e.width,"%"),t.style.backgroundColor=e.color,_.append(t)});var w=r("div","league-scale-axis");w.setAttribute("aria-hidden","true"),[0,25,50,75,100].forEach(function(e){var t=r("span","","".concat(e,"%"));t.style.left="".concat(e,"%"),w.append(t)});var E=r("ul","league-scale-key");[].concat(c).reverse().forEach(function(e){var t=r("li",""),n=r("span","league-scale-swatch");n.style.backgroundColor=e.color,n.setAttribute("aria-hidden","true"),t.append(n,r("span","","".concat(e.emoji," ").concat(e.label)),r("span","league-scale-range",e.range)),E.append(t)}),v.append(_,w,E,r("p","league-scoring-note","Individual category scores retain their own scale: Outstanding 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.")),document.body.append(v),g.addEventListener("click",function(){return v.showModal()}),b.addEventListener("click",function(){return v.close()}),v.addEventListener("click",function(e){if(e.target===v){var t=v.getBoundingClientRect();(e.clientX<t.left||e.clientX>t.right||e.clientY<t.top||e.clientY>t.bottom)&&v.close()}}),v.addEventListener("close",function(){return g.focus({preventScroll:!0})}),f.append(g),e.prepend(f),null===(n=e.querySelector(".gym-view-toggle"))||void 0===n||n.remove(),e.querySelectorAll(".gym-filter-buttons button").forEach(function(e){return e.setAttribute("aria-pressed",String(e.classList.contains("is-active")))});var A=e.querySelector("[data-gym-compare-bar]");A&&e.append(A);var L=r("div","league-layout");h.before(L);var S=r("div","league-list-pane");L.append(S),S.append(h),null===(i=e.querySelector(".gym-pagination"))||void 0===i||i.remove();var k=r("aside","league-detail");k.id="gym-branch-detail",k.setAttribute("aria-label","Selected branch details"),L.append(k);var x=r("div","league-map-pane"),C=r("p","league-map-status");C.setAttribute("role","status");var T=r("div","league-map-canvas");T.setAttribute("aria-label","Gym review locations");var O=r("div","league-map-choices"),q=new Map;O.setAttribute("aria-label","Matching gym reviews"),x.append(C,T,O),x.hidden=!0,S.append(x);var M=r("div","league-view-switch");M.setAttribute("role","group"),M.setAttribute("aria-label","Gym view");var I=r("button","","List"),N=r("button","","Map");[I,N].forEach(function(e){e.type="button",M.append(e)}),e.querySelector(".filter-inputs").append(M);var D,P,j,$=!1,F=[];function R(){if($)return C.textContent="Loading map…",(window.L?Promise.resolve():j||(j=new Promise(function(e,t){var n=document.createElement("link");n.rel="stylesheet",n.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",document.head.append(n);var i=document.createElement("script");i.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",i.onload=e,i.onerror=t,document.head.append(i)}))).then(function(){if($){D||(D=window.L.map(T,{scrollWheelZoom:!1}).setView([54,-2],5),window.L.tileLayer("https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',maxZoom:19}).addTo(D).on("tileerror",function(){C.textContent="Map background could not load. Check the CARTO key’s website restrictions; gym pins and reviews are still available."}),P=window.L.layerGroup().addTo(D)),P.clearLayers(),O.replaceChildren(),q.clear();var e=[];F.forEach(function(t){var n=function(e){var t,n,i=Number(e.dataset.lat),r=Number(e.dataset.lng);return null!==(t=e.dataset.lat)&&void 0!==t&&t.trim()&&null!==(n=e.dataset.lng)&&void 0!==n&&n.trim()&&Number.isFinite(i)&&Number.isFinite(r)&&Math.abs(i)<=90&&Math.abs(r)<=180?[i,r]:null}(t),i=r("button","league-map-choice"),o=r("span","league-map-choice-info");o.append(r("strong","",t.dataset.branchLabel),r("small","","".concat(t.dataset.chainLabel).concat(n?"":" · Pin unavailable")));var a=r("span","league-map-choice-score",t.dataset.overallLabel);if(a.dataset.tone=d(t.dataset.overall),i.append(o,a),i.setAttribute("aria-pressed",String(t===W)),q.set(i,t),i.type="button",i.addEventListener("click",function(){ae(t),n&&D.setView(n,13)}),O.append(i),n){e.push(n);var s=r("span","league-map-pin",t.dataset.overallLabel);s.dataset.tone=d(t.dataset.overall);var c=window.L.marker(n,{title:"".concat(t.dataset.chainLabel," · ").concat(t.dataset.branchLabel,": ").concat(t.dataset.overallLabel),icon:window.L.divIcon({className:"league-map-marker",html:s.outerHTML,iconSize:[66,30],iconAnchor:[33,30]})}).addTo(P);c.bindTooltip(document.createTextNode("".concat(t.dataset.chainLabel," · ").concat(t.dataset.branchLabel))),c.on("click",function(){ae(t),U.matches||k.scrollIntoView({block:"start",behavior:X.matches?"instant":"smooth"})})}});var t=F.length-e.length;C.textContent="".concat(e.length," gyms on the map").concat(t?" · ".concat(t," without a pin"):"",". Select a pin or branch below."),D.invalidateSize(),e.length&&D.fitBounds(e,{padding:[35,35],maxZoom:13})}}).catch(function(){C.textContent="The map could not load. Please use List view and try again later.",j=null})}function H(t){$=t,e.classList.toggle("is-map-view",$),I.setAttribute("aria-pressed",String(!$)),N.setAttribute("aria-pressed",String($)),h.hidden=$,x.hidden=!$,oe(),R()}I.addEventListener("click",function(){H(!1),e.dispatchEvent(new Event("league-view-change"))}),N.addEventListener("click",function(){H(!0),e.dispatchEvent(new Event("league-view-change"))}),I.setAttribute("aria-pressed","true"),N.setAttribute("aria-pressed","false");var B=r("p","league-result-count");B.setAttribute("role","status"),L.before(B);var z=r("div","league-columns");z.setAttribute("aria-hidden","true"),["POS","BRANCH","OVERALL","COMPARE"].forEach(function(e){return z.append(r("span","",e))}),h.prepend(z);var W=null,U=window.matchMedia("(min-width: 992px)"),V=new Map,X=window.matchMedia("(prefers-reduced-motion: reduce)"),Y=0,G=null,K=new IntersectionObserver(function(e){if(e.some(function(e){return e.isIntersecting})&&G){K.disconnect();var t=G;G=null,t()}},{threshold:.15});function Q(){cancelAnimationFrame(Y),K.disconnect(),G=null}for(var Z=e.parentElement;Z&&Z!==document.documentElement;Z=Z.parentElement){var J=getComputedStyle(Z);"hidden"!==J.overflowX&&"hidden"!==J.overflowY||Z.classList.add("league-sticky-ancestor")}var ee=s(document.querySelectorAll(".navbar, #wpadminbar")),te=function(){var t=ee.reduce(function(e,t){var n=getComputedStyle(t).position;return"fixed"===n||"sticky"===n?Math.max(e,t.getBoundingClientRect().bottom):e},0),n=Math.max(16,t+16);e.style.setProperty("--league-sticky-safe-top","".concat(n,"px"));var i=k.getBoundingClientRect().height,r=Math.max(0,window.innerHeight-n-16),o=n+Math.max(0,(r-i)/2);e.style.setProperty("--league-sticky-top","".concat(o,"px"))},ne=new ResizeObserver(te);ee.forEach(function(e){return ne.observe(e)}),ne.observe(k),window.addEventListener("resize",te,{passive:!0}),te();var ie=new Map(s(t).sort(function(e,t){return Number(t.dataset.overall)-Number(e.dataset.overall)||e.dataset.branch.localeCompare(t.dataset.branch)}).map(function(e,t){return[e,t+1]}));function re(){q.forEach(function(e,t){return t.setAttribute("aria-pressed",String(e===W))}),t.forEach(function(e){e.classList.toggle("is-current",e===W),e.querySelector(".league-select").setAttribute("aria-expanded",String(e===W&&!k.hidden))})}function oe(){W&&!k.hidden?U.matches||$?L.append(k):W.after(k):L.append(k)}function ae(t){var n,i=arguments.length>1&&void 0!==arguments[1]&&arguments[1];W=t,k.replaceChildren(V.get(t)),k.hidden=!1,k.scrollTop=0,re(),oe(),te(),function(e){Q();var t=k.querySelector(".league-total"),n=Number(e.dataset.overall),i=""!==e.dataset.overall&&Number.isFinite(n)&&n>=0,r=s(k.querySelectorAll(".dx-score-block[data-score] .dx-score-bar span")),a=function(a){if(i){var s=n*a;t.querySelector(".league-total-number").textContent=1===a?e.dataset.overallLabel:"".concat((10*s).toFixed(1),"%"),t.dataset.tone=d(s),t.querySelector(".league-total-emoji").textContent=l(s).emoji,t.querySelector(".league-total-rating-label").textContent=l(s).label}r.forEach(function(e){var t=e.closest("[data-score]"),n=Number(t.dataset.score);t.dataset.tone=o(n*a);var i=t.querySelector(".dx-score-value");i&&(i.setAttribute("aria-label","".concat(n,"/10")),i.textContent="".concat(1===a?n:Math.floor(n*a),"/10")),e.style.transform="scaleX(".concat(Math.max(0,Math.min(1,n/10))*a,")")})};X.matches?a(1):(a(0),G=function(){var e,t=function(n){if(X.matches)a(1);else{null!=e||(e=n);var i=Math.min(1,(n-e)/1200);a(1-Math.pow(1-i,3)),i<1&&(Y=requestAnimationFrame(t))}};Y=requestAnimationFrame(t)},K.observe(t))}(t),(n=k.querySelector(".league-detail-image"))&&(n.getAnimations().forEach(function(e){return e.cancel()}),n.style.opacity="0",n.decode().then(function(){k.contains(n)&&(n.style.removeProperty("opacity"),window.matchMedia("(prefers-reduced-motion: reduce)").matches||n.animate([{opacity:0,transform:"scale(1)"},{opacity:.66,transform:"scale(1.04)"}],{duration:400,easing:"ease-out"}))}).catch(function(){})),!i||U.matches||$||requestAnimationFrame(function(){if(W===t&&!k.hidden){te();var n=parseFloat(e.style.getPropertyValue("--league-sticky-safe-top"))||16;window.scrollTo({top:Math.max(0,window.scrollY+t.getBoundingClientRect().top-n),behavior:X.matches?"instant":"smooth"})}})}return t.forEach(function(e){var t,n=r("div","league-detail-content");if(e.dataset.featuredImage){var i=r("img","league-detail-image");i.alt="",i.setAttribute("aria-hidden","true"),i.loading="lazy",i.decoding="async",i.src=e.dataset.featuredImage;var s=r("div","league-detail-image-frame");s.append(i),n.append(s)}n.append(r("p","league-eyebrow","BRANCH DETAILS"),r("h3","",e.dataset.branchLabel),r("p","league-detail-chain",e.dataset.chainLabel));var c=e.querySelector(".dx-gym-card__subtitle");if(c){var h=c.cloneNode(!0),f=h.querySelector("a");f&&(f.href=e.dataset.mapsUrl||f.href,f.target="_blank",f.rel="noopener noreferrer",f.addEventListener("click",function(e){return e.stopPropagation()})),n.append(h)}var p=r("div","league-total");p.dataset.tone=d(e.dataset.overall);var m=r("span","league-total-number",e.dataset.overallLabel),g=r("span","league-total-emoji",u[d(e.dataset.overall)]);g.setAttribute("aria-hidden","true");var v=r("span","league-total-rating");v.setAttribute("aria-hidden","true"),v.append(g,r("span","league-total-rating-label",l(e.dataset.overall).label)),p.append(m,v),p.setAttribute("role","img"),p.setAttribute("aria-label","".concat(e.dataset.overallLabel," overall rating, ").concat(l(e.dataset.overall).label)),n.append(p,r("p","league-total-label","OVERALL RATING"));var b=r("div","league-awards");e.querySelectorAll(".dx-badge--rank,.dx-badge--category").forEach(function(e){return b.append(e.cloneNode(!0))}),n.append(b);var y=null===(t=e.querySelector(".dx-gym-card__scores"))||void 0===t?void 0:t.cloneNode(!0);y&&(y.querySelectorAll(".dx-score-block").forEach(function(e){var t;e.dataset.tone=o(null!==(t=e.dataset.score)&&void 0!==t?t:"")}),n.append(y)),n.append(r("h4","league-notes-title","Field notes"));var _=r("div","league-notes"),w=e.querySelector("[data-notes-panel]");w&&(_.innerHTML=w.innerHTML),n.append(_),n.append(r("p","league-visit","Visited ".concat(e.dataset.visitedLabel," · ").concat(e.dataset.membership)));var E=[];try{E=JSON.parse(e.dataset.visitHistory||"[]")}catch(e){E=[]}if(E.length){var A=r("details","league-history");A.append(r("summary","","Visit history · ".concat(E.length+1," reviews"))),A.append(r("p","league-visit","The latest dated visit sets the league rating. Earlier visits are retained below.")),E.forEach(function(e){var t=r("article","league-history-entry");t.append(r("h4","",e.date||"Date not recorded"));var n=r("strong","",null===e.overall?"Not assessed":"".concat((10*e.overall).toFixed(1),"%"));n.dataset.tone=d(null===e.overall?"":e.overall),t.append(n);var i=r("dl","league-history-scores");Object.entries(e.scores).forEach(function(e){var t=a(e,2),n=t[0],o=t[1];i.append(r("dt","",n),r("dd","",null===o?"Not assessed":"unavailable"===o?"Unavailable":"".concat(o,"/10")))}),t.append(i,r("p","",e.notes));var o=r("a","","Read this visit ↗");o.href=e.url,t.append(o),A.append(t)}),n.append(A)}var L=r("a","league-review","Read full review ↗");L.href=e.dataset.link,n.append(L),V.set(e,n);var S=r("button","league-select");S.type="button",S.setAttribute("aria-controls",k.id),S.setAttribute("aria-expanded","false");var x=r("span","league-row-info");x.append(r("strong","",e.dataset.branchLabel),r("small","","".concat(e.dataset.chainLabel).concat(c?" · "+c.textContent.replace("📍","").trim():"")));var C=r("strong","league-row-score",e.dataset.overallLabel);C.dataset.tone=d(e.dataset.overall),S.append(r("span","league-rank",String(ie.get(e)).padStart(2,"0")),x,C),S.addEventListener("click",function(){W!==e||U.matches?ae(e,!0):(Q(),W=null,k.hidden=!0,re())});var T=e.querySelector("[data-gym-compare-toggle]");T&&(T.setAttribute("aria-label","Compare ".concat(e.dataset.branchLabel)),T.querySelector(".label-add").textContent="+",T.querySelector(".label-remove").textContent="✓"),e.prepend(S)}),U.addEventListener("change",oe),e.classList.add("is-premium-league"),{update:function(e,t){F=e,R();var n=$?e:e.slice(0,t);B.textContent="".concat(n.length," of ").concat(e.length," branches shown"),n.length?W&&n.includes(W)?oe():ae(n[0]):(Q(),W=null,k.hidden=!0,re(),oe())}}}(n,C),O={all:"All",davidlloyds:"David Lloyd",puregym:"PureGym",fitnessfirst:"Fitness First",gymbox:"Gymbox",virginactive:"Virgin Active",bodyworks:"Bodyworks Gym",thegymgroup:"The Gym Group",other:"Other"},q=new Set,M=document.createElement("fieldset");M.className="league-amenity-filters";var I=document.createElement("legend");I.textContent="Assessed amenities",M.append(I),[["gymScore","Gym"],["swimScore","Swimming & Wetside Facilities"],["cafeScore","Café & Work Area"],["spaScore","Spa Retreat / Sauna Facilities"]].forEach(function(e){var t=a(e,2),n=t[0],i=t[1],r=document.createElement("label"),o=document.createElement("input");o.type="checkbox",o.value=n,o.addEventListener("change",function(){o.checked?q.add(n):q.delete(n),H=10,ie()}),r.append(o,document.createTextNode(i)),M.append(r)});var N=n.querySelector(".filter-inputs"),D=document.createElement("details");D.className="league-filter-disclosure";var P=document.createElement("summary");P.textContent="Filters";var j=document.createElement("div");j.className="league-filter-panel";var $=document.createElement("p");$.textContent="Gym chains";var F=document.createElement("button");F.type="button",F.textContent="Clear filters",F.addEventListener("click",function(){var e;q.clear(),M.querySelectorAll("input").forEach(function(e){e.checked=!1}),null===(e=c.find(function(e){return"all"===e.dataset.chain}))||void 0===e||e.click()}),j.append($,n.querySelector(".gym-filter-buttons"),M,F),D.append(P,j),N.append(D),D.addEventListener("keydown",function(e){"Escape"===e.key&&(D.open=!1,P.focus())}),document.addEventListener("click",function(e){D.contains(e.target)||(D.open=!1)});var R=(null===(e=c.find(function(e){return e.classList.contains("is-active")}))||void 0===e?void 0:e.dataset.chain)||"all",H=10,B=[],z=null,W=[],U=function(e){return(e.getAttribute("data-branch")||"").trim().toLowerCase()},V=function(e){return parseFloat(e.getAttribute("data-overall"))||0},X=function(e){return parseInt(e.getAttribute("data-visited-ts"),10)||0},Y=function(e){return e&&"function"==typeof e.getAttribute?{id:e.getAttribute("data-gym-id")||"",branch:e.getAttribute("data-branch-label")||"",chain:e.getAttribute("data-chain-label")||"",link:e.getAttribute("data-link")||"",visited:e.getAttribute("data-visited-label")||"—",overall:parseFloat(e.getAttribute("data-overall")),overallLabel:e.getAttribute("data-overall-label")||"No rating",membership:e.getAttribute("data-membership")||"—",lat:parseFloat(e.getAttribute("data-lat")),lng:parseFloat(e.getAttribute("data-lng")),scores:{gym:e.getAttribute("data-gym-score")||"",swim:e.getAttribute("data-swim-score")||"",spa:e.getAttribute("data-spa-score")||"",cafe:e.getAttribute("data-cafe-score")||"",clean:e.getAttribute("data-clean-score")||"",parking:e.getAttribute("data-parking-score")||""}}:null},G=function(e){return""===e||null==e?"—":"".concat(e,"/10")},K=function(e,t){var n=null,i=[];return e.forEach(function(e){var r=t(e);if(""!==r&&null!=r&&!Number.isNaN(Number(r))){var o=Number(r);null===n||o>n?(n=o,i.length=0,i.push(e.id)):o===n&&i.push(e.id)}}),i},Q=function(){var e;!E||B.length<2||(E.hidden=!1,A&&(A.value=(e=new URL(window.location.href),B.length?e.searchParams.set("compare",B.join(",")):e.searchParams.delete("compare"),e.toString()),A.focus(),A.select()),S&&(S.textContent=""),E.hidden=!1)},Z=function(){E&&(E.hidden=!0,S&&(S.textContent=""))},J=function(){if(b&&y){if(B.length<2)return b.hidden=!0,y.innerHTML="",void(w&&(w.hidden=!0));var e=B.map(function(e){return C.find(function(t){return t.getAttribute("data-gym-id")===e})}).filter(Boolean).map(Y).filter(Boolean);if(e.length<2)return b.hidden=!0,y.innerHTML="",void(w&&(w.hidden=!0));var t=[{label:"Overall",format:function(e){return e.overallLabel},winners:K(e,function(e){return e.overall})},{label:"Gym",format:function(e){return G(e.scores.gym)},winners:K(e,function(e){return e.scores.gym})},{label:"Swimming & Wetside Facilities",format:function(e){return G(e.scores.swim)},winners:K(e,function(e){return e.scores.swim})},{label:"Spa Retreat",format:function(e){return"".concat("gymbox"===e.chain.toLowerCase()?"Sauna Facilities: ":"").concat(G(e.scores.spa))},winners:K(e,function(e){return e.scores.spa})},{label:"Café & Work Area",format:function(e){return"".concat(e.chain.toLowerCase().startsWith("david lloyd")?"Clubroom: ":"").concat(G(e.scores.cafe))},winners:K(e,function(e){return e.scores.cafe})},{label:"Cleanliness & Maintenance",format:function(e){return G(e.scores.clean)},winners:K(e,function(e){return e.scores.clean})},{label:"Parking",format:function(e){return G(e.scores.parking)},winners:K(e,function(e){return e.scores.parking})},{label:"Membership",format:function(e){return e.membership||"—"},winners:[]},{label:"Visited",format:function(e){return e.visited||"—"},winners:[]}];y.innerHTML='\n\t\t\t\t<div class="dx-gym-comparison__table">\n\t\t\t\t\t<div class="dx-gym-comparison__row dx-gym-comparison__row--head '.concat(2===e.length?"is-two-up":"",'">\n\t\t\t\t\t\t<div class="dx-gym-comparison__metric">Metric</div>\n\t\t\t\t\t\t').concat(e.map(function(e){return'\n\t\t\t\t\t\t\t<div class="dx-gym-comparison__cell dx-gym-comparison__cell--gym">\n\t\t\t\t\t\t\t\t<h3 class="branch-name">'.concat(e.branch,"</h3>\n\t\t\t\t\t\t\t\t<span>").concat(e.chain,"</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t")}).join(""),"\n\t\t\t\t\t</div>\n\t\t\t\t\t").concat(t.map(function(t){return'\n\t\t\t\t\t\t<div class="dx-gym-comparison__row '.concat(2===e.length?"is-two-up":"",'">\n\t\t\t\t\t\t\t<div class="dx-gym-comparison__metric">').concat(t.label,"</div>\n\t\t\t\t\t\t\t").concat(e.map(function(e){return'\n\t\t\t\t\t\t\t\t<div class="dx-gym-comparison__cell '.concat(t.winners.includes(e.id)?"is-winner":"",'">\n\t\t\t\t\t\t\t\t\t').concat(t.format(e),"\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t")}).join(""),"\n\t\t\t\t\t\t</div>\n\t\t\t\t\t")}).join(""),"\n\t\t\t\t</div>\n\t\t\t"),function(e){if(w){var t=e.filter(function(e){return!Number.isNaN(e.lat)&&!Number.isNaN(e.lng)});if(w.hidden=0===t.length,t.length){var n=w&&"undefined"!=typeof L?z||(z=L.map(w,{scrollWheelZoom:!1,zoomControl:!0}),L.tileLayer("https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",{attribution:"&copy; OpenStreetMap contributors &copy; CARTO",subdomains:"abcd",maxZoom:20}).addTo(z),z):null;if(n){W.forEach(function(e){return e.remove()}),W=[];var i=[];t.forEach(function(e){var t=[e.lat,e.lng];i.push(t);var r=L.marker(t).addTo(n).bindPopup("<strong>".concat(e.branch,"</strong><br>").concat(e.chain).concat(e.overallLabel?"<br>".concat(e.overallLabel):""));W.push(r)}),window.setTimeout(function(){n.invalidateSize(),1===i.length?n.setView(i[0],12):n.fitBounds(i,{padding:[40,40]})},100)}}}}(e)}},ee=function(){if(h&&f&&p&&m&&g){var e,t=B.length>=3,n=B.length>=2;h.hidden=0===B.length,h.classList.toggle("is-visible",B.length>0),f.textContent=String(B.length),m.disabled=!n,g.disabled=0===B.length,v.forEach(function(e){e.disabled=!n}),p.innerHTML=B.map(function(e){var t=C.find(function(t){return t.getAttribute("data-gym-id")===e}),n=(null==t?void 0:t.getAttribute("data-branch-label"))||"Gym",i=document.createElement("button");return i.type="button",i.className="dx-gym-compare-chip",i.dataset.removeGym=e,i.textContent=n+" ×",i.setAttribute("aria-label","Remove "+n+" from comparison"),i.outerHTML}).join(""),C.forEach(function(e){var n=e.getAttribute("data-gym-id"),i=e.querySelector("[data-gym-compare-toggle]");if(i){var r=B.includes(n),o=t&&!r;i.classList.toggle("is-active",r),i.classList.toggle("is-disabled",o),i.setAttribute("aria-pressed",r?"true":"false"),i.disabled=o}}),B.length<2&&Z(),e=new URL(window.location.href),B.length?e.searchParams.set("compare",B.join(",")):e.searchParams.delete("compare"),window.history.replaceState({},"",e.toString())}},te=null,ne=new IntersectionObserver(function(e){e.some(function(e){return e.isIntersecting&&e.target===te})&&(ne.disconnect(),te=null,H+=10,ie())},{rootMargin:"0px 0px 180px 0px",threshold:0}),ie=function(){var e=q.size+("all"===R?0:1);P.textContent=e?"Filters (".concat(e,")"):"Filters";var t,n,a,c=((null==r?void 0:r.value)||"").trim().toLowerCase(),l=(t=C.filter(function(e){var t=e.getAttribute("data-chain")||"unknown",n="all"===R||t===R||"other"===R&&!Object.prototype.hasOwnProperty.call(O,t),i=(e.getAttribute("data-search")||"").toLowerCase(),r=!c||i.includes(c),o=s(q).every(function(t){var n=e.dataset[t];return void 0!==n&&""!==n.trim()&&Number.isFinite(Number(n))&&Number(n)>=0});return n&&r&&o}),n=(null==o?void 0:o.value)||"overall_desc",(a=s(t)).sort(function(e,t){var i=U(e),r=U(t),o=V(e),a=V(t),s=X(e),c=X(t);switch(n){case"overall_desc":return a-o||i.localeCompare(r);case"overall_asc":return o-a||i.localeCompare(r);case"date_desc":return c-s||i.localeCompare(r);case"date_asc":return s-c||i.localeCompare(r);case"za":return r.localeCompare(i);default:return i.localeCompare(r)}}),a);l.forEach(function(e){return i.appendChild(e)}),C.forEach(function(e){e.hidden=!0}),l.slice(0,H).forEach(function(e){e.hidden=!1}),u&&(u.hidden=0!==l.length),ne.disconnect(),(te=l.length>H?l[Math.min(H,l.length)-1]:null)&&ne.observe(te),function(){if(d){var e=O[R]||"All",t="".concat(e,"|").concat((null==r?void 0:r.value)||"","|").concat(s(q).join(","));d.dataset.filterSignature!==t&&(d.textContent=e,d.dataset.filterSignature=t,window.matchMedia("(prefers-reduced-motion: reduce)").matches||d.animate([{backgroundSize:"0% 2px"},{backgroundSize:"100% 2px"}],{duration:450,easing:"ease-out"}))}}(),T.update(l,H)};c.forEach(function(e){e.addEventListener("click",function(){c.forEach(function(e){e.classList.remove("is-active"),e.setAttribute("aria-pressed","false")}),e.setAttribute("aria-pressed","true"),e.classList.add("is-active"),R=e.dataset.chain||"all",H=10,ie()})}),n.addEventListener("league-view-change",ie),null==r||r.addEventListener("input",function(){H=10,ie()}),null==o||o.addEventListener("change",function(){H=10,ie()}),l.forEach(function(e){e.addEventListener("click",function(){l.forEach(function(e){return e.classList.remove("is-active")}),e.classList.add("is-active");var t=e.getAttribute("data-gym-view")||"cards";n.setAttribute("data-view",t)})}),null==i||i.addEventListener("click",function(e){var t=e.target.closest("[data-notes-toggle]");if(t){var n=t.closest("[data-gym-card]"),i=null==n?void 0:n.querySelector("[data-notes-panel]");if(n&&i){var r=n.classList.contains("is-notes-open");n.classList.toggle("is-notes-open",!r),t.setAttribute("aria-expanded",String(!r))}}}),null==i||i.addEventListener("click",function(e){var t=e.target.closest("[data-gym-compare-toggle]");if(t&&!t.disabled){var n=t.closest("[data-gym-card]");if(n){var i=n.getAttribute("data-gym-id");if(i){if(B.includes(i))B=B.filter(function(e){return e!==i});else{if(B.length>=3)return;B=[].concat(s(B),[i])}ee(),J()}}}}),null==m||m.addEventListener("click",function(){J(),null==b||b.removeAttribute("hidden"),null==b||b.scrollIntoView({behavior:"smooth",block:"start"})}),null==p||p.addEventListener("click",function(e){var t=e.target.closest("[data-remove-gym]");t&&(B=B.filter(function(e){return e!==t.dataset.removeGym}),ee(),J())}),null==g||g.addEventListener("click",function(){B=[],ee(),J()}),v.forEach(function(e){e.addEventListener("click",Q)}),null==k||k.addEventListener("click",function(){var e=null==A?void 0:A.value;if(e&&k){var t=k.dataset.originalText||k.textContent;k.dataset.originalText=t;var n=function(e,n){k.textContent=e,k.classList.remove("is-success","is-error"),k.classList.add(n),window.setTimeout(function(){k.textContent=t,k.classList.remove("is-success","is-error")},2e3)},i=function(){var t=document.createElement("textarea");t.value=e,t.setAttribute("readonly","readonly"),t.style.position="fixed",t.style.top="-9999px",t.style.left="-9999px",document.body.appendChild(t),t.focus(),t.select();var i=!1;try{i=document.execCommand("copy")}catch(e){i=!1}document.body.removeChild(t),i?n("Link copied","is-success"):(n("Copy failed","is-error"),null==A||A.focus(),null==A||A.select())};"undefined"!=typeof navigator&&navigator.clipboard&&"function"==typeof navigator.clipboard.writeText&&window.isSecureContext?navigator.clipboard.writeText(e).then(function(){n("Link copied","is-success")}).catch(function(){i()}):i()}}),null==x||x.addEventListener("click",Z),null==_||_.addEventListener("click",function(){b&&(b.hidden=!0)});var re=new URLSearchParams(window.location.search).get("compare");re&&(B=re.split(",").map(function(e){return e.trim()}).filter(function(e){return C.some(function(t){return t.getAttribute("data-gym-id")===e})}).slice(0,3)).length>=2&&(J(),null==b||b.removeAttribute("hidden"),window.setTimeout(function(){null==b||b.scrollIntoView({behavior:"smooth",block:"start"})},100));var oe=l.find(function(e){return e.classList.contains("is-active")});n.setAttribute("data-view",(null==oe?void 0:oe.getAttribute("data-gym-view"))||"cards");var ae=new WeakSet,se=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(function(e){if(e&&!ae.has(e)){var t=s(e.querySelectorAll(".dx-score-bar span"));t.length&&(ae.add(e),t.forEach(function(e,t){var n=getComputedStyle(e).getPropertyValue("--pct").trim()||"0";e.style.transform="scaleX(0)",window.setTimeout(function(){e.style.transform="scaleX(".concat(n,")")},100*t)}))}}(e.target),se.unobserve(e.target))})},{threshold:.2,rootMargin:"0px 0px -10% 0px"});C.forEach(function(e){se.observe(e)}),ee(),J(),ie(),n.classList.remove("is-loading"),n.removeAttribute("aria-busy"),null===(t=n.querySelector(".league-loading"))||void 0===t||t.remove()}}}(),null===(e=document.querySelector("[data-gyms-archive]"))||void 0===e||null===(e=e.closest("section"))||void 0===e||e.classList.add("viewport-active"),document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector(".bus-diary-entry");if(e){var t=e.querySelector("[data-bus-map]"),n=e.querySelector("[data-bus-dock]"),r=e.querySelector("[data-bus-pane-stage]"),o=n?s(n.querySelectorAll("[data-view-toggle]")):[],a=r?s(r.querySelectorAll(".bus-pane-view[data-pane-view]")):[];if(t){var c=t.dataset.route||"",d=t.dataset.startName||"Start",u=t.dataset.endName||"End";if(console.log("Bus map ready:",{route:c,start:d,end:u}),"undefined"!=typeof L){var h=parseFloat(t.dataset.startLat),f=parseFloat(t.dataset.startLng),p=parseFloat(t.dataset.endLat),m=parseFloat(t.dataset.endLng),g=!Number.isNaN(h)&&!Number.isNaN(f),v=!Number.isNaN(p)&&!Number.isNaN(m);if(g||v){var b=L.map(t,{scrollWheelZoom:!1,zoomControl:!0});L.tileLayer("https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",{attribution:"&copy; OpenStreetMap contributors &copy; CARTO",subdomains:"abcd",maxZoom:20}).addTo(b);var y=[],_=L.divIcon({className:"bus-map-marker bus-map-marker--start",html:"<span></span>",iconSize:[18,18],iconAnchor:[9,9]}),w=L.divIcon({className:"bus-map-marker bus-map-marker--end",html:"<span></span>",iconSize:[18,18],iconAnchor:[9,9]});if(g){var E=[h,f];y.push(E),L.marker(E,{icon:_}).addTo(b).bindPopup("<strong>".concat(d,"</strong>").concat(c?"<br>Route ".concat(c):""))}if(v){var A=[p,m];y.push(A),L.marker(A,{icon:w}).addTo(b).bindPopup("<strong>".concat(u,"</strong>").concat(c?"<br>Route ".concat(c):""))}g&&v&&L.polyline([[h,f],[p,m]],{color:"#ffffff",weight:4,opacity:.85}).addTo(b),1===y.length?b.setView(y[0],13):b.fitBounds(y,{padding:[40,40]}),window.addEventListener("resize",function(){b.invalidateSize()})}else t.innerHTML='<div class="bus-map__empty">No journey coordinates added yet.</div>'}}if(n&&r&&o.length&&a.length){var S=function(e){a.forEach(function(t){t.classList.toggle("is-active",t.dataset.paneView===e)}),o.forEach(function(t){var n=t.dataset.viewToggle===e;t.classList.toggle("is-active",n),t.setAttribute("aria-pressed",n?"true":"false")}),"map"===e&&window.dispatchEvent(new Event("resize"))};o.forEach(function(e){e.addEventListener("click",function(){var t=e.dataset.viewToggle;t&&S(t)})});var k=n.querySelector("[data-view-toggle].is-active");S((null==k?void 0:k.dataset.viewToggle)||"map")}var x=s(e.querySelectorAll("[data-bus-panel-toggle]")),C=s(e.querySelectorAll("[data-bus-panel]"));x.length&&C.length&&x.forEach(function(t){t.addEventListener("click",function(){var n=t.dataset.busPanelToggle;if(n){var i=e.querySelector('[data-bus-panel="'.concat(n,'"]'));if(i){var r=i.hasAttribute("hidden");C.forEach(function(e){return e.setAttribute("hidden","hidden")}),r&&i.removeAttribute("hidden")}}})});var T=e.querySelector("[data-bus-departures]");if(T){var O=T.querySelector("[data-bus-locate]"),q=T.querySelector("[data-bus-status]"),M=T.querySelector("[data-bus-stops]"),I=T.querySelector("[data-bus-results]");if(O&&q&&M&&I&&"true"!==O.dataset.busLocateBound){O.dataset.busLocateBound="true";var N="undefined"!=typeof DX_BUS_DIARY&&DX_BUS_DIARY&&DX_BUS_DIARY.rest_url,D=N?DX_BUS_DIARY.rest_url.replace(/\/$/,""):"",P=function(e){q.textContent=e},j=function(e){e.length?I.innerHTML=e.map(function(e){return'\n\t\t\t\t<div class="bus-arrival-card">\n\t\t\t\t\t<div class="bus-arrival-main">\n\t\t\t\t\t\t<div class="bus-arrival-line">'.concat(e.lineName||"Bus",'</div>\n\t\t\t\t\t\t<div class="bus-arrival-destination">').concat(e.destinationName||"Unknown destination",'</div>\n\t\t\t\t\t\t<div class="bus-arrival-meta">').concat(e.towards||"",'</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="bus-arrival-time">').concat(function(e){if(null==e)return"—";var t=Math.round(e/60);return t<=0?"Due":"".concat(t," min")}(e.timeToStation),"</div>\n\t\t\t\t</div>\n\t\t\t")}).join(""):I.innerHTML='\n\t\t\t\t\t<div class="bus-arrival-card">\n\t\t\t\t\t\t<div class="bus-arrival-main">No live departures found.</div>\n\t\t\t\t\t</div>\n\t\t\t\t'},$=function(){var e=i(l().mark(function e(t,n){var i,r,o;return l().wrap(function(e){for(;;)switch(e.prev=e.next){case 0:return P("Loading departures for ".concat(n,"…")),I.innerHTML="",e.prev=1,e.next=2,fetch("".concat(D,"/tfl-stop-arrivals?stop_id=").concat(encodeURIComponent(t)),{headers:{"X-WP-Nonce":DX_BUS_DIARY.nonce}});case 2:return i=e.sent,e.next=3,i.json();case 3:if((r=e.sent).success){e.next=4;break}throw new Error(r.message||"Could not load arrivals.");case 4:P("Showing live departures for ".concat(n)),j(r.arrivals||[]),e.next=6;break;case 5:e.prev=5,o=e.catch(1),P("Unable to load live departures right now."),I.innerHTML='\n\t\t\t\t\t<div class="bus-arrival-card">\n\t\t\t\t\t\t<div class="bus-arrival-main">'.concat(o.message,"</div>\n\t\t\t\t\t</div>\n\t\t\t\t");case 6:case"end":return e.stop()}},e,null,[[1,5]])}));return function(t,n){return e.apply(this,arguments)}}(),F=function(e){if(!e.length)return M.innerHTML='\n\t\t\t\t\t<div class="bus-stop-card">\n\t\t\t\t\t\t<p>No nearby bus stops found.</p>\n\t\t\t\t\t</div>\n\t\t\t\t',void(I.innerHTML="");M.innerHTML=e.map(function(e,t){var n;return'\n\t\t\t\t<button\n\t\t\t\t\ttype="button"\n\t\t\t\t\tclass="bus-stop-card '.concat(0===t?"is-active":"",'"\n\t\t\t\t\tdata-stop-id="').concat(e.id,'"\n\t\t\t\t\tdata-stop-name="').concat(e.name,'"\n\t\t\t\t>\n\t\t\t\t\t<h4>').concat(e.name,"</h4>\n\t\t\t\t\t<p>").concat(null!==(n=e.distance)&&void 0!==n?n:"—","m away ").concat(e.indicator?"• Stop ".concat(e.indicator):"","</p>\n\t\t\t\t</button>\n\t\t\t")}).join("");var t=s(M.querySelectorAll("[data-stop-id]"));t.forEach(function(e){e.addEventListener("click",function(){t.forEach(function(e){return e.classList.remove("is-active")}),e.classList.add("is-active"),$(e.dataset.stopId,e.dataset.stopName)})}),$(e[0].id,e[0].name)};O.addEventListener("click",function(){if(!N)return P("Live departures are not configured yet."),I.innerHTML="",M.innerHTML='\n\t\t\t\t\t<div class="bus-stop-card">\n\t\t\t\t\t\t<p>DX_BUS_DIARY is missing or not localised into the page.</p>\n\t\t\t\t\t</div>\n\t\t\t\t',void console.warn("DX_BUS_DIARY is missing from the page.");P("Getting your location…"),M.innerHTML="",I.innerHTML="",navigator.geolocation.getCurrentPosition(function(){var e=i(l().mark(function e(t){var n,i,r,o,a,s;return l().wrap(function(e){for(;;)switch(e.prev=e.next){case 0:return n=t.coords,i=n.latitude,r=n.longitude,e.prev=1,e.next=2,fetch("".concat(D,"/tfl-nearby-stops?lat=").concat(encodeURIComponent(i),"&lng=").concat(encodeURIComponent(r),"&radius=600"),{headers:{"X-WP-Nonce":DX_BUS_DIARY.nonce}});case 2:return o=e.sent,e.next=3,o.json();case 3:if((a=e.sent).success){e.next=4;break}throw new Error(a.message||"Could not load nearby stops.");case 4:P("Nearby stops found."),F(a.stops||[]),e.next=6;break;case 5:e.prev=5,s=e.catch(1),P("Unable to find nearby stops right now."),M.innerHTML='\n\t\t\t\t\t\t\t<div class="bus-stop-card">\n\t\t\t\t\t\t\t\t<p>'.concat(s.message,"</p>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");case 6:case"end":return e.stop()}},e,null,[[1,5]])}));return function(t){return e.apply(this,arguments)}}(),function(e){switch(e.code){case e.PERMISSION_DENIED:P("Location access was denied.");break;case e.POSITION_UNAVAILABLE:P("Your location is currently unavailable.");break;case e.TIMEOUT:P("Location request timed out.");break;default:P("Unable to get your location right now.")}},{enableHighAccuracy:!0,timeout:1e4,maximumAge:6e4})})}}}}),c=["IL"],d="/access-restricted/",u="error405",h=function(e){return e&&"string"==typeof e?e.trim().toUpperCase():""},f=function(){var e,t,n=(t=new URLSearchParams(window.location.search),h(t.get("geo"))||(void 0!==window.CF_IPCountry?h(window.CF_IPCountry):h(null===(e=document.body)||void 0===e||null===(e=e.dataset)||void 0===e?void 0:e.country)||"")),i=function(e){return!!e&&c.includes(e)}(n),r=(window.location.pathname.replace(/\/+$/,"")||"/")===(d.replace(/\/+$/,"")||"/");window.DX_GEO_DEBUG={countryCode:n,blocked:i,onRestrictedPage:r,blockedCountries:[].concat(c)},i&&(document.body.classList.add(u),document.documentElement.classList.add(u),r||function(e){var t=new URL(d,window.location.origin);t.searchParams.set("geo",e),window.location.replace(t.toString())}(n))},"loading"===document.readyState?document.addEventListener("DOMContentLoaded",f):f(),document.addEventListener("DOMContentLoaded",function(){var e=document.querySelectorAll(".js-calendly-popup");e.length&&(e.forEach(function(e){e.addEventListener("click",function(e){e.preventDefault(),"undefined"!=typeof Calendly&&"function"==typeof Calendly.initPopupWidget?Calendly.initPopupWidget({url:"https://calendly.com/dxndre/30min"}):console.warn("Calendly widget script is not loaded yet.")})}),console.log("Calendly popup initialized for buttons:",e))}),function(){var e=document.querySelector("[data-bus-nfs]");if(e){var t=s(e.querySelectorAll("[data-bus-slide]")),n=e.querySelector("[data-bus-prev]"),i=e.querySelector("[data-bus-next]"),r=e.querySelector("[data-bus-current]");if(t.length){var o=0,a=!1,c=function(e){o=Math.max(0,Math.min(e,t.length-1)),t.forEach(function(e,t){e.classList.toggle("is-active",t===o),e.classList.toggle("is-before",t<o),e.classList.toggle("is-after",t>o)}),r&&(r.textContent=String(o+1).padStart(2,"0"))},l=function(){o>=t.length-1||c(o+1)},d=function(){o<=0||c(o-1)};null==i||i.addEventListener("click",l),null==n||n.addEventListener("click",d),window.addEventListener("keydown",function(e){"ArrowRight"!==e.key&&"ArrowDown"!==e.key||l(),"ArrowLeft"!==e.key&&"ArrowUp"!==e.key||d()}),e.addEventListener("wheel",function(e){e.preventDefault(),a||(a=!0,e.deltaY>0?l():d(),setTimeout(function(){a=!1},850))},{passive:!1}),c(0)}}}(),function(){var e=document.body;if(e&&e.classList.contains("single-gym-review")){var t=window.matchMedia("(prefers-reduced-motion: reduce)").matches,n=function(e,t,n){return Math.min(Math.max(e,t),n)},i=function(){var i;!function(){var e=document.querySelectorAll([".gym-review-overview__grid",".gym-review-section-heading",".gym-review-score",".gym-review-panel",".gym-review-gallery figure",".gym-review-content__grid",".gym-review-final .container"].join(","));if(e.forEach(function(e){e.hasAttribute("data-gym-reveal")||e.setAttribute("data-gym-reveal","")}),!t&&"IntersectionObserver"in window){var n=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(e.target.classList.add("is-visible"),n.unobserve(e.target))})},{threshold:.12,rootMargin:"0px 0px -40px 0px"});e.forEach(function(e){n.observe(e)})}else e.forEach(function(e){e.classList.add("is-visible")})}(),function(){if(!t){var e=document.querySelector(".gym-review-hero"),i=document.querySelector(".gym-review-hero__image");if(e&&i){var r=!1,o=function(){var t=e.getBoundingClientRect(),o=window.innerHeight;if(t.bottom<0||t.top>o)r=!1;else{n(-window.scrollY/1200,-1,0);var a=.08*window.scrollY;i.style.transform="translate3d(0, ".concat(a,"px, 0) scale(1.035)"),r=!1}},a=function(){r||(r=!0,window.requestAnimationFrame(o))};window.addEventListener("scroll",a,{passive:!0}),a()}}}(),function(){var e=document.querySelectorAll(".gym-review-score");if(e.length){e.forEach(function(e){var t=function(e){if(null==e||""===e||"unavailable"===e)return null;var t=parseFloat(e);return Number.isFinite(t)?t:null}(e.dataset.score),i=e.querySelector(".gym-review-score__fill"),r=e.querySelector(".gym-review-score__value")||e.querySelector(".gym-review-score__meta strong");if(null===t)return e.classList.add("is-unavailable"),void(r&&(r.textContent="Unavailable"));var o=n(10*t,0,100);i&&(i.dataset.width="".concat(o,"%"),i.style.width="0"),r&&(r.textContent="".concat(t,"/10"))});var i=function(e){var t=e.querySelector(".gym-review-score__fill");if(t){var n=t.dataset.width;n&&requestAnimationFrame(function(){t.style.width=n})}};if(!t&&"IntersectionObserver"in window){var r=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(i(e.target),r.unobserve(e.target))})},{threshold:.35});e.forEach(function(e){e.classList.contains("is-unavailable")||r.observe(e)})}else e.forEach(i)}}(),function(){var e=document.querySelectorAll("[data-overall-score]");if(e.length){var i=function(e){var i=parseFloat(e.dataset.overallScore);if(Number.isFinite(i))if(e.style.color=xo(i).color,t)e.textContent="".concat(i.toFixed(1),"%");else{var r=performance.now(),o=function(t){var a=n((t-r)/1100,0,1),s=1-Math.pow(1-a,3),c=i*s;e.textContent="".concat(c.toFixed(1),"%"),e.style.color=xo(c).color,a<1&&requestAnimationFrame(o)};requestAnimationFrame(o)}};if("IntersectionObserver"in window){var r=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(i(e.target),r.unobserve(e.target))})},{threshold:.4});e.forEach(function(e){r.observe(e)})}else e.forEach(i)}}(),(i=document.querySelectorAll(".gym-review-map")).length&&i.forEach(function(e){var t=e.dataset.location||e.dataset.address||"";if(t){var n=document.createElement("div");n.className="gym-review-map__loading",n.textContent="Loading map",e.appendChild(n);var i=document.createElement("iframe");i.title="Map showing ".concat(t),i.loading="lazy",i.referrerPolicy="no-referrer-when-downgrade",i.setAttribute("allowfullscreen",""),i.src="https://www.google.com/maps?q="+encodeURIComponent(t)+"&output=embed",i.addEventListener("load",function(){n.remove()}),e.appendChild(i)}}),document.querySelectorAll("[data-map-url]").forEach(function(e){var t=e.dataset.mapUrl;t&&(e.href=t,e.target="_blank",e.rel="noopener noreferrer")}),function(){var t=Array.from(document.querySelectorAll(".gym-review-gallery figure img"));if(t.length){var n=document.createElement("div");n.className="gym-review-lightbox",n.setAttribute("aria-hidden","true"),n.setAttribute("role","dialog"),n.setAttribute("aria-modal","true"),n.innerHTML='\n\t\t\t<button\n\t\t\t\ttype="button"\n\t\t\t\tclass="gym-review-lightbox__close"\n\t\t\t\taria-label="Close image"\n\t\t\t>\n\t\t\t\t×\n\t\t\t</button>\n\n\t\t\t<button\n\t\t\t\ttype="button"\n\t\t\t\tclass="gym-review-lightbox__prev"\n\t\t\t\taria-label="Previous image"\n\t\t\t>\n\t\t\t\t←\n\t\t\t</button>\n\n\t\t\t<img\n\t\t\t\tclass="gym-review-lightbox__image"\n\t\t\t\tsrc=""\n\t\t\t\talt=""\n\t\t\t>\n\n\t\t\t<button\n\t\t\t\ttype="button"\n\t\t\t\tclass="gym-review-lightbox__next"\n\t\t\t\taria-label="Next image"\n\t\t\t>\n\t\t\t\t→\n\t\t\t</button>\n\t\t',document.body.appendChild(n);var i=n.querySelector(".gym-review-lightbox__image"),r=n.querySelector(".gym-review-lightbox__close"),o=n.querySelector(".gym-review-lightbox__prev"),a=n.querySelector(".gym-review-lightbox__next"),s=0,c=function(){var e=t[s];i.src=function(e){return e.dataset.full||e.currentSrc||e.src}(e),i.alt=e.alt||""},l=function(t){s=t,c(),n.classList.add("is-open"),n.setAttribute("aria-hidden","false"),e.classList.add("gym-lightbox-open"),r.focus()},d=function(){n.classList.remove("is-open"),n.setAttribute("aria-hidden","true"),e.classList.remove("gym-lightbox-open")},u=function(){s=(s-1+t.length)%t.length,c()},h=function(){s=(s+1)%t.length,c()};t.forEach(function(e,n){var i=e.closest("figure");i&&(i.tabIndex=0,i.setAttribute("role","button"),i.setAttribute("aria-label","View image ".concat(n+1," of ").concat(t.length)),i.addEventListener("click",function(){l(n)}),i.addEventListener("keydown",function(e){"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),l(n))}))}),r.addEventListener("click",d),o.addEventListener("click",u),a.addEventListener("click",h),n.addEventListener("click",function(e){e.target===n&&d()}),document.addEventListener("keydown",function(e){if(n.classList.contains("is-open"))switch(e.key){case"Escape":d();break;case"ArrowLeft":u();break;case"ArrowRight":h()}})}}(),function(){var e=document.querySelector(".gym-review-gallery__viewport");if(e){var n=Array.from(e.querySelectorAll("figure"));if(!(n.length<2)){var i=document.querySelector(".gym-review-gallery__controls");i||((i=document.createElement("div")).className="gym-review-gallery__controls",e.insertAdjacentElement("afterend",i)),i.innerHTML="";var r=n.map(function(e,r){var o=document.createElement("button");return o.type="button",o.className="gym-review-gallery__dot",o.setAttribute("aria-label","Go to image ".concat(r+1)),0===r&&o.classList.add("is-active"),o.addEventListener("click",function(){n[r].scrollIntoView({behavior:t?"auto":"smooth",inline:"start",block:"nearest"})}),i.appendChild(o),o});if("IntersectionObserver"in window){var o=new IntersectionObserver(function(e){var t=e.filter(function(e){return e.isIntersecting}).sort(function(e,t){return t.intersectionRatio-e.intersectionRatio});if(t.length){var i=n.indexOf(t[0].target);r.forEach(function(e,t){e.classList.toggle("is-active",t===i)})}},{root:e,threshold:[.45,.6,.75]});n.forEach(function(e){o.observe(e)})}}}}(),document.querySelectorAll("[data-score-label-source]").forEach(function(e){var t=parseFloat(e.dataset.scoreLabelSource);Number.isFinite(t)&&(e.textContent=function(e){return xo(e).label}(t),e.style.color=xo(t).color)})};"loading"===document.readyState?document.addEventListener("DOMContentLoaded",i,{once:!0}):i()}}()}(),document.addEventListener("DOMContentLoaded",function(){if(document.body.matches(".is-frontend.page-template-page-homepage")){var e=document.querySelector("#main .hero-background"),t=null==e?void 0:e.querySelector(":scope > img"),n=null==e?void 0:e.querySelector(".hero-foreground > img");if(e&&t&&n&&!e.dataset.motionInit){e.dataset.motionInit="true";var i=matchMedia("(prefers-reduced-motion: reduce)"),r=matchMedia("(min-width: 992px) and (hover: hover) and (pointer: fine)"),o=!1,a=!1,s=0,c=0,l=0,d=0,u=0,h=0,f=0,p=new Set,m=function(){return a&&o&&!document.hidden&&!i.matches&&r.matches},g=function(){t.style.setProperty("--hero-depth-x","".concat((6*d).toFixed(3),"px")),t.style.setProperty("--hero-depth-y","".concat((6*u).toFixed(3),"px")),n.style.setProperty("--hero-depth-x","".concat((2*d).toFixed(3),"px")),n.style.setProperty("--hero-depth-y","".concat((2*u).toFixed(3),"px"))},v=function(){l=0;var t=e.getBoundingClientRect(),a=Math.max(0,Math.min(1,-t.top/Math.max(1,t.height))),s=!o||document.hidden||i.matches?0:-a*(r.matches?160:36);n.style.setProperty("--hero-scroll-y","".concat(s.toFixed(3),"px"));var c=!o||document.hidden||i.matches?0:a*(r.matches?70:24);e.style.setProperty("--hero-glow-y","".concat(c.toFixed(3),"px"))},b=function(){l||(l=requestAnimationFrame(v))},y=function(){cancelAnimationFrame(s),s=c=0,d=u=h=f=0,g(),e.classList.remove("hero-depth-active")},_=function(t){if(s=0,m()){var n=c?Math.min(64,t-c):16;c=t;var i=1-Math.exp(-n/160);d+=(h-d)*i,u+=(f-u)*i,g(),Math.abs(h-d)+Math.abs(f-u)>.001?s=requestAnimationFrame(_):(d=h,u=f,g(),c=0,h||f||e.classList.remove("hero-depth-active"))}else y()},w=function(){m()&&!s&&(s=requestAnimationFrame(_))},E=function(){p.forEach(function(e){return e.cancel()}),p.clear(),a=!0,e.classList.remove("hero-entering"),b()},A=function(){if(!a&&!e.classList.contains("hero-entering"))if(i.matches||"function"!=typeof n.animate)a=!0;else{e.classList.add("hero-entering");var r=getComputedStyle(n).opacity,o=t.animate([{filter:"brightness(.38)"},{filter:"brightness(.55)"}],{duration:1800,easing:"cubic-bezier(.22,1,.36,1)"}),s=n.animate([{opacity:0,translate:"0 12px"},{opacity:r,translate:"0 0"}],{duration:1200,delay:100,fill:"backwards",easing:"cubic-bezier(.22,1,.36,1)"});p.add(o),p.add(s),Promise.allSettled([o.finished,s.finished]).then(E)}};Promise.allSettled([t,n].map(function(e){var t;return null===(t=e.decode)||void 0===t?void 0:t.call(e)})).then(function(){e.classList.add("hero-motion-ready"),o&&!document.hidden&&A()}),e.addEventListener("pointermove",function(t){if(m()&&"mouse"===t.pointerType){var n=e.getBoundingClientRect();h=Math.max(-1,Math.min(1,(t.clientX-n.left)/n.width*2-1)),f=Math.max(-1,Math.min(1,(t.clientY-n.top)/n.height*2-1)),e.classList.add("hero-depth-active"),w()}},{passive:!0}),e.addEventListener("pointerleave",function(){h=f=0,w()},{passive:!0});var L=function(){b(),m()||y(),(i.matches||document.hidden)&&E(),o&&!document.hidden&&e.classList.contains("hero-motion-ready")&&A()};i.addEventListener("change",L),r.addEventListener("change",L),document.addEventListener("visibilitychange",L),window.addEventListener("scroll",b,{passive:!0}),window.addEventListener("resize",function(){y(),b()},{passive:!0}),window.addEventListener("pagehide",function(){y(),E(),cancelAnimationFrame(l),l=0,n.style.setProperty("--hero-scroll-y","0px"),e.style.setProperty("--hero-glow-y","0px")}),new IntersectionObserver(function(e){o=e[0].isIntersecting,L()},{threshold:0}).observe(e)}}})}();
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/main.js":
+/*!************************!*\
+  !*** ./assets/main.js ***!
+  \************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+
+
+
+
+// Overall scores use /10 internally; the five middle bands span 14% each.
+var gymOverallBands = [{
+  tone: 'maroon',
+  label: 'Diabolical',
+  range: '0–<15%',
+  min: 0,
+  width: 15,
+  color: '#8c354b',
+  emoji: '💩'
+}, {
+  tone: 'bad',
+  label: 'Bad',
+  range: '15–<29%',
+  min: 1.5,
+  width: 14,
+  color: '#d85b70',
+  emoji: '😡'
+}, {
+  tone: 'red',
+  label: 'Poor',
+  range: '29–<43%',
+  min: 2.9,
+  width: 14,
+  color: '#ef8585',
+  emoji: '👎🏾'
+}, {
+  tone: 'amber',
+  label: 'Mixed',
+  range: '43–<57%',
+  min: 4.3,
+  width: 14,
+  color: '#e5a653',
+  emoji: '🤷🏽‍♂️'
+}, {
+  tone: 'green',
+  label: 'Positive',
+  range: '57–<71%',
+  min: 5.7,
+  width: 14,
+  color: '#82c995',
+  emoji: '👍🏾'
+}, {
+  tone: 'great',
+  label: 'Excellent',
+  range: '71–<85%',
+  min: 7.1,
+  width: 14,
+  color: '#6ed9c5',
+  emoji: '🤩'
+}, {
+  tone: 'diamond',
+  label: 'Outstanding',
+  range: '85–100%',
+  min: 8.5,
+  width: 15,
+  color: '#b9eaff',
+  emoji: '💎'
+}];
+var gymOverallBand = function gymOverallBand(percentage) {
+  return [].concat(gymOverallBands).reverse().find(function (band) {
+    return percentage >= band.min * 10;
+  }) || gymOverallBands[0];
+};
+
+// Progressive enhancement: original review content remains usable without JavaScript.
+function initGymLeague(archive, cards) {
+  var _archive$querySelecto, _archive$querySelecto2;
+  var make = function make(tag, cls, text) {
+    var el = document.createElement(tag);
+    el.className = cls;
+    if (text) el.textContent = text;
+    return el;
+  };
+  var tone = function tone(value) {
+    var n = Number(value);
+    return value === '' || !Number.isFinite(n) || n < 0 ? 'unrated' : n >= 9 ? 'diamond' : n >= 7 ? 'green' : n >= 5 ? 'amber' : n >= 3 ? 'red' : 'maroon';
+  };
+  var bands = gymOverallBands;
+  var overallBand = function overallBand(value) {
+    var n = Number(value);
+    return value === '' || !Number.isFinite(n) || n < 0 ? {
+      tone: 'unrated',
+      label: 'Not assessed',
+      emoji: ''
+    } : [].concat(bands).reverse().find(function (band) {
+      return n >= band.min;
+    });
+  };
+  var overallTone = function overallTone(value) {
+    return overallBand(value).tone;
+  };
+  var ratingEmoji = Object.fromEntries(bands.map(function (band) {
+    return [band.tone, band.emoji];
+  }));
+  ratingEmoji.unrated = '';
+  var grid = archive.querySelector('[data-gyms-grid]');
+  var header = make('header', 'league-heading');
+  header.append(make('p', 'league-eyebrow', "THE GYM LEAGUE \xB7 ".concat(cards.length, " BRANCHES LOGGED")), make('h2', '', 'The full field.'), make('p', 'league-intro', 'Personally visited. Honestly rated. Find your next place to train.'));
+  var watermark = make('span', 'league-watermark', String(cards.length));
+  watermark.setAttribute('aria-hidden', 'true');
+  header.append(watermark);
+  var legend = make('div', 'league-legend');
+  [].concat(bands).reverse().forEach(function (band) {
+    var item = make('span', '', "".concat(band.range, " ").concat(band.label));
+    item.dataset.tone = band.tone;
+    legend.append(item);
+  });
+  legend.append(make('span', '', '— Not assessed / N/A Unavailable'));
+  header.append(legend);
+  var method = make('button', 'league-method-trigger', 'How I score gyms');
+  method.type = 'button';
+  method.setAttribute('aria-haspopup', 'dialog');
+  method.setAttribute('aria-controls', 'league-scoring-guide');
+  var guide = make('dialog', 'league-scoring-guide');
+  guide.id = 'league-scoring-guide';
+  guide.setAttribute('aria-labelledby', 'league-scoring-title');
+  var close = make('button', 'league-scoring-close', 'Close ×');
+  close.type = 'button';
+  close.setAttribute('aria-label', 'Close scoring guide');
+  var title = make('h2', '', 'How I score gyms');
+  title.id = 'league-scoring-title';
+  guide.append(close, title, make('p', '', 'Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.'));
+  guide.append(make('p', '', 'The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×2, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.'));
+  guide.append(make('h3', '', 'Overall rating scale'));
+  var scale = make('div', 'league-scale');
+  scale.setAttribute('aria-hidden', 'true');
+  bands.forEach(function (band) {
+    var segment = make('span', '');
+    segment.style.width = "".concat(band.width, "%");
+    segment.style.backgroundColor = band.color;
+    scale.append(segment);
+  });
+  var axis = make('div', 'league-scale-axis');
+  axis.setAttribute('aria-hidden', 'true');
+  [0, 25, 50, 75, 100].forEach(function (value) {
+    var tick = make('span', '', "".concat(value, "%"));
+    tick.style.left = "".concat(value, "%");
+    axis.append(tick);
+  });
+  var key = make('ul', 'league-scale-key');
+  [].concat(bands).reverse().forEach(function (band) {
+    var row = make('li', '');
+    var swatch = make('span', 'league-scale-swatch');
+    swatch.style.backgroundColor = band.color;
+    swatch.setAttribute('aria-hidden', 'true');
+    row.append(swatch, make('span', '', "".concat(band.emoji, " ").concat(band.label)), make('span', 'league-scale-range', band.range));
+    key.append(row);
+  });
+  guide.append(scale, axis, key, make('p', 'league-scoring-note', 'Individual category scores retain their own scale: Outstanding 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.'));
+  document.body.append(guide);
+  method.addEventListener('click', function () {
+    return guide.showModal();
+  });
+  close.addEventListener('click', function () {
+    return guide.close();
+  });
+  guide.addEventListener('click', function (event) {
+    if (event.target !== guide) return;
+    var bounds = guide.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) guide.close();
+  });
+  guide.addEventListener('close', function () {
+    return method.focus({
+      preventScroll: true
+    });
+  });
+  header.append(method);
+  archive.prepend(header);
+  (_archive$querySelecto = archive.querySelector('.gym-view-toggle')) === null || _archive$querySelecto === void 0 || _archive$querySelecto.remove();
+  archive.querySelectorAll('.gym-filter-buttons button').forEach(function (b) {
+    return b.setAttribute('aria-pressed', String(b.classList.contains('is-active')));
+  });
+  var tray = archive.querySelector('[data-gym-compare-bar]');
+  if (tray) archive.append(tray);
+  var layout = make('div', 'league-layout');
+  grid.before(layout);
+  var left = make('div', 'league-list-pane');
+  layout.append(left);
+  left.append(grid);
+  (_archive$querySelecto2 = archive.querySelector('.gym-pagination')) === null || _archive$querySelecto2 === void 0 || _archive$querySelecto2.remove();
+  var panel = make('aside', 'league-detail');
+  panel.id = 'gym-branch-detail';
+  panel.setAttribute('aria-label', 'Selected branch details');
+  layout.append(panel);
+  // Map assets load only when requested; list browsing needs no external map requests.
+  var mapPane = make('div', 'league-map-pane');
+  var mapStatus = make('p', 'league-map-status');
+  mapStatus.setAttribute('role', 'status');
+  var mapCanvas = make('div', 'league-map-canvas');
+  mapCanvas.setAttribute('aria-label', 'Gym review locations');
+  var mapChoices = make('div', 'league-map-choices');
+  var mapChoiceCards = new Map();
+  mapChoices.setAttribute('aria-label', 'Matching gym reviews');
+  mapPane.append(mapStatus, mapCanvas, mapChoices);
+  mapPane.hidden = true;
+  left.append(mapPane);
+  var switcher = make('div', 'league-view-switch');
+  switcher.setAttribute('role', 'group');
+  switcher.setAttribute('aria-label', 'Gym view');
+  var listButton = make('button', '', 'List');
+  var mapButton = make('button', '', 'Map');
+  [listButton, mapButton].forEach(function (button) {
+    button.type = 'button';
+    switcher.append(button);
+  });
+  archive.querySelector('.filter-inputs').append(switcher);
+  var mapView = false,
+    mapInstance,
+    mapMarkers,
+    mapAssets,
+    mapCards = [];
+  var coordinates = function coordinates(card) {
+    var _card$dataset$lat, _card$dataset$lng;
+    var lat = Number(card.dataset.lat),
+      lng = Number(card.dataset.lng);
+    return (_card$dataset$lat = card.dataset.lat) !== null && _card$dataset$lat !== void 0 && _card$dataset$lat.trim() && (_card$dataset$lng = card.dataset.lng) !== null && _card$dataset$lng !== void 0 && _card$dataset$lng.trim() && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? [lat, lng] : null;
+  };
+  var loadMapAssets = function loadMapAssets() {
+    if (window.L) return Promise.resolve();
+    if (mapAssets) return mapAssets;
+    mapAssets = new Promise(function (resolve, reject) {
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.append(css);
+      var script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.append(script);
+    });
+    return mapAssets;
+  };
+  function renderLeagueMap() {
+    if (!mapView) return;
+    mapStatus.textContent = 'Loading map…';
+    return loadMapAssets().then(function () {
+      if (!mapView) return;
+      if (!mapInstance) {
+        mapInstance = window.L.map(mapCanvas, {
+          scrollWheelZoom: false
+        }).setView([54, -2], 5);
+        var baseTiles = window.L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          maxZoom: 19
+        }).addTo(mapInstance);
+        baseTiles.on('tileerror', function () {
+          mapStatus.textContent = 'Map background could not load. Check the CARTO key’s website restrictions; gym pins and reviews are still available.';
+        });
+        mapMarkers = window.L.layerGroup().addTo(mapInstance);
+      }
+      mapMarkers.clearLayers();
+      mapChoices.replaceChildren();
+      mapChoiceCards.clear();
+      var points = [];
+      mapCards.forEach(function (card) {
+        var point = coordinates(card);
+        var choice = make('button', 'league-map-choice');
+        var info = make('span', 'league-map-choice-info');
+        info.append(make('strong', '', card.dataset.branchLabel), make('small', '', "".concat(card.dataset.chainLabel).concat(point ? '' : ' · Pin unavailable')));
+        var score = make('span', 'league-map-choice-score', card.dataset.overallLabel);
+        score.dataset.tone = overallTone(card.dataset.overall);
+        choice.append(info, score);
+        choice.setAttribute('aria-pressed', String(card === selected));
+        mapChoiceCards.set(choice, card);
+        choice.type = 'button';
+        choice.addEventListener('click', function () {
+          select(card);
+          if (point) mapInstance.setView(point, 13);
+        });
+        mapChoices.append(choice);
+        if (!point) return;
+        points.push(point);
+        var pin = make('span', 'league-map-pin', card.dataset.overallLabel);
+        pin.dataset.tone = overallTone(card.dataset.overall);
+        var marker = window.L.marker(point, {
+          title: "".concat(card.dataset.chainLabel, " \xB7 ").concat(card.dataset.branchLabel, ": ").concat(card.dataset.overallLabel),
+          icon: window.L.divIcon({
+            className: 'league-map-marker',
+            html: pin.outerHTML,
+            iconSize: [66, 30],
+            iconAnchor: [33, 30]
+          })
+        }).addTo(mapMarkers);
+        marker.bindTooltip(document.createTextNode("".concat(card.dataset.chainLabel, " \xB7 ").concat(card.dataset.branchLabel)));
+        marker.on('click', function () {
+          select(card);
+          if (!media.matches) panel.scrollIntoView({
+            block: 'start',
+            behavior: reducedMotion.matches ? 'instant' : 'smooth'
+          });
+        });
+      });
+      var missing = mapCards.length - points.length;
+      mapStatus.textContent = "".concat(points.length, " gyms on the map").concat(missing ? " \xB7 ".concat(missing, " without a pin") : '', ". Select a pin or branch below.");
+      mapInstance.invalidateSize();
+      if (points.length) mapInstance.fitBounds(points, {
+        padding: [35, 35],
+        maxZoom: 13
+      });
+    }).catch(function () {
+      mapStatus.textContent = 'The map could not load. Please use List view and try again later.';
+      mapAssets = null;
+    });
+  }
+  function setLeagueView(useMap) {
+    mapView = useMap;
+    archive.classList.toggle('is-map-view', mapView);
+    listButton.setAttribute('aria-pressed', String(!mapView));
+    mapButton.setAttribute('aria-pressed', String(mapView));
+    grid.hidden = mapView;
+    mapPane.hidden = !mapView;
+    place();
+    renderLeagueMap();
+  }
+  listButton.addEventListener('click', function () {
+    setLeagueView(false);
+    archive.dispatchEvent(new Event('league-view-change'));
+  });
+  mapButton.addEventListener('click', function () {
+    setLeagueView(true);
+    archive.dispatchEvent(new Event('league-view-change'));
+  });
+  listButton.setAttribute('aria-pressed', 'true');
+  mapButton.setAttribute('aria-pressed', 'false');
+  var count = make('p', 'league-result-count');
+  count.setAttribute('role', 'status');
+  layout.before(count);
+  var columns = make('div', 'league-columns');
+  columns.setAttribute('aria-hidden', 'true');
+  ['POS', 'BRANCH', 'OVERALL', 'COMPARE'].forEach(function (s) {
+    return columns.append(make('span', '', s));
+  });
+  grid.prepend(columns);
+  var selected = null;
+  var media = window.matchMedia('(min-width: 992px)');
+  var details = new Map();
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var animationFrame = 0;
+  var pendingAnimation = null;
+  var animationObserver = new IntersectionObserver(function (entries) {
+    if (entries.some(function (entry) {
+      return entry.isIntersecting;
+    }) && pendingAnimation) {
+      animationObserver.disconnect();
+      var start = pendingAnimation;
+      pendingAnimation = null;
+      start();
+    }
+  }, {
+    threshold: 0.15
+  });
+  function stopAnimation() {
+    cancelAnimationFrame(animationFrame);
+    animationObserver.disconnect();
+    pendingAnimation = null;
+  }
+  function animateDetails(card) {
+    stopAnimation();
+    var total = panel.querySelector('.league-total');
+    var target = Number(card.dataset.overall);
+    var rated = card.dataset.overall !== '' && Number.isFinite(target) && target >= 0;
+    var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(panel.querySelectorAll('.dx-score-block[data-score] .dx-score-bar span'));
+    var paint = function paint(progress) {
+      if (rated) {
+        var current = target * progress;
+        total.querySelector('.league-total-number').textContent = progress === 1 ? card.dataset.overallLabel : "".concat((current * 10).toFixed(1), "%");
+        total.dataset.tone = overallTone(current);
+        total.querySelector('.league-total-emoji').textContent = overallBand(current).emoji;
+        total.querySelector('.league-total-rating-label').textContent = overallBand(current).label;
+      }
+      bars.forEach(function (bar) {
+        var block = bar.closest('[data-score]');
+        var value = Number(block.dataset.score);
+        block.dataset.tone = tone(value * progress);
+        var label = block.querySelector('.dx-score-value');
+        if (label) {
+          label.setAttribute('aria-label', "".concat(value, "/10"));
+          label.textContent = "".concat(progress === 1 ? value : Math.floor(value * progress), "/10");
+        }
+        bar.style.transform = "scaleX(".concat(Math.max(0, Math.min(1, value / 10)) * progress, ")");
+      });
+    };
+    if (reducedMotion.matches) {
+      paint(1);
+      return;
+    }
+    paint(0);
+    pendingAnimation = function pendingAnimation() {
+      var started;
+      var _tick = function tick(now) {
+        if (reducedMotion.matches) {
+          paint(1);
+          return;
+        }
+        started !== null && started !== void 0 ? started : started = now;
+        var fraction = Math.min(1, (now - started) / 1200);
+        paint(1 - Math.pow(1 - fraction, 3));
+        if (fraction < 1) animationFrame = requestAnimationFrame(_tick);
+      };
+      animationFrame = requestAnimationFrame(_tick);
+    };
+    animationObserver.observe(total);
+  }
+  // Hidden overflow on WordPress cover wrappers would otherwise capture sticky positioning.
+  for (var parent = archive.parentElement; parent && parent !== document.documentElement; parent = parent.parentElement) {
+    var style = getComputedStyle(parent);
+    if (style.overflowX === 'hidden' || style.overflowY === 'hidden') parent.classList.add('league-sticky-ancestor');
+  }
+  var stickyHeaders = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.navbar, #wpadminbar'));
+  var updateStickyOffset = function updateStickyOffset() {
+    var bottom = stickyHeaders.reduce(function (offset, el) {
+      var position = getComputedStyle(el).position;
+      return position === 'fixed' || position === 'sticky' ? Math.max(offset, el.getBoundingClientRect().bottom) : offset;
+    }, 0);
+    var safeTop = Math.max(16, bottom + 16);
+    archive.style.setProperty('--league-sticky-safe-top', "".concat(safeTop, "px"));
+    var height = panel.getBoundingClientRect().height;
+    var available = Math.max(0, window.innerHeight - safeTop - 16);
+    var centered = safeTop + Math.max(0, (available - height) / 2);
+    archive.style.setProperty('--league-sticky-top', "".concat(centered, "px"));
+  };
+  var headerObserver = new ResizeObserver(updateStickyOffset);
+  stickyHeaders.forEach(function (el) {
+    return headerObserver.observe(el);
+  });
+  headerObserver.observe(panel);
+  window.addEventListener('resize', updateStickyOffset, {
+    passive: true
+  });
+  updateStickyOffset();
+  var ranks = new Map((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(cards).sort(function (a, b) {
+    return Number(b.dataset.overall) - Number(a.dataset.overall) || a.dataset.branch.localeCompare(b.dataset.branch);
+  }).map(function (c, i) {
+    return [c, i + 1];
+  }));
+  cards.forEach(function (card) {
+    var _card$querySelector;
+    var content = make('div', 'league-detail-content');
+    if (card.dataset.featuredImage) {
+      var image = make('img', 'league-detail-image');
+      image.alt = '';
+      image.setAttribute('aria-hidden', 'true');
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      image.src = card.dataset.featuredImage;
+      var frame = make('div', 'league-detail-image-frame');
+      frame.append(image);
+      content.append(frame);
+    }
+    content.append(make('p', 'league-eyebrow', 'BRANCH DETAILS'), make('h3', '', card.dataset.branchLabel), make('p', 'league-detail-chain', card.dataset.chainLabel));
+    var loc = card.querySelector('.dx-gym-card__subtitle');
+    if (loc) {
+      var location = loc.cloneNode(true);
+      var link = location.querySelector('a');
+      if (link) {
+        link.href = card.dataset.mapsUrl || link.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.addEventListener('click', function (event) {
+          return event.stopPropagation();
+        });
+      }
+      content.append(location);
+    }
+    var score = make('div', 'league-total');
+    score.dataset.tone = overallTone(card.dataset.overall);
+    var number = make('span', 'league-total-number', card.dataset.overallLabel);
+    var emoji = make('span', 'league-total-emoji', ratingEmoji[overallTone(card.dataset.overall)]);
+    emoji.setAttribute('aria-hidden', 'true');
+    var badge = make('span', 'league-total-rating');
+    badge.setAttribute('aria-hidden', 'true');
+    badge.append(emoji, make('span', 'league-total-rating-label', overallBand(card.dataset.overall).label));
+    score.append(number, badge);
+    score.setAttribute('role', 'img');
+    score.setAttribute('aria-label', "".concat(card.dataset.overallLabel, " overall rating, ").concat(overallBand(card.dataset.overall).label));
+    content.append(score, make('p', 'league-total-label', 'OVERALL RATING'));
+    var awards = make('div', 'league-awards');
+    card.querySelectorAll('.dx-badge--rank,.dx-badge--category').forEach(function (b) {
+      return awards.append(b.cloneNode(true));
+    });
+    content.append(awards);
+    var scores = (_card$querySelector = card.querySelector('.dx-gym-card__scores')) === null || _card$querySelector === void 0 ? void 0 : _card$querySelector.cloneNode(true);
+    if (scores) {
+      scores.querySelectorAll('.dx-score-block').forEach(function (block) {
+        var _block$dataset$score;
+        block.dataset.tone = tone((_block$dataset$score = block.dataset.score) !== null && _block$dataset$score !== void 0 ? _block$dataset$score : '');
+      });
+      content.append(scores);
+    }
+    content.append(make('h4', 'league-notes-title', 'Field notes'));
+    var notes = make('div', 'league-notes');
+    var original = card.querySelector('[data-notes-panel]');
+    if (original) notes.innerHTML = original.innerHTML;
+    content.append(notes);
+    content.append(make('p', 'league-visit', "Visited ".concat(card.dataset.visitedLabel, " \xB7 ").concat(card.dataset.membership)));
+    var history = [];
+    try {
+      history = JSON.parse(card.dataset.visitHistory || '[]');
+    } catch (_unused) {
+      history = [];
+    }
+    if (history.length) {
+      var visits = make('details', 'league-history');
+      visits.append(make('summary', '', "Visit history \xB7 ".concat(history.length + 1, " reviews")));
+      visits.append(make('p', 'league-visit', 'The latest dated visit sets the league rating. Earlier visits are retained below.'));
+      history.forEach(function (visit) {
+        var entry = make('article', 'league-history-entry');
+        entry.append(make('h4', '', visit.date || 'Date not recorded'));
+        var overall = make('strong', '', visit.overall === null ? 'Not assessed' : "".concat((visit.overall * 10).toFixed(1), "%"));
+        overall.dataset.tone = overallTone(visit.overall === null ? '' : visit.overall);
+        entry.append(overall);
+        var list = make('dl', 'league-history-scores');
+        Object.entries(visit.scores).forEach(function (_ref) {
+          var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref, 2),
+            label = _ref2[0],
+            value = _ref2[1];
+          list.append(make('dt', '', label), make('dd', '', value === null ? 'Not assessed' : value === 'unavailable' ? 'Unavailable' : "".concat(value, "/10")));
+        });
+        entry.append(list, make('p', '', visit.notes));
+        var link = make('a', '', 'Read this visit ↗');
+        link.href = visit.url;
+        entry.append(link);
+        visits.append(entry);
+      });
+      content.append(visits);
+    }
+    var review = make('a', 'league-review', 'Read full review ↗');
+    review.href = card.dataset.link;
+    content.append(review);
+    details.set(card, content);
+    var btn = make('button', 'league-select');
+    btn.type = 'button';
+    btn.setAttribute('aria-controls', panel.id);
+    btn.setAttribute('aria-expanded', 'false');
+    var info = make('span', 'league-row-info');
+    info.append(make('strong', '', card.dataset.branchLabel), make('small', '', "".concat(card.dataset.chainLabel).concat(loc ? ' · ' + loc.textContent.replace('📍', '').trim() : '')));
+    var value = make('strong', 'league-row-score', card.dataset.overallLabel);
+    value.dataset.tone = overallTone(card.dataset.overall);
+    btn.append(make('span', 'league-rank', String(ranks.get(card)).padStart(2, '0')), info, value);
+    btn.addEventListener('click', function () {
+      if (selected === card && !media.matches) {
+        stopAnimation();
+        selected = null;
+        panel.hidden = true;
+        syncSelection();
+      } else select(card, true);
+    });
+    var compare = card.querySelector('[data-gym-compare-toggle]');
+    if (compare) {
+      compare.setAttribute('aria-label', "Compare ".concat(card.dataset.branchLabel));
+      compare.querySelector('.label-add').textContent = '+';
+      compare.querySelector('.label-remove').textContent = '✓';
+    }
+    card.prepend(btn);
+  });
+  function syncSelection() {
+    mapChoiceCards.forEach(function (card, button) {
+      return button.setAttribute('aria-pressed', String(card === selected));
+    });
+    cards.forEach(function (c) {
+      c.classList.toggle('is-current', c === selected);
+      c.querySelector('.league-select').setAttribute('aria-expanded', String(c === selected && !panel.hidden));
+    });
+  }
+  function place() {
+    if (selected && !panel.hidden) {
+      if (media.matches || mapView) layout.append(panel);else selected.after(panel);
+    } else layout.append(panel);
+  }
+  // Wait for the photograph before fading it in, including cached images.
+  function revealDetailImage() {
+    var image = panel.querySelector('.league-detail-image');
+    if (!image) return;
+    image.getAnimations().forEach(function (animation) {
+      return animation.cancel();
+    });
+    image.style.opacity = '0';
+    image.decode().then(function () {
+      if (!panel.contains(image)) return;
+      image.style.removeProperty('opacity');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        image.animate([{
+          opacity: 0,
+          transform: 'scale(1)'
+        }, {
+          opacity: 0.66,
+          transform: 'scale(1.04)'
+        }], {
+          duration: 400,
+          easing: 'ease-out'
+        });
+      }
+    }).catch(function () {
+      // Keep the gold background when the photograph cannot load.
+    });
+  }
+  function select(card) {
+    var scrollToRow = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    selected = card;
+    panel.replaceChildren(details.get(card));
+    panel.hidden = false;
+    panel.scrollTop = 0;
+    syncSelection();
+    place();
+    updateStickyOffset();
+    animateDetails(card);
+    revealDetailImage();
+    if (scrollToRow && !media.matches && !mapView) {
+      requestAnimationFrame(function () {
+        if (selected !== card || panel.hidden) return;
+        updateStickyOffset();
+        var offset = parseFloat(archive.style.getPropertyValue('--league-sticky-safe-top')) || 16;
+        window.scrollTo({
+          top: Math.max(0, window.scrollY + card.getBoundingClientRect().top - offset),
+          behavior: reducedMotion.matches ? 'instant' : 'smooth'
+        });
+      });
+    }
+  }
+  media.addEventListener('change', place);
+  archive.classList.add('is-premium-league');
+  return {
+    update: function update(ordered, visibleCount) {
+      mapCards = ordered;
+      renderLeagueMap();
+      var shown = mapView ? ordered : ordered.slice(0, visibleCount);
+      count.textContent = "".concat(shown.length, " of ").concat(ordered.length, " branches shown");
+      if (!shown.length) {
+        stopAnimation();
+        selected = null;
+        panel.hidden = true;
+        syncSelection();
+        place();
+      } else if (!selected || !shown.includes(selected)) select(shown[0]);else place();
+    }
+  };
+}
+
+// Webpack Imports
+
+(function (_document$querySelect5) {
+  'use strict';
+
+  // n
+  // Navbar scroll state toggle
+  function initNavbarScrolled() {
+    var nav = document.querySelector('.navbar');
+    if (!nav) return;
+    var onScroll = function onScroll() {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    };
+    window.addEventListener('scroll', onScroll, {
+      passive: true
+    });
+    onScroll();
+  }
+  document.addEventListener('DOMContentLoaded', initNavbarScrolled);
+
+  // Focus input if Searchform is empty
+  [].forEach.call(document.querySelectorAll('.search-form'), function (el) {
+    el.addEventListener('submit', function (e) {
+      var search = el.querySelector('input');
+      if (search.value.length < 1) {
+        e.preventDefault();
+        search.focus();
+      }
+    });
+  });
+
+  // Initialize Popovers
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Popover(popoverTriggerEl, {
+      trigger: 'focus'
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+    /* ==========================
+       VIEWPORT-ACTIVE SECTIONS
+    ========================== */
+
+    var sections = document.querySelectorAll('section');
+    var sectionObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.target.classList.contains('story-section') || entry.target.classList.contains('story-hero') || entry.target.querySelector('[data-gyms-archive]')) {
+          return;
+        }
+        if (entry.isIntersecting) {
+          entry.target.classList.add('viewport-active');
+        } else {
+          entry.target.classList.remove('viewport-active');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '-20% 0px -20% 0px'
+    });
+    sections.forEach(function (section) {
+      return sectionObserver.observe(section);
+    });
+
+    /* ==========================
+       STAT COUNTER ANIMATION
+    ========================== */
+    var counters = document.querySelectorAll('.stat-figure');
+    var animateCounter = function animateCounter(el) {
+      var raw = el.textContent.trim();
+      var match = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+      if (!match) return;
+      var target = parseFloat(match[1]);
+      var suffix = match[2].trim(); // e.g. "KG", "+", "kg", etc.
+
+      var startTime = null;
+      var duration = 1800;
+      var _tick2 = function tick(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        var value = Math.floor(progress * target);
+        el.textContent = "".concat(value).concat(suffix ? suffix : '');
+        if (progress < 1) {
+          requestAnimationFrame(_tick2);
+        } else {
+          el.textContent = "".concat(target).concat(suffix ? suffix : '');
+        }
+      };
+      requestAnimationFrame(_tick2);
+    };
+    var counterObserver = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.4
+    });
+    counters.forEach(function (counter) {
+      return counterObserver.observe(counter);
+    });
+
+    /* ==========================
+       BODY STATE: CLIENT JOURNEY
+    ========================== */
+    var body = document.body;
+    var journeySection = document.querySelector('.client-journey');
+    var techStackSection = document.querySelector('.tech-stack');
+    if (journeySection) {
+      var journeyObserver = new IntersectionObserver(function (_ref3) {
+        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref3, 1),
+          entry = _ref4[0];
+        if (entry.isIntersecting) {
+          body.classList.add('client-journey-section');
+        } else {
+          body.classList.remove('client-journey-section');
+        }
+      }, {
+        threshold: 0.35
+      });
+      journeyObserver.observe(journeySection);
+    }
+    if (techStackSection) {
+      var techStackObserver = new IntersectionObserver(function (_ref5) {
+        var _ref6 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref5, 1),
+          entry = _ref6[0];
+        if (entry.isIntersecting) {
+          body.classList.add('tech-stack-section');
+        } else {
+          body.classList.remove('tech-stack-section');
+        }
+      }, {
+        threshold: 0.35
+      });
+      techStackObserver.observe(techStackSection);
+    }
+  });
+
+  /* ==========================
+  PROCESS STEP CYCLER (DEBUG MODE)
+  ========================== */
+
+  var processSteps = document.querySelectorAll('.process-step');
+  if (processSteps.length) {
+    var currentIndex = 0;
+
+    // Clear any existing state
+    processSteps.forEach(function (step) {
+      return step.classList.remove('is-active');
+    });
+
+    // Activate first step
+    processSteps[0].classList.add('is-active');
+    setInterval(function () {
+      // Remove active from current
+      processSteps[currentIndex].classList.remove('is-active');
+
+      // Move to next
+      currentIndex = (currentIndex + 1) % processSteps.length;
+
+      // Add active to next
+      processSteps[currentIndex].classList.add('is-active');
+    }, 5000);
+  }
+  var processTrack = document.querySelector('.process-area > .wp-block-group__inner-container');
+  if (processTrack && processSteps.length) {
+    var stepDistance = 400 + 160; // 400px step + ~10em gap
+    var currentOffset = 0;
+    setInterval(function () {
+      currentOffset = (currentOffset + 1) % processSteps.length;
+      processTrack.style.transform = "translateX(-".concat(currentOffset * stepDistance, "px)");
+    }, 5000);
+  }
+
+  // Duplicate Footnotes at runtime 
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tracks = document.querySelectorAll('.footline-track');
+    if (!tracks.length) return;
+    var DUPLICATES = 2;
+    tracks.forEach(function (track) {
+      var item = track.querySelector('.footline');
+      if (!item) return;
+      for (var i = 0; i < DUPLICATES; i++) {
+        track.appendChild(item.cloneNode(true));
+      }
+    });
+  });
+
+  /* ==========================================================
+  DXNDRE — CINEMATIC NAVIGATION CONTROLLER
+  ========================================================== */
+
+  function initDxndreNavigation() {
+    var menu = document.getElementById('navbar');
+    var toggle = document.getElementById('dx-menu-toggle');
+    if (!menu || !toggle) return;
+
+    // Prevent duplicate initialisation.
+    if (menu.dataset.dxInitialized === 'true') return;
+    menu.dataset.dxInitialized = 'true';
+    var body = document.body;
+    var focusableSelector = ['a[href]', 'button:not([disabled])', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])', '[tabindex]:not([tabindex="-1"])'].join(',');
+    var previouslyFocused = null;
+    var isOpen = false;
+    var getFocusable = function getFocusable() {
+      var controls = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(menu.querySelectorAll(focusableSelector)), (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('#header .dxndre-nav-left a, ' + '#header .dxndre-nav-left button, ' + '#header .dxndre-nav-left input, ' + '#header .dxndre-navbar-brand-centered')), [toggle]);
+      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(new Set(controls)).filter(function (element) {
+        var style = window.getComputedStyle(element);
+        return element.getClientRects().length > 0 && style.visibility !== 'hidden' && style.display !== 'none' && !element.closest('[inert]');
+      });
+    };
+    var lockScroll = function lockScroll() {
+      body.classList.add('nav-open');
+    };
+    var unlockScroll = function unlockScroll() {
+      body.classList.remove('nav-open');
+    };
+
+    // Bootstrap starts opening.
+    menu.addEventListener('show.bs.collapse', function () {
+      previouslyFocused = document.activeElement;
+      isOpen = true;
+      lockScroll();
+      menu.removeAttribute('inert');
+      menu.setAttribute('aria-hidden', 'false');
+    });
+
+    // Bootstrap completes opening.
+    menu.addEventListener('shown.bs.collapse', function () {
+      isOpen = true;
+      var currentLink = menu.querySelector('.current-menu-item > a, ' + '.current_page_item > a');
+      var firstLink = menu.querySelector('.dx-menu__list > li > a');
+      var target = currentLink || firstLink;
+      if (target) {
+        target.focus({
+          preventScroll: true
+        });
+      }
+    });
+
+    // Bootstrap starts closing.
+    menu.addEventListener('hide.bs.collapse', function () {
+      isOpen = false;
+
+      // Keep focus away from disappearing menu items.
+      if (menu.contains(document.activeElement)) {
+        toggle.focus({
+          preventScroll: true
+        });
+      }
+    });
+
+    // Bootstrap completes closing.
+    menu.addEventListener('hidden.bs.collapse', function () {
+      isOpen = false;
+      unlockScroll();
+      menu.setAttribute('inert', '');
+      menu.setAttribute('aria-hidden', 'true');
+      var restoreFocus = previouslyFocused;
+      if (restoreFocus && restoreFocus.isConnected && typeof restoreFocus.focus === 'function') {
+        restoreFocus.focus({
+          preventScroll: true
+        });
+      } else {
+        toggle.focus({
+          preventScroll: true
+        });
+      }
+      previouslyFocused = null;
+    });
+
+    // Handle keyboard accessibility.
+    document.addEventListener('keydown', function (event) {
+      if (!isOpen) return;
+
+      // Escape closes the menu.
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Collapse.getOrCreateInstance(menu, {
+          toggle: false
+        });
+        instance.hide();
+        return;
+      }
+
+      // Trap focus inside navigation controls.
+      if (event.key !== 'Tab') return;
+      var focusable = getFocusable();
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      var currentIndex = focusable.indexOf(document.activeElement);
+      if (event.shiftKey) {
+        if (currentIndex <= 0) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (currentIndex === focusable.length - 1) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // Close when navigating to a section on the same page.
+    menu.querySelectorAll('a[href]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var destination = new URL(link.href, window.location.href);
+        var current = new URL(window.location.href);
+        var samePage = destination.origin === current.origin && destination.pathname === current.pathname && destination.search === current.search;
+        if (!samePage) return;
+        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Collapse.getOrCreateInstance(menu, {
+          toggle: false
+        });
+        instance.hide();
+      });
+    });
+
+    // Ensure overlay is inaccessible while closed.
+    if (!menu.classList.contains('show')) {
+      menu.setAttribute('inert', '');
+      menu.setAttribute('aria-hidden', 'true');
+    } else {
+      isOpen = true;
+      lockScroll();
+      menu.removeAttribute('inert');
+      menu.setAttribute('aria-hidden', 'false');
+    }
+
+    // Safety net for returning from browser history.
+    window.addEventListener('pageshow', function () {
+      if (!menu.classList.contains('show')) {
+        isOpen = false;
+        unlockScroll();
+        menu.setAttribute('inert', '');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initDxndreNavigation);
+
+  // Client Dashboard Loading Test
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!document.body.classList.contains('page-dashboard')) return;
+
+    // Dashboard-specific JS here
+    console.log('Client dashboard loaded');
+  });
+  console.log('DX DASHBOARD JS LOADED');
+
+  // Client Dashboard Request Update
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!document.body.classList.contains('page-dashboard')) return;
+
+    // UX: if modal fails / Bootstrap not present, send them to fallback page
+    var newTicketBtn = document.querySelector('[data-bs-target="#newTicketModal"]');
+    if (newTicketBtn && typeof window.bootstrap === 'undefined') {
+      newTicketBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.location.href = '/submit-ticket/';
+      });
+    }
+
+    // Request update button UX-only (you can wire AJAX later)
+    var requestBtn = document.querySelector('.request-update');
+    if (requestBtn) {
+      requestBtn.addEventListener('click', function () {
+        requestBtn.textContent = 'Request Sent ✓';
+        requestBtn.disabled = true;
+        requestBtn.classList.add('is-disabled');
+      });
+    }
+  });
+
+  // AJAX Message posting for Client Portal status update agent
+
+  var form = document.querySelector('.ticket-reply-form');
+  if (form) {
+    form.addEventListener('submit', /*#__PURE__*/function () {
+      var _ref7 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(e) {
+        var data, res, html;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              e.preventDefault();
+              data = new FormData(form);
+              _context.next = 1;
+              return fetch(form.action, {
+                method: 'POST',
+                body: data
+              });
+            case 1:
+              res = _context.sent;
+              _context.next = 2;
+              return res.text();
+            case 2:
+              html = _context.sent;
+              document.querySelector('.ticket-thread').insertAdjacentHTML('beforeend', html);
+              form.reset();
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee);
+      }));
+      return function (_x) {
+        return _ref7.apply(this, arguments);
+      };
+    }());
+  }
+
+  // Add image button for client portal support ticket form 
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var addBtn = document.querySelector('.add-image-btn');
+    var fields = document.querySelectorAll('.ticket-image-field');
+    if (!addBtn || !fields.length) return;
+    var visibleCount = 1;
+    addBtn.addEventListener('click', function () {
+      if (visibleCount < fields.length) {
+        fields[visibleCount].classList.remove('is-hidden');
+        visibleCount++;
+      }
+      if (visibleCount >= fields.length) {
+        addBtn.disabled = true;
+        addBtn.textContent = 'Maximum images added';
+      }
+    });
+  });
+
+  // AJAX Tab Switching
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('.js-ticket-link');
+    if (!link) return;
+    e.preventDefault();
+    console.log('Ticket clicked', link.dataset.ticketId);
+    var ticketId = link.dataset.ticketId;
+    var panel = document.querySelector('.dashboard-panel');
+    console.log('Sending AJAX for ticket', ticketId);
+    panel.classList.add('is-loading');
+    var formData = new FormData();
+    formData.append('action', 'dx_load_ticket_panel');
+    formData.append('ticket_id', ticketId);
+    formData.append('nonce', DX_DASHBOARD.nonce);
+    fetch(DX_DASHBOARD.ajax_url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: formData
+    }).then(function (res) {
+      return res.json();
+    }).then(function (res) {
+      if (!res.success || !res.data.html) {
+        panel.innerHTML = '<p>Unable to load ticket.</p>';
+        return;
+      }
+      panel.innerHTML = res.data.html;
+      panel.classList.remove('is-loading');
+      document.querySelectorAll('.ticket').forEach(function (t) {
+        return t.classList.remove('is-active');
+      });
+      link.closest('.ticket').classList.add('is-active');
+    }).catch(function (err) {
+      console.error('FETCH FAILED', err);
+      panel.classList.remove('is-loading');
+    });
+  });
+
+  // Tab JS for Client Portal
+
+  document.addEventListener('click', function (e) {
+    var tab = e.target.closest('.dashboard-tab[data-status]');
+    if (!tab) return;
+    var status = tab.dataset.status;
+    document.querySelectorAll('.dashboard-tab').forEach(function (t) {
+      return t.classList.remove('is-active');
+    });
+    tab.classList.add('is-active');
+    document.querySelectorAll('.ticket').forEach(function (ticket) {
+      var ticketStatus = ticket.dataset.status;
+      if (status === 'open') {
+        ticket.style.display = ticketStatus !== 'resolved' && ticketStatus !== 'cancelled' ? '' : 'none';
+      } else {
+        ticket.style.display = ticketStatus === status ? '' : 'none';
+      }
+    });
+  });
+
+  // Cancel Ticket 
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-cancel-ticket');
+    if (!btn) return;
+    var ticketId = btn.dataset.ticketId;
+    var input = document.getElementById('cancel-ticket-id');
+    if (input) {
+      input.value = ticketId;
+    }
+  });
+
+  // Tab Switching using keyboard
+
+  document.addEventListener('keydown', function (e) {
+    if (!document.body.classList.contains('page-dashboard')) return;
+    var tickets = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.ticket'));
+    var active = document.querySelector('.ticket.is-active');
+    if (!active) return;
+    var index = tickets.indexOf(active);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      index = Math.min(index + 1, tickets.length - 1);
+      tickets[index].querySelector('.js-ticket-link').click();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      index = Math.max(index - 1, 0);
+      tickets[index].querySelector('.js-ticket-link').click();
+    }
+  });
+
+  // Make the panel load once
+  document.addEventListener('DOMContentLoaded', function () {
+    var first = document.querySelector('.js-ticket-link');
+    if (first) {
+      first.click();
+    }
+  });
+
+  // Converting Gallery into carousel
+  document.querySelectorAll('.wp-block-group.gallery').forEach(function (gallery) {
+    var track = gallery.querySelector('.wp-block-gallery');
+    if (!track) return;
+
+    // Prevent double-init
+    if (track.dataset.cloned) return;
+    track.dataset.cloned = 'true';
+    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(track.children);
+    slides.forEach(function (slide) {
+      track.appendChild(slide.cloneNode(true));
+    });
+  });
+
+  // Duplicating Gallery Carousel 
+
+  document.querySelectorAll('.wp-block-group.gallery').forEach(function (gallery) {
+    var track = gallery.querySelector('.wp-block-gallery');
+    if (!track) return;
+
+    // Prevent double backdrop creation
+    if (gallery.querySelector('.gallery-backdrop')) return;
+
+    // Clone the gallery
+    var backdrop = track.cloneNode(true);
+
+    // Mark + style hook
+    backdrop.classList.add('gallery-backdrop');
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    // Insert backdrop before the original
+    track.parentNode.insertBefore(backdrop, track);
+
+    // Ensure stacking context
+    gallery.style.position = 'relative';
+  });
+
+  // Adding glowing backgrounds to all images via duplication and class additions
+  document.querySelectorAll('#main section.about figure').forEach(function (figure) {
+    var img = figure.querySelector('img');
+    if (!img) return;
+
+    // Prevent double cloning
+    if (figure.dataset.backdrop === 'true') return;
+    figure.dataset.backdrop = 'true';
+
+    // Ensure positioning context
+    figure.style.position = 'relative';
+
+    // Clone image
+    var backdrop = img.cloneNode(true);
+    backdrop.classList.add('image-backdrop');
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    // Insert behind original
+    figure.insertBefore(backdrop, img);
+  });
+
+  // Homepage Bootstrap Modal (for identifying client) 
+  document.addEventListener('DOMContentLoaded', function () {
+    var _document$querySelect, _document$querySelect2;
+    var hireBtn = document.querySelector('.js-hire-me');
+    if (!hireBtn) return;
+    var hireModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#hireMeModal');
+    var clientModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#clientModal');
+    var recruiterModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#recruiterModal');
+    hireBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      hireModal.show();
+    });
+    (_document$querySelect = document.querySelector('.js-client-path')) === null || _document$querySelect === void 0 || _document$querySelect.addEventListener('click', function () {
+      hireModal.hide();
+      setTimeout(function () {
+        return clientModal.show();
+      }, 200);
+    });
+    (_document$querySelect2 = document.querySelector('.js-recruiter-path')) === null || _document$querySelect2 === void 0 || _document$querySelect2.addEventListener('click', function () {
+      hireModal.hide();
+      setTimeout(function () {
+        return recruiterModal.show();
+      }, 200);
+    });
+  });
+
+  // Auto-rotation of services tabs
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tabs = document.querySelectorAll('.services-nav .nav-link');
+    if (!tabs.length) return;
+    var index = 0;
+    var interval = null;
+    var ROTATION_DELAY = 8000; // 8s feels premium
+
+    var activateTab = function activateTab(i) {
+      tabs[i].click();
+    };
+    var startRotation = function startRotation() {
+      interval = setInterval(function () {
+        index = (index + 1) % tabs.length;
+        activateTab(index);
+      }, ROTATION_DELAY);
+    };
+    var stopRotation = function stopRotation() {
+      clearInterval(interval);
+      interval = null;
+    };
+
+    // Start rotation
+    startRotation();
+
+    // Pause on hover / interaction
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('mouseenter', stopRotation);
+      tab.addEventListener('focus', stopRotation);
+      tab.addEventListener('mouseleave', function () {
+        index = i;
+        startRotation();
+      });
+      tab.addEventListener('click', function () {
+        index = i;
+      });
+    });
+
+    // const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+    // if (!isTouch) {
+    // startRotation();
+    // }
+
+    // Duplicating Services Tab images for glowing backdrop effect
+
+    document.querySelectorAll('.service-image.foreground').forEach(function (img) {
+      // Prevent duplicate cloning
+      if (img.dataset.hasBackdrop) return;
+      var clone = img.cloneNode(true);
+      clone.classList.remove('foreground');
+      clone.classList.add('background');
+      clone.setAttribute('aria-hidden', 'true');
+      clone.loading = 'eager';
+      img.dataset.hasBackdrop = 'true';
+      img.parentNode.insertBefore(clone, img);
+    });
+  });
+
+  // Projects Marquee
+
+  (function () {
+    var marquee = document.querySelector('.projects-marquee');
+    var track = marquee === null || marquee === void 0 ? void 0 : marquee.querySelector('.marquee-track');
+    if (!track) return;
+
+    // Duplicate content for seamless loop
+    var items = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(track.children);
+    items.forEach(function (item) {
+      return track.appendChild(item.cloneNode(true));
+    });
+    var position = 0;
+    var speed = 0.6; // base speed
+    var targetSpeed = speed;
+    function animate() {
+      position -= targetSpeed;
+      var resetPoint = track.scrollWidth / 2;
+      if (Math.abs(position) >= resetPoint) {
+        position = 0;
+      }
+      track.style.transform = "translate3d(".concat(position, "px,0,0)");
+
+      // Smooth easing toward target speed
+      targetSpeed += (speed - targetSpeed) * 0.08;
+      requestAnimationFrame(animate);
+    }
+    marquee.addEventListener('mouseenter', function () {
+      speed = 0.05; // slow glide instead of stop
+    });
+    marquee.addEventListener('mouseleave', function () {
+      speed = 0.6;
+    });
+    animate();
+  })();
+
+  // Previous modal back button functionality
+
+  document.addEventListener('click', function (e) {
+    var backBtn = e.target.closest('.modal-back');
+    if (!backBtn) return;
+    var targetModal = backBtn.dataset.backTo;
+    var currentModal = backBtn.closest('.modal');
+    if (!targetModal || !currentModal) return;
+    var currentInstance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(currentModal);
+    currentInstance.hide();
+    var nextModalEl = document.querySelector(targetModal);
+    var nextInstance = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal(nextModalEl);
+    nextInstance.show();
+  });
+
+  // Make sure only mone modal is open at a time
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var _document$querySelect3, _document$querySelect4;
+    // -----------------------------
+    // Modal controller
+    // -----------------------------
+    function showModalSafely(targetSelector) {
+      var openModals = document.querySelectorAll('.modal.show');
+      if (openModals.length) {
+        var remaining = openModals.length;
+        openModals.forEach(function (modal) {
+          var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(modal);
+          if (!instance) {
+            remaining--;
+            return;
+          }
+          modal.addEventListener('hidden.bs.modal', function () {
+            remaining--;
+            if (remaining === 0) {
+              openTargetModal(targetSelector);
+            }
+          }, {
+            once: true
+          });
+          instance.hide();
+        });
+      } else {
+        openTargetModal(targetSelector);
+      }
+    }
+    function openTargetModal(targetSelector) {
+      var modalEl = document.querySelector(targetSelector);
+      if (!modalEl) return;
+
+      // 👇 Check if this is YOUR gym modal
+      var isGymModal = modalEl.classList.contains('dx-gym-share-modal');
+      var modal = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getOrCreateInstance(modalEl, {
+        backdrop: isGymModal ? false : 'static',
+        focus: true
+      });
+
+      // 🔥 ONLY run custom backdrop logic for gym modal
+      if (isGymModal) {
+        var archiveSection = document.querySelector('[data-gyms-archive]');
+        if (archiveSection) {
+          archiveSection.querySelectorAll('.modal-backdrop').forEach(function (el) {
+            return el.remove();
+          });
+          var backdrop = document.createElement('div');
+          backdrop.className = 'modal-backdrop fade show';
+          archiveSection.appendChild(backdrop);
+          backdrop.addEventListener('click', function () {
+            return modal.hide();
+          });
+        }
+        modalEl.addEventListener('hidden.bs.modal', function () {
+          document.querySelectorAll('[data-gyms-archive] .modal-backdrop').forEach(function (el) {
+            return el.remove();
+          });
+        }, {
+          once: true
+        });
+      }
+      modal.show();
+    }
+
+    // -----------------------------
+    // Step 2: Navigation bindings
+    // -----------------------------
+
+    // Client path
+    (_document$querySelect3 = document.querySelector('.js-client-path')) === null || _document$querySelect3 === void 0 || _document$querySelect3.addEventListener('click', function () {
+      showModalSafely('#clientModal');
+    });
+
+    // Recruiter path
+    (_document$querySelect4 = document.querySelector('.js-recruiter-path')) === null || _document$querySelect4 === void 0 || _document$querySelect4.addEventListener('click', function () {
+      showModalSafely('#recruiterModal');
+    });
+
+    // Back buttons (delegated)
+    document.addEventListener('click', function (e) {
+      var backBtn = e.target.closest('.modal-back');
+      if (!backBtn) return;
+      var target = backBtn.dataset.backTo;
+      if (!target) return;
+      showModalSafely(target);
+    });
+
+    // -----------------------------
+    // Step 3: Cleanup safety net
+    // -----------------------------
+    document.addEventListener('hidden.bs.modal', function () {
+      document.body.classList.remove('modal-open');
+      document.querySelectorAll('.modal-backdrop').forEach(function (b) {
+        return b.remove();
+      });
+    });
+  });
+
+  // Gallery marquee for Portfolio page
+
+  document.querySelectorAll('.gallery-marquee').forEach(function (marquee) {
+    var track = marquee.querySelector('.gallery-track');
+    if (!track) return;
+    var galleries = track.querySelectorAll('.wp-block-gallery');
+    if (galleries.length < 2) return;
+    var position = 0;
+    var speed = 0.5; // gallery pace (slower than projects)
+    var paused = false;
+    var galleryWidth = galleries[0].offsetWidth;
+    function animate() {
+      if (!paused) {
+        position -= speed;
+
+        // seamless loop
+        if (Math.abs(position) >= galleryWidth) {
+          position += galleryWidth;
+        }
+        track.style.transform = "translate3d(".concat(position, "px, 0, 0)");
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Pause on hover
+    marquee.addEventListener('mouseenter', function () {
+      return paused = true;
+    });
+    marquee.addEventListener('mouseleave', function () {
+      return paused = false;
+    });
+
+    // Pause when off-screen
+    var observer = new IntersectionObserver(function (entries) {
+      paused = !entries[0].isIntersecting;
+    }, {
+      threshold: 0.15
+    });
+    observer.observe(marquee);
+    animate();
+  });
+  function initSmartSearchSuggestions() {
+    var _params$get;
+    var suggestionsEl = document.querySelector('.search-suggestions');
+    if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
+    var searchInput = document.querySelector('input[type="search"]');
+    var params = new URLSearchParams(window.location.search);
+    var query = (searchInput === null || searchInput === void 0 ? void 0 : searchInput.value.trim()) || ((_params$get = params.get('s')) === null || _params$get === void 0 ? void 0 : _params$get.trim());
+    if (!query) return;
+    fetch("/wp-json/wp/v2/search?search=".concat(encodeURIComponent(query))).then(function (res) {
+      return res.json();
+    }).then(function (results) {
+      if (!Array.isArray(results) || !results.length) return;
+      var seen = new Set();
+      var fragment = document.createDocumentFragment();
+      results.slice(0, 6).forEach(function (item, index) {
+        if (!item.title || seen.has(item.title)) return;
+        seen.add(item.title);
+        var li = document.createElement('li');
+        li.style.setProperty('--delay', index);
+        li.innerHTML = "\n\t\t\t\t\t\t<a href=\"".concat(item.url, "\" class=\"search-suggestion\">\n\t\t\t\t\t\t\t<span class=\"suggestion-type\">\n\t\t\t\t\t\t\t\t").concat(item.subtype.replace('-', ' '), "\n\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t<div class=\"suggestion-content\">\n\t\t\t\t\t\t\t\t<span class=\"suggestion-label\">").concat(item.title, "</span>\n\t\t\t\t\t\t\t\t<span class=\"suggestion-arrow\">\u2192</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t");
+        fragment.appendChild(li);
+      });
+      if (!fragment.childNodes.length) return;
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.appendChild(fragment);
+      suggestionsEl.classList.add('is-visible');
+    }).catch(function () {
+      // silent fail
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    // Initialise search suggestions
+    initSmartSearchSuggestions();
+
+    // Visibility listener for Homepage Hero inner content
+    var hero = document.querySelector('.cover-content');
+    if (!hero) return;
+    requestAnimationFrame(function () {
+      hero.classList.add('is-revealed');
+    });
+  });
+
+  /* ==========================
+  CASE STUDY: STORY CONTROLLER (SIMPLIFIED)
+  ========================== */
+
+  function initStoryController() {
+    var _document$fonts;
+    var wrapper = document.querySelector('.chapters-wrapper');
+    var sections = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-section'));
+    var nav = document.querySelector('.chapter-selector');
+    var list = nav === null || nav === void 0 ? void 0 : nav.querySelector('ul');
+    if (!wrapper || !sections.length || !list) return;
+    // Only mark successful initialisation; pageshow reuses the existing listeners.
+    if (document.body.dataset.storyInit === 'true') return;
+    var chapters = sections.map(function (section) {
+      var chapter = section.querySelector('.cs-chapter[id]');
+      var title = chapter === null || chapter === void 0 ? void 0 : chapter.querySelector('h2.chapter-title');
+      return chapter && title ? {
+        section: section,
+        id: chapter.id,
+        title: title.textContent.trim()
+      } : null;
+    }).filter(Boolean);
+    if (!chapters.length) return;
+    document.body.dataset.storyInit = 'true';
+    document.documentElement.classList.add('case-study-document');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var frame = 0;
+    var activeIndex = -1;
+    var entered = false;
+    var pendingIndex = null;
+    var userInteracted = false;
+    var settleTimer = 0;
+    // CSS and explicit navigation share exactly the same landing offset.
+    var offset = function offset() {
+      return parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    };
+    var destination = function destination(index) {
+      return Math.max(0, window.scrollY + chapters[index].section.getBoundingClientRect().top - offset());
+    };
+    var readHash = function readHash() {
+      try {
+        return decodeURIComponent(window.location.hash.slice(1));
+      } catch (_unused2) {
+        return '';
+      }
+    };
+    var initialIndex = chapters.findIndex(function (chapter) {
+      return chapter.id === readHash();
+    });
+    var links = chapters.map(function (_ref8) {
+      var id = _ref8.id,
+        title = _ref8.title;
+      var li = document.createElement('li');
+      li.dataset.target = id;
+      var link = document.createElement('a');
+      link.href = '#' + encodeURIComponent(id);
+      var label = document.createElement('span');
+      label.textContent = title;
+      link.appendChild(label);
+      li.appendChild(link);
+      return {
+        li: li,
+        link: link
+      };
+    });
+    list.replaceChildren.apply(list, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(links.map(function (item) {
+      return item.li;
+    })));
+    var progress = nav.querySelector('.chapter-progress span');
+    if (!progress) {
+      var track = document.createElement('div');
+      track.className = 'chapter-progress';
+      progress = document.createElement('span');
+      track.appendChild(progress);
+      nav.appendChild(track);
+    }
+    var controls = document.createElement('div');
+    controls.className = 'chapter-step-controls';
+    var previous = document.createElement('button');
+    var next = document.createElement('button');
+    previous.type = next.type = 'button';
+    previous.textContent = '← Previous';
+    next.textContent = 'Next →';
+    previous.setAttribute('aria-label', 'Previous chapter');
+    next.setAttribute('aria-label', 'Next chapter');
+    controls.append(previous, next);
+    nav.appendChild(controls);
+    var backgrounds = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
+    var setActive = function setActive(index) {
+      if (index === activeIndex) return;
+      activeIndex = index;
+      previous.disabled = index === 0;
+      next.disabled = index === chapters.length - 1;
+      var chapter = chapters[index];
+      sections.forEach(function (section) {
+        return section.classList.toggle('viewport-active', section === chapter.section);
+      });
+      links.forEach(function (_ref9, i) {
+        var li = _ref9.li,
+          link = _ref9.link;
+        li.classList.toggle('is-active', i === index);
+        if (i === index) link.setAttribute('aria-current', 'location');else link.removeAttribute('aria-current');
+      });
+      backgrounds.forEach(function (bg) {
+        return bg.classList.toggle('is-active', bg.dataset.bg === chapter.id);
+      });
+      progress.style.transform = 'scaleY(' + (index + 1) / chapters.length + ')';
+    };
+    var update = function update() {
+      frame = 0;
+      var top = 0;
+      var height = window.innerHeight;
+      if (!height) return;
+      var rect = wrapper.getBoundingClientRect();
+      var line = height * .35;
+      // Controls only appear once the hero has cleared their reading position.
+      var inChapters = rect.top <= offset() + 1 && rect.bottom > height * .5;
+      document.body.classList.toggle('is-in-chapters', inChapters);
+      nav.inert = !inChapters || chapters.length < 2;
+      nav.setAttribute('aria-hidden', String(!inChapters || chapters.length < 2));
+      if (!inChapters) return;
+      // Use a viewport reading line, not a percentage of the entire chapter.
+      // A very tall chapter can never meet a high intersection-ratio threshold.
+
+      var index = 0;
+      chapters.forEach(function (chapter, i) {
+        if (chapter.section.getBoundingClientRect().top <= line) index = i;
+      });
+      backgrounds.forEach(function (bg) {
+        return bg.classList.toggle('is-active', bg.dataset.bg === chapters[index].id);
+      });
+      if (pendingIndex === null) setActive(index);
+      // Do not rewrite the URL merely because chapter 1 peeks under the hero.
+      if (rect.top <= line) entered = true;
+    };
+    var finishScroll = function finishScroll() {
+      clearTimeout(settleTimer);
+      // If interrupted, settle on the chapter actually reached.
+      pendingIndex = null;
+      update();
+      var currentHash = readHash();
+      var isChapterHash = chapters.some(function (chapter) {
+        return chapter.id === currentHash;
+      });
+      if (entered && document.body.classList.contains('is-in-chapters') && (!currentHash || isChapterHash) && currentHash !== chapters[activeIndex].id) {
+        var url = new URL(window.location.href);
+        url.hash = chapters[activeIndex].id;
+        history.replaceState(history.state, '', url);
+      }
+    };
+    var schedule = function schedule() {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    var goTo = function goTo(index) {
+      var smooth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      pendingIndex = index;
+      setActive(index);
+      var top = destination(index);
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: smooth && !reducedMotion.matches ? 'smooth' : 'instant'
+      });
+      schedule();
+      clearTimeout(settleTimer);
+      // Also handles clicking the current chapter (no scroll event).
+      settleTimer = setTimeout(finishScroll, 220);
+    };
+    previous.addEventListener('click', function () {
+      userInteracted = true;
+      entered = true;
+      goTo(Math.max(0, activeIndex - 1));
+    });
+    next.addEventListener('click', function () {
+      userInteracted = true;
+      entered = true;
+      goTo(Math.min(chapters.length - 1, activeIndex + 1));
+    });
+    links.forEach(function (_ref0, index) {
+      var link = _ref0.link;
+      return link.addEventListener('click', function (event) {
+        // Preserve modified clicks and opening a chapter in a new tab.
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        userInteracted = true;
+        entered = true;
+        goTo(index);
+        // Selection stays on the destination; backgrounds follow the visible chapter.
+      });
+    });
+    var onHashChange = function onHashChange() {
+      var index = chapters.findIndex(function (chapter) {
+        return chapter.id === readHash();
+      });
+      if (index >= 0) {
+        entered = true;
+        goTo(index, false);
+      }
+    };
+    window.addEventListener('scroll', function () {
+      schedule();
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(finishScroll, 180);
+    }, {
+      passive: true
+    });
+    // Native completion where available; the debounce remains a fallback.
+    document.addEventListener('scrollend', finishScroll);
+    var releaseNavigation = function releaseNavigation() {
+      userInteracted = true;
+      pendingIndex = null;
+      schedule();
+    };
+    window.addEventListener('wheel', releaseNavigation, {
+      passive: true
+    });
+    window.addEventListener('touchstart', releaseNavigation, {
+      passive: true
+    });
+    window.addEventListener('keydown', function (event) {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) releaseNavigation();
+    });
+    window.addEventListener('resize', schedule, {
+      passive: true
+    });
+    window.addEventListener('pageshow', function (event) {
+      if (!event.persisted && initialIndex >= 0 && !userInteracted) goTo(initialIndex, false);else schedule();
+    });
+    window.addEventListener('hashchange', onHashChange);
+    // Native wheel, touch and keyboard scrolling remain uninterrupted.
+    if (typeof ResizeObserver !== 'undefined') {
+      var observer = new ResizeObserver(schedule);
+      observer.observe(wrapper);
+      chapters.forEach(function (chapter) {
+        return observer.observe(chapter.section);
+      });
+    }
+    wrapper.addEventListener('load', schedule, true);
+    (_document$fonts = document.fonts) === null || _document$fonts === void 0 || _document$fonts.ready.then(schedule);
+    setActive(initialIndex >= 0 ? initialIndex : 0);
+    if (chapters.length < 2) nav.hidden = true;
+    update();
+    if (initialIndex >= 0) {
+      var _document$fonts2;
+      entered = true;
+      requestAnimationFrame(function () {
+        return goTo(initialIndex, false);
+      });
+      var eagerImages = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-hero img')).map(function (img) {
+        return img.complete ? Promise.resolve() : new Promise(function (resolve) {
+          img.addEventListener('load', resolve, {
+            once: true
+          });
+          img.addEventListener('error', resolve, {
+            once: true
+          });
+        });
+      });
+      Promise.all([(_document$fonts2 = document.fonts) === null || _document$fonts2 === void 0 ? void 0 : _document$fonts2.ready].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(eagerImages))).then(function () {
+        if (!userInteracted) goTo(initialIndex, false);
+      });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initStoryController);
+  window.addEventListener('pageshow', initStoryController);
+
+  /* ==========================
+  PROJECTS ARCHIVE
+  ========================== */
+
+  (function () {
+    var archive = document.querySelector('[data-projects-archive]');
+    if (!archive) return;
+    var grid = archive.querySelector('[data-projects-grid]');
+    var search = archive.querySelector('[data-project-search]');
+    var filterButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
+    var titleEl = archive.querySelector('[data-projects-state-title]');
+    var emptyEl = archive.querySelector('[data-projects-empty]');
+    if (!grid) return;
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(grid.querySelectorAll('.project-card'));
+    var activeMode = 'filter';
+    var activeValue = 'all';
+    var LABELS = {
+      all: 'All',
+      design: 'Design',
+      development: 'WordPress',
+      static: 'Static',
+      shopify: 'Shopify',
+      freelance: 'Freelance',
+      commercial: 'Commercial'
+    };
+    var updateTitle = function updateTitle() {
+      if (!titleEl) return;
+      titleEl.textContent = LABELS[activeValue] || 'All';
+    };
+    var matchesFilter = function matchesFilter(card) {
+      if (activeValue === 'all') return true;
+      if (activeMode === 'filter') {
+        var types = (card.getAttribute('data-type') || '').split(/\s+/).map(function (value) {
+          return value.trim();
+        }).filter(Boolean);
+        return types.includes(activeValue);
+      }
+      if (activeMode === 'context') {
+        return (card.getAttribute('data-context') || '') === activeValue;
+      }
+      return true;
+    };
+    var update = function update() {
+      var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
+      var visibleCount = 0;
+      allCards.forEach(function (card) {
+        var haystack = (card.getAttribute('data-search') || '').toLowerCase();
+        var searchOk = !q || haystack.includes(q);
+        var filterOk = matchesFilter(card);
+        var show = searchOk && filterOk;
+        card.hidden = !show;
+        if (show) {
+          visibleCount++;
+        }
+      });
+      if (emptyEl) {
+        emptyEl.hidden = visibleCount !== 0;
+      }
+      var count = archive.querySelector('[data-projects-count]');
+      if (count) count.textContent = String(visibleCount);
+      var countLabel = archive.querySelector('[data-projects-count-label]');
+      if (countLabel) countLabel.textContent = visibleCount === 1 ? 'project' : 'projects';
+      filterButtons.forEach(function (button) {
+        return button.setAttribute('aria-pressed', String(button.classList.contains('is-active')));
+      });
+      updateTitle();
+    };
+    filterButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        filterButtons.forEach(function (btn) {
+          return btn.classList.remove('is-active');
+        });
+        button.classList.add('is-active');
+        if (button.hasAttribute('data-filter')) {
+          activeMode = 'filter';
+          activeValue = button.getAttribute('data-filter') || 'all';
+        } else if (button.hasAttribute('data-context')) {
+          activeMode = 'context';
+          activeValue = button.getAttribute('data-context') || 'all';
+        }
+        update();
+      });
+    });
+    search === null || search === void 0 || search.addEventListener('input', update);
+    update();
+  })();
+
+  /* ==========================
+  GYMS ARCHIVE
+  ========================== */
+
+  (function (_buttons$find2, _archive$querySelecto3) {
+    var archive = document.querySelector('[data-gyms-archive]');
+    if (!archive) return;
+    var grid = archive.querySelector('[data-gyms-grid]');
+    var search = archive.querySelector('[data-gym-search]');
+    var sortSel = archive.querySelector('[data-gym-sort]');
+    var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('.gym-filter-buttons button'));
+    var viewBtns = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-gym-view]'));
+    var titleEl = archive.querySelector('[data-gyms-state-title]');
+    var emptyEl = archive.querySelector('[data-gyms-empty]');
+    var loadMore = archive.querySelector('[data-gyms-load-more]');
+    var compareBar = archive.querySelector('[data-gym-compare-bar]');
+    var compareCount = archive.querySelector('[data-gym-compare-count]');
+    var compareSelected = archive.querySelector('[data-gym-compare-selected]');
+    var compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
+    var compareClear = archive.querySelector('[data-gym-compare-clear]');
+    var compareShareButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-gym-compare-share]'));
+    var comparison = archive.querySelector('[data-gym-comparison]');
+    var comparisonTable = archive.querySelector('[data-gym-comparison-table]');
+    var comparisonClose = archive.querySelector('[data-gym-compare-close]');
+    var comparisonMapEl = archive.querySelector('[data-gym-comparison-map]');
+    var sharePanel = archive.querySelector('[data-gym-share-panel]');
+    var shareInput = archive.querySelector('[data-gym-share-input]');
+    var shareStatus = archive.querySelector('[data-gym-share-status]');
+    var shareCopyBtn = archive.querySelector('[data-gym-share-copy]');
+    var shareCloseBtn = archive.querySelector('[data-gym-share-close]');
+    if (!grid) return;
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(grid.querySelectorAll('[data-gym-card]'));
+    var league = initGymLeague(archive, allCards);
+    var LABELS = {
+      all: 'All',
+      davidlloyds: 'David Lloyd',
+      puregym: 'PureGym',
+      fitnessfirst: 'Fitness First',
+      gymbox: 'Gymbox',
+      virginactive: 'Virgin Active',
+      bodyworks: 'Bodyworks Gym',
+      thegymgroup: 'The Gym Group',
+      other: 'Other'
+    };
+    var assessedAmenities = new Set();
+    var amenities = document.createElement('fieldset');
+    amenities.className = 'league-amenity-filters';
+    var amenityLegend = document.createElement('legend');
+    amenityLegend.textContent = 'Assessed amenities';
+    amenities.append(amenityLegend);
+    var amenityOptions = [['gymScore', 'Gym'], ['swimScore', 'Swimming & Wetside Facilities'], ['cafeScore', 'Café & Work Area'], ['spaScore', 'Spa Retreat / Sauna Facilities']];
+    amenityOptions.forEach(function (_ref1) {
+      var _ref10 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref1, 2),
+        key = _ref10[0],
+        label = _ref10[1];
+      var option = document.createElement('label');
+      var input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = key;
+      input.addEventListener('change', function () {
+        if (input.checked) assessedAmenities.add(key);else assessedAmenities.delete(key);
+        visibleCount = 10;
+        update();
+      });
+      option.append(input, document.createTextNode(label));
+      amenities.append(option);
+    });
+    var toolbar = archive.querySelector('.filter-inputs');
+    var filterDisclosure = document.createElement('details');
+    filterDisclosure.className = 'league-filter-disclosure';
+    var filterSummary = document.createElement('summary');
+    filterSummary.textContent = 'Filters';
+    var filterPanel = document.createElement('div');
+    filterPanel.className = 'league-filter-panel';
+    var chainTitle = document.createElement('p');
+    chainTitle.textContent = 'Gym chains';
+    var resetFilters = document.createElement('button');
+    resetFilters.type = 'button';
+    resetFilters.textContent = 'Clear filters';
+    resetFilters.addEventListener('click', function () {
+      var _buttons$find;
+      assessedAmenities.clear();
+      amenities.querySelectorAll('input').forEach(function (input) {
+        input.checked = false;
+      });
+      (_buttons$find = buttons.find(function (button) {
+        return button.dataset.chain === 'all';
+      })) === null || _buttons$find === void 0 || _buttons$find.click();
+    });
+    filterPanel.append(chainTitle, archive.querySelector('.gym-filter-buttons'), amenities, resetFilters);
+    filterDisclosure.append(filterSummary, filterPanel);
+    toolbar.append(filterDisclosure);
+    filterDisclosure.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        filterDisclosure.open = false;
+        filterSummary.focus();
+      }
+    });
+    document.addEventListener('click', function (event) {
+      if (!filterDisclosure.contains(event.target)) filterDisclosure.open = false;
+    });
+    var activeChain = ((_buttons$find2 = buttons.find(function (btn) {
+      return btn.classList.contains('is-active');
+    })) === null || _buttons$find2 === void 0 ? void 0 : _buttons$find2.dataset.chain) || 'all';
+    var visibleCount = 10;
+    var selectedGyms = [];
+    var compareMap = null;
+    var compareMarkers = [];
+    var getBranch = function getBranch(el) {
+      return (el.getAttribute('data-branch') || '').trim().toLowerCase();
+    };
+    var getOverall = function getOverall(el) {
+      return parseFloat(el.getAttribute('data-overall')) || 0;
+    };
+    var getVisitedTs = function getVisitedTs(el) {
+      return parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
+    };
+    var updateTitle = function updateTitle() {
+      if (!titleEl) return;
+      var label = LABELS[activeChain] || 'All';
+      var signature = "".concat(label, "|").concat((search === null || search === void 0 ? void 0 : search.value) || '', "|").concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(assessedAmenities).join(','));
+      if (titleEl.dataset.filterSignature !== signature) {
+        titleEl.textContent = label;
+        titleEl.dataset.filterSignature = signature;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          titleEl.animate([{
+            backgroundSize: '0% 2px'
+          }, {
+            backgroundSize: '100% 2px'
+          }], {
+            duration: 450,
+            easing: 'ease-out'
+          });
+        }
+      }
+    };
+    var sortCards = function sortCards(cards) {
+      var mode = (sortSel === null || sortSel === void 0 ? void 0 : sortSel.value) || 'overall_desc';
+      var sorted = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(cards);
+      sorted.sort(function (a, b) {
+        var aBranch = getBranch(a);
+        var bBranch = getBranch(b);
+        var aOverall = getOverall(a);
+        var bOverall = getOverall(b);
+        var aDate = getVisitedTs(a);
+        var bDate = getVisitedTs(b);
+        switch (mode) {
+          case 'overall_desc':
+            return bOverall - aOverall || aBranch.localeCompare(bBranch);
+          case 'overall_asc':
+            return aOverall - bOverall || aBranch.localeCompare(bBranch);
+          case 'date_desc':
+            return bDate - aDate || aBranch.localeCompare(bBranch);
+          case 'date_asc':
+            return aDate - bDate || aBranch.localeCompare(bBranch);
+          case 'za':
+            return bBranch.localeCompare(aBranch);
+          case 'az':
+          default:
+            return aBranch.localeCompare(bBranch);
+        }
+      });
+      return sorted;
+    };
+    var getCardData = function getCardData(card) {
+      if (!card || typeof card.getAttribute !== 'function') {
+        return null;
+      }
+      return {
+        id: card.getAttribute('data-gym-id') || '',
+        branch: card.getAttribute('data-branch-label') || '',
+        chain: card.getAttribute('data-chain-label') || '',
+        link: card.getAttribute('data-link') || '',
+        visited: card.getAttribute('data-visited-label') || '—',
+        overall: parseFloat(card.getAttribute('data-overall')),
+        overallLabel: card.getAttribute('data-overall-label') || 'No rating',
+        membership: card.getAttribute('data-membership') || '—',
+        lat: parseFloat(card.getAttribute('data-lat')),
+        lng: parseFloat(card.getAttribute('data-lng')),
+        scores: {
+          gym: card.getAttribute('data-gym-score') || '',
+          swim: card.getAttribute('data-swim-score') || '',
+          spa: card.getAttribute('data-spa-score') || '',
+          cafe: card.getAttribute('data-cafe-score') || '',
+          clean: card.getAttribute('data-clean-score') || '',
+          parking: card.getAttribute('data-parking-score') || ''
+        }
+      };
+    };
+    var scoreLabel = function scoreLabel(value) {
+      if (value === '' || value === null || value === undefined) return '—';
+      return "".concat(value, "/10");
+    };
+    var getWinnerIdsForMetric = function getWinnerIdsForMetric(items, getter) {
+      var best = null;
+      var ids = [];
+      items.forEach(function (item) {
+        var value = getter(item);
+        if (value === '' || value === null || value === undefined || Number.isNaN(Number(value))) {
+          return;
+        }
+        var numeric = Number(value);
+        if (best === null || numeric > best) {
+          best = numeric;
+          ids.length = 0;
+          ids.push(item.id);
+        } else if (numeric === best) {
+          ids.push(item.id);
+        }
+      });
+      return ids;
+    };
+    var getShareUrl = function getShareUrl() {
+      var url = new URL(window.location.href);
+      if (selectedGyms.length) {
+        url.searchParams.set('compare', selectedGyms.join(','));
+      } else {
+        url.searchParams.delete('compare');
+      }
+      return url.toString();
+    };
+    var syncShareUrl = function syncShareUrl() {
+      var url = new URL(window.location.href);
+      if (selectedGyms.length) {
+        url.searchParams.set('compare', selectedGyms.join(','));
+      } else {
+        url.searchParams.delete('compare');
+      }
+      window.history.replaceState({}, '', url.toString());
+    };
+    var openSharePanel = function openSharePanel() {
+      if (!sharePanel || selectedGyms.length < 2) return;
+      sharePanel.hidden = false;
+      if (shareInput) {
+        shareInput.value = getShareUrl();
+        shareInput.focus();
+        shareInput.select();
+      }
+      if (shareStatus) {
+        shareStatus.textContent = '';
+      }
+      sharePanel.hidden = false;
+    };
+    var closeSharePanel = function closeSharePanel() {
+      if (!sharePanel) return;
+      sharePanel.hidden = true;
+      if (shareStatus) {
+        shareStatus.textContent = '';
+      }
+    };
+    var copyShareLink = function copyShareLink() {
+      var url = shareInput === null || shareInput === void 0 ? void 0 : shareInput.value;
+      if (!url || !shareCopyBtn) return;
+      var originalText = shareCopyBtn.dataset.originalText || shareCopyBtn.textContent;
+      shareCopyBtn.dataset.originalText = originalText;
+      var resetButtonState = function resetButtonState() {
+        window.setTimeout(function () {
+          shareCopyBtn.textContent = originalText;
+          shareCopyBtn.classList.remove('is-success', 'is-error');
+        }, 2000);
+      };
+      var setButtonState = function setButtonState(text, className) {
+        shareCopyBtn.textContent = text;
+        shareCopyBtn.classList.remove('is-success', 'is-error');
+        shareCopyBtn.classList.add(className);
+        resetButtonState();
+      };
+      var fallbackCopy = function fallbackCopy() {
+        var tempInput = document.createElement('textarea');
+        tempInput.value = url;
+        tempInput.setAttribute('readonly', 'readonly');
+        tempInput.style.position = 'fixed';
+        tempInput.style.top = '-9999px';
+        tempInput.style.left = '-9999px';
+        document.body.appendChild(tempInput);
+        tempInput.focus();
+        tempInput.select();
+        var copied = false;
+        try {
+          copied = document.execCommand('copy');
+        } catch (error) {
+          copied = false;
+        }
+        document.body.removeChild(tempInput);
+        if (copied) {
+          setButtonState('Link copied', 'is-success');
+        } else {
+          setButtonState('Copy failed', 'is-error');
+          shareInput === null || shareInput === void 0 || shareInput.focus();
+          shareInput === null || shareInput === void 0 || shareInput.select();
+        }
+      };
+      if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(function () {
+          setButtonState('Link copied', 'is-success');
+        }).catch(function () {
+          fallbackCopy();
+        });
+        return;
+      }
+      fallbackCopy();
+    };
+    var initComparisonMap = function initComparisonMap() {
+      if (!comparisonMapEl || typeof L === 'undefined') return null;
+      if (compareMap) return compareMap;
+      compareMap = L.map(comparisonMapEl, {
+        scrollWheelZoom: false,
+        zoomControl: true
+      });
+      L.tileLayer('https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(compareMap);
+      return compareMap;
+    };
+    var renderComparisonMap = function renderComparisonMap(items) {
+      if (!comparisonMapEl) return;
+      var mappable = items.filter(function (item) {
+        return !Number.isNaN(item.lat) && !Number.isNaN(item.lng);
+      });
+      comparisonMapEl.hidden = mappable.length === 0;
+      if (!mappable.length) return;
+      var map = initComparisonMap();
+      if (!map) return;
+      compareMarkers.forEach(function (marker) {
+        return marker.remove();
+      });
+      compareMarkers = [];
+      var points = [];
+      mappable.forEach(function (item) {
+        var point = [item.lat, item.lng];
+        points.push(point);
+        var marker = L.marker(point).addTo(map).bindPopup("<strong>".concat(item.branch, "</strong><br>").concat(item.chain).concat(item.overallLabel ? "<br>".concat(item.overallLabel) : ''));
+        compareMarkers.push(marker);
+      });
+      window.setTimeout(function () {
+        map.invalidateSize();
+        if (points.length === 1) {
+          map.setView(points[0], 12);
+        } else {
+          map.fitBounds(points, {
+            padding: [40, 40]
+          });
+        }
+      }, 100);
+    };
+    var renderComparison = function renderComparison() {
+      if (!comparison || !comparisonTable) return;
+      if (selectedGyms.length < 2) {
+        comparison.hidden = true;
+        comparisonTable.innerHTML = '';
+        if (comparisonMapEl) comparisonMapEl.hidden = true;
+        return;
+      }
+      var items = selectedGyms.map(function (id) {
+        return allCards.find(function (card) {
+          return card.getAttribute('data-gym-id') === id;
+        });
+      }).filter(Boolean).map(getCardData).filter(Boolean);
+      if (items.length < 2) {
+        comparison.hidden = true;
+        comparisonTable.innerHTML = '';
+        if (comparisonMapEl) comparisonMapEl.hidden = true;
+        return;
+      }
+      var rows = [{
+        label: 'Overall',
+        format: function format(item) {
+          return item.overallLabel;
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.overall;
+        })
+      }, {
+        label: 'Gym',
+        format: function format(item) {
+          return scoreLabel(item.scores.gym);
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.gym;
+        })
+      }, {
+        label: 'Swimming & Wetside Facilities',
+        format: function format(item) {
+          return scoreLabel(item.scores.swim);
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.swim;
+        })
+      }, {
+        label: 'Spa Retreat',
+        format: function format(item) {
+          return "".concat(item.chain.toLowerCase() === 'gymbox' ? 'Sauna Facilities: ' : '').concat(scoreLabel(item.scores.spa));
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.spa;
+        })
+      }, {
+        label: 'Café & Work Area',
+        format: function format(item) {
+          return "".concat(item.chain.toLowerCase().startsWith('david lloyd') ? 'Clubroom: ' : '').concat(scoreLabel(item.scores.cafe));
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.cafe;
+        })
+      }, {
+        label: 'Cleanliness & Maintenance',
+        format: function format(item) {
+          return scoreLabel(item.scores.clean);
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.clean;
+        })
+      }, {
+        label: 'Parking',
+        format: function format(item) {
+          return scoreLabel(item.scores.parking);
+        },
+        winners: getWinnerIdsForMetric(items, function (item) {
+          return item.scores.parking;
+        })
+      }, {
+        label: 'Membership',
+        format: function format(item) {
+          return item.membership || '—';
+        },
+        winners: []
+      }, {
+        label: 'Visited',
+        format: function format(item) {
+          return item.visited || '—';
+        },
+        winners: []
+      }];
+      comparisonTable.innerHTML = "\n\t\t\t\t<div class=\"dx-gym-comparison__table\">\n\t\t\t\t\t<div class=\"dx-gym-comparison__row dx-gym-comparison__row--head ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t\t\t").concat(items.map(function (item) {
+        return "\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t\t\t<h3 class=\"branch-name\">".concat(item.branch, "</h3>\n\t\t\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
+      }).join(''), "\n\t\t\t\t\t</div>\n\t\t\t\t\t").concat(rows.map(function (row) {
+        return "\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__row ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">").concat(row.label, "</div>\n\t\t\t\t\t\t\t").concat(items.map(function (item) {
+          return "\n\t\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell ".concat(row.winners.includes(item.id) ? 'is-winner' : '', "\">\n\t\t\t\t\t\t\t\t\t").concat(row.format(item), "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t");
+        }).join(''), "\n\t\t\t\t\t\t</div>\n\t\t\t\t\t");
+      }).join(''), "\n\t\t\t\t</div>\n\t\t\t");
+      renderComparisonMap(items);
+    };
+    var updateCompareBar = function updateCompareBar() {
+      if (!compareBar || !compareCount || !compareSelected || !compareTrigger || !compareClear) return;
+      var atLimit = selectedGyms.length >= 3;
+      var hasEnoughToCompare = selectedGyms.length >= 2;
+      compareBar.hidden = selectedGyms.length === 0;
+      compareBar.classList.toggle('is-visible', selectedGyms.length > 0);
+      compareCount.textContent = String(selectedGyms.length);
+      compareTrigger.disabled = !hasEnoughToCompare;
+      compareClear.disabled = selectedGyms.length === 0;
+      compareShareButtons.forEach(function (button) {
+        button.disabled = !hasEnoughToCompare;
+      });
+      compareSelected.innerHTML = selectedGyms.map(function (id) {
+        var card = allCards.find(function (item) {
+          return item.getAttribute('data-gym-id') === id;
+        });
+        var label = (card === null || card === void 0 ? void 0 : card.getAttribute('data-branch-label')) || 'Gym';
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'dx-gym-compare-chip';
+        chip.dataset.removeGym = id;
+        chip.textContent = label + ' ×';
+        chip.setAttribute('aria-label', 'Remove ' + label + ' from comparison');
+        return chip.outerHTML;
+      }).join('');
+      allCards.forEach(function (card) {
+        var id = card.getAttribute('data-gym-id');
+        var toggle = card.querySelector('[data-gym-compare-toggle]');
+        if (!toggle) return;
+        var isSelected = selectedGyms.includes(id);
+        var shouldDisable = atLimit && !isSelected;
+        toggle.classList.toggle('is-active', isSelected);
+        toggle.classList.toggle('is-disabled', shouldDisable);
+        toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        toggle.disabled = shouldDisable;
+      });
+      if (selectedGyms.length < 2) {
+        closeSharePanel();
+      }
+      syncShareUrl();
+    };
+    var observedLast = null;
+    var moreObserver = new IntersectionObserver(function (entries) {
+      if (!entries.some(function (entry) {
+        return entry.isIntersecting && entry.target === observedLast;
+      })) return;
+      moreObserver.disconnect();
+      observedLast = null;
+      visibleCount += 10;
+      update();
+    }, {
+      rootMargin: '0px 0px 180px 0px',
+      threshold: 0
+    });
+    var update = function update() {
+      var activeFilters = assessedAmenities.size + (activeChain === 'all' ? 0 : 1);
+      filterSummary.textContent = activeFilters ? "Filters (".concat(activeFilters, ")") : 'Filters';
+      var q = ((search === null || search === void 0 ? void 0 : search.value) || '').trim().toLowerCase();
+      var eligible = allCards.filter(function (card) {
+        var chain = card.getAttribute('data-chain') || 'unknown';
+        var chainOk = activeChain === 'all' || chain === activeChain || activeChain === 'other' && !Object.prototype.hasOwnProperty.call(LABELS, chain);
+        var haystack = (card.getAttribute('data-search') || '').toLowerCase();
+        var searchOk = !q || haystack.includes(q);
+        var amenitiesOk = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(assessedAmenities).every(function (key) {
+          var value = card.dataset[key];
+          return value !== undefined && value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0;
+        });
+        return chainOk && searchOk && amenitiesOk;
+      });
+      var ordered = sortCards(eligible);
+      ordered.forEach(function (card) {
+        return grid.appendChild(card);
+      });
+      allCards.forEach(function (card) {
+        card.hidden = true;
+      });
+      ordered.slice(0, visibleCount).forEach(function (card) {
+        card.hidden = false;
+      });
+      if (emptyEl) {
+        emptyEl.hidden = ordered.length !== 0;
+      }
+      moreObserver.disconnect();
+      observedLast = ordered.length > visibleCount ? ordered[Math.min(visibleCount, ordered.length) - 1] : null;
+      if (observedLast) moreObserver.observe(observedLast);
+      updateTitle();
+      league.update(ordered, visibleCount);
+    };
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) {
+          b.classList.remove('is-active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.setAttribute('aria-pressed', 'true');
+        btn.classList.add('is-active');
+        activeChain = btn.dataset.chain || 'all';
+        visibleCount = 10;
+        update();
+      });
+    });
+    archive.addEventListener('league-view-change', update);
+    search === null || search === void 0 || search.addEventListener('input', function () {
+      visibleCount = 10;
+      update();
+    });
+    sortSel === null || sortSel === void 0 || sortSel.addEventListener('change', function () {
+      visibleCount = 10;
+      update();
+    });
+    viewBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        viewBtns.forEach(function (b) {
+          return b.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        var view = btn.getAttribute('data-gym-view') || 'cards';
+        archive.setAttribute('data-view', view);
+      });
+    });
+    grid === null || grid === void 0 || grid.addEventListener('click', function (e) {
+      var toggle = e.target.closest('[data-notes-toggle]');
+      if (!toggle) return;
+      var card = toggle.closest('[data-gym-card]');
+      var panel = card === null || card === void 0 ? void 0 : card.querySelector('[data-notes-panel]');
+      if (!card || !panel) return;
+      var isOpen = card.classList.contains('is-notes-open');
+      card.classList.toggle('is-notes-open', !isOpen);
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+    grid === null || grid === void 0 || grid.addEventListener('click', function (e) {
+      var compareBtn = e.target.closest('[data-gym-compare-toggle]');
+      if (!compareBtn || compareBtn.disabled) return;
+      var card = compareBtn.closest('[data-gym-card]');
+      if (!card) return;
+      var id = card.getAttribute('data-gym-id');
+      if (!id) return;
+      if (selectedGyms.includes(id)) {
+        selectedGyms = selectedGyms.filter(function (item) {
+          return item !== id;
+        });
+      } else {
+        if (selectedGyms.length >= 3) return;
+        selectedGyms = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(selectedGyms), [id]);
+      }
+      updateCompareBar();
+      renderComparison();
+    });
+    compareTrigger === null || compareTrigger === void 0 || compareTrigger.addEventListener('click', function () {
+      renderComparison();
+      comparison === null || comparison === void 0 || comparison.removeAttribute('hidden');
+      comparison === null || comparison === void 0 || comparison.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    });
+    compareSelected === null || compareSelected === void 0 || compareSelected.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-remove-gym]');
+      if (!button) return;
+      selectedGyms = selectedGyms.filter(function (id) {
+        return id !== button.dataset.removeGym;
+      });
+      updateCompareBar();
+      renderComparison();
+    });
+    compareClear === null || compareClear === void 0 || compareClear.addEventListener('click', function () {
+      selectedGyms = [];
+      updateCompareBar();
+      renderComparison();
+    });
+    compareShareButtons.forEach(function (btn) {
+      btn.addEventListener('click', openSharePanel);
+    });
+    shareCopyBtn === null || shareCopyBtn === void 0 || shareCopyBtn.addEventListener('click', copyShareLink);
+    shareCloseBtn === null || shareCloseBtn === void 0 || shareCloseBtn.addEventListener('click', closeSharePanel);
+    comparisonClose === null || comparisonClose === void 0 || comparisonClose.addEventListener('click', function () {
+      if (comparison) {
+        comparison.hidden = true;
+      }
+    });
+    var compareParam = new URLSearchParams(window.location.search).get('compare');
+    if (compareParam) {
+      selectedGyms = compareParam.split(',').map(function (id) {
+        return id.trim();
+      }).filter(function (id) {
+        return allCards.some(function (card) {
+          return card.getAttribute('data-gym-id') === id;
+        });
+      }).slice(0, 3);
+      if (selectedGyms.length >= 2) {
+        renderComparison();
+        comparison === null || comparison === void 0 || comparison.removeAttribute('hidden');
+        window.setTimeout(function () {
+          comparison === null || comparison === void 0 || comparison.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100);
+      }
+    }
+    var initialViewBtn = viewBtns.find(function (btn) {
+      return btn.classList.contains('is-active');
+    });
+    archive.setAttribute('data-view', (initialViewBtn === null || initialViewBtn === void 0 ? void 0 : initialViewBtn.getAttribute('data-gym-view')) || 'cards');
+    var animatedCards = new WeakSet();
+    var animateCardBars = function animateCardBars(card) {
+      if (!card || animatedCards.has(card)) return;
+      var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(card.querySelectorAll('.dx-score-bar span'));
+      if (!bars.length) return;
+      animatedCards.add(card);
+      bars.forEach(function (bar, index) {
+        var pct = getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
+        bar.style.transform = 'scaleX(0)';
+        window.setTimeout(function () {
+          bar.style.transform = "scaleX(".concat(pct, ")");
+        }, index * 100);
+      });
+    };
+    var cardObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCardBars(entry.target);
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -10% 0px'
+    });
+    allCards.forEach(function (card) {
+      cardObserver.observe(card);
+    });
+    updateCompareBar();
+    renderComparison();
+    update();
+    archive.classList.remove('is-loading');
+    archive.removeAttribute('aria-busy');
+    (_archive$querySelecto3 = archive.querySelector('.league-loading')) === null || _archive$querySelecto3 === void 0 || _archive$querySelecto3.remove();
+  })();
+
+  /* ==========================
+  GYM VIEWPORT-ACTIVE (DEDICATED)
+  ========================== */
+
+  // The league can be taller than the viewport; do not gate it on scroll ratios.
+  (_document$querySelect5 = document.querySelector('[data-gyms-archive]')) === null || _document$querySelect5 === void 0 || (_document$querySelect5 = _document$querySelect5.closest('section')) === null || _document$querySelect5 === void 0 || _document$querySelect5.classList.add('viewport-active');
+
+  /* ==========================
+  BUS DIARY
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var busEntry = document.querySelector('.bus-diary-entry');
+    if (!busEntry) return;
+    var mapEl = busEntry.querySelector('[data-bus-map]');
+    var dock = busEntry.querySelector('[data-bus-dock]');
+    var paneStage = busEntry.querySelector('[data-bus-pane-stage]');
+    var toggleButtons = dock ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(dock.querySelectorAll('[data-view-toggle]')) : [];
+    var paneViews = paneStage ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(paneStage.querySelectorAll('.bus-pane-view[data-pane-view]')) : [];
+
+    /* ==========================
+    BUS MAP
+    ========================== */
+
+    if (mapEl) {
+      var route = mapEl.dataset.route || '';
+      var startName = mapEl.dataset.startName || 'Start';
+      var endName = mapEl.dataset.endName || 'End';
+      console.log('Bus map ready:', {
+        route: route,
+        start: startName,
+        end: endName
+      });
+      if (typeof L !== 'undefined') {
+        var startLat = parseFloat(mapEl.dataset.startLat);
+        var startLng = parseFloat(mapEl.dataset.startLng);
+        var endLat = parseFloat(mapEl.dataset.endLat);
+        var endLng = parseFloat(mapEl.dataset.endLng);
+        var hasStart = !Number.isNaN(startLat) && !Number.isNaN(startLng);
+        var hasEnd = !Number.isNaN(endLat) && !Number.isNaN(endLng);
+        if (!hasStart && !hasEnd) {
+          mapEl.innerHTML = '<div class="bus-map__empty">No journey coordinates added yet.</div>';
+        } else {
+          var map = L.map(mapEl, {
+            scrollWheelZoom: false,
+            zoomControl: true
+          });
+          L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+          }).addTo(map);
+          var points = [];
+          var startIcon = L.divIcon({
+            className: 'bus-map-marker bus-map-marker--start',
+            html: '<span></span>',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+          });
+          var endIcon = L.divIcon({
+            className: 'bus-map-marker bus-map-marker--end',
+            html: '<span></span>',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+          });
+          if (hasStart) {
+            var startPoint = [startLat, startLng];
+            points.push(startPoint);
+            L.marker(startPoint, {
+              icon: startIcon
+            }).addTo(map).bindPopup("<strong>".concat(startName, "</strong>").concat(route ? "<br>Route ".concat(route) : ''));
+          }
+          if (hasEnd) {
+            var endPoint = [endLat, endLng];
+            points.push(endPoint);
+            L.marker(endPoint, {
+              icon: endIcon
+            }).addTo(map).bindPopup("<strong>".concat(endName, "</strong>").concat(route ? "<br>Route ".concat(route) : ''));
+          }
+          if (hasStart && hasEnd) {
+            L.polyline([[startLat, startLng], [endLat, endLng]], {
+              color: '#ffffff',
+              weight: 4,
+              opacity: 0.85
+            }).addTo(map);
+          }
+          if (points.length === 1) {
+            map.setView(points[0], 13);
+          } else {
+            map.fitBounds(points, {
+              padding: [40, 40]
+            });
+          }
+          window.addEventListener('resize', function () {
+            map.invalidateSize();
+          });
+        }
+      }
+    }
+
+    /* ==========================
+    BUS DIARY STATE SWITCHING
+    Only the left pane changes state
+    ========================== */
+
+    if (dock && paneStage && toggleButtons.length && paneViews.length) {
+      var setActivePane = function setActivePane(viewName) {
+        paneViews.forEach(function (view) {
+          view.classList.toggle('is-active', view.dataset.paneView === viewName);
+        });
+        toggleButtons.forEach(function (button) {
+          var isActive = button.dataset.viewToggle === viewName;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        if (viewName === 'map') {
+          window.dispatchEvent(new Event('resize'));
+        }
+      };
+      toggleButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var viewName = button.dataset.viewToggle;
+          if (!viewName) return;
+          setActivePane(viewName);
+        });
+      });
+      var activeButton = dock.querySelector('[data-view-toggle].is-active');
+      setActivePane((activeButton === null || activeButton === void 0 ? void 0 : activeButton.dataset.viewToggle) || 'map');
+    }
+
+    /* ==========================
+    BUS PANEL TOGGLES
+    ========================== */
+
+    var panelToggleButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(busEntry.querySelectorAll('[data-bus-panel-toggle]'));
+    var panels = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(busEntry.querySelectorAll('[data-bus-panel]'));
+    if (panelToggleButtons.length && panels.length) {
+      panelToggleButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.dataset.busPanelToggle;
+          if (!key) return;
+          var panel = busEntry.querySelector("[data-bus-panel=\"".concat(key, "\"]"));
+          if (!panel) return;
+          var isHidden = panel.hasAttribute('hidden');
+          panels.forEach(function (p) {
+            return p.setAttribute('hidden', 'hidden');
+          });
+          if (isHidden) {
+            panel.removeAttribute('hidden');
+          }
+        });
+      });
+    }
+
+    /* ==========================
+    TFL DEPARTURES NEAR YOU
+    ========================== */
+
+    var departuresRoot = busEntry.querySelector('[data-bus-departures]');
+    if (!departuresRoot) return;
+    var locateBtn = departuresRoot.querySelector('[data-bus-locate]');
+    var statusEl = departuresRoot.querySelector('[data-bus-status]');
+    var stopsEl = departuresRoot.querySelector('[data-bus-stops]');
+    var resultsEl = departuresRoot.querySelector('[data-bus-results]');
+    if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
+    if (locateBtn.dataset.busLocateBound === 'true') return;
+    locateBtn.dataset.busLocateBound = 'true';
+    var hasBusConfig = typeof DX_BUS_DIARY !== 'undefined' && DX_BUS_DIARY && DX_BUS_DIARY.rest_url;
+    var restBase = hasBusConfig ? DX_BUS_DIARY.rest_url.replace(/\/$/, '') : '';
+    var setStatus = function setStatus(message) {
+      statusEl.textContent = message;
+    };
+    var minsLabel = function minsLabel(seconds) {
+      if (seconds === null || seconds === undefined) return '—';
+      var mins = Math.round(seconds / 60);
+      if (mins <= 0) return 'Due';
+      return "".concat(mins, " min");
+    };
+    var renderArrivals = function renderArrivals(arrivals) {
+      if (!arrivals.length) {
+        resultsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t\t<div class=\"bus-arrival-main\">No live departures found.</div>\n\t\t\t\t\t</div>\n\t\t\t\t";
+        return;
+      }
+      resultsEl.innerHTML = arrivals.map(function (item) {
+        return "\n\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t<div class=\"bus-arrival-main\">\n\t\t\t\t\t\t<div class=\"bus-arrival-line\">".concat(item.lineName || 'Bus', "</div>\n\t\t\t\t\t\t<div class=\"bus-arrival-destination\">").concat(item.destinationName || 'Unknown destination', "</div>\n\t\t\t\t\t\t<div class=\"bus-arrival-meta\">").concat(item.towards || '', "</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"bus-arrival-time\">").concat(minsLabel(item.timeToStation), "</div>\n\t\t\t\t</div>\n\t\t\t");
+      }).join('');
+    };
+    var loadArrivals = /*#__PURE__*/function () {
+      var _ref11 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee2(stopId, stopName) {
+        var res, data, _t;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              setStatus("Loading departures for ".concat(stopName, "\u2026"));
+              resultsEl.innerHTML = '';
+              _context2.prev = 1;
+              _context2.next = 2;
+              return fetch("".concat(restBase, "/tfl-stop-arrivals?stop_id=").concat(encodeURIComponent(stopId)), {
+                headers: {
+                  'X-WP-Nonce': DX_BUS_DIARY.nonce
+                }
+              });
+            case 2:
+              res = _context2.sent;
+              _context2.next = 3;
+              return res.json();
+            case 3:
+              data = _context2.sent;
+              if (data.success) {
+                _context2.next = 4;
+                break;
+              }
+              throw new Error(data.message || 'Could not load arrivals.');
+            case 4:
+              setStatus("Showing live departures for ".concat(stopName));
+              renderArrivals(data.arrivals || []);
+              _context2.next = 6;
+              break;
+            case 5:
+              _context2.prev = 5;
+              _t = _context2["catch"](1);
+              setStatus('Unable to load live departures right now.');
+              resultsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-arrival-card\">\n\t\t\t\t\t\t<div class=\"bus-arrival-main\">".concat(_t.message, "</div>\n\t\t\t\t\t</div>\n\t\t\t\t");
+            case 6:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, null, [[1, 5]]);
+      }));
+      return function loadArrivals(_x2, _x3) {
+        return _ref11.apply(this, arguments);
+      };
+    }();
+    var renderStops = function renderStops(stops) {
+      if (!stops.length) {
+        stopsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-stop-card\">\n\t\t\t\t\t\t<p>No nearby bus stops found.</p>\n\t\t\t\t\t</div>\n\t\t\t\t";
+        resultsEl.innerHTML = '';
+        return;
+      }
+      stopsEl.innerHTML = stops.map(function (stop, index) {
+        var _stop$distance;
+        return "\n\t\t\t\t<button\n\t\t\t\t\ttype=\"button\"\n\t\t\t\t\tclass=\"bus-stop-card ".concat(index === 0 ? 'is-active' : '', "\"\n\t\t\t\t\tdata-stop-id=\"").concat(stop.id, "\"\n\t\t\t\t\tdata-stop-name=\"").concat(stop.name, "\"\n\t\t\t\t>\n\t\t\t\t\t<h4>").concat(stop.name, "</h4>\n\t\t\t\t\t<p>").concat((_stop$distance = stop.distance) !== null && _stop$distance !== void 0 ? _stop$distance : '—', "m away ").concat(stop.indicator ? "\u2022 Stop ".concat(stop.indicator) : '', "</p>\n\t\t\t\t</button>\n\t\t\t");
+      }).join('');
+      var stopButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(stopsEl.querySelectorAll('[data-stop-id]'));
+      stopButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          stopButtons.forEach(function (b) {
+            return b.classList.remove('is-active');
+          });
+          btn.classList.add('is-active');
+          loadArrivals(btn.dataset.stopId, btn.dataset.stopName);
+        });
+      });
+      loadArrivals(stops[0].id, stops[0].name);
+    };
+    locateBtn.addEventListener('click', function () {
+      if (!hasBusConfig) {
+        setStatus('Live departures are not configured yet.');
+        resultsEl.innerHTML = '';
+        stopsEl.innerHTML = "\n\t\t\t\t\t<div class=\"bus-stop-card\">\n\t\t\t\t\t\t<p>DX_BUS_DIARY is missing or not localised into the page.</p>\n\t\t\t\t\t</div>\n\t\t\t\t";
+        console.warn('DX_BUS_DIARY is missing from the page.');
+        return;
+      }
+      setStatus('Getting your location…');
+      stopsEl.innerHTML = '';
+      resultsEl.innerHTML = '';
+      navigator.geolocation.getCurrentPosition(/*#__PURE__*/function () {
+        var _ref12 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee3(position) {
+          var _position$coords, latitude, longitude, res, data, _t2;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context3) {
+            while (1) switch (_context3.prev = _context3.next) {
+              case 0:
+                _position$coords = position.coords, latitude = _position$coords.latitude, longitude = _position$coords.longitude;
+                _context3.prev = 1;
+                _context3.next = 2;
+                return fetch("".concat(restBase, "/tfl-nearby-stops?lat=").concat(encodeURIComponent(latitude), "&lng=").concat(encodeURIComponent(longitude), "&radius=600"), {
+                  headers: {
+                    'X-WP-Nonce': DX_BUS_DIARY.nonce
+                  }
+                });
+              case 2:
+                res = _context3.sent;
+                _context3.next = 3;
+                return res.json();
+              case 3:
+                data = _context3.sent;
+                if (data.success) {
+                  _context3.next = 4;
+                  break;
+                }
+                throw new Error(data.message || 'Could not load nearby stops.');
+              case 4:
+                setStatus('Nearby stops found.');
+                renderStops(data.stops || []);
+                _context3.next = 6;
+                break;
+              case 5:
+                _context3.prev = 5;
+                _t2 = _context3["catch"](1);
+                setStatus('Unable to find nearby stops right now.');
+                stopsEl.innerHTML = "\n\t\t\t\t\t\t\t<div class=\"bus-stop-card\">\n\t\t\t\t\t\t\t\t<p>".concat(_t2.message, "</p>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }, _callee3, null, [[1, 5]]);
+        }));
+        return function (_x4) {
+          return _ref12.apply(this, arguments);
+        };
+      }(), function (error) {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setStatus('Location access was denied.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setStatus('Your location is currently unavailable.');
+            break;
+          case error.TIMEOUT:
+            setStatus('Location request timed out.');
+            break;
+          default:
+            setStatus('Unable to get your location right now.');
+        }
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      });
+    });
+  });
+
+  /* ==========================
+  GEO RESTRICTION
+  ========================== */
+
+  (function () {
+    'use strict';
+
+    var BLOCKED_COUNTRIES = ['IL'];
+    var RESTRICTED_PATH = '/access-restricted/';
+    var BODY_CLASS = 'error405';
+    var DEV_PARAM = 'geo';
+    var normaliseCountryCode = function normaliseCountryCode(value) {
+      if (!value || typeof value !== 'string') return '';
+      return value.trim().toUpperCase();
+    };
+    var getCountryCode = function getCountryCode() {
+      var _document$body;
+      var params = new URLSearchParams(window.location.search);
+      var override = normaliseCountryCode(params.get(DEV_PARAM));
+
+      // Local/dev testing: ?geo=US
+      if (override) {
+        return override;
+      }
+
+      // Optional global value if you expose it elsewhere
+      if (typeof window.CF_IPCountry !== 'undefined') {
+        return normaliseCountryCode(window.CF_IPCountry);
+      }
+
+      // Cloudflare header values are not directly readable in frontend JS
+      // unless you expose them yourself server-side.
+      var bodyCountry = normaliseCountryCode((_document$body = document.body) === null || _document$body === void 0 || (_document$body = _document$body.dataset) === null || _document$body === void 0 ? void 0 : _document$body.country);
+      if (bodyCountry) {
+        return bodyCountry;
+      }
+      return '';
+    };
+    var isRestrictedPage = function isRestrictedPage() {
+      var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+      var restrictedPath = RESTRICTED_PATH.replace(/\/+$/, '') || '/';
+      return currentPath === restrictedPath;
+    };
+    var shouldBlockCountry = function shouldBlockCountry(countryCode) {
+      if (!countryCode) return false;
+      return BLOCKED_COUNTRIES.includes(countryCode);
+    };
+    var applyBlockedState = function applyBlockedState() {
+      document.body.classList.add(BODY_CLASS);
+      document.documentElement.classList.add(BODY_CLASS);
+    };
+    var redirectToRestrictedPage = function redirectToRestrictedPage(countryCode) {
+      var url = new URL(RESTRICTED_PATH, window.location.origin);
+
+      // Optional: pass through debug info for testing/inspection
+      url.searchParams.set('geo', countryCode);
+      window.location.replace(url.toString());
+    };
+    var initGeoRestriction = function initGeoRestriction() {
+      var countryCode = getCountryCode();
+      var blocked = shouldBlockCountry(countryCode);
+      var onRestrictedPage = isRestrictedPage();
+
+      // Debug helpers
+      window.DX_GEO_DEBUG = {
+        countryCode: countryCode,
+        blocked: blocked,
+        onRestrictedPage: onRestrictedPage,
+        blockedCountries: [].concat(BLOCKED_COUNTRIES)
+      };
+      if (!blocked) {
+        return;
+      }
+      applyBlockedState();
+      if (!onRestrictedPage) {
+        redirectToRestrictedPage(countryCode);
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initGeoRestriction);
+    } else {
+      initGeoRestriction();
+    }
+  })();
+
+  /* ==========================
+  CALENDLY POPUP
+  ========================== */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendlyButtons = document.querySelectorAll('.js-calendly-popup');
+    if (!calendlyButtons.length) return;
+    calendlyButtons.forEach(function (button) {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (typeof Calendly === 'undefined' || typeof Calendly.initPopupWidget !== 'function') {
+          console.warn('Calendly widget script is not loaded yet.');
+          return;
+        }
+        Calendly.initPopupWidget({
+          url: 'https://calendly.com/dxndre/30min'
+        });
+      });
+    });
+    console.log('Calendly popup initialized for buttons:', calendlyButtons);
+  });
+
+  /* ==========================
+  	BUS NFS ARCHIVE
+  ========================== */
+
+  (function () {
+    var archive = document.querySelector('[data-bus-nfs]');
+    if (!archive) return;
+    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-bus-slide]'));
+    var prevBtn = archive.querySelector('[data-bus-prev]');
+    var nextBtn = archive.querySelector('[data-bus-next]');
+    var currentEl = archive.querySelector('[data-bus-current]');
+    if (!slides.length) return;
+    var currentIndex = 0;
+    var locked = false;
+    var pad = function pad(number) {
+      return String(number).padStart(2, '0');
+    };
+    var setActiveSlide = function setActiveSlide(index) {
+      currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach(function (slide, slideIndex) {
+        slide.classList.toggle('is-active', slideIndex === currentIndex);
+        slide.classList.toggle('is-before', slideIndex < currentIndex);
+        slide.classList.toggle('is-after', slideIndex > currentIndex);
+      });
+      if (currentEl) {
+        currentEl.textContent = pad(currentIndex + 1);
+      }
+    };
+    var next = function next() {
+      if (currentIndex >= slides.length - 1) return;
+      setActiveSlide(currentIndex + 1);
+    };
+    var prev = function prev() {
+      if (currentIndex <= 0) return;
+      setActiveSlide(currentIndex - 1);
+    };
+    nextBtn === null || nextBtn === void 0 || nextBtn.addEventListener('click', next);
+    prevBtn === null || prevBtn === void 0 || prevBtn.addEventListener('click', prev);
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+    });
+    archive.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      if (locked) return;
+      locked = true;
+      if (e.deltaY > 0) {
+        next();
+      } else {
+        prev();
+      }
+      setTimeout(function () {
+        locked = false;
+      }, 850);
+    }, {
+      passive: false
+    });
+    setActiveSlide(0);
+  })();
+  (function () {
+    'use strict';
+
+    // ================================================================
+    // GUARD
+    // ================================================================
+    var body = document.body;
+    if (!body || !body.classList.contains('single-gym-review')) {
+      return;
+    }
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ================================================================
+    // HELPERS
+    // ================================================================
+
+    var clamp = function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    };
+    var parseScore = function parseScore(value) {
+      if (value === null || value === undefined || value === '' || value === 'unavailable') {
+        return null;
+      }
+      var parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+    var escapeAttribute = function escapeAttribute() {
+      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    };
+
+    // ================================================================
+    // SCROLL REVEAL
+    // ================================================================
+
+    var initialiseRevealAnimations = function initialiseRevealAnimations() {
+      var selectors = ['.gym-review-overview__grid', '.gym-review-section-heading', '.gym-review-score', '.gym-review-panel', '.gym-review-gallery figure', '.gym-review-content__grid', '.gym-review-final .container'];
+      var elements = document.querySelectorAll(selectors.join(','));
+      elements.forEach(function (element) {
+        if (!element.hasAttribute('data-gym-reveal')) {
+          element.setAttribute('data-gym-reveal', '');
+        }
+      });
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        elements.forEach(function (element) {
+          element.classList.add('is-visible');
+        });
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
+      });
+      elements.forEach(function (element) {
+        observer.observe(element);
+      });
+    };
+
+    // ================================================================
+    // HERO PARALLAX
+    // ================================================================
+
+    var initialiseHeroParallax = function initialiseHeroParallax() {
+      if (reduceMotion) {
+        return;
+      }
+      var hero = document.querySelector('.gym-review-hero');
+      var image = document.querySelector('.gym-review-hero__image');
+      if (!hero || !image) {
+        return;
+      }
+      var ticking = false;
+      var update = function update() {
+        var rect = hero.getBoundingClientRect();
+        var viewportHeight = window.innerHeight;
+        if (rect.bottom < 0 || rect.top > viewportHeight) {
+          ticking = false;
+          return;
+        }
+        var progress = clamp(-window.scrollY / 1200, -1, 0);
+        var translate = window.scrollY * 0.08;
+        image.style.transform = "translate3d(0, ".concat(translate, "px, 0) scale(1.035)");
+        ticking = false;
+      };
+      var requestUpdate = function requestUpdate() {
+        if (ticking) {
+          return;
+        }
+        ticking = true;
+        window.requestAnimationFrame(update);
+      };
+      window.addEventListener('scroll', requestUpdate, {
+        passive: true
+      });
+      requestUpdate();
+    };
+
+    // ================================================================
+    // SCORE BARS
+    // ================================================================
+
+    var initialiseScores = function initialiseScores() {
+      var scoreItems = document.querySelectorAll('.gym-review-score');
+      if (!scoreItems.length) {
+        return;
+      }
+      scoreItems.forEach(function (item) {
+        var scoreValue = parseScore(item.dataset.score);
+        var fill = item.querySelector('.gym-review-score__fill');
+        var display = item.querySelector('.gym-review-score__value') || item.querySelector('.gym-review-score__meta strong');
+        if (scoreValue === null) {
+          item.classList.add('is-unavailable');
+          if (display) {
+            display.textContent = 'Unavailable';
+          }
+          return;
+        }
+        var percentage = clamp(scoreValue * 10, 0, 100);
+        if (fill) {
+          fill.dataset.width = "".concat(percentage, "%");
+          fill.style.width = '0';
+        }
+        if (display) {
+          display.textContent = "".concat(scoreValue, "/10");
+        }
+      });
+      var animate = function animate(item) {
+        var fill = item.querySelector('.gym-review-score__fill');
+        if (!fill) {
+          return;
+        }
+        var width = fill.dataset.width;
+        if (!width) {
+          return;
+        }
+        requestAnimationFrame(function () {
+          fill.style.width = width;
+        });
+      };
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        scoreItems.forEach(animate);
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          animate(entry.target);
+          observer.unobserve(entry.target);
+        });
+      }, {
+        threshold: 0.35
+      });
+      scoreItems.forEach(function (item) {
+        if (!item.classList.contains('is-unavailable')) {
+          observer.observe(item);
+        }
+      });
+    };
+
+    // ================================================================
+    // OVERALL SCORE COUNT-UP
+    // ================================================================
+
+    var initialiseOverallScore = function initialiseOverallScore() {
+      var scoreElements = document.querySelectorAll('[data-overall-score]');
+      if (!scoreElements.length) {
+        return;
+      }
+      var animateScore = function animateScore(element) {
+        var target = parseFloat(element.dataset.overallScore);
+        if (!Number.isFinite(target)) {
+          return;
+        }
+        element.style.color = gymOverallBand(target).color;
+        if (reduceMotion) {
+          element.textContent = "".concat(target.toFixed(1), "%");
+          return;
+        }
+        var duration = 1100;
+        var start = performance.now();
+        var _frame = function frame(time) {
+          var elapsed = time - start;
+          var progress = clamp(elapsed / duration, 0, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = target * eased;
+          element.textContent = "".concat(current.toFixed(1), "%");
+          element.style.color = gymOverallBand(current).color;
+          if (progress < 1) {
+            requestAnimationFrame(_frame);
+          }
+        };
+        requestAnimationFrame(_frame);
+      };
+      if (!('IntersectionObserver' in window)) {
+        scoreElements.forEach(animateScore);
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          animateScore(entry.target);
+          observer.unobserve(entry.target);
+        });
+      }, {
+        threshold: 0.4
+      });
+      scoreElements.forEach(function (element) {
+        observer.observe(element);
+      });
+    };
+
+    // ================================================================
+    // MAP
+    //
+    // Expected markup:
+    //
+    // <div
+    //   class="gym-review-map"
+    //   data-location="Notting Hill, London"
+    // ></div>
+    //
+    // Your ACF gym_location can populate data-location.
+    // ================================================================
+
+    var initialiseMap = function initialiseMap() {
+      var maps = document.querySelectorAll('.gym-review-map');
+      if (!maps.length) {
+        return;
+      }
+      maps.forEach(function (map) {
+        var location = map.dataset.location || map.dataset.address || '';
+        if (!location) {
+          return;
+        }
+        var loading = document.createElement('div');
+        loading.className = 'gym-review-map__loading';
+        loading.textContent = 'Loading map';
+        map.appendChild(loading);
+        var iframe = document.createElement('iframe');
+        iframe.title = "Map showing ".concat(location);
+        iframe.loading = 'lazy';
+        iframe.referrerPolicy = 'no-referrer-when-downgrade';
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.src = 'https://www.google.com/maps?' + 'q=' + encodeURIComponent(location) + '&output=embed';
+        iframe.addEventListener('load', function () {
+          loading.remove();
+        });
+        map.appendChild(iframe);
+      });
+    };
+
+    // ================================================================
+    // GOOGLE MAPS / DIRECTIONS LINK
+    //
+    // Existing ACF google_maps_url can be output as:
+    //
+    // <a
+    //   class="gym-review-location__directions"
+    //   data-map-url="..."
+    // >
+    // ================================================================
+
+    var initialiseDirections = function initialiseDirections() {
+      var links = document.querySelectorAll('[data-map-url]');
+      links.forEach(function (link) {
+        var url = link.dataset.mapUrl;
+        if (!url) {
+          return;
+        }
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+      });
+    };
+
+    // ================================================================
+    // GALLERY LIGHTBOX
+    // ================================================================
+
+    var initialiseGalleryLightbox = function initialiseGalleryLightbox() {
+      var images = Array.from(document.querySelectorAll('.gym-review-gallery figure img'));
+      if (!images.length) {
+        return;
+      }
+      var lightbox = document.createElement('div');
+      lightbox.className = 'gym-review-lightbox';
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightbox.setAttribute('role', 'dialog');
+      lightbox.setAttribute('aria-modal', 'true');
+      lightbox.innerHTML = "\n\t\t\t<button\n\t\t\t\ttype=\"button\"\n\t\t\t\tclass=\"gym-review-lightbox__close\"\n\t\t\t\taria-label=\"Close image\"\n\t\t\t>\n\t\t\t\t\xD7\n\t\t\t</button>\n\n\t\t\t<button\n\t\t\t\ttype=\"button\"\n\t\t\t\tclass=\"gym-review-lightbox__prev\"\n\t\t\t\taria-label=\"Previous image\"\n\t\t\t>\n\t\t\t\t\u2190\n\t\t\t</button>\n\n\t\t\t<img\n\t\t\t\tclass=\"gym-review-lightbox__image\"\n\t\t\t\tsrc=\"\"\n\t\t\t\talt=\"\"\n\t\t\t>\n\n\t\t\t<button\n\t\t\t\ttype=\"button\"\n\t\t\t\tclass=\"gym-review-lightbox__next\"\n\t\t\t\taria-label=\"Next image\"\n\t\t\t>\n\t\t\t\t\u2192\n\t\t\t</button>\n\t\t";
+      document.body.appendChild(lightbox);
+      var lightboxImage = lightbox.querySelector('.gym-review-lightbox__image');
+      var closeButton = lightbox.querySelector('.gym-review-lightbox__close');
+      var previousButton = lightbox.querySelector('.gym-review-lightbox__prev');
+      var nextButton = lightbox.querySelector('.gym-review-lightbox__next');
+      var currentIndex = 0;
+      var getFullSource = function getFullSource(image) {
+        return image.dataset.full || image.currentSrc || image.src;
+      };
+      var render = function render() {
+        var image = images[currentIndex];
+        lightboxImage.src = getFullSource(image);
+        lightboxImage.alt = image.alt || '';
+      };
+      var open = function open(index) {
+        currentIndex = index;
+        render();
+        lightbox.classList.add('is-open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        body.classList.add('gym-lightbox-open');
+        closeButton.focus();
+      };
+      var close = function close() {
+        lightbox.classList.remove('is-open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        body.classList.remove('gym-lightbox-open');
+      };
+      var previous = function previous() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        render();
+      };
+      var next = function next() {
+        currentIndex = (currentIndex + 1) % images.length;
+        render();
+      };
+      images.forEach(function (image, index) {
+        var figure = image.closest('figure');
+        if (!figure) {
+          return;
+        }
+        figure.tabIndex = 0;
+        figure.setAttribute('role', 'button');
+        figure.setAttribute('aria-label', "View image ".concat(index + 1, " of ").concat(images.length));
+        figure.addEventListener('click', function () {
+          open(index);
+        });
+        figure.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            open(index);
+          }
+        });
+      });
+      closeButton.addEventListener('click', close);
+      previousButton.addEventListener('click', previous);
+      nextButton.addEventListener('click', next);
+      lightbox.addEventListener('click', function (event) {
+        if (event.target === lightbox) {
+          close();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (!lightbox.classList.contains('is-open')) {
+          return;
+        }
+        switch (event.key) {
+          case 'Escape':
+            close();
+            break;
+          case 'ArrowLeft':
+            previous();
+            break;
+          case 'ArrowRight':
+            next();
+            break;
+        }
+      });
+    };
+
+    // ================================================================
+    // MOBILE GALLERY DOTS
+    // ================================================================
+
+    var initialiseGalleryProgress = function initialiseGalleryProgress() {
+      var viewport = document.querySelector('.gym-review-gallery__viewport');
+      if (!viewport) {
+        return;
+      }
+      var slides = Array.from(viewport.querySelectorAll('figure'));
+      if (slides.length < 2) {
+        return;
+      }
+      var controls = document.querySelector('.gym-review-gallery__controls');
+      if (!controls) {
+        controls = document.createElement('div');
+        controls.className = 'gym-review-gallery__controls';
+        viewport.insertAdjacentElement('afterend', controls);
+      }
+      controls.innerHTML = '';
+      var dots = slides.map(function (_, index) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'gym-review-gallery__dot';
+        button.setAttribute('aria-label', "Go to image ".concat(index + 1));
+        if (index === 0) {
+          button.classList.add('is-active');
+        }
+        button.addEventListener('click', function () {
+          slides[index].scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            inline: 'start',
+            block: 'nearest'
+          });
+        });
+        controls.appendChild(button);
+        return button;
+      });
+      if (!('IntersectionObserver' in window)) {
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries.filter(function (entry) {
+          return entry.isIntersecting;
+        }).sort(function (a, b) {
+          return b.intersectionRatio - a.intersectionRatio;
+        });
+        if (!visible.length) {
+          return;
+        }
+        var index = slides.indexOf(visible[0].target);
+        dots.forEach(function (dot, dotIndex) {
+          dot.classList.toggle('is-active', dotIndex === index);
+        });
+      }, {
+        root: viewport,
+        threshold: [0.45, 0.6, 0.75]
+      });
+      slides.forEach(function (slide) {
+        observer.observe(slide);
+      });
+    };
+
+    // ================================================================
+    // SCORE LABELS
+    // ================================================================
+
+    var getScoreLabel = function getScoreLabel(score) {
+      return gymOverallBand(score).label;
+    };
+    var initialiseScoreLabels = function initialiseScoreLabels() {
+      var containers = document.querySelectorAll('[data-score-label-source]');
+      containers.forEach(function (element) {
+        var score = parseFloat(element.dataset.scoreLabelSource);
+        if (!Number.isFinite(score)) {
+          return;
+        }
+        element.textContent = getScoreLabel(score);
+        element.style.color = gymOverallBand(score).color;
+      });
+    };
+
+    // ================================================================
+    // INITIALISE
+    // ================================================================
+
+    var initialise = function initialise() {
+      initialiseRevealAnimations();
+      initialiseHeroParallax();
+      initialiseScores();
+      initialiseOverallScore();
+      initialiseMap();
+      initialiseDirections();
+      initialiseGalleryLightbox();
+      initialiseGalleryProgress();
+      initialiseScoreLabels();
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialise, {
+        once: true
+      });
+    } else {
+      initialise();
+    }
+  })();
+})();
+
+// Homepage only: one entrance, then gentle pointer depth while in view.
+function initHomepageHeroMotion() {
+  if (!document.body.matches('.is-frontend.page-template-page-homepage')) return;
+  var hero = document.querySelector('#main .hero-background');
+  var background = hero === null || hero === void 0 ? void 0 : hero.querySelector(':scope > img');
+  var portrait = hero === null || hero === void 0 ? void 0 : hero.querySelector('.hero-foreground > img');
+  if (!hero || !background || !portrait || hero.dataset.motionInit) return;
+  hero.dataset.motionInit = 'true';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  var desktop = matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)');
+  var visible = false;
+  var entered = false;
+  var frame = 0;
+  var lastTime = 0;
+  var scrollFrame = 0;
+  var x = 0,
+    y = 0,
+    targetX = 0,
+    targetY = 0;
+  var animations = new Set();
+  var enabled = function enabled() {
+    return entered && visible && !document.hidden && !reduced.matches && desktop.matches;
+  };
+  var paint = function paint() {
+    background.style.setProperty('--hero-depth-x', "".concat((x * 6).toFixed(3), "px"));
+    background.style.setProperty('--hero-depth-y', "".concat((y * 6).toFixed(3), "px"));
+    portrait.style.setProperty('--hero-depth-x', "".concat((x * 2).toFixed(3), "px"));
+    portrait.style.setProperty('--hero-depth-y', "".concat((y * 2).toFixed(3), "px"));
+  };
+  var paintScroll = function paintScroll() {
+    scrollFrame = 0;
+    var rect = hero.getBoundingClientRect();
+    var progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height)));
+    var offset = visible && !document.hidden && !reduced.matches ? -progress * (desktop.matches ? 160 : 36) : 0;
+    portrait.style.setProperty('--hero-scroll-y', "".concat(offset.toFixed(3), "px"));
+    var glowOffset = visible && !document.hidden && !reduced.matches ? progress * (desktop.matches ? 70 : 24) : 0;
+    hero.style.setProperty('--hero-glow-y', "".concat(glowOffset.toFixed(3), "px"));
+  };
+  var scheduleScroll = function scheduleScroll() {
+    if (!scrollFrame) scrollFrame = requestAnimationFrame(paintScroll);
+  };
+  var reset = function reset() {
+    cancelAnimationFrame(frame);
+    frame = lastTime = 0;
+    x = y = targetX = targetY = 0;
+    paint();
+    hero.classList.remove('hero-depth-active');
+  };
+  var _tick3 = function tick(time) {
+    frame = 0;
+    if (!enabled()) {
+      reset();
+      return;
+    }
+    var dt = lastTime ? Math.min(64, time - lastTime) : 16;
+    lastTime = time;
+    var smoothing = 1 - Math.exp(-dt / 160);
+    x += (targetX - x) * smoothing;
+    y += (targetY - y) * smoothing;
+    paint();
+    if (Math.abs(targetX - x) + Math.abs(targetY - y) > .001) {
+      frame = requestAnimationFrame(_tick3);
+    } else {
+      x = targetX;
+      y = targetY;
+      paint();
+      lastTime = 0;
+      if (!targetX && !targetY) hero.classList.remove('hero-depth-active');
+    }
+  };
+  var schedule = function schedule() {
+    if (enabled() && !frame) frame = requestAnimationFrame(_tick3);
+  };
+  var stopEntrance = function stopEntrance() {
+    animations.forEach(function (animation) {
+      return animation.cancel();
+    });
+    animations.clear();
+    entered = true;
+    hero.classList.remove('hero-entering');
+    scheduleScroll();
+  };
+  var entrance = function entrance() {
+    if (entered || hero.classList.contains('hero-entering')) return;
+    if (reduced.matches || typeof portrait.animate !== 'function') {
+      entered = true;
+      return;
+    }
+    hero.classList.add('hero-entering');
+    var opacity = getComputedStyle(portrait).opacity;
+    var bgAnimation = background.animate([{
+      filter: 'brightness(.38)'
+    }, {
+      filter: 'brightness(.55)'
+    }], {
+      duration: 1800,
+      easing: 'cubic-bezier(.22,1,.36,1)'
+    });
+    var portraitAnimation = portrait.animate([{
+      opacity: 0,
+      translate: '0 12px'
+    }, {
+      opacity: opacity,
+      translate: '0 0'
+    }], {
+      duration: 1200,
+      delay: 100,
+      fill: 'backwards',
+      easing: 'cubic-bezier(.22,1,.36,1)'
+    });
+    animations.add(bgAnimation);
+    animations.add(portraitAnimation);
+    Promise.allSettled([bgAnimation.finished, portraitAnimation.finished]).then(stopEntrance);
+  };
+
+  // Wait for actual image pixels, without ever hiding essential hero copy.
+  Promise.allSettled([background, portrait].map(function (img) {
+    var _img$decode;
+    return (_img$decode = img.decode) === null || _img$decode === void 0 ? void 0 : _img$decode.call(img);
+  })).then(function () {
+    hero.classList.add('hero-motion-ready');
+    if (visible && !document.hidden) entrance();
+  });
+  hero.addEventListener('pointermove', function (event) {
+    if (!enabled() || event.pointerType !== 'mouse') return;
+    var rect = hero.getBoundingClientRect();
+    targetX = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+    targetY = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
+    hero.classList.add('hero-depth-active');
+    schedule();
+  }, {
+    passive: true
+  });
+  hero.addEventListener('pointerleave', function () {
+    targetX = targetY = 0;
+    schedule();
+  }, {
+    passive: true
+  });
+  var refresh = function refresh() {
+    scheduleScroll();
+    if (!enabled()) reset();
+    if (reduced.matches || document.hidden) stopEntrance();
+    if (visible && !document.hidden && hero.classList.contains('hero-motion-ready')) entrance();
+  };
+  reduced.addEventListener('change', refresh);
+  desktop.addEventListener('change', refresh);
+  document.addEventListener('visibilitychange', refresh);
+  window.addEventListener('scroll', scheduleScroll, {
+    passive: true
+  });
+  window.addEventListener('resize', function () {
+    reset();
+    scheduleScroll();
+  }, {
+    passive: true
+  });
+  window.addEventListener('pagehide', function () {
+    reset();
+    stopEntrance();
+    cancelAnimationFrame(scrollFrame);
+    scrollFrame = 0;
+    portrait.style.setProperty('--hero-scroll-y', '0px');
+    hero.style.setProperty('--hero-glow-y', '0px');
+  });
+  var observer = new IntersectionObserver(function (entries) {
+    visible = entries[0].isIntersecting;
+    refresh();
+  }, {
+    threshold: 0
+  });
+  observer.observe(hero);
+}
+document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
+
+/***/ }),
+
+/***/ "./assets/main.scss":
+/*!**************************!*\
+  !*** ./assets/main.scss ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _arrayLikeToArray; }
+/* harmony export */ });
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _arrayWithHoles; }
+/* harmony export */ });
+function _arrayWithHoles(r) {
+  if (Array.isArray(r)) return r;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _arrayWithoutHoles; }
+/* harmony export */ });
+/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
+
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _asyncToGenerator; }
+/* harmony export */ });
+function asyncGeneratorStep(n, t, e, r, o, a, c) {
+  try {
+    var i = n[a](c),
+      u = i.value;
+  } catch (n) {
+    return void e(n);
+  }
+  i.done ? t(u) : Promise.resolve(u).then(r, o);
+}
+function _asyncToGenerator(n) {
+  return function () {
+    var t = this,
+      e = arguments;
+    return new Promise(function (r, o) {
+      var a = n.apply(t, e);
+      function _next(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "next", n);
+      }
+      function _throw(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "throw", n);
+      }
+      _next(void 0);
+    });
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _iterableToArray; }
+/* harmony export */ });
+function _iterableToArray(r) {
+  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _iterableToArrayLimit; }
+/* harmony export */ });
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _nonIterableRest; }
+/* harmony export */ });
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _nonIterableSpread; }
+/* harmony export */ });
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _slicedToArray; }
+/* harmony export */ });
+/* harmony import */ var _arrayWithHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js");
+/* harmony import */ var _iterableToArrayLimit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArrayLimit.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js");
+/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
+/* harmony import */ var _nonIterableRest_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableRest.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js");
+
+
+
+
+function _slicedToArray(r, e) {
+  return (0,_arrayWithHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r) || (0,_iterableToArrayLimit_js__WEBPACK_IMPORTED_MODULE_1__["default"])(r, e) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(r, e) || (0,_nonIterableRest_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _toConsumableArray; }
+/* harmony export */ });
+/* harmony import */ var _arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithoutHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js");
+/* harmony import */ var _iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js");
+/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
+/* harmony import */ var _nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableSpread.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js");
+
+
+
+
+function _toConsumableArray(r) {
+  return (0,_arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r) || (0,_iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__["default"])(r) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(r) || (0,_nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _unsupportedIterableToArray; }
+/* harmony export */ });
+/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
+
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ("string" == typeof r) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r, a) : void 0;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/createPopper.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/createPopper.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createPopper: function() { return /* binding */ createPopper; },
+/* harmony export */   detectOverflow: function() { return /* reexport safe */ _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_7__["default"]; },
+/* harmony export */   popperGenerator: function() { return /* binding */ popperGenerator; }
+/* harmony export */ });
+/* harmony import */ var _dom_utils_getCompositeRect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dom-utils/getCompositeRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js");
+/* harmony import */ var _dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dom-utils/getLayoutRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js");
+/* harmony import */ var _dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dom-utils/listScrollParents.js */ "./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js");
+/* harmony import */ var _dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./dom-utils/getOffsetParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js");
+/* harmony import */ var _utils_orderModifiers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/orderModifiers.js */ "./node_modules/@popperjs/core/lib/utils/orderModifiers.js");
+/* harmony import */ var _utils_debounce_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/debounce.js */ "./node_modules/@popperjs/core/lib/utils/debounce.js");
+/* harmony import */ var _utils_mergeByName_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/mergeByName.js */ "./node_modules/@popperjs/core/lib/utils/mergeByName.js");
+/* harmony import */ var _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./dom-utils/instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+
+
+
+
+
+
+
+
+var DEFAULT_OPTIONS = {
+  placement: 'bottom',
+  modifiers: [],
+  strategy: 'absolute'
+};
+
+function areValidElements() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  return !args.some(function (element) {
+    return !(element && typeof element.getBoundingClientRect === 'function');
+  });
+}
+
+function popperGenerator(generatorOptions) {
+  if (generatorOptions === void 0) {
+    generatorOptions = {};
+  }
+
+  var _generatorOptions = generatorOptions,
+      _generatorOptions$def = _generatorOptions.defaultModifiers,
+      defaultModifiers = _generatorOptions$def === void 0 ? [] : _generatorOptions$def,
+      _generatorOptions$def2 = _generatorOptions.defaultOptions,
+      defaultOptions = _generatorOptions$def2 === void 0 ? DEFAULT_OPTIONS : _generatorOptions$def2;
+  return function createPopper(reference, popper, options) {
+    if (options === void 0) {
+      options = defaultOptions;
+    }
+
+    var state = {
+      placement: 'bottom',
+      orderedModifiers: [],
+      options: Object.assign({}, DEFAULT_OPTIONS, defaultOptions),
+      modifiersData: {},
+      elements: {
+        reference: reference,
+        popper: popper
+      },
+      attributes: {},
+      styles: {}
+    };
+    var effectCleanupFns = [];
+    var isDestroyed = false;
+    var instance = {
+      state: state,
+      setOptions: function setOptions(setOptionsAction) {
+        var options = typeof setOptionsAction === 'function' ? setOptionsAction(state.options) : setOptionsAction;
+        cleanupModifierEffects();
+        state.options = Object.assign({}, defaultOptions, state.options, options);
+        state.scrollParents = {
+          reference: (0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_8__.isElement)(reference) ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_2__["default"])(reference) : reference.contextElement ? (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_2__["default"])(reference.contextElement) : [],
+          popper: (0,_dom_utils_listScrollParents_js__WEBPACK_IMPORTED_MODULE_2__["default"])(popper)
+        }; // Orders the modifiers based on their dependencies and `phase`
+        // properties
+
+        var orderedModifiers = (0,_utils_orderModifiers_js__WEBPACK_IMPORTED_MODULE_4__["default"])((0,_utils_mergeByName_js__WEBPACK_IMPORTED_MODULE_6__["default"])([].concat(defaultModifiers, state.options.modifiers))); // Strip out disabled modifiers
+
+        state.orderedModifiers = orderedModifiers.filter(function (m) {
+          return m.enabled;
+        });
+        runModifierEffects();
+        return instance.update();
+      },
+      // Sync update – it will always be executed, even if not necessary. This
+      // is useful for low frequency updates where sync behavior simplifies the
+      // logic.
+      // For high frequency updates (e.g. `resize` and `scroll` events), always
+      // prefer the async Popper#update method
+      forceUpdate: function forceUpdate() {
+        if (isDestroyed) {
+          return;
+        }
+
+        var _state$elements = state.elements,
+            reference = _state$elements.reference,
+            popper = _state$elements.popper; // Don't proceed if `reference` or `popper` are not valid elements
+        // anymore
+
+        if (!areValidElements(reference, popper)) {
+          return;
+        } // Store the reference and popper rects to be read by modifiers
+
+
+        state.rects = {
+          reference: (0,_dom_utils_getCompositeRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(reference, (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_3__["default"])(popper), state.options.strategy === 'fixed'),
+          popper: (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_1__["default"])(popper)
+        }; // Modifiers have the ability to reset the current update cycle. The
+        // most common use case for this is the `flip` modifier changing the
+        // placement, which then needs to re-run all the modifiers, because the
+        // logic was previously ran for the previous placement and is therefore
+        // stale/incorrect
+
+        state.reset = false;
+        state.placement = state.options.placement; // On each update cycle, the `modifiersData` property for each modifier
+        // is filled with the initial data specified by the modifier. This means
+        // it doesn't persist and is fresh on each update.
+        // To ensure persistent data, use `${name}#persistent`
+
+        state.orderedModifiers.forEach(function (modifier) {
+          return state.modifiersData[modifier.name] = Object.assign({}, modifier.data);
+        });
+
+        for (var index = 0; index < state.orderedModifiers.length; index++) {
+          if (state.reset === true) {
+            state.reset = false;
+            index = -1;
+            continue;
+          }
+
+          var _state$orderedModifie = state.orderedModifiers[index],
+              fn = _state$orderedModifie.fn,
+              _state$orderedModifie2 = _state$orderedModifie.options,
+              _options = _state$orderedModifie2 === void 0 ? {} : _state$orderedModifie2,
+              name = _state$orderedModifie.name;
+
+          if (typeof fn === 'function') {
+            state = fn({
+              state: state,
+              options: _options,
+              name: name,
+              instance: instance
+            }) || state;
+          }
+        }
+      },
+      // Async and optimistically optimized update – it will not be executed if
+      // not necessary (debounced to run at most once-per-tick)
+      update: (0,_utils_debounce_js__WEBPACK_IMPORTED_MODULE_5__["default"])(function () {
+        return new Promise(function (resolve) {
+          instance.forceUpdate();
+          resolve(state);
+        });
+      }),
+      destroy: function destroy() {
+        cleanupModifierEffects();
+        isDestroyed = true;
+      }
+    };
+
+    if (!areValidElements(reference, popper)) {
+      return instance;
+    }
+
+    instance.setOptions(options).then(function (state) {
+      if (!isDestroyed && options.onFirstUpdate) {
+        options.onFirstUpdate(state);
+      }
+    }); // Modifiers have the ability to execute arbitrary code before the first
+    // update cycle runs. They will be executed in the same order as the update
+    // cycle. This is useful when a modifier adds some persistent data that
+    // other modifiers need to use, but the modifier is run after the dependent
+    // one.
+
+    function runModifierEffects() {
+      state.orderedModifiers.forEach(function (_ref) {
+        var name = _ref.name,
+            _ref$options = _ref.options,
+            options = _ref$options === void 0 ? {} : _ref$options,
+            effect = _ref.effect;
+
+        if (typeof effect === 'function') {
+          var cleanupFn = effect({
+            state: state,
+            name: name,
+            instance: instance,
+            options: options
+          });
+
+          var noopFn = function noopFn() {};
+
+          effectCleanupFns.push(cleanupFn || noopFn);
+        }
+      });
+    }
+
+    function cleanupModifierEffects() {
+      effectCleanupFns.forEach(function (fn) {
+        return fn();
+      });
+      effectCleanupFns = [];
+    }
+
+    return instance;
+  };
+}
+var createPopper = /*#__PURE__*/popperGenerator(); // eslint-disable-next-line import/no-unused-modules
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/contains.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/contains.js ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ contains; }
+/* harmony export */ });
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+function contains(parent, child) {
+  var rootNode = child.getRootNode && child.getRootNode(); // First, attempt with faster native method
+
+  if (parent.contains(child)) {
+    return true;
+  } // then fallback to custom implementation with Shadow DOM support
+  else if (rootNode && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isShadowRoot)(rootNode)) {
+      var next = child;
+
+      do {
+        if (next && parent.isSameNode(next)) {
+          return true;
+        } // $FlowFixMe[prop-missing]: need a better way to handle this...
+
+
+        next = next.parentNode || next.host;
+      } while (next);
+    } // Give up, the result is false
+
+
+  return false;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getBoundingClientRect; }
+/* harmony export */ });
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _isLayoutViewport_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./isLayoutViewport.js */ "./node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js");
+
+
+
+
+function getBoundingClientRect(element, includeScale, isFixedStrategy) {
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+
+  var clientRect = element.getBoundingClientRect();
+  var scaleX = 1;
+  var scaleY = 1;
+
+  if (includeScale && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isHTMLElement)(element)) {
+    scaleX = element.offsetWidth > 0 ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_1__.round)(clientRect.width) / element.offsetWidth || 1 : 1;
+    scaleY = element.offsetHeight > 0 ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_1__.round)(clientRect.height) / element.offsetHeight || 1 : 1;
+  }
+
+  var _ref = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isElement)(element) ? (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element) : window,
+      visualViewport = _ref.visualViewport;
+
+  var addVisualOffsets = !(0,_isLayoutViewport_js__WEBPACK_IMPORTED_MODULE_3__["default"])() && isFixedStrategy;
+  var x = (clientRect.left + (addVisualOffsets && visualViewport ? visualViewport.offsetLeft : 0)) / scaleX;
+  var y = (clientRect.top + (addVisualOffsets && visualViewport ? visualViewport.offsetTop : 0)) / scaleY;
+  var width = clientRect.width / scaleX;
+  var height = clientRect.height / scaleY;
+  return {
+    width: width,
+    height: height,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+    left: x,
+    x: x,
+    y: y
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getClippingRect; }
+/* harmony export */ });
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _getViewportRect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getViewportRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js");
+/* harmony import */ var _getDocumentRect_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getDocumentRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js");
+/* harmony import */ var _listScrollParents_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./listScrollParents.js */ "./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js");
+/* harmony import */ var _getOffsetParent_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./getOffsetParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _getComputedStyle_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+/* harmony import */ var _getParentNode_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./getParentNode.js */ "./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js");
+/* harmony import */ var _contains_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./contains.js */ "./node_modules/@popperjs/core/lib/dom-utils/contains.js");
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../utils/rectToClientRect.js */ "./node_modules/@popperjs/core/lib/utils/rectToClientRect.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getInnerBoundingClientRect(element, strategy) {
+  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_8__["default"])(element, false, strategy === 'fixed');
+  rect.top = rect.top + element.clientTop;
+  rect.left = rect.left + element.clientLeft;
+  rect.bottom = rect.top + element.clientHeight;
+  rect.right = rect.left + element.clientWidth;
+  rect.width = element.clientWidth;
+  rect.height = element.clientHeight;
+  rect.x = rect.left;
+  rect.y = rect.top;
+  return rect;
+}
+
+function getClientRectFromMixedType(element, clippingParent, strategy) {
+  return clippingParent === _enums_js__WEBPACK_IMPORTED_MODULE_0__.viewport ? (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_getViewportRect_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element, strategy)) : (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_7__.isElement)(clippingParent) ? getInnerBoundingClientRect(clippingParent, strategy) : (0,_utils_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_getDocumentRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__["default"])(element)));
+} // A "clipping parent" is an overflowable container with the characteristic of
+// clipping (or hiding) overflowing elements with a position different from
+// `initial`
+
+
+function getClippingParents(element) {
+  var clippingParents = (0,_listScrollParents_js__WEBPACK_IMPORTED_MODULE_3__["default"])((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_9__["default"])(element));
+  var canEscapeClipping = ['absolute', 'fixed'].indexOf((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_6__["default"])(element).position) >= 0;
+  var clipperElement = canEscapeClipping && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_7__.isHTMLElement)(element) ? (0,_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_4__["default"])(element) : element;
+
+  if (!(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_7__.isElement)(clipperElement)) {
+    return [];
+  } // $FlowFixMe[incompatible-return]: https://github.com/facebook/flow/issues/1414
+
+
+  return clippingParents.filter(function (clippingParent) {
+    return (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_7__.isElement)(clippingParent) && (0,_contains_js__WEBPACK_IMPORTED_MODULE_10__["default"])(clippingParent, clipperElement) && (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_11__["default"])(clippingParent) !== 'body';
+  });
+} // Gets the maximum area that the element is visible in due to any number of
+// clipping parents
+
+
+function getClippingRect(element, boundary, rootBoundary, strategy) {
+  var mainClippingParents = boundary === 'clippingParents' ? getClippingParents(element) : [].concat(boundary);
+  var clippingParents = [].concat(mainClippingParents, [rootBoundary]);
+  var firstClippingParent = clippingParents[0];
+  var clippingRect = clippingParents.reduce(function (accRect, clippingParent) {
+    var rect = getClientRectFromMixedType(element, clippingParent, strategy);
+    accRect.top = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_13__.max)(rect.top, accRect.top);
+    accRect.right = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_13__.min)(rect.right, accRect.right);
+    accRect.bottom = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_13__.min)(rect.bottom, accRect.bottom);
+    accRect.left = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_13__.max)(rect.left, accRect.left);
+    return accRect;
+  }, getClientRectFromMixedType(element, firstClippingParent, strategy));
+  clippingRect.width = clippingRect.right - clippingRect.left;
+  clippingRect.height = clippingRect.bottom - clippingRect.top;
+  clippingRect.x = clippingRect.left;
+  clippingRect.y = clippingRect.top;
+  return clippingRect;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getCompositeRect; }
+/* harmony export */ });
+/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+/* harmony import */ var _getNodeScroll_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getNodeScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js");
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./getWindowScrollBarX.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _isScrollParent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./isScrollParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+
+
+
+
+
+
+
+
+function isElementScaled(element) {
+  var rect = element.getBoundingClientRect();
+  var scaleX = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_7__.round)(rect.width) / element.offsetWidth || 1;
+  var scaleY = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_7__.round)(rect.height) / element.offsetHeight || 1;
+  return scaleX !== 1 || scaleY !== 1;
+} // Returns the composite rect of an element relative to its offsetParent.
+// Composite means it takes into account transforms as well as layout.
+
+
+function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
+  if (isFixed === void 0) {
+    isFixed = false;
+  }
+
+  var isOffsetParentAnElement = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(offsetParent);
+  var offsetParentIsScaled = (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(offsetParent) && isElementScaled(offsetParent);
+  var documentElement = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_5__["default"])(offsetParent);
+  var rect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(elementOrVirtualElement, offsetParentIsScaled, isFixed);
+  var scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  var offsets = {
+    x: 0,
+    y: 0
+  };
+
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_2__["default"])(offsetParent) !== 'body' || // https://github.com/popperjs/popper-core/issues/1078
+    (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_6__["default"])(documentElement)) {
+      scroll = (0,_getNodeScroll_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent);
+    }
+
+    if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(offsetParent)) {
+      offsets = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(offsetParent, true);
+      offsets.x += offsetParent.clientLeft;
+      offsets.y += offsetParent.clientTop;
+    } else if (documentElement) {
+      offsets.x = (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_4__["default"])(documentElement);
+    }
+  }
+
+  return {
+    x: rect.left + scroll.scrollLeft - offsets.x,
+    y: rect.top + scroll.scrollTop - offsets.y,
+    width: rect.width,
+    height: rect.height
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getComputedStyle; }
+/* harmony export */ });
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+
+function getComputedStyle(element) {
+  return (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element).getComputedStyle(element);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getDocumentElement; }
+/* harmony export */ });
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+function getDocumentElement(element) {
+  // $FlowFixMe[incompatible-return]: assume body is always available
+  return (((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_0__.isElement)(element) ? element.ownerDocument : // $FlowFixMe[prop-missing]
+  element.document) || window.document).documentElement;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getDocumentRect; }
+/* harmony export */ });
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
+/* harmony import */ var _getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWindowScrollBarX.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js");
+/* harmony import */ var _getWindowScroll_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getWindowScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+
+
+
+ // Gets the entire size of the scrollable document area, even extending outside
+// of the `<html>` and `<body>` rect bounds if horizontally scrollable
+
+function getDocumentRect(element) {
+  var _element$ownerDocumen;
+
+  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var winScroll = (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_3__["default"])(element);
+  var body = (_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body;
+  var width = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_4__.max)(html.scrollWidth, html.clientWidth, body ? body.scrollWidth : 0, body ? body.clientWidth : 0);
+  var height = (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_4__.max)(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
+  var x = -winScroll.scrollLeft + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element);
+  var y = -winScroll.scrollTop;
+
+  if ((0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_1__["default"])(body || html).direction === 'rtl') {
+    x += (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_4__.max)(html.clientWidth, body ? body.clientWidth : 0) - width;
+  }
+
+  return {
+    width: width,
+    height: height,
+    x: x,
+    y: y
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getHTMLElementScroll; }
+/* harmony export */ });
+function getHTMLElementScroll(element) {
+  return {
+    scrollLeft: element.scrollLeft,
+    scrollTop: element.scrollTop
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getLayoutRect; }
+/* harmony export */ });
+/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+ // Returns the layout rect of an element relative to its offsetParent. Layout
+// means it doesn't take into account transforms.
+
+function getLayoutRect(element) {
+  var clientRect = (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element); // Use the clientRect sizes if it's not been transformed.
+  // Fixes https://github.com/popperjs/popper-core/issues/1223
+
+  var width = element.offsetWidth;
+  var height = element.offsetHeight;
+
+  if (Math.abs(clientRect.width - width) <= 1) {
+    width = clientRect.width;
+  }
+
+  if (Math.abs(clientRect.height - height) <= 1) {
+    height = clientRect.height;
+  }
+
+  return {
+    x: element.offsetLeft,
+    y: element.offsetTop,
+    width: width,
+    height: height
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getNodeName; }
+/* harmony export */ });
+function getNodeName(element) {
+  return element ? (element.nodeName || '').toLowerCase() : null;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getNodeScroll; }
+/* harmony export */ });
+/* harmony import */ var _getWindowScroll_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindowScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js");
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _getHTMLElementScroll_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getHTMLElementScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js");
+
+
+
+
+function getNodeScroll(node) {
+  if (node === (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(node) || !(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_2__.isHTMLElement)(node)) {
+    return (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node);
+  } else {
+    return (0,_getHTMLElementScroll_js__WEBPACK_IMPORTED_MODULE_3__["default"])(node);
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getOffsetParent; }
+/* harmony export */ });
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _isTableElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./isTableElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/isTableElement.js");
+/* harmony import */ var _getParentNode_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getParentNode.js */ "./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js");
+/* harmony import */ var _utils_userAgent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/userAgent.js */ "./node_modules/@popperjs/core/lib/utils/userAgent.js");
+
+
+
+
+
+
+
+
+function getTrueOffsetParent(element) {
+  if (!(0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(element) || // https://github.com/popperjs/popper-core/issues/837
+  (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element).position === 'fixed') {
+    return null;
+  }
+
+  return element.offsetParent;
+} // `.offsetParent` reports `null` for fixed elements, while absolute elements
+// return the containing block
+
+
+function getContainingBlock(element) {
+  var isFirefox = /firefox/i.test((0,_utils_userAgent_js__WEBPACK_IMPORTED_MODULE_6__["default"])());
+  var isIE = /Trident/i.test((0,_utils_userAgent_js__WEBPACK_IMPORTED_MODULE_6__["default"])());
+
+  if (isIE && (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(element)) {
+    // In IE 9, 10 and 11 fixed elements containing block is always established by the viewport
+    var elementCss = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element);
+
+    if (elementCss.position === 'fixed') {
+      return null;
+    }
+  }
+
+  var currentNode = (0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_5__["default"])(element);
+
+  if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isShadowRoot)(currentNode)) {
+    currentNode = currentNode.host;
+  }
+
+  while ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(currentNode) && ['html', 'body'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__["default"])(currentNode)) < 0) {
+    var css = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__["default"])(currentNode); // This is non-exhaustive but covers the most common CSS properties that
+    // create a containing block.
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+
+    if (css.transform !== 'none' || css.perspective !== 'none' || css.contain === 'paint' || ['transform', 'perspective'].indexOf(css.willChange) !== -1 || isFirefox && css.willChange === 'filter' || isFirefox && css.filter && css.filter !== 'none') {
+      return currentNode;
+    } else {
+      currentNode = currentNode.parentNode;
+    }
+  }
+
+  return null;
+} // Gets the closest ancestor positioned element. Handles some edge cases,
+// such as table ancestors and cross browser bugs.
+
+
+function getOffsetParent(element) {
+  var window = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var offsetParent = getTrueOffsetParent(element);
+
+  while (offsetParent && (0,_isTableElement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(offsetParent) && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__["default"])(offsetParent).position === 'static') {
+    offsetParent = getTrueOffsetParent(offsetParent);
+  }
+
+  if (offsetParent && ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent) === 'html' || (0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_1__["default"])(offsetParent) === 'body' && (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_2__["default"])(offsetParent).position === 'static')) {
+    return window;
+  }
+
+  return offsetParent || getContainingBlock(element) || window;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getParentNode; }
+/* harmony export */ });
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+
+
+function getParentNode(element) {
+  if ((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element) === 'html') {
+    return element;
+  }
+
+  return (// this is a quicker (but less type safe) way to save quite some bytes from the bundle
+    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[prop-missing]
+    element.assignedSlot || // step into the shadow DOM of the parent of a slotted node
+    element.parentNode || ( // DOM Element detected
+    (0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_2__.isShadowRoot)(element) ? element.host : null) || // ShadowRoot detected
+    // $FlowFixMe[incompatible-call]: HTMLElement is a Node
+    (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element) // fallback
+
+  );
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getScrollParent; }
+/* harmony export */ });
+/* harmony import */ var _getParentNode_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getParentNode.js */ "./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js");
+/* harmony import */ var _isScrollParent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./isScrollParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js");
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _instanceOf_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+
+
+
+function getScrollParent(node) {
+  if (['html', 'body', '#document'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_2__["default"])(node)) >= 0) {
+    // $FlowFixMe[incompatible-return]: assume body is always available
+    return node.ownerDocument.body;
+  }
+
+  if ((0,_instanceOf_js__WEBPACK_IMPORTED_MODULE_3__.isHTMLElement)(node) && (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_1__["default"])(node)) {
+    return node;
+  }
+
+  return getScrollParent((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node));
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getViewportRect; }
+/* harmony export */ });
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWindowScrollBarX.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js");
+/* harmony import */ var _isLayoutViewport_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./isLayoutViewport.js */ "./node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js");
+
+
+
+
+function getViewportRect(element, strategy) {
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var html = (0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element);
+  var visualViewport = win.visualViewport;
+  var width = html.clientWidth;
+  var height = html.clientHeight;
+  var x = 0;
+  var y = 0;
+
+  if (visualViewport) {
+    width = visualViewport.width;
+    height = visualViewport.height;
+    var layoutViewport = (0,_isLayoutViewport_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+
+    if (layoutViewport || !layoutViewport && strategy === 'fixed') {
+      x = visualViewport.offsetLeft;
+      y = visualViewport.offsetTop;
+    }
+  }
+
+  return {
+    width: width,
+    height: height,
+    x: x + (0,_getWindowScrollBarX_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element),
+    y: y
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getWindow.js ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getWindow; }
+/* harmony export */ });
+function getWindow(node) {
+  if (node == null) {
+    return window;
+  }
+
+  if (node.toString() !== '[object Window]') {
+    var ownerDocument = node.ownerDocument;
+    return ownerDocument ? ownerDocument.defaultView || window : window;
+  }
+
+  return node;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getWindowScroll; }
+/* harmony export */ });
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+
+function getWindowScroll(node) {
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node);
+  var scrollLeft = win.pageXOffset;
+  var scrollTop = win.pageYOffset;
+  return {
+    scrollLeft: scrollLeft,
+    scrollTop: scrollTop
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js ***!
+  \**************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getWindowScrollBarX; }
+/* harmony export */ });
+/* harmony import */ var _getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+/* harmony import */ var _getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWindowScroll.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js");
+
+
+
+function getWindowScrollBarX(element) {
+  // If <html> has a CSS width greater than the viewport, then this will be
+  // incorrect for RTL.
+  // Popper 1 is broken in this case and never had a bug report so let's assume
+  // it's not an issue. I don't think anyone ever specifies width on <html>
+  // anyway.
+  // Browsers where the left scrollbar doesn't cause an issue report `0` for
+  // this (e.g. Edge 2019, IE11, Safari)
+  return (0,_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])((0,_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(element)).left + (0,_getWindowScroll_js__WEBPACK_IMPORTED_MODULE_2__["default"])(element).scrollLeft;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isElement: function() { return /* binding */ isElement; },
+/* harmony export */   isHTMLElement: function() { return /* binding */ isHTMLElement; },
+/* harmony export */   isShadowRoot: function() { return /* binding */ isShadowRoot; }
+/* harmony export */ });
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+
+
+function isElement(node) {
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).Element;
+  return node instanceof OwnElement || node instanceof Element;
+}
+
+function isHTMLElement(node) {
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).HTMLElement;
+  return node instanceof OwnElement || node instanceof HTMLElement;
+}
+
+function isShadowRoot(node) {
+  // IE 11 has no ShadowRoot
+  if (typeof ShadowRoot === 'undefined') {
+    return false;
+  }
+
+  var OwnElement = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(node).ShadowRoot;
+  return node instanceof OwnElement || node instanceof ShadowRoot;
+}
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ isLayoutViewport; }
+/* harmony export */ });
+/* harmony import */ var _utils_userAgent_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/userAgent.js */ "./node_modules/@popperjs/core/lib/utils/userAgent.js");
+
+function isLayoutViewport() {
+  return !/^((?!chrome|android).)*safari/i.test((0,_utils_userAgent_js__WEBPACK_IMPORTED_MODULE_0__["default"])());
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ isScrollParent; }
+/* harmony export */ });
+/* harmony import */ var _getComputedStyle_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
+
+function isScrollParent(element) {
+  // Firefox wants us to check `-x` and `-y` variations as well
+  var _getComputedStyle = (0,_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element),
+      overflow = _getComputedStyle.overflow,
+      overflowX = _getComputedStyle.overflowX,
+      overflowY = _getComputedStyle.overflowY;
+
+  return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/isTableElement.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/isTableElement.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ isTableElement; }
+/* harmony export */ });
+/* harmony import */ var _getNodeName_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+
+function isTableElement(element) {
+  return ['table', 'td', 'th'].indexOf((0,_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element)) >= 0;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js ***!
+  \************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ listScrollParents; }
+/* harmony export */ });
+/* harmony import */ var _getScrollParent_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getScrollParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js");
+/* harmony import */ var _getParentNode_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getParentNode.js */ "./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js");
+/* harmony import */ var _getWindow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _isScrollParent_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./isScrollParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js");
+
+
+
+
+/*
+given a DOM element, return the list of all scroll parents, up the list of ancesors
+until we get to the top window object. This list is what we attach scroll listeners
+to, because if any of these parent elements scroll, we'll need to re-calculate the
+reference element's position.
+*/
+
+function listScrollParents(element, list) {
+  var _element$ownerDocumen;
+
+  if (list === void 0) {
+    list = [];
+  }
+
+  var scrollParent = (0,_getScrollParent_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element);
+  var isBody = scrollParent === ((_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body);
+  var win = (0,_getWindow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(scrollParent);
+  var target = isBody ? [win].concat(win.visualViewport || [], (0,_isScrollParent_js__WEBPACK_IMPORTED_MODULE_3__["default"])(scrollParent) ? scrollParent : []) : scrollParent;
+  var updatedList = list.concat(target);
+  return isBody ? updatedList : // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
+  updatedList.concat(listScrollParents((0,_getParentNode_js__WEBPACK_IMPORTED_MODULE_1__["default"])(target)));
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/enums.js":
+/*!**************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/enums.js ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   afterMain: function() { return /* binding */ afterMain; },
+/* harmony export */   afterRead: function() { return /* binding */ afterRead; },
+/* harmony export */   afterWrite: function() { return /* binding */ afterWrite; },
+/* harmony export */   auto: function() { return /* binding */ auto; },
+/* harmony export */   basePlacements: function() { return /* binding */ basePlacements; },
+/* harmony export */   beforeMain: function() { return /* binding */ beforeMain; },
+/* harmony export */   beforeRead: function() { return /* binding */ beforeRead; },
+/* harmony export */   beforeWrite: function() { return /* binding */ beforeWrite; },
+/* harmony export */   bottom: function() { return /* binding */ bottom; },
+/* harmony export */   clippingParents: function() { return /* binding */ clippingParents; },
+/* harmony export */   end: function() { return /* binding */ end; },
+/* harmony export */   left: function() { return /* binding */ left; },
+/* harmony export */   main: function() { return /* binding */ main; },
+/* harmony export */   modifierPhases: function() { return /* binding */ modifierPhases; },
+/* harmony export */   placements: function() { return /* binding */ placements; },
+/* harmony export */   popper: function() { return /* binding */ popper; },
+/* harmony export */   read: function() { return /* binding */ read; },
+/* harmony export */   reference: function() { return /* binding */ reference; },
+/* harmony export */   right: function() { return /* binding */ right; },
+/* harmony export */   start: function() { return /* binding */ start; },
+/* harmony export */   top: function() { return /* binding */ top; },
+/* harmony export */   variationPlacements: function() { return /* binding */ variationPlacements; },
+/* harmony export */   viewport: function() { return /* binding */ viewport; },
+/* harmony export */   write: function() { return /* binding */ write; }
+/* harmony export */ });
+var top = 'top';
+var bottom = 'bottom';
+var right = 'right';
+var left = 'left';
+var auto = 'auto';
+var basePlacements = [top, bottom, right, left];
+var start = 'start';
+var end = 'end';
+var clippingParents = 'clippingParents';
+var viewport = 'viewport';
+var popper = 'popper';
+var reference = 'reference';
+var variationPlacements = /*#__PURE__*/basePlacements.reduce(function (acc, placement) {
+  return acc.concat([placement + "-" + start, placement + "-" + end]);
+}, []);
+var placements = /*#__PURE__*/[].concat(basePlacements, [auto]).reduce(function (acc, placement) {
+  return acc.concat([placement, placement + "-" + start, placement + "-" + end]);
+}, []); // modifiers that need to read the DOM
+
+var beforeRead = 'beforeRead';
+var read = 'read';
+var afterRead = 'afterRead'; // pure-logic modifiers
+
+var beforeMain = 'beforeMain';
+var main = 'main';
+var afterMain = 'afterMain'; // modifier with the purpose to write to the DOM (or write into a framework state)
+
+var beforeWrite = 'beforeWrite';
+var write = 'write';
+var afterWrite = 'afterWrite';
+var modifierPhases = [beforeRead, read, afterRead, beforeMain, main, afterMain, beforeWrite, write, afterWrite];
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/index.js ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   afterMain: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.afterMain; },
+/* harmony export */   afterRead: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.afterRead; },
+/* harmony export */   afterWrite: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.afterWrite; },
+/* harmony export */   applyStyles: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.applyStyles; },
+/* harmony export */   arrow: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.arrow; },
+/* harmony export */   auto: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.auto; },
+/* harmony export */   basePlacements: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.basePlacements; },
+/* harmony export */   beforeMain: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.beforeMain; },
+/* harmony export */   beforeRead: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.beforeRead; },
+/* harmony export */   beforeWrite: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.beforeWrite; },
+/* harmony export */   bottom: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom; },
+/* harmony export */   clippingParents: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.clippingParents; },
+/* harmony export */   computeStyles: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.computeStyles; },
+/* harmony export */   createPopper: function() { return /* reexport safe */ _popper_js__WEBPACK_IMPORTED_MODULE_4__.createPopper; },
+/* harmony export */   createPopperBase: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_2__.createPopper; },
+/* harmony export */   createPopperLite: function() { return /* reexport safe */ _popper_lite_js__WEBPACK_IMPORTED_MODULE_5__.createPopper; },
+/* harmony export */   detectOverflow: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_3__["default"]; },
+/* harmony export */   end: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.end; },
+/* harmony export */   eventListeners: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.eventListeners; },
+/* harmony export */   flip: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.flip; },
+/* harmony export */   hide: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.hide; },
+/* harmony export */   left: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.left; },
+/* harmony export */   main: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.main; },
+/* harmony export */   modifierPhases: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.modifierPhases; },
+/* harmony export */   offset: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.offset; },
+/* harmony export */   placements: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.placements; },
+/* harmony export */   popper: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.popper; },
+/* harmony export */   popperGenerator: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_2__.popperGenerator; },
+/* harmony export */   popperOffsets: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.popperOffsets; },
+/* harmony export */   preventOverflow: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__.preventOverflow; },
+/* harmony export */   read: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.read; },
+/* harmony export */   reference: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.reference; },
+/* harmony export */   right: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.right; },
+/* harmony export */   start: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.start; },
+/* harmony export */   top: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.top; },
+/* harmony export */   variationPlacements: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.variationPlacements; },
+/* harmony export */   viewport: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.viewport; },
+/* harmony export */   write: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.write; }
+/* harmony export */ });
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _modifiers_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modifiers/index.js */ "./node_modules/@popperjs/core/lib/modifiers/index.js");
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/createPopper.js");
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _popper_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./popper.js */ "./node_modules/@popperjs/core/lib/popper.js");
+/* harmony import */ var _popper_lite_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./popper-lite.js */ "./node_modules/@popperjs/core/lib/popper-lite.js");
+
+ // eslint-disable-next-line import/no-unused-modules
+
+ // eslint-disable-next-line import/no-unused-modules
+
+ // eslint-disable-next-line import/no-unused-modules
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/applyStyles.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/applyStyles.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom-utils/getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
+/* harmony import */ var _dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+
+ // This modifier takes the styles prepared by the `computeStyles` modifier
+// and applies them to the HTMLElements such as popper and arrow
+
+function applyStyles(_ref) {
+  var state = _ref.state;
+  Object.keys(state.elements).forEach(function (name) {
+    var style = state.styles[name] || {};
+    var attributes = state.attributes[name] || {};
+    var element = state.elements[name]; // arrow is optional + virtual elements
+
+    if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element)) {
+      return;
+    } // Flow doesn't support to extend this property, but it's the most
+    // effective way to apply styles to an HTMLElement
+    // $FlowFixMe[cannot-write]
+
+
+    Object.assign(element.style, style);
+    Object.keys(attributes).forEach(function (name) {
+      var value = attributes[name];
+
+      if (value === false) {
+        element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, value === true ? '' : value);
+      }
+    });
+  });
+}
+
+function effect(_ref2) {
+  var state = _ref2.state;
+  var initialStyles = {
+    popper: {
+      position: state.options.strategy,
+      left: '0',
+      top: '0',
+      margin: '0'
+    },
+    arrow: {
+      position: 'absolute'
+    },
+    reference: {}
+  };
+  Object.assign(state.elements.popper.style, initialStyles.popper);
+  state.styles = initialStyles;
+
+  if (state.elements.arrow) {
+    Object.assign(state.elements.arrow.style, initialStyles.arrow);
+  }
+
+  return function () {
+    Object.keys(state.elements).forEach(function (name) {
+      var element = state.elements[name];
+      var attributes = state.attributes[name] || {};
+      var styleProperties = Object.keys(state.styles.hasOwnProperty(name) ? state.styles[name] : initialStyles[name]); // Set all values to an empty string to unset them
+
+      var style = styleProperties.reduce(function (style, property) {
+        style[property] = '';
+        return style;
+      }, {}); // arrow is optional + virtual elements
+
+      if (!(0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__.isHTMLElement)(element) || !(0,_dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__["default"])(element)) {
+        return;
+      }
+
+      Object.assign(element.style, style);
+      Object.keys(attributes).forEach(function (attribute) {
+        element.removeAttribute(attribute);
+      });
+    });
+  };
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'applyStyles',
+  enabled: true,
+  phase: 'write',
+  fn: applyStyles,
+  effect: effect,
+  requires: ['computeStyles']
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/arrow.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/arrow.js ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/getLayoutRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js");
+/* harmony import */ var _dom_utils_contains_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../dom-utils/contains.js */ "./node_modules/@popperjs/core/lib/dom-utils/contains.js");
+/* harmony import */ var _dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../dom-utils/getOffsetParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js");
+/* harmony import */ var _utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/getMainAxisFromPlacement.js */ "./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js");
+/* harmony import */ var _utils_within_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/within.js */ "./node_modules/@popperjs/core/lib/utils/within.js");
+/* harmony import */ var _utils_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/mergePaddingObject.js */ "./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js");
+/* harmony import */ var _utils_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/expandToHashMap.js */ "./node_modules/@popperjs/core/lib/utils/expandToHashMap.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+
+
+
+
+
+
+
+
+ // eslint-disable-next-line import/no-unused-modules
+
+var toPaddingObject = function toPaddingObject(padding, state) {
+  padding = typeof padding === 'function' ? padding(Object.assign({}, state.rects, {
+    placement: state.placement
+  })) : padding;
+  return (0,_utils_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_6__["default"])(typeof padding !== 'number' ? padding : (0,_utils_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_7__["default"])(padding, _enums_js__WEBPACK_IMPORTED_MODULE_8__.basePlacements));
+};
+
+function arrow(_ref) {
+  var _state$modifiersData$;
+
+  var state = _ref.state,
+      name = _ref.name,
+      options = _ref.options;
+  var arrowElement = state.elements.arrow;
+  var popperOffsets = state.modifiersData.popperOffsets;
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(state.placement);
+  var axis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(basePlacement);
+  var isVertical = [_enums_js__WEBPACK_IMPORTED_MODULE_8__.left, _enums_js__WEBPACK_IMPORTED_MODULE_8__.right].indexOf(basePlacement) >= 0;
+  var len = isVertical ? 'height' : 'width';
+
+  if (!arrowElement || !popperOffsets) {
+    return;
+  }
+
+  var paddingObject = toPaddingObject(options.padding, state);
+  var arrowRect = (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_1__["default"])(arrowElement);
+  var minProp = axis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_8__.top : _enums_js__WEBPACK_IMPORTED_MODULE_8__.left;
+  var maxProp = axis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_8__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_8__.right;
+  var endDiff = state.rects.reference[len] + state.rects.reference[axis] - popperOffsets[axis] - state.rects.popper[len];
+  var startDiff = popperOffsets[axis] - state.rects.reference[axis];
+  var arrowOffsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_3__["default"])(arrowElement);
+  var clientSize = arrowOffsetParent ? axis === 'y' ? arrowOffsetParent.clientHeight || 0 : arrowOffsetParent.clientWidth || 0 : 0;
+  var centerToReference = endDiff / 2 - startDiff / 2; // Make sure the arrow doesn't overflow the popper if the center point is
+  // outside of the popper bounds
+
+  var min = paddingObject[minProp];
+  var max = clientSize - arrowRect[len] - paddingObject[maxProp];
+  var center = clientSize / 2 - arrowRect[len] / 2 + centerToReference;
+  var offset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_5__.within)(min, center, max); // Prevents breaking syntax highlighting...
+
+  var axisProp = axis;
+  state.modifiersData[name] = (_state$modifiersData$ = {}, _state$modifiersData$[axisProp] = offset, _state$modifiersData$.centerOffset = offset - center, _state$modifiersData$);
+}
+
+function effect(_ref2) {
+  var state = _ref2.state,
+      options = _ref2.options;
+  var _options$element = options.element,
+      arrowElement = _options$element === void 0 ? '[data-popper-arrow]' : _options$element;
+
+  if (arrowElement == null) {
+    return;
+  } // CSS selector
+
+
+  if (typeof arrowElement === 'string') {
+    arrowElement = state.elements.popper.querySelector(arrowElement);
+
+    if (!arrowElement) {
+      return;
+    }
+  }
+
+  if (!(0,_dom_utils_contains_js__WEBPACK_IMPORTED_MODULE_2__["default"])(state.elements.popper, arrowElement)) {
+    return;
+  }
+
+  state.elements.arrow = arrowElement;
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'arrow',
+  enabled: true,
+  phase: 'main',
+  fn: arrow,
+  effect: effect,
+  requires: ['popperOffsets'],
+  requiresIfExists: ['preventOverflow']
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/computeStyles.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/computeStyles.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   mapToStyles: function() { return /* binding */ mapToStyles; }
+/* harmony export */ });
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/getOffsetParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js");
+/* harmony import */ var _dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../dom-utils/getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+/* harmony import */ var _dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../dom-utils/getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../dom-utils/getComputedStyle.js */ "./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js");
+/* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _utils_getVariation_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+
+
+
+
+
+
+ // eslint-disable-next-line import/no-unused-modules
+
+var unsetSides = {
+  top: 'auto',
+  right: 'auto',
+  bottom: 'auto',
+  left: 'auto'
+}; // Round the offsets to the nearest suitable subpixel based on the DPR.
+// Zooming can change the DPR, but it seems to report a value that will
+// cleanly divide the values into the appropriate subpixels.
+
+function roundOffsetsByDPR(_ref, win) {
+  var x = _ref.x,
+      y = _ref.y;
+  var dpr = win.devicePixelRatio || 1;
+  return {
+    x: (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_7__.round)(x * dpr) / dpr || 0,
+    y: (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_7__.round)(y * dpr) / dpr || 0
+  };
+}
+
+function mapToStyles(_ref2) {
+  var _Object$assign2;
+
+  var popper = _ref2.popper,
+      popperRect = _ref2.popperRect,
+      placement = _ref2.placement,
+      variation = _ref2.variation,
+      offsets = _ref2.offsets,
+      position = _ref2.position,
+      gpuAcceleration = _ref2.gpuAcceleration,
+      adaptive = _ref2.adaptive,
+      roundOffsets = _ref2.roundOffsets,
+      isFixed = _ref2.isFixed;
+  var _offsets$x = offsets.x,
+      x = _offsets$x === void 0 ? 0 : _offsets$x,
+      _offsets$y = offsets.y,
+      y = _offsets$y === void 0 ? 0 : _offsets$y;
+
+  var _ref3 = typeof roundOffsets === 'function' ? roundOffsets({
+    x: x,
+    y: y
+  }) : {
+    x: x,
+    y: y
+  };
+
+  x = _ref3.x;
+  y = _ref3.y;
+  var hasX = offsets.hasOwnProperty('x');
+  var hasY = offsets.hasOwnProperty('y');
+  var sideX = _enums_js__WEBPACK_IMPORTED_MODULE_0__.left;
+  var sideY = _enums_js__WEBPACK_IMPORTED_MODULE_0__.top;
+  var win = window;
+
+  if (adaptive) {
+    var offsetParent = (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_1__["default"])(popper);
+    var heightProp = 'clientHeight';
+    var widthProp = 'clientWidth';
+
+    if (offsetParent === (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(popper)) {
+      offsetParent = (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(popper);
+
+      if ((0,_dom_utils_getComputedStyle_js__WEBPACK_IMPORTED_MODULE_4__["default"])(offsetParent).position !== 'static' && position === 'absolute') {
+        heightProp = 'scrollHeight';
+        widthProp = 'scrollWidth';
+      }
+    } // $FlowFixMe[incompatible-cast]: force type refinement, we compare offsetParent with window above, but Flow doesn't detect it
+
+
+    offsetParent = offsetParent;
+
+    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.top || (placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.left || placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.right) && variation === _enums_js__WEBPACK_IMPORTED_MODULE_0__.end) {
+      sideY = _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom;
+      var offsetY = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.height : // $FlowFixMe[prop-missing]
+      offsetParent[heightProp];
+      y -= offsetY - popperRect.height;
+      y *= gpuAcceleration ? 1 : -1;
+    }
+
+    if (placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.left || (placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.top || placement === _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom) && variation === _enums_js__WEBPACK_IMPORTED_MODULE_0__.end) {
+      sideX = _enums_js__WEBPACK_IMPORTED_MODULE_0__.right;
+      var offsetX = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.width : // $FlowFixMe[prop-missing]
+      offsetParent[widthProp];
+      x -= offsetX - popperRect.width;
+      x *= gpuAcceleration ? 1 : -1;
+    }
+  }
+
+  var commonStyles = Object.assign({
+    position: position
+  }, adaptive && unsetSides);
+
+  var _ref4 = roundOffsets === true ? roundOffsetsByDPR({
+    x: x,
+    y: y
+  }, (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(popper)) : {
+    x: x,
+    y: y
+  };
+
+  x = _ref4.x;
+  y = _ref4.y;
+
+  if (gpuAcceleration) {
+    var _Object$assign;
+
+    return Object.assign({}, commonStyles, (_Object$assign = {}, _Object$assign[sideY] = hasY ? '0' : '', _Object$assign[sideX] = hasX ? '0' : '', _Object$assign.transform = (win.devicePixelRatio || 1) <= 1 ? "translate(" + x + "px, " + y + "px)" : "translate3d(" + x + "px, " + y + "px, 0)", _Object$assign));
+  }
+
+  return Object.assign({}, commonStyles, (_Object$assign2 = {}, _Object$assign2[sideY] = hasY ? y + "px" : '', _Object$assign2[sideX] = hasX ? x + "px" : '', _Object$assign2.transform = '', _Object$assign2));
+}
+
+function computeStyles(_ref5) {
+  var state = _ref5.state,
+      options = _ref5.options;
+  var _options$gpuAccelerat = options.gpuAcceleration,
+      gpuAcceleration = _options$gpuAccelerat === void 0 ? true : _options$gpuAccelerat,
+      _options$adaptive = options.adaptive,
+      adaptive = _options$adaptive === void 0 ? true : _options$adaptive,
+      _options$roundOffsets = options.roundOffsets,
+      roundOffsets = _options$roundOffsets === void 0 ? true : _options$roundOffsets;
+  var commonStyles = {
+    placement: (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_5__["default"])(state.placement),
+    variation: (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state.placement),
+    popper: state.elements.popper,
+    popperRect: state.rects.popper,
+    gpuAcceleration: gpuAcceleration,
+    isFixed: state.options.strategy === 'fixed'
+  };
+
+  if (state.modifiersData.popperOffsets != null) {
+    state.styles.popper = Object.assign({}, state.styles.popper, mapToStyles(Object.assign({}, commonStyles, {
+      offsets: state.modifiersData.popperOffsets,
+      position: state.options.strategy,
+      adaptive: adaptive,
+      roundOffsets: roundOffsets
+    })));
+  }
+
+  if (state.modifiersData.arrow != null) {
+    state.styles.arrow = Object.assign({}, state.styles.arrow, mapToStyles(Object.assign({}, commonStyles, {
+      offsets: state.modifiersData.arrow,
+      position: 'absolute',
+      adaptive: false,
+      roundOffsets: roundOffsets
+    })));
+  }
+
+  state.attributes.popper = Object.assign({}, state.attributes.popper, {
+    'data-popper-placement': state.placement
+  });
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'computeStyles',
+  enabled: true,
+  phase: 'beforeWrite',
+  fn: computeStyles,
+  data: {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/eventListeners.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/eventListeners.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom-utils/getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
+ // eslint-disable-next-line import/no-unused-modules
+
+var passive = {
+  passive: true
+};
+
+function effect(_ref) {
+  var state = _ref.state,
+      instance = _ref.instance,
+      options = _ref.options;
+  var _options$scroll = options.scroll,
+      scroll = _options$scroll === void 0 ? true : _options$scroll,
+      _options$resize = options.resize,
+      resize = _options$resize === void 0 ? true : _options$resize;
+  var window = (0,_dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_0__["default"])(state.elements.popper);
+  var scrollParents = [].concat(state.scrollParents.reference, state.scrollParents.popper);
+
+  if (scroll) {
+    scrollParents.forEach(function (scrollParent) {
+      scrollParent.addEventListener('scroll', instance.update, passive);
+    });
+  }
+
+  if (resize) {
+    window.addEventListener('resize', instance.update, passive);
+  }
+
+  return function () {
+    if (scroll) {
+      scrollParents.forEach(function (scrollParent) {
+        scrollParent.removeEventListener('scroll', instance.update, passive);
+      });
+    }
+
+    if (resize) {
+      window.removeEventListener('resize', instance.update, passive);
+    }
+  };
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'eventListeners',
+  enabled: true,
+  phase: 'write',
+  fn: function fn() {},
+  effect: effect,
+  data: {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/flip.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/flip.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getOppositePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js");
+/* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getOppositeVariationPlacement.js */ "./node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js");
+/* harmony import */ var _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _utils_computeAutoPlacement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/computeAutoPlacement.js */ "./node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _utils_getVariation_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
+
+
+
+
+
+
+ // eslint-disable-next-line import/no-unused-modules
+
+function getExpandedFallbackPlacements(placement) {
+  if ((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_5__.auto) {
+    return [];
+  }
+
+  var oppositePlacement = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement);
+  return [(0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(placement), oppositePlacement, (0,_utils_getOppositeVariationPlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(oppositePlacement)];
+}
+
+function flip(_ref) {
+  var state = _ref.state,
+      options = _ref.options,
+      name = _ref.name;
+
+  if (state.modifiersData[name]._skip) {
+    return;
+  }
+
+  var _options$mainAxis = options.mainAxis,
+      checkMainAxis = _options$mainAxis === void 0 ? true : _options$mainAxis,
+      _options$altAxis = options.altAxis,
+      checkAltAxis = _options$altAxis === void 0 ? true : _options$altAxis,
+      specifiedFallbackPlacements = options.fallbackPlacements,
+      padding = options.padding,
+      boundary = options.boundary,
+      rootBoundary = options.rootBoundary,
+      altBoundary = options.altBoundary,
+      _options$flipVariatio = options.flipVariations,
+      flipVariations = _options$flipVariatio === void 0 ? true : _options$flipVariatio,
+      allowedAutoPlacements = options.allowedAutoPlacements;
+  var preferredPlacement = state.options.placement;
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(preferredPlacement);
+  var isBasePlacement = basePlacement === preferredPlacement;
+  var fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipVariations ? [(0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(preferredPlacement)] : getExpandedFallbackPlacements(preferredPlacement));
+  var placements = [preferredPlacement].concat(fallbackPlacements).reduce(function (acc, placement) {
+    return acc.concat((0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_5__.auto ? (0,_utils_computeAutoPlacement_js__WEBPACK_IMPORTED_MODULE_4__["default"])(state, {
+      placement: placement,
+      boundary: boundary,
+      rootBoundary: rootBoundary,
+      padding: padding,
+      flipVariations: flipVariations,
+      allowedAutoPlacements: allowedAutoPlacements
+    }) : placement);
+  }, []);
+  var referenceRect = state.rects.reference;
+  var popperRect = state.rects.popper;
+  var checksMap = new Map();
+  var makeFallbackChecks = true;
+  var firstFittingPlacement = placements[0];
+
+  for (var i = 0; i < placements.length; i++) {
+    var placement = placements[i];
+
+    var _basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement);
+
+    var isStartVariation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_6__["default"])(placement) === _enums_js__WEBPACK_IMPORTED_MODULE_5__.start;
+    var isVertical = [_enums_js__WEBPACK_IMPORTED_MODULE_5__.top, _enums_js__WEBPACK_IMPORTED_MODULE_5__.bottom].indexOf(_basePlacement) >= 0;
+    var len = isVertical ? 'width' : 'height';
+    var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_3__["default"])(state, {
+      placement: placement,
+      boundary: boundary,
+      rootBoundary: rootBoundary,
+      altBoundary: altBoundary,
+      padding: padding
+    });
+    var mainVariationSide = isVertical ? isStartVariation ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.right : _enums_js__WEBPACK_IMPORTED_MODULE_5__.left : isStartVariation ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_5__.top;
+
+    if (referenceRect[len] > popperRect[len]) {
+      mainVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(mainVariationSide);
+    }
+
+    var altVariationSide = (0,_utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(mainVariationSide);
+    var checks = [];
+
+    if (checkMainAxis) {
+      checks.push(overflow[_basePlacement] <= 0);
+    }
+
+    if (checkAltAxis) {
+      checks.push(overflow[mainVariationSide] <= 0, overflow[altVariationSide] <= 0);
+    }
+
+    if (checks.every(function (check) {
+      return check;
+    })) {
+      firstFittingPlacement = placement;
+      makeFallbackChecks = false;
+      break;
+    }
+
+    checksMap.set(placement, checks);
+  }
+
+  if (makeFallbackChecks) {
+    // `2` may be desired in some cases – research later
+    var numberOfChecks = flipVariations ? 3 : 1;
+
+    var _loop = function _loop(_i) {
+      var fittingPlacement = placements.find(function (placement) {
+        var checks = checksMap.get(placement);
+
+        if (checks) {
+          return checks.slice(0, _i).every(function (check) {
+            return check;
+          });
+        }
+      });
+
+      if (fittingPlacement) {
+        firstFittingPlacement = fittingPlacement;
+        return "break";
+      }
+    };
+
+    for (var _i = numberOfChecks; _i > 0; _i--) {
+      var _ret = _loop(_i);
+
+      if (_ret === "break") break;
+    }
+  }
+
+  if (state.placement !== firstFittingPlacement) {
+    state.modifiersData[name]._skip = true;
+    state.placement = firstFittingPlacement;
+    state.reset = true;
+  }
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'flip',
+  enabled: true,
+  phase: 'main',
+  fn: flip,
+  requiresIfExists: ['offset'],
+  data: {
+    _skip: false
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/hide.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/hide.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+
+
+
+function getSideOffsets(overflow, rect, preventedOffsets) {
+  if (preventedOffsets === void 0) {
+    preventedOffsets = {
+      x: 0,
+      y: 0
+    };
+  }
+
+  return {
+    top: overflow.top - rect.height - preventedOffsets.y,
+    right: overflow.right - rect.width + preventedOffsets.x,
+    bottom: overflow.bottom - rect.height + preventedOffsets.y,
+    left: overflow.left - rect.width - preventedOffsets.x
+  };
+}
+
+function isAnySideFullyClipped(overflow) {
+  return [_enums_js__WEBPACK_IMPORTED_MODULE_0__.top, _enums_js__WEBPACK_IMPORTED_MODULE_0__.right, _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom, _enums_js__WEBPACK_IMPORTED_MODULE_0__.left].some(function (side) {
+    return overflow[side] >= 0;
+  });
+}
+
+function hide(_ref) {
+  var state = _ref.state,
+      name = _ref.name;
+  var referenceRect = state.rects.reference;
+  var popperRect = state.rects.popper;
+  var preventedOffsets = state.modifiersData.preventOverflow;
+  var referenceOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state, {
+    elementContext: 'reference'
+  });
+  var popperAltOverflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state, {
+    altBoundary: true
+  });
+  var referenceClippingOffsets = getSideOffsets(referenceOverflow, referenceRect);
+  var popperEscapeOffsets = getSideOffsets(popperAltOverflow, popperRect, preventedOffsets);
+  var isReferenceHidden = isAnySideFullyClipped(referenceClippingOffsets);
+  var hasPopperEscaped = isAnySideFullyClipped(popperEscapeOffsets);
+  state.modifiersData[name] = {
+    referenceClippingOffsets: referenceClippingOffsets,
+    popperEscapeOffsets: popperEscapeOffsets,
+    isReferenceHidden: isReferenceHidden,
+    hasPopperEscaped: hasPopperEscaped
+  };
+  state.attributes.popper = Object.assign({}, state.attributes.popper, {
+    'data-popper-reference-hidden': isReferenceHidden,
+    'data-popper-escaped': hasPopperEscaped
+  });
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'hide',
+  enabled: true,
+  phase: 'main',
+  requiresIfExists: ['preventOverflow'],
+  fn: hide
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/index.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/index.js ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyStyles: function() { return /* reexport safe */ _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__["default"]; },
+/* harmony export */   arrow: function() { return /* reexport safe */ _arrow_js__WEBPACK_IMPORTED_MODULE_1__["default"]; },
+/* harmony export */   computeStyles: function() { return /* reexport safe */ _computeStyles_js__WEBPACK_IMPORTED_MODULE_2__["default"]; },
+/* harmony export */   eventListeners: function() { return /* reexport safe */ _eventListeners_js__WEBPACK_IMPORTED_MODULE_3__["default"]; },
+/* harmony export */   flip: function() { return /* reexport safe */ _flip_js__WEBPACK_IMPORTED_MODULE_4__["default"]; },
+/* harmony export */   hide: function() { return /* reexport safe */ _hide_js__WEBPACK_IMPORTED_MODULE_5__["default"]; },
+/* harmony export */   offset: function() { return /* reexport safe */ _offset_js__WEBPACK_IMPORTED_MODULE_6__["default"]; },
+/* harmony export */   popperOffsets: function() { return /* reexport safe */ _popperOffsets_js__WEBPACK_IMPORTED_MODULE_7__["default"]; },
+/* harmony export */   preventOverflow: function() { return /* reexport safe */ _preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__["default"]; }
+/* harmony export */ });
+/* harmony import */ var _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./applyStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/applyStyles.js");
+/* harmony import */ var _arrow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./arrow.js */ "./node_modules/@popperjs/core/lib/modifiers/arrow.js");
+/* harmony import */ var _computeStyles_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./computeStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/computeStyles.js");
+/* harmony import */ var _eventListeners_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./eventListeners.js */ "./node_modules/@popperjs/core/lib/modifiers/eventListeners.js");
+/* harmony import */ var _flip_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flip.js */ "./node_modules/@popperjs/core/lib/modifiers/flip.js");
+/* harmony import */ var _hide_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./hide.js */ "./node_modules/@popperjs/core/lib/modifiers/hide.js");
+/* harmony import */ var _offset_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./offset.js */ "./node_modules/@popperjs/core/lib/modifiers/offset.js");
+/* harmony import */ var _popperOffsets_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./popperOffsets.js */ "./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js");
+/* harmony import */ var _preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./preventOverflow.js */ "./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js");
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/offset.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/offset.js ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   distanceAndSkiddingToXY: function() { return /* binding */ distanceAndSkiddingToXY; }
+/* harmony export */ });
+/* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+
+ // eslint-disable-next-line import/no-unused-modules
+
+function distanceAndSkiddingToXY(placement, rects, offset) {
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement);
+  var invertDistance = [_enums_js__WEBPACK_IMPORTED_MODULE_1__.left, _enums_js__WEBPACK_IMPORTED_MODULE_1__.top].indexOf(basePlacement) >= 0 ? -1 : 1;
+
+  var _ref = typeof offset === 'function' ? offset(Object.assign({}, rects, {
+    placement: placement
+  })) : offset,
+      skidding = _ref[0],
+      distance = _ref[1];
+
+  skidding = skidding || 0;
+  distance = (distance || 0) * invertDistance;
+  return [_enums_js__WEBPACK_IMPORTED_MODULE_1__.left, _enums_js__WEBPACK_IMPORTED_MODULE_1__.right].indexOf(basePlacement) >= 0 ? {
+    x: distance,
+    y: skidding
+  } : {
+    x: skidding,
+    y: distance
+  };
+}
+
+function offset(_ref2) {
+  var state = _ref2.state,
+      options = _ref2.options,
+      name = _ref2.name;
+  var _options$offset = options.offset,
+      offset = _options$offset === void 0 ? [0, 0] : _options$offset;
+  var data = _enums_js__WEBPACK_IMPORTED_MODULE_1__.placements.reduce(function (acc, placement) {
+    acc[placement] = distanceAndSkiddingToXY(placement, state.rects, offset);
+    return acc;
+  }, {});
+  var _data$state$placement = data[state.placement],
+      x = _data$state$placement.x,
+      y = _data$state$placement.y;
+
+  if (state.modifiersData.popperOffsets != null) {
+    state.modifiersData.popperOffsets.x += x;
+    state.modifiersData.popperOffsets.y += y;
+  }
+
+  state.modifiersData[name] = data;
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'offset',
+  enabled: true,
+  phase: 'main',
+  requires: ['popperOffsets'],
+  fn: offset
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_computeOffsets_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/computeOffsets.js */ "./node_modules/@popperjs/core/lib/utils/computeOffsets.js");
+
+
+function popperOffsets(_ref) {
+  var state = _ref.state,
+      name = _ref.name;
+  // Offsets are the actual position the popper needs to have to be
+  // properly positioned near its reference element
+  // This is the most basic placement, and will be adjusted by
+  // the modifiers in the next step
+  state.modifiersData[name] = (0,_utils_computeOffsets_js__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    reference: state.rects.reference,
+    element: state.rects.popper,
+    strategy: 'absolute',
+    placement: state.placement
+  });
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'popperOffsets',
+  enabled: true,
+  phase: 'read',
+  fn: popperOffsets,
+  data: {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js ***!
+  \**********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getMainAxisFromPlacement.js */ "./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js");
+/* harmony import */ var _utils_getAltAxis_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getAltAxis.js */ "./node_modules/@popperjs/core/lib/utils/getAltAxis.js");
+/* harmony import */ var _utils_within_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/within.js */ "./node_modules/@popperjs/core/lib/utils/within.js");
+/* harmony import */ var _dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../dom-utils/getLayoutRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js");
+/* harmony import */ var _dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../dom-utils/getOffsetParent.js */ "./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js");
+/* harmony import */ var _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _utils_getVariation_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
+/* harmony import */ var _utils_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../utils/getFreshSideObject.js */ "./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js");
+/* harmony import */ var _utils_math_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../utils/math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+
+
+
+
+
+
+
+
+
+
+
+function preventOverflow(_ref) {
+  var state = _ref.state,
+      options = _ref.options,
+      name = _ref.name;
+  var _options$mainAxis = options.mainAxis,
+      checkMainAxis = _options$mainAxis === void 0 ? true : _options$mainAxis,
+      _options$altAxis = options.altAxis,
+      checkAltAxis = _options$altAxis === void 0 ? false : _options$altAxis,
+      boundary = options.boundary,
+      rootBoundary = options.rootBoundary,
+      altBoundary = options.altBoundary,
+      padding = options.padding,
+      _options$tether = options.tether,
+      tether = _options$tether === void 0 ? true : _options$tether,
+      _options$tetherOffset = options.tetherOffset,
+      tetherOffset = _options$tetherOffset === void 0 ? 0 : _options$tetherOffset;
+  var overflow = (0,_utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_7__["default"])(state, {
+    boundary: boundary,
+    rootBoundary: rootBoundary,
+    padding: padding,
+    altBoundary: altBoundary
+  });
+  var basePlacement = (0,_utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state.placement);
+  var variation = (0,_utils_getVariation_js__WEBPACK_IMPORTED_MODULE_8__["default"])(state.placement);
+  var isBasePlacement = !variation;
+  var mainAxis = (0,_utils_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(basePlacement);
+  var altAxis = (0,_utils_getAltAxis_js__WEBPACK_IMPORTED_MODULE_3__["default"])(mainAxis);
+  var popperOffsets = state.modifiersData.popperOffsets;
+  var referenceRect = state.rects.reference;
+  var popperRect = state.rects.popper;
+  var tetherOffsetValue = typeof tetherOffset === 'function' ? tetherOffset(Object.assign({}, state.rects, {
+    placement: state.placement
+  })) : tetherOffset;
+  var normalizedTetherOffsetValue = typeof tetherOffsetValue === 'number' ? {
+    mainAxis: tetherOffsetValue,
+    altAxis: tetherOffsetValue
+  } : Object.assign({
+    mainAxis: 0,
+    altAxis: 0
+  }, tetherOffsetValue);
+  var offsetModifierState = state.modifiersData.offset ? state.modifiersData.offset[state.placement] : null;
+  var data = {
+    x: 0,
+    y: 0
+  };
+
+  if (!popperOffsets) {
+    return;
+  }
+
+  if (checkMainAxis) {
+    var _offsetModifierState$;
+
+    var mainSide = mainAxis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.top : _enums_js__WEBPACK_IMPORTED_MODULE_0__.left;
+    var altSide = mainAxis === 'y' ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_0__.right;
+    var len = mainAxis === 'y' ? 'height' : 'width';
+    var offset = popperOffsets[mainAxis];
+    var min = offset + overflow[mainSide];
+    var max = offset - overflow[altSide];
+    var additive = tether ? -popperRect[len] / 2 : 0;
+    var minLen = variation === _enums_js__WEBPACK_IMPORTED_MODULE_0__.start ? referenceRect[len] : popperRect[len];
+    var maxLen = variation === _enums_js__WEBPACK_IMPORTED_MODULE_0__.start ? -popperRect[len] : -referenceRect[len]; // We need to include the arrow in the calculation so the arrow doesn't go
+    // outside the reference bounds
+
+    var arrowElement = state.elements.arrow;
+    var arrowRect = tether && arrowElement ? (0,_dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_5__["default"])(arrowElement) : {
+      width: 0,
+      height: 0
+    };
+    var arrowPaddingObject = state.modifiersData['arrow#persistent'] ? state.modifiersData['arrow#persistent'].padding : (0,_utils_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_9__["default"])();
+    var arrowPaddingMin = arrowPaddingObject[mainSide];
+    var arrowPaddingMax = arrowPaddingObject[altSide]; // If the reference length is smaller than the arrow length, we don't want
+    // to include its full size in the calculation. If the reference is small
+    // and near the edge of a boundary, the popper can overflow even if the
+    // reference is not overflowing as well (e.g. virtual elements with no
+    // width or height)
+
+    var arrowLen = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_4__.within)(0, referenceRect[len], arrowRect[len]);
+    var minOffset = isBasePlacement ? referenceRect[len] / 2 - additive - arrowLen - arrowPaddingMin - normalizedTetherOffsetValue.mainAxis : minLen - arrowLen - arrowPaddingMin - normalizedTetherOffsetValue.mainAxis;
+    var maxOffset = isBasePlacement ? -referenceRect[len] / 2 + additive + arrowLen + arrowPaddingMax + normalizedTetherOffsetValue.mainAxis : maxLen + arrowLen + arrowPaddingMax + normalizedTetherOffsetValue.mainAxis;
+    var arrowOffsetParent = state.elements.arrow && (0,_dom_utils_getOffsetParent_js__WEBPACK_IMPORTED_MODULE_6__["default"])(state.elements.arrow);
+    var clientOffset = arrowOffsetParent ? mainAxis === 'y' ? arrowOffsetParent.clientTop || 0 : arrowOffsetParent.clientLeft || 0 : 0;
+    var offsetModifierValue = (_offsetModifierState$ = offsetModifierState == null ? void 0 : offsetModifierState[mainAxis]) != null ? _offsetModifierState$ : 0;
+    var tetherMin = offset + minOffset - offsetModifierValue - clientOffset;
+    var tetherMax = offset + maxOffset - offsetModifierValue;
+    var preventedOffset = (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_4__.within)(tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.min)(min, tetherMin) : min, offset, tether ? (0,_utils_math_js__WEBPACK_IMPORTED_MODULE_10__.max)(max, tetherMax) : max);
+    popperOffsets[mainAxis] = preventedOffset;
+    data[mainAxis] = preventedOffset - offset;
+  }
+
+  if (checkAltAxis) {
+    var _offsetModifierState$2;
+
+    var _mainSide = mainAxis === 'x' ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.top : _enums_js__WEBPACK_IMPORTED_MODULE_0__.left;
+
+    var _altSide = mainAxis === 'x' ? _enums_js__WEBPACK_IMPORTED_MODULE_0__.bottom : _enums_js__WEBPACK_IMPORTED_MODULE_0__.right;
+
+    var _offset = popperOffsets[altAxis];
+
+    var _len = altAxis === 'y' ? 'height' : 'width';
+
+    var _min = _offset + overflow[_mainSide];
+
+    var _max = _offset - overflow[_altSide];
+
+    var isOriginSide = [_enums_js__WEBPACK_IMPORTED_MODULE_0__.top, _enums_js__WEBPACK_IMPORTED_MODULE_0__.left].indexOf(basePlacement) !== -1;
+
+    var _offsetModifierValue = (_offsetModifierState$2 = offsetModifierState == null ? void 0 : offsetModifierState[altAxis]) != null ? _offsetModifierState$2 : 0;
+
+    var _tetherMin = isOriginSide ? _min : _offset - referenceRect[_len] - popperRect[_len] - _offsetModifierValue + normalizedTetherOffsetValue.altAxis;
+
+    var _tetherMax = isOriginSide ? _offset + referenceRect[_len] + popperRect[_len] - _offsetModifierValue - normalizedTetherOffsetValue.altAxis : _max;
+
+    var _preventedOffset = tether && isOriginSide ? (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_4__.withinMaxClamp)(_tetherMin, _offset, _tetherMax) : (0,_utils_within_js__WEBPACK_IMPORTED_MODULE_4__.within)(tether ? _tetherMin : _min, _offset, tether ? _tetherMax : _max);
+
+    popperOffsets[altAxis] = _preventedOffset;
+    data[altAxis] = _preventedOffset - _offset;
+  }
+
+  state.modifiersData[name] = data;
+} // eslint-disable-next-line import/no-unused-modules
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'preventOverflow',
+  enabled: true,
+  phase: 'main',
+  fn: preventOverflow,
+  requiresIfExists: ['offset']
+});
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/popper-lite.js":
+/*!********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/popper-lite.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createPopper: function() { return /* binding */ createPopper; },
+/* harmony export */   defaultModifiers: function() { return /* binding */ defaultModifiers; },
+/* harmony export */   detectOverflow: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_1__["default"]; },
+/* harmony export */   popperGenerator: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_0__.popperGenerator; }
+/* harmony export */ });
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/createPopper.js");
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modifiers/eventListeners.js */ "./node_modules/@popperjs/core/lib/modifiers/eventListeners.js");
+/* harmony import */ var _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modifiers/popperOffsets.js */ "./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js");
+/* harmony import */ var _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modifiers/computeStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/computeStyles.js");
+/* harmony import */ var _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modifiers/applyStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/applyStyles.js");
+
+
+
+
+
+var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_2__["default"], _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_3__["default"], _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_4__["default"], _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_5__["default"]];
+var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_0__.popperGenerator)({
+  defaultModifiers: defaultModifiers
+}); // eslint-disable-next-line import/no-unused-modules
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/popper.js":
+/*!***************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/popper.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyStyles: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.applyStyles; },
+/* harmony export */   arrow: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.arrow; },
+/* harmony export */   computeStyles: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.computeStyles; },
+/* harmony export */   createPopper: function() { return /* binding */ createPopper; },
+/* harmony export */   createPopperLite: function() { return /* reexport safe */ _popper_lite_js__WEBPACK_IMPORTED_MODULE_11__.createPopper; },
+/* harmony export */   defaultModifiers: function() { return /* binding */ defaultModifiers; },
+/* harmony export */   detectOverflow: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_1__["default"]; },
+/* harmony export */   eventListeners: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.eventListeners; },
+/* harmony export */   flip: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.flip; },
+/* harmony export */   hide: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.hide; },
+/* harmony export */   offset: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.offset; },
+/* harmony export */   popperGenerator: function() { return /* reexport safe */ _createPopper_js__WEBPACK_IMPORTED_MODULE_0__.popperGenerator; },
+/* harmony export */   popperOffsets: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.popperOffsets; },
+/* harmony export */   preventOverflow: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.preventOverflow; }
+/* harmony export */ });
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/createPopper.js");
+/* harmony import */ var _createPopper_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createPopper.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modifiers/eventListeners.js */ "./node_modules/@popperjs/core/lib/modifiers/eventListeners.js");
+/* harmony import */ var _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modifiers/popperOffsets.js */ "./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js");
+/* harmony import */ var _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modifiers/computeStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/computeStyles.js");
+/* harmony import */ var _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modifiers/applyStyles.js */ "./node_modules/@popperjs/core/lib/modifiers/applyStyles.js");
+/* harmony import */ var _modifiers_offset_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modifiers/offset.js */ "./node_modules/@popperjs/core/lib/modifiers/offset.js");
+/* harmony import */ var _modifiers_flip_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modifiers/flip.js */ "./node_modules/@popperjs/core/lib/modifiers/flip.js");
+/* harmony import */ var _modifiers_preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modifiers/preventOverflow.js */ "./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js");
+/* harmony import */ var _modifiers_arrow_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modifiers/arrow.js */ "./node_modules/@popperjs/core/lib/modifiers/arrow.js");
+/* harmony import */ var _modifiers_hide_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modifiers/hide.js */ "./node_modules/@popperjs/core/lib/modifiers/hide.js");
+/* harmony import */ var _popper_lite_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./popper-lite.js */ "./node_modules/@popperjs/core/lib/popper-lite.js");
+/* harmony import */ var _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modifiers/index.js */ "./node_modules/@popperjs/core/lib/modifiers/index.js");
+
+
+
+
+
+
+
+
+
+
+var defaultModifiers = [_modifiers_eventListeners_js__WEBPACK_IMPORTED_MODULE_2__["default"], _modifiers_popperOffsets_js__WEBPACK_IMPORTED_MODULE_3__["default"], _modifiers_computeStyles_js__WEBPACK_IMPORTED_MODULE_4__["default"], _modifiers_applyStyles_js__WEBPACK_IMPORTED_MODULE_5__["default"], _modifiers_offset_js__WEBPACK_IMPORTED_MODULE_6__["default"], _modifiers_flip_js__WEBPACK_IMPORTED_MODULE_7__["default"], _modifiers_preventOverflow_js__WEBPACK_IMPORTED_MODULE_8__["default"], _modifiers_arrow_js__WEBPACK_IMPORTED_MODULE_9__["default"], _modifiers_hide_js__WEBPACK_IMPORTED_MODULE_10__["default"]];
+var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_0__.popperGenerator)({
+  defaultModifiers: defaultModifiers
+}); // eslint-disable-next-line import/no-unused-modules
+
+ // eslint-disable-next-line import/no-unused-modules
+
+ // eslint-disable-next-line import/no-unused-modules
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ computeAutoPlacement; }
+/* harmony export */ });
+/* harmony import */ var _getVariation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _detectOverflow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
+/* harmony import */ var _getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+
+
+
+
+function computeAutoPlacement(state, options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  var _options = options,
+      placement = _options.placement,
+      boundary = _options.boundary,
+      rootBoundary = _options.rootBoundary,
+      padding = _options.padding,
+      flipVariations = _options.flipVariations,
+      _options$allowedAutoP = _options.allowedAutoPlacements,
+      allowedAutoPlacements = _options$allowedAutoP === void 0 ? _enums_js__WEBPACK_IMPORTED_MODULE_1__.placements : _options$allowedAutoP;
+  var variation = (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement);
+  var placements = variation ? flipVariations ? _enums_js__WEBPACK_IMPORTED_MODULE_1__.variationPlacements : _enums_js__WEBPACK_IMPORTED_MODULE_1__.variationPlacements.filter(function (placement) {
+    return (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement) === variation;
+  }) : _enums_js__WEBPACK_IMPORTED_MODULE_1__.basePlacements;
+  var allowedPlacements = placements.filter(function (placement) {
+    return allowedAutoPlacements.indexOf(placement) >= 0;
+  });
+
+  if (allowedPlacements.length === 0) {
+    allowedPlacements = placements;
+  } // $FlowFixMe[incompatible-type]: Flow seems to have problems with two array unions...
+
+
+  var overflows = allowedPlacements.reduce(function (acc, placement) {
+    acc[placement] = (0,_detectOverflow_js__WEBPACK_IMPORTED_MODULE_2__["default"])(state, {
+      placement: placement,
+      boundary: boundary,
+      rootBoundary: rootBoundary,
+      padding: padding
+    })[(0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_3__["default"])(placement)];
+    return acc;
+  }, {});
+  return Object.keys(overflows).sort(function (a, b) {
+    return overflows[a] - overflows[b];
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/computeOffsets.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/computeOffsets.js ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ computeOffsets; }
+/* harmony export */ });
+/* harmony import */ var _getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
+/* harmony import */ var _getVariation_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getVariation.js */ "./node_modules/@popperjs/core/lib/utils/getVariation.js");
+/* harmony import */ var _getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getMainAxisFromPlacement.js */ "./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+
+
+
+
+function computeOffsets(_ref) {
+  var reference = _ref.reference,
+      element = _ref.element,
+      placement = _ref.placement;
+  var basePlacement = placement ? (0,_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__["default"])(placement) : null;
+  var variation = placement ? (0,_getVariation_js__WEBPACK_IMPORTED_MODULE_1__["default"])(placement) : null;
+  var commonX = reference.x + reference.width / 2 - element.width / 2;
+  var commonY = reference.y + reference.height / 2 - element.height / 2;
+  var offsets;
+
+  switch (basePlacement) {
+    case _enums_js__WEBPACK_IMPORTED_MODULE_3__.top:
+      offsets = {
+        x: commonX,
+        y: reference.y - element.height
+      };
+      break;
+
+    case _enums_js__WEBPACK_IMPORTED_MODULE_3__.bottom:
+      offsets = {
+        x: commonX,
+        y: reference.y + reference.height
+      };
+      break;
+
+    case _enums_js__WEBPACK_IMPORTED_MODULE_3__.right:
+      offsets = {
+        x: reference.x + reference.width,
+        y: commonY
+      };
+      break;
+
+    case _enums_js__WEBPACK_IMPORTED_MODULE_3__.left:
+      offsets = {
+        x: reference.x - element.width,
+        y: commonY
+      };
+      break;
+
+    default:
+      offsets = {
+        x: reference.x,
+        y: reference.y
+      };
+  }
+
+  var mainAxis = basePlacement ? (0,_getMainAxisFromPlacement_js__WEBPACK_IMPORTED_MODULE_2__["default"])(basePlacement) : null;
+
+  if (mainAxis != null) {
+    var len = mainAxis === 'y' ? 'height' : 'width';
+
+    switch (variation) {
+      case _enums_js__WEBPACK_IMPORTED_MODULE_3__.start:
+        offsets[mainAxis] = offsets[mainAxis] - (reference[len] / 2 - element[len] / 2);
+        break;
+
+      case _enums_js__WEBPACK_IMPORTED_MODULE_3__.end:
+        offsets[mainAxis] = offsets[mainAxis] + (reference[len] / 2 - element[len] / 2);
+        break;
+
+      default:
+    }
+  }
+
+  return offsets;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/debounce.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/debounce.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ debounce; }
+/* harmony export */ });
+function debounce(fn) {
+  var pending;
+  return function () {
+    if (!pending) {
+      pending = new Promise(function (resolve) {
+        Promise.resolve().then(function () {
+          pending = undefined;
+          resolve(fn());
+        });
+      });
+    }
+
+    return pending;
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/detectOverflow.js ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ detectOverflow; }
+/* harmony export */ });
+/* harmony import */ var _dom_utils_getClippingRect_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom-utils/getClippingRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js");
+/* harmony import */ var _dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/getDocumentElement.js */ "./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js");
+/* harmony import */ var _dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../dom-utils/getBoundingClientRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js");
+/* harmony import */ var _computeOffsets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./computeOffsets.js */ "./node_modules/@popperjs/core/lib/utils/computeOffsets.js");
+/* harmony import */ var _rectToClientRect_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./rectToClientRect.js */ "./node_modules/@popperjs/core/lib/utils/rectToClientRect.js");
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+/* harmony import */ var _dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../dom-utils/instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
+/* harmony import */ var _mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./mergePaddingObject.js */ "./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js");
+/* harmony import */ var _expandToHashMap_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./expandToHashMap.js */ "./node_modules/@popperjs/core/lib/utils/expandToHashMap.js");
+
+
+
+
+
+
+
+
+ // eslint-disable-next-line import/no-unused-modules
+
+function detectOverflow(state, options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  var _options = options,
+      _options$placement = _options.placement,
+      placement = _options$placement === void 0 ? state.placement : _options$placement,
+      _options$strategy = _options.strategy,
+      strategy = _options$strategy === void 0 ? state.strategy : _options$strategy,
+      _options$boundary = _options.boundary,
+      boundary = _options$boundary === void 0 ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.clippingParents : _options$boundary,
+      _options$rootBoundary = _options.rootBoundary,
+      rootBoundary = _options$rootBoundary === void 0 ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.viewport : _options$rootBoundary,
+      _options$elementConte = _options.elementContext,
+      elementContext = _options$elementConte === void 0 ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.popper : _options$elementConte,
+      _options$altBoundary = _options.altBoundary,
+      altBoundary = _options$altBoundary === void 0 ? false : _options$altBoundary,
+      _options$padding = _options.padding,
+      padding = _options$padding === void 0 ? 0 : _options$padding;
+  var paddingObject = (0,_mergePaddingObject_js__WEBPACK_IMPORTED_MODULE_7__["default"])(typeof padding !== 'number' ? padding : (0,_expandToHashMap_js__WEBPACK_IMPORTED_MODULE_8__["default"])(padding, _enums_js__WEBPACK_IMPORTED_MODULE_5__.basePlacements));
+  var altContext = elementContext === _enums_js__WEBPACK_IMPORTED_MODULE_5__.popper ? _enums_js__WEBPACK_IMPORTED_MODULE_5__.reference : _enums_js__WEBPACK_IMPORTED_MODULE_5__.popper;
+  var popperRect = state.rects.popper;
+  var element = state.elements[altBoundary ? altContext : elementContext];
+  var clippingClientRect = (0,_dom_utils_getClippingRect_js__WEBPACK_IMPORTED_MODULE_0__["default"])((0,_dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_6__.isElement)(element) ? element : element.contextElement || (0,_dom_utils_getDocumentElement_js__WEBPACK_IMPORTED_MODULE_1__["default"])(state.elements.popper), boundary, rootBoundary, strategy);
+  var referenceClientRect = (0,_dom_utils_getBoundingClientRect_js__WEBPACK_IMPORTED_MODULE_2__["default"])(state.elements.reference);
+  var popperOffsets = (0,_computeOffsets_js__WEBPACK_IMPORTED_MODULE_3__["default"])({
+    reference: referenceClientRect,
+    element: popperRect,
+    strategy: 'absolute',
+    placement: placement
+  });
+  var popperClientRect = (0,_rectToClientRect_js__WEBPACK_IMPORTED_MODULE_4__["default"])(Object.assign({}, popperRect, popperOffsets));
+  var elementClientRect = elementContext === _enums_js__WEBPACK_IMPORTED_MODULE_5__.popper ? popperClientRect : referenceClientRect; // positive = overflowing the clipping rect
+  // 0 or negative = within the clipping rect
+
+  var overflowOffsets = {
+    top: clippingClientRect.top - elementClientRect.top + paddingObject.top,
+    bottom: elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom,
+    left: clippingClientRect.left - elementClientRect.left + paddingObject.left,
+    right: elementClientRect.right - clippingClientRect.right + paddingObject.right
+  };
+  var offsetData = state.modifiersData.offset; // Offsets can be applied only to the popper element
+
+  if (elementContext === _enums_js__WEBPACK_IMPORTED_MODULE_5__.popper && offsetData) {
+    var offset = offsetData[placement];
+    Object.keys(overflowOffsets).forEach(function (key) {
+      var multiply = [_enums_js__WEBPACK_IMPORTED_MODULE_5__.right, _enums_js__WEBPACK_IMPORTED_MODULE_5__.bottom].indexOf(key) >= 0 ? 1 : -1;
+      var axis = [_enums_js__WEBPACK_IMPORTED_MODULE_5__.top, _enums_js__WEBPACK_IMPORTED_MODULE_5__.bottom].indexOf(key) >= 0 ? 'y' : 'x';
+      overflowOffsets[key] += offset[axis] * multiply;
+    });
+  }
+
+  return overflowOffsets;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/expandToHashMap.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/expandToHashMap.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ expandToHashMap; }
+/* harmony export */ });
+function expandToHashMap(value, keys) {
+  return keys.reduce(function (hashMap, key) {
+    hashMap[key] = value;
+    return hashMap;
+  }, {});
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getAltAxis.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getAltAxis.js ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getAltAxis; }
+/* harmony export */ });
+function getAltAxis(axis) {
+  return axis === 'x' ? 'y' : 'x';
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getBasePlacement.js ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getBasePlacement; }
+/* harmony export */ });
+
+function getBasePlacement(placement) {
+  return placement.split('-')[0];
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getFreshSideObject; }
+/* harmony export */ });
+function getFreshSideObject() {
+  return {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getMainAxisFromPlacement; }
+/* harmony export */ });
+function getMainAxisFromPlacement(placement) {
+  return ['top', 'bottom'].indexOf(placement) >= 0 ? 'x' : 'y';
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getOppositePlacement; }
+/* harmony export */ });
+var hash = {
+  left: 'right',
+  right: 'left',
+  bottom: 'top',
+  top: 'bottom'
+};
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, function (matched) {
+    return hash[matched];
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getOppositeVariationPlacement; }
+/* harmony export */ });
+var hash = {
+  start: 'end',
+  end: 'start'
+};
+function getOppositeVariationPlacement(placement) {
+  return placement.replace(/start|end/g, function (matched) {
+    return hash[matched];
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/getVariation.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/getVariation.js ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getVariation; }
+/* harmony export */ });
+function getVariation(placement) {
+  return placement.split('-')[1];
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/math.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/math.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   max: function() { return /* binding */ max; },
+/* harmony export */   min: function() { return /* binding */ min; },
+/* harmony export */   round: function() { return /* binding */ round; }
+/* harmony export */ });
+var max = Math.max;
+var min = Math.min;
+var round = Math.round;
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/mergeByName.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/mergeByName.js ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ mergeByName; }
+/* harmony export */ });
+function mergeByName(modifiers) {
+  var merged = modifiers.reduce(function (merged, current) {
+    var existing = merged[current.name];
+    merged[current.name] = existing ? Object.assign({}, existing, current, {
+      options: Object.assign({}, existing.options, current.options),
+      data: Object.assign({}, existing.data, current.data)
+    }) : current;
+    return merged;
+  }, {}); // IE11 does not support Object.values
+
+  return Object.keys(merged).map(function (key) {
+    return merged[key];
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ mergePaddingObject; }
+/* harmony export */ });
+/* harmony import */ var _getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFreshSideObject.js */ "./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js");
+
+function mergePaddingObject(paddingObject) {
+  return Object.assign({}, (0,_getFreshSideObject_js__WEBPACK_IMPORTED_MODULE_0__["default"])(), paddingObject);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/orderModifiers.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/orderModifiers.js ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ orderModifiers; }
+/* harmony export */ });
+/* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
+ // source: https://stackoverflow.com/questions/49875255
+
+function order(modifiers) {
+  var map = new Map();
+  var visited = new Set();
+  var result = [];
+  modifiers.forEach(function (modifier) {
+    map.set(modifier.name, modifier);
+  }); // On visiting object, check for its dependencies and visit them recursively
+
+  function sort(modifier) {
+    visited.add(modifier.name);
+    var requires = [].concat(modifier.requires || [], modifier.requiresIfExists || []);
+    requires.forEach(function (dep) {
+      if (!visited.has(dep)) {
+        var depModifier = map.get(dep);
+
+        if (depModifier) {
+          sort(depModifier);
+        }
+      }
+    });
+    result.push(modifier);
+  }
+
+  modifiers.forEach(function (modifier) {
+    if (!visited.has(modifier.name)) {
+      // check for visited object
+      sort(modifier);
+    }
+  });
+  return result;
+}
+
+function orderModifiers(modifiers) {
+  // order based on dependencies
+  var orderedModifiers = order(modifiers); // order based on phase
+
+  return _enums_js__WEBPACK_IMPORTED_MODULE_0__.modifierPhases.reduce(function (acc, phase) {
+    return acc.concat(orderedModifiers.filter(function (modifier) {
+      return modifier.phase === phase;
+    }));
+  }, []);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/rectToClientRect.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/rectToClientRect.js ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ rectToClientRect; }
+/* harmony export */ });
+function rectToClientRect(rect) {
+  return Object.assign({}, rect, {
+    left: rect.x,
+    top: rect.y,
+    right: rect.x + rect.width,
+    bottom: rect.y + rect.height
+  });
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/userAgent.js":
+/*!************************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/userAgent.js ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ getUAString; }
+/* harmony export */ });
+function getUAString() {
+  var uaData = navigator.userAgentData;
+
+  if (uaData != null && uaData.brands && Array.isArray(uaData.brands)) {
+    return uaData.brands.map(function (item) {
+      return item.brand + "/" + item.version;
+    }).join(' ');
+  }
+
+  return navigator.userAgent;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@popperjs/core/lib/utils/within.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/@popperjs/core/lib/utils/within.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   within: function() { return /* binding */ within; },
+/* harmony export */   withinMaxClamp: function() { return /* binding */ withinMaxClamp; }
+/* harmony export */ });
+/* harmony import */ var _math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./math.js */ "./node_modules/@popperjs/core/lib/utils/math.js");
+
+function within(min, value, max) {
+  return (0,_math_js__WEBPACK_IMPORTED_MODULE_0__.max)(min, (0,_math_js__WEBPACK_IMPORTED_MODULE_0__.min)(value, max));
+}
+function withinMaxClamp(min, value, max) {
+  var v = within(min, value, max);
+  return v > max ? max : v;
+}
+
+/***/ }),
+
+/***/ "./node_modules/bootstrap/dist/js/bootstrap.esm.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/bootstrap/dist/js/bootstrap.esm.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Alert: function() { return /* binding */ Alert; },
+/* harmony export */   Button: function() { return /* binding */ Button; },
+/* harmony export */   Carousel: function() { return /* binding */ Carousel; },
+/* harmony export */   Collapse: function() { return /* binding */ Collapse; },
+/* harmony export */   Dropdown: function() { return /* binding */ Dropdown; },
+/* harmony export */   Modal: function() { return /* binding */ Modal; },
+/* harmony export */   Offcanvas: function() { return /* binding */ Offcanvas; },
+/* harmony export */   Popover: function() { return /* binding */ Popover; },
+/* harmony export */   ScrollSpy: function() { return /* binding */ ScrollSpy; },
+/* harmony export */   Tab: function() { return /* binding */ Tab; },
+/* harmony export */   Toast: function() { return /* binding */ Toast; },
+/* harmony export */   Tooltip: function() { return /* binding */ Tooltip; }
+/* harmony export */ });
+/* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/index.js");
+/* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/popper.js");
+/*!
+  * Bootstrap v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+  */
+
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap dom/data.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+/**
+ * Constants
+ */
+
+const elementMap = new Map();
+const Data = {
+  set(element, key, instance) {
+    if (!elementMap.has(element)) {
+      elementMap.set(element, new Map());
+    }
+    const instanceMap = elementMap.get(element);
+
+    // make it clear we only want one instance per element
+    // can be removed later when multiple key/instances are fine to be used
+    if (!instanceMap.has(key) && instanceMap.size !== 0) {
+      // eslint-disable-next-line no-console
+      console.error(`Bootstrap doesn't allow more than one instance per element. Bound instance: ${Array.from(instanceMap.keys())[0]}.`);
+      return;
+    }
+    instanceMap.set(key, instance);
+  },
+  get(element, key) {
+    if (elementMap.has(element)) {
+      return elementMap.get(element).get(key) || null;
+    }
+    return null;
+  },
+  remove(element, key) {
+    if (!elementMap.has(element)) {
+      return;
+    }
+    const instanceMap = elementMap.get(element);
+    instanceMap.delete(key);
+
+    // free up element references if there are no instances left for an element
+    if (instanceMap.size === 0) {
+      elementMap.delete(element);
+    }
+  }
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/index.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+const MAX_UID = 1000000;
+const MILLISECONDS_MULTIPLIER = 1000;
+const TRANSITION_END = 'transitionend';
+
+/**
+ * Properly escape IDs selectors to handle weird IDs
+ * @param {string} selector
+ * @returns {string}
+ */
+const parseSelector = selector => {
+  if (selector && window.CSS && window.CSS.escape) {
+    // document.querySelector needs escaping to handle IDs (html5+) containing for instance /
+    selector = selector.replace(/#([^\s"#']+)/g, (match, id) => `#${CSS.escape(id)}`);
+  }
+  return selector;
+};
+
+// Shout-out Angus Croll (https://goo.gl/pxwQGp)
+const toType = object => {
+  if (object === null || object === undefined) {
+    return `${object}`;
+  }
+  return Object.prototype.toString.call(object).match(/\s([a-z]+)/i)[1].toLowerCase();
+};
+
+/**
+ * Public Util API
+ */
+
+const getUID = prefix => {
+  do {
+    prefix += Math.floor(Math.random() * MAX_UID);
+  } while (document.getElementById(prefix));
+  return prefix;
+};
+const getTransitionDurationFromElement = element => {
+  if (!element) {
+    return 0;
+  }
+
+  // Get transition-duration of the element
+  let {
+    transitionDuration,
+    transitionDelay
+  } = window.getComputedStyle(element);
+  const floatTransitionDuration = Number.parseFloat(transitionDuration);
+  const floatTransitionDelay = Number.parseFloat(transitionDelay);
+
+  // Return 0 if element or transition duration is not found
+  if (!floatTransitionDuration && !floatTransitionDelay) {
+    return 0;
+  }
+
+  // If multiple durations are defined, take the first
+  transitionDuration = transitionDuration.split(',')[0];
+  transitionDelay = transitionDelay.split(',')[0];
+  return (Number.parseFloat(transitionDuration) + Number.parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER;
+};
+const triggerTransitionEnd = element => {
+  element.dispatchEvent(new Event(TRANSITION_END));
+};
+const isElement = object => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+  if (typeof object.jquery !== 'undefined') {
+    object = object[0];
+  }
+  return typeof object.nodeType !== 'undefined';
+};
+const getElement = object => {
+  // it's a jQuery object or a node element
+  if (isElement(object)) {
+    return object.jquery ? object[0] : object;
+  }
+  if (typeof object === 'string' && object.length > 0) {
+    return document.querySelector(parseSelector(object));
+  }
+  return null;
+};
+const isVisible = element => {
+  if (!isElement(element) || element.getClientRects().length === 0) {
+    return false;
+  }
+  const elementIsVisible = getComputedStyle(element).getPropertyValue('visibility') === 'visible';
+  // Handle `details` element as its content may falsie appear visible when it is closed
+  const closedDetails = element.closest('details:not([open])');
+  if (!closedDetails) {
+    return elementIsVisible;
+  }
+  if (closedDetails !== element) {
+    const summary = element.closest('summary');
+    if (summary && summary.parentNode !== closedDetails) {
+      return false;
+    }
+    if (summary === null) {
+      return false;
+    }
+  }
+  return elementIsVisible;
+};
+const isDisabled = element => {
+  if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+    return true;
+  }
+  if (element.classList.contains('disabled')) {
+    return true;
+  }
+  if (typeof element.disabled !== 'undefined') {
+    return element.disabled;
+  }
+  return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
+};
+const findShadowRoot = element => {
+  if (!document.documentElement.attachShadow) {
+    return null;
+  }
+
+  // Can find the shadow root otherwise it'll return the document
+  if (typeof element.getRootNode === 'function') {
+    const root = element.getRootNode();
+    return root instanceof ShadowRoot ? root : null;
+  }
+  if (element instanceof ShadowRoot) {
+    return element;
+  }
+
+  // when we don't find a shadow root
+  if (!element.parentNode) {
+    return null;
+  }
+  return findShadowRoot(element.parentNode);
+};
+const noop = () => {};
+
+/**
+ * Trick to restart an element's animation
+ *
+ * @param {HTMLElement} element
+ * @return void
+ *
+ * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+ */
+const reflow = element => {
+  element.offsetHeight; // eslint-disable-line no-unused-expressions
+};
+const getjQuery = () => {
+  if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
+    return window.jQuery;
+  }
+  return null;
+};
+const DOMContentLoadedCallbacks = [];
+const onDOMContentLoaded = callback => {
+  if (document.readyState === 'loading') {
+    // add listener on the first call when the document is in loading state
+    if (!DOMContentLoadedCallbacks.length) {
+      document.addEventListener('DOMContentLoaded', () => {
+        for (const callback of DOMContentLoadedCallbacks) {
+          callback();
+        }
+      });
+    }
+    DOMContentLoadedCallbacks.push(callback);
+  } else {
+    callback();
+  }
+};
+const isRTL = () => document.documentElement.dir === 'rtl';
+const defineJQueryPlugin = plugin => {
+  onDOMContentLoaded(() => {
+    const $ = getjQuery();
+    /* istanbul ignore if */
+    if ($) {
+      const name = plugin.NAME;
+      const JQUERY_NO_CONFLICT = $.fn[name];
+      $.fn[name] = plugin.jQueryInterface;
+      $.fn[name].Constructor = plugin;
+      $.fn[name].noConflict = () => {
+        $.fn[name] = JQUERY_NO_CONFLICT;
+        return plugin.jQueryInterface;
+      };
+    }
+  });
+};
+const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
+  return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue;
+};
+const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
+  if (!waitForTransition) {
+    execute(callback);
+    return;
+  }
+  const durationPadding = 5;
+  const emulatedDuration = getTransitionDurationFromElement(transitionElement) + durationPadding;
+  let called = false;
+  const handler = ({
+    target
+  }) => {
+    if (target !== transitionElement) {
+      return;
+    }
+    called = true;
+    transitionElement.removeEventListener(TRANSITION_END, handler);
+    execute(callback);
+  };
+  transitionElement.addEventListener(TRANSITION_END, handler);
+  setTimeout(() => {
+    if (!called) {
+      triggerTransitionEnd(transitionElement);
+    }
+  }, emulatedDuration);
+};
+
+/**
+ * Return the previous/next element of a list.
+ *
+ * @param {array} list    The list of elements
+ * @param activeElement   The active element
+ * @param shouldGetNext   Choose to get next or previous element
+ * @param isCycleAllowed
+ * @return {Element|elem} The proper element
+ */
+const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
+  const listLength = list.length;
+  let index = list.indexOf(activeElement);
+
+  // if the element does not exist in the list return an element
+  // depending on the direction and if cycle is allowed
+  if (index === -1) {
+    return !shouldGetNext && isCycleAllowed ? list[listLength - 1] : list[0];
+  }
+  index += shouldGetNext ? 1 : -1;
+  if (isCycleAllowed) {
+    index = (index + listLength) % listLength;
+  }
+  return list[Math.max(0, Math.min(index, listLength - 1))];
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap dom/event-handler.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const namespaceRegex = /[^.]*(?=\..*)\.|.*/;
+const stripNameRegex = /\..*/;
+const stripUidRegex = /::\d+$/;
+const eventRegistry = {}; // Events storage
+let uidEvent = 1;
+const customEvents = {
+  mouseenter: 'mouseover',
+  mouseleave: 'mouseout'
+};
+const nativeEvents = new Set(['click', 'dblclick', 'mouseup', 'mousedown', 'contextmenu', 'mousewheel', 'DOMMouseScroll', 'mouseover', 'mouseout', 'mousemove', 'selectstart', 'selectend', 'keydown', 'keypress', 'keyup', 'orientationchange', 'touchstart', 'touchmove', 'touchend', 'touchcancel', 'pointerdown', 'pointermove', 'pointerup', 'pointerleave', 'pointercancel', 'gesturestart', 'gesturechange', 'gestureend', 'focus', 'blur', 'change', 'reset', 'select', 'submit', 'focusin', 'focusout', 'load', 'unload', 'beforeunload', 'resize', 'move', 'DOMContentLoaded', 'readystatechange', 'error', 'abort', 'scroll']);
+
+/**
+ * Private methods
+ */
+
+function makeEventUid(element, uid) {
+  return uid && `${uid}::${uidEvent++}` || element.uidEvent || uidEvent++;
+}
+function getElementEvents(element) {
+  const uid = makeEventUid(element);
+  element.uidEvent = uid;
+  eventRegistry[uid] = eventRegistry[uid] || {};
+  return eventRegistry[uid];
+}
+function bootstrapHandler(element, fn) {
+  return function handler(event) {
+    hydrateObj(event, {
+      delegateTarget: element
+    });
+    if (handler.oneOff) {
+      EventHandler.off(element, event.type, fn);
+    }
+    return fn.apply(element, [event]);
+  };
+}
+function bootstrapDelegationHandler(element, selector, fn) {
+  return function handler(event) {
+    const domElements = element.querySelectorAll(selector);
+    for (let {
+      target
+    } = event; target && target !== this; target = target.parentNode) {
+      for (const domElement of domElements) {
+        if (domElement !== target) {
+          continue;
+        }
+        hydrateObj(event, {
+          delegateTarget: target
+        });
+        if (handler.oneOff) {
+          EventHandler.off(element, event.type, selector, fn);
+        }
+        return fn.apply(target, [event]);
+      }
+    }
+  };
+}
+function findHandler(events, callable, delegationSelector = null) {
+  return Object.values(events).find(event => event.callable === callable && event.delegationSelector === delegationSelector);
+}
+function normalizeParameters(originalTypeEvent, handler, delegationFunction) {
+  const isDelegated = typeof handler === 'string';
+  // TODO: tooltip passes `false` instead of selector, so we need to check
+  const callable = isDelegated ? delegationFunction : handler || delegationFunction;
+  let typeEvent = getTypeEvent(originalTypeEvent);
+  if (!nativeEvents.has(typeEvent)) {
+    typeEvent = originalTypeEvent;
+  }
+  return [isDelegated, callable, typeEvent];
+}
+function addHandler(element, originalTypeEvent, handler, delegationFunction, oneOff) {
+  if (typeof originalTypeEvent !== 'string' || !element) {
+    return;
+  }
+  let [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+
+  // in case of mouseenter or mouseleave wrap the handler within a function that checks for its DOM position
+  // this prevents the handler from being dispatched the same way as mouseover or mouseout does
+  if (originalTypeEvent in customEvents) {
+    const wrapFunction = fn => {
+      return function (event) {
+        if (!event.relatedTarget || event.relatedTarget !== event.delegateTarget && !event.delegateTarget.contains(event.relatedTarget)) {
+          return fn.call(this, event);
+        }
+      };
+    };
+    callable = wrapFunction(callable);
+  }
+  const events = getElementEvents(element);
+  const handlers = events[typeEvent] || (events[typeEvent] = {});
+  const previousFunction = findHandler(handlers, callable, isDelegated ? handler : null);
+  if (previousFunction) {
+    previousFunction.oneOff = previousFunction.oneOff && oneOff;
+    return;
+  }
+  const uid = makeEventUid(callable, originalTypeEvent.replace(namespaceRegex, ''));
+  const fn = isDelegated ? bootstrapDelegationHandler(element, handler, callable) : bootstrapHandler(element, callable);
+  fn.delegationSelector = isDelegated ? handler : null;
+  fn.callable = callable;
+  fn.oneOff = oneOff;
+  fn.uidEvent = uid;
+  handlers[uid] = fn;
+  element.addEventListener(typeEvent, fn, isDelegated);
+}
+function removeHandler(element, events, typeEvent, handler, delegationSelector) {
+  const fn = findHandler(events[typeEvent], handler, delegationSelector);
+  if (!fn) {
+    return;
+  }
+  element.removeEventListener(typeEvent, fn, Boolean(delegationSelector));
+  delete events[typeEvent][fn.uidEvent];
+}
+function removeNamespacedHandlers(element, events, typeEvent, namespace) {
+  const storeElementEvent = events[typeEvent] || {};
+  for (const [handlerKey, event] of Object.entries(storeElementEvent)) {
+    if (handlerKey.includes(namespace)) {
+      removeHandler(element, events, typeEvent, event.callable, event.delegationSelector);
+    }
+  }
+}
+function getTypeEvent(event) {
+  // allow to get the native events from namespaced events ('click.bs.button' --> 'click')
+  event = event.replace(stripNameRegex, '');
+  return customEvents[event] || event;
+}
+const EventHandler = {
+  on(element, event, handler, delegationFunction) {
+    addHandler(element, event, handler, delegationFunction, false);
+  },
+  one(element, event, handler, delegationFunction) {
+    addHandler(element, event, handler, delegationFunction, true);
+  },
+  off(element, originalTypeEvent, handler, delegationFunction) {
+    if (typeof originalTypeEvent !== 'string' || !element) {
+      return;
+    }
+    const [isDelegated, callable, typeEvent] = normalizeParameters(originalTypeEvent, handler, delegationFunction);
+    const inNamespace = typeEvent !== originalTypeEvent;
+    const events = getElementEvents(element);
+    const storeElementEvent = events[typeEvent] || {};
+    const isNamespace = originalTypeEvent.startsWith('.');
+    if (typeof callable !== 'undefined') {
+      // Simplest case: handler is passed, remove that listener ONLY.
+      if (!Object.keys(storeElementEvent).length) {
+        return;
+      }
+      removeHandler(element, events, typeEvent, callable, isDelegated ? handler : null);
+      return;
+    }
+    if (isNamespace) {
+      for (const elementEvent of Object.keys(events)) {
+        removeNamespacedHandlers(element, events, elementEvent, originalTypeEvent.slice(1));
+      }
+    }
+    for (const [keyHandlers, event] of Object.entries(storeElementEvent)) {
+      const handlerKey = keyHandlers.replace(stripUidRegex, '');
+      if (!inNamespace || originalTypeEvent.includes(handlerKey)) {
+        removeHandler(element, events, typeEvent, event.callable, event.delegationSelector);
+      }
+    }
+  },
+  trigger(element, event, args) {
+    if (typeof event !== 'string' || !element) {
+      return null;
+    }
+    const $ = getjQuery();
+    const typeEvent = getTypeEvent(event);
+    const inNamespace = event !== typeEvent;
+    let jQueryEvent = null;
+    let bubbles = true;
+    let nativeDispatch = true;
+    let defaultPrevented = false;
+    if (inNamespace && $) {
+      jQueryEvent = $.Event(event, args);
+      $(element).trigger(jQueryEvent);
+      bubbles = !jQueryEvent.isPropagationStopped();
+      nativeDispatch = !jQueryEvent.isImmediatePropagationStopped();
+      defaultPrevented = jQueryEvent.isDefaultPrevented();
+    }
+    const evt = hydrateObj(new Event(event, {
+      bubbles,
+      cancelable: true
+    }), args);
+    if (defaultPrevented) {
+      evt.preventDefault();
+    }
+    if (nativeDispatch) {
+      element.dispatchEvent(evt);
+    }
+    if (evt.defaultPrevented && jQueryEvent) {
+      jQueryEvent.preventDefault();
+    }
+    return evt;
+  }
+};
+function hydrateObj(obj, meta = {}) {
+  for (const [key, value] of Object.entries(meta)) {
+    try {
+      obj[key] = value;
+    } catch (_unused) {
+      Object.defineProperty(obj, key, {
+        configurable: true,
+        get() {
+          return value;
+        }
+      });
+    }
+  }
+  return obj;
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap dom/manipulator.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+function normalizeData(value) {
+  if (value === 'true') {
+    return true;
+  }
+  if (value === 'false') {
+    return false;
+  }
+  if (value === Number(value).toString()) {
+    return Number(value);
+  }
+  if (value === '' || value === 'null') {
+    return null;
+  }
+  if (typeof value !== 'string') {
+    return value;
+  }
+  try {
+    return JSON.parse(decodeURIComponent(value));
+  } catch (_unused) {
+    return value;
+  }
+}
+function normalizeDataKey(key) {
+  return key.replace(/[A-Z]/g, chr => `-${chr.toLowerCase()}`);
+}
+const Manipulator = {
+  setDataAttribute(element, key, value) {
+    element.setAttribute(`data-bs-${normalizeDataKey(key)}`, value);
+  },
+  removeDataAttribute(element, key) {
+    element.removeAttribute(`data-bs-${normalizeDataKey(key)}`);
+  },
+  getDataAttributes(element) {
+    if (!element) {
+      return {};
+    }
+    const attributes = {};
+    const bsKeys = Object.keys(element.dataset).filter(key => key.startsWith('bs') && !key.startsWith('bsConfig'));
+    for (const key of bsKeys) {
+      let pureKey = key.replace(/^bs/, '');
+      pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1);
+      attributes[pureKey] = normalizeData(element.dataset[key]);
+    }
+    return attributes;
+  },
+  getDataAttribute(element, key) {
+    return normalizeData(element.getAttribute(`data-bs-${normalizeDataKey(key)}`));
+  }
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/config.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Class definition
+ */
+
+class Config {
+  // Getters
+  static get Default() {
+    return {};
+  }
+  static get DefaultType() {
+    return {};
+  }
+  static get NAME() {
+    throw new Error('You have to implement the static method "NAME", for each component!');
+  }
+  _getConfig(config) {
+    config = this._mergeConfigObj(config);
+    config = this._configAfterMerge(config);
+    this._typeCheckConfig(config);
+    return config;
+  }
+  _configAfterMerge(config) {
+    return config;
+  }
+  _mergeConfigObj(config, element) {
+    const jsonConfig = isElement(element) ? Manipulator.getDataAttribute(element, 'config') : {}; // try to parse
+
+    return {
+      ...this.constructor.Default,
+      ...(typeof jsonConfig === 'object' ? jsonConfig : {}),
+      ...(isElement(element) ? Manipulator.getDataAttributes(element) : {}),
+      ...(typeof config === 'object' ? config : {})
+    };
+  }
+  _typeCheckConfig(config, configTypes = this.constructor.DefaultType) {
+    for (const [property, expectedTypes] of Object.entries(configTypes)) {
+      const value = config[property];
+      const valueType = isElement(value) ? 'element' : toType(value);
+      if (!new RegExp(expectedTypes).test(valueType)) {
+        throw new TypeError(`${this.constructor.NAME.toUpperCase()}: Option "${property}" provided type "${valueType}" but expected type "${expectedTypes}".`);
+      }
+    }
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap base-component.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const VERSION = '5.3.8';
+
+/**
+ * Class definition
+ */
+
+class BaseComponent extends Config {
+  constructor(element, config) {
+    super();
+    element = getElement(element);
+    if (!element) {
+      return;
+    }
+    this._element = element;
+    this._config = this._getConfig(config);
+    Data.set(this._element, this.constructor.DATA_KEY, this);
+  }
+
+  // Public
+  dispose() {
+    Data.remove(this._element, this.constructor.DATA_KEY);
+    EventHandler.off(this._element, this.constructor.EVENT_KEY);
+    for (const propertyName of Object.getOwnPropertyNames(this)) {
+      this[propertyName] = null;
+    }
+  }
+
+  // Private
+  _queueCallback(callback, element, isAnimated = true) {
+    executeAfterTransition(callback, element, isAnimated);
+  }
+  _getConfig(config) {
+    config = this._mergeConfigObj(config, this._element);
+    config = this._configAfterMerge(config);
+    this._typeCheckConfig(config);
+    return config;
+  }
+
+  // Static
+  static getInstance(element) {
+    return Data.get(getElement(element), this.DATA_KEY);
+  }
+  static getOrCreateInstance(element, config = {}) {
+    return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
+  }
+  static get VERSION() {
+    return VERSION;
+  }
+  static get DATA_KEY() {
+    return `bs.${this.NAME}`;
+  }
+  static get EVENT_KEY() {
+    return `.${this.DATA_KEY}`;
+  }
+  static eventName(name) {
+    return `${name}${this.EVENT_KEY}`;
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap dom/selector-engine.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+const getSelector = element => {
+  let selector = element.getAttribute('data-bs-target');
+  if (!selector || selector === '#') {
+    let hrefAttribute = element.getAttribute('href');
+
+    // The only valid content that could double as a selector are IDs or classes,
+    // so everything starting with `#` or `.`. If a "real" URL is used as the selector,
+    // `document.querySelector` will rightfully complain it is invalid.
+    // See https://github.com/twbs/bootstrap/issues/32273
+    if (!hrefAttribute || !hrefAttribute.includes('#') && !hrefAttribute.startsWith('.')) {
+      return null;
+    }
+
+    // Just in case some CMS puts out a full URL with the anchor appended
+    if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
+      hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
+    }
+    selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
+  }
+  return selector ? selector.split(',').map(sel => parseSelector(sel)).join(',') : null;
+};
+const SelectorEngine = {
+  find(selector, element = document.documentElement) {
+    return [].concat(...Element.prototype.querySelectorAll.call(element, selector));
+  },
+  findOne(selector, element = document.documentElement) {
+    return Element.prototype.querySelector.call(element, selector);
+  },
+  children(element, selector) {
+    return [].concat(...element.children).filter(child => child.matches(selector));
+  },
+  parents(element, selector) {
+    const parents = [];
+    let ancestor = element.parentNode.closest(selector);
+    while (ancestor) {
+      parents.push(ancestor);
+      ancestor = ancestor.parentNode.closest(selector);
+    }
+    return parents;
+  },
+  prev(element, selector) {
+    let previous = element.previousElementSibling;
+    while (previous) {
+      if (previous.matches(selector)) {
+        return [previous];
+      }
+      previous = previous.previousElementSibling;
+    }
+    return [];
+  },
+  // TODO: this is now unused; remove later along with prev()
+  next(element, selector) {
+    let next = element.nextElementSibling;
+    while (next) {
+      if (next.matches(selector)) {
+        return [next];
+      }
+      next = next.nextElementSibling;
+    }
+    return [];
+  },
+  focusableChildren(element) {
+    const focusables = ['a', 'button', 'input', 'textarea', 'select', 'details', '[tabindex]', '[contenteditable="true"]'].map(selector => `${selector}:not([tabindex^="-"])`).join(',');
+    return this.find(focusables, element).filter(el => !isDisabled(el) && isVisible(el));
+  },
+  getSelectorFromElement(element) {
+    const selector = getSelector(element);
+    if (selector) {
+      return SelectorEngine.findOne(selector) ? selector : null;
+    }
+    return null;
+  },
+  getElementFromSelector(element) {
+    const selector = getSelector(element);
+    return selector ? SelectorEngine.findOne(selector) : null;
+  },
+  getMultipleElementsFromSelector(element) {
+    const selector = getSelector(element);
+    return selector ? SelectorEngine.find(selector) : [];
+  }
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/component-functions.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+const enableDismissTrigger = (component, method = 'hide') => {
+  const clickEvent = `click.dismiss${component.EVENT_KEY}`;
+  const name = component.NAME;
+  EventHandler.on(document, clickEvent, `[data-bs-dismiss="${name}"]`, function (event) {
+    if (['A', 'AREA'].includes(this.tagName)) {
+      event.preventDefault();
+    }
+    if (isDisabled(this)) {
+      return;
+    }
+    const target = SelectorEngine.getElementFromSelector(this) || this.closest(`.${name}`);
+    const instance = component.getOrCreateInstance(target);
+
+    // Method argument is left, for Alert and only, as it doesn't implement the 'hide' method
+    instance[method]();
+  });
+};
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap alert.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$f = 'alert';
+const DATA_KEY$a = 'bs.alert';
+const EVENT_KEY$b = `.${DATA_KEY$a}`;
+const EVENT_CLOSE = `close${EVENT_KEY$b}`;
+const EVENT_CLOSED = `closed${EVENT_KEY$b}`;
+const CLASS_NAME_FADE$5 = 'fade';
+const CLASS_NAME_SHOW$8 = 'show';
+
+/**
+ * Class definition
+ */
+
+class Alert extends BaseComponent {
+  // Getters
+  static get NAME() {
+    return NAME$f;
+  }
+
+  // Public
+  close() {
+    const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
+    if (closeEvent.defaultPrevented) {
+      return;
+    }
+    this._element.classList.remove(CLASS_NAME_SHOW$8);
+    const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$5);
+    this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
+  }
+
+  // Private
+  _destroyElement() {
+    this._element.remove();
+    EventHandler.trigger(this._element, EVENT_CLOSED);
+    this.dispose();
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Alert.getOrCreateInstance(this);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config](this);
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+enableDismissTrigger(Alert, 'close');
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Alert);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap button.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$e = 'button';
+const DATA_KEY$9 = 'bs.button';
+const EVENT_KEY$a = `.${DATA_KEY$9}`;
+const DATA_API_KEY$6 = '.data-api';
+const CLASS_NAME_ACTIVE$3 = 'active';
+const SELECTOR_DATA_TOGGLE$5 = '[data-bs-toggle="button"]';
+const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$a}${DATA_API_KEY$6}`;
+
+/**
+ * Class definition
+ */
+
+class Button extends BaseComponent {
+  // Getters
+  static get NAME() {
+    return NAME$e;
+  }
+
+  // Public
+  toggle() {
+    // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+    this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Button.getOrCreateInstance(this);
+      if (config === 'toggle') {
+        data[config]();
+      }
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API$6, SELECTOR_DATA_TOGGLE$5, event => {
+  event.preventDefault();
+  const button = event.target.closest(SELECTOR_DATA_TOGGLE$5);
+  const data = Button.getOrCreateInstance(button);
+  data.toggle();
+});
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Button);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/swipe.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$d = 'swipe';
+const EVENT_KEY$9 = '.bs.swipe';
+const EVENT_TOUCHSTART = `touchstart${EVENT_KEY$9}`;
+const EVENT_TOUCHMOVE = `touchmove${EVENT_KEY$9}`;
+const EVENT_TOUCHEND = `touchend${EVENT_KEY$9}`;
+const EVENT_POINTERDOWN = `pointerdown${EVENT_KEY$9}`;
+const EVENT_POINTERUP = `pointerup${EVENT_KEY$9}`;
+const POINTER_TYPE_TOUCH = 'touch';
+const POINTER_TYPE_PEN = 'pen';
+const CLASS_NAME_POINTER_EVENT = 'pointer-event';
+const SWIPE_THRESHOLD = 40;
+const Default$c = {
+  endCallback: null,
+  leftCallback: null,
+  rightCallback: null
+};
+const DefaultType$c = {
+  endCallback: '(function|null)',
+  leftCallback: '(function|null)',
+  rightCallback: '(function|null)'
+};
+
+/**
+ * Class definition
+ */
+
+class Swipe extends Config {
+  constructor(element, config) {
+    super();
+    this._element = element;
+    if (!element || !Swipe.isSupported()) {
+      return;
+    }
+    this._config = this._getConfig(config);
+    this._deltaX = 0;
+    this._supportPointerEvents = Boolean(window.PointerEvent);
+    this._initEvents();
+  }
+
+  // Getters
+  static get Default() {
+    return Default$c;
+  }
+  static get DefaultType() {
+    return DefaultType$c;
+  }
+  static get NAME() {
+    return NAME$d;
+  }
+
+  // Public
+  dispose() {
+    EventHandler.off(this._element, EVENT_KEY$9);
+  }
+
+  // Private
+  _start(event) {
+    if (!this._supportPointerEvents) {
+      this._deltaX = event.touches[0].clientX;
+      return;
+    }
+    if (this._eventIsPointerPenTouch(event)) {
+      this._deltaX = event.clientX;
+    }
+  }
+  _end(event) {
+    if (this._eventIsPointerPenTouch(event)) {
+      this._deltaX = event.clientX - this._deltaX;
+    }
+    this._handleSwipe();
+    execute(this._config.endCallback);
+  }
+  _move(event) {
+    this._deltaX = event.touches && event.touches.length > 1 ? 0 : event.touches[0].clientX - this._deltaX;
+  }
+  _handleSwipe() {
+    const absDeltaX = Math.abs(this._deltaX);
+    if (absDeltaX <= SWIPE_THRESHOLD) {
+      return;
+    }
+    const direction = absDeltaX / this._deltaX;
+    this._deltaX = 0;
+    if (!direction) {
+      return;
+    }
+    execute(direction > 0 ? this._config.rightCallback : this._config.leftCallback);
+  }
+  _initEvents() {
+    if (this._supportPointerEvents) {
+      EventHandler.on(this._element, EVENT_POINTERDOWN, event => this._start(event));
+      EventHandler.on(this._element, EVENT_POINTERUP, event => this._end(event));
+      this._element.classList.add(CLASS_NAME_POINTER_EVENT);
+    } else {
+      EventHandler.on(this._element, EVENT_TOUCHSTART, event => this._start(event));
+      EventHandler.on(this._element, EVENT_TOUCHMOVE, event => this._move(event));
+      EventHandler.on(this._element, EVENT_TOUCHEND, event => this._end(event));
+    }
+  }
+  _eventIsPointerPenTouch(event) {
+    return this._supportPointerEvents && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH);
+  }
+
+  // Static
+  static isSupported() {
+    return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap carousel.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$c = 'carousel';
+const DATA_KEY$8 = 'bs.carousel';
+const EVENT_KEY$8 = `.${DATA_KEY$8}`;
+const DATA_API_KEY$5 = '.data-api';
+const ARROW_LEFT_KEY$1 = 'ArrowLeft';
+const ARROW_RIGHT_KEY$1 = 'ArrowRight';
+const TOUCHEVENT_COMPAT_WAIT = 500; // Time for mouse compat events to fire after touch
+
+const ORDER_NEXT = 'next';
+const ORDER_PREV = 'prev';
+const DIRECTION_LEFT = 'left';
+const DIRECTION_RIGHT = 'right';
+const EVENT_SLIDE = `slide${EVENT_KEY$8}`;
+const EVENT_SLID = `slid${EVENT_KEY$8}`;
+const EVENT_KEYDOWN$1 = `keydown${EVENT_KEY$8}`;
+const EVENT_MOUSEENTER$1 = `mouseenter${EVENT_KEY$8}`;
+const EVENT_MOUSELEAVE$1 = `mouseleave${EVENT_KEY$8}`;
+const EVENT_DRAG_START = `dragstart${EVENT_KEY$8}`;
+const EVENT_LOAD_DATA_API$3 = `load${EVENT_KEY$8}${DATA_API_KEY$5}`;
+const EVENT_CLICK_DATA_API$5 = `click${EVENT_KEY$8}${DATA_API_KEY$5}`;
+const CLASS_NAME_CAROUSEL = 'carousel';
+const CLASS_NAME_ACTIVE$2 = 'active';
+const CLASS_NAME_SLIDE = 'slide';
+const CLASS_NAME_END = 'carousel-item-end';
+const CLASS_NAME_START = 'carousel-item-start';
+const CLASS_NAME_NEXT = 'carousel-item-next';
+const CLASS_NAME_PREV = 'carousel-item-prev';
+const SELECTOR_ACTIVE = '.active';
+const SELECTOR_ITEM = '.carousel-item';
+const SELECTOR_ACTIVE_ITEM = SELECTOR_ACTIVE + SELECTOR_ITEM;
+const SELECTOR_ITEM_IMG = '.carousel-item img';
+const SELECTOR_INDICATORS = '.carousel-indicators';
+const SELECTOR_DATA_SLIDE = '[data-bs-slide], [data-bs-slide-to]';
+const SELECTOR_DATA_RIDE = '[data-bs-ride="carousel"]';
+const KEY_TO_DIRECTION = {
+  [ARROW_LEFT_KEY$1]: DIRECTION_RIGHT,
+  [ARROW_RIGHT_KEY$1]: DIRECTION_LEFT
+};
+const Default$b = {
+  interval: 5000,
+  keyboard: true,
+  pause: 'hover',
+  ride: false,
+  touch: true,
+  wrap: true
+};
+const DefaultType$b = {
+  interval: '(number|boolean)',
+  // TODO:v6 remove boolean support
+  keyboard: 'boolean',
+  pause: '(string|boolean)',
+  ride: '(boolean|string)',
+  touch: 'boolean',
+  wrap: 'boolean'
+};
+
+/**
+ * Class definition
+ */
+
+class Carousel extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._interval = null;
+    this._activeElement = null;
+    this._isSliding = false;
+    this.touchTimeout = null;
+    this._swipeHelper = null;
+    this._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, this._element);
+    this._addEventListeners();
+    if (this._config.ride === CLASS_NAME_CAROUSEL) {
+      this.cycle();
+    }
+  }
+
+  // Getters
+  static get Default() {
+    return Default$b;
+  }
+  static get DefaultType() {
+    return DefaultType$b;
+  }
+  static get NAME() {
+    return NAME$c;
+  }
+
+  // Public
+  next() {
+    this._slide(ORDER_NEXT);
+  }
+  nextWhenVisible() {
+    // FIXME TODO use `document.visibilityState`
+    // Don't call next when the page isn't visible
+    // or the carousel or its parent isn't visible
+    if (!document.hidden && isVisible(this._element)) {
+      this.next();
+    }
+  }
+  prev() {
+    this._slide(ORDER_PREV);
+  }
+  pause() {
+    if (this._isSliding) {
+      triggerTransitionEnd(this._element);
+    }
+    this._clearInterval();
+  }
+  cycle() {
+    this._clearInterval();
+    this._updateInterval();
+    this._interval = setInterval(() => this.nextWhenVisible(), this._config.interval);
+  }
+  _maybeEnableCycle() {
+    if (!this._config.ride) {
+      return;
+    }
+    if (this._isSliding) {
+      EventHandler.one(this._element, EVENT_SLID, () => this.cycle());
+      return;
+    }
+    this.cycle();
+  }
+  to(index) {
+    const items = this._getItems();
+    if (index > items.length - 1 || index < 0) {
+      return;
+    }
+    if (this._isSliding) {
+      EventHandler.one(this._element, EVENT_SLID, () => this.to(index));
+      return;
+    }
+    const activeIndex = this._getItemIndex(this._getActive());
+    if (activeIndex === index) {
+      return;
+    }
+    const order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
+    this._slide(order, items[index]);
+  }
+  dispose() {
+    if (this._swipeHelper) {
+      this._swipeHelper.dispose();
+    }
+    super.dispose();
+  }
+
+  // Private
+  _configAfterMerge(config) {
+    config.defaultInterval = config.interval;
+    return config;
+  }
+  _addEventListeners() {
+    if (this._config.keyboard) {
+      EventHandler.on(this._element, EVENT_KEYDOWN$1, event => this._keydown(event));
+    }
+    if (this._config.pause === 'hover') {
+      EventHandler.on(this._element, EVENT_MOUSEENTER$1, () => this.pause());
+      EventHandler.on(this._element, EVENT_MOUSELEAVE$1, () => this._maybeEnableCycle());
+    }
+    if (this._config.touch && Swipe.isSupported()) {
+      this._addTouchEventListeners();
+    }
+  }
+  _addTouchEventListeners() {
+    for (const img of SelectorEngine.find(SELECTOR_ITEM_IMG, this._element)) {
+      EventHandler.on(img, EVENT_DRAG_START, event => event.preventDefault());
+    }
+    const endCallBack = () => {
+      if (this._config.pause !== 'hover') {
+        return;
+      }
+
+      // If it's a touch-enabled device, mouseenter/leave are fired as
+      // part of the mouse compatibility events on first tap - the carousel
+      // would stop cycling until user tapped out of it;
+      // here, we listen for touchend, explicitly pause the carousel
+      // (as if it's the second time we tap on it, mouseenter compat event
+      // is NOT fired) and after a timeout (to allow for mouse compatibility
+      // events to fire) we explicitly restart cycling
+
+      this.pause();
+      if (this.touchTimeout) {
+        clearTimeout(this.touchTimeout);
+      }
+      this.touchTimeout = setTimeout(() => this._maybeEnableCycle(), TOUCHEVENT_COMPAT_WAIT + this._config.interval);
+    };
+    const swipeConfig = {
+      leftCallback: () => this._slide(this._directionToOrder(DIRECTION_LEFT)),
+      rightCallback: () => this._slide(this._directionToOrder(DIRECTION_RIGHT)),
+      endCallback: endCallBack
+    };
+    this._swipeHelper = new Swipe(this._element, swipeConfig);
+  }
+  _keydown(event) {
+    if (/input|textarea/i.test(event.target.tagName)) {
+      return;
+    }
+    const direction = KEY_TO_DIRECTION[event.key];
+    if (direction) {
+      event.preventDefault();
+      this._slide(this._directionToOrder(direction));
+    }
+  }
+  _getItemIndex(element) {
+    return this._getItems().indexOf(element);
+  }
+  _setActiveIndicatorElement(index) {
+    if (!this._indicatorsElement) {
+      return;
+    }
+    const activeIndicator = SelectorEngine.findOne(SELECTOR_ACTIVE, this._indicatorsElement);
+    activeIndicator.classList.remove(CLASS_NAME_ACTIVE$2);
+    activeIndicator.removeAttribute('aria-current');
+    const newActiveIndicator = SelectorEngine.findOne(`[data-bs-slide-to="${index}"]`, this._indicatorsElement);
+    if (newActiveIndicator) {
+      newActiveIndicator.classList.add(CLASS_NAME_ACTIVE$2);
+      newActiveIndicator.setAttribute('aria-current', 'true');
+    }
+  }
+  _updateInterval() {
+    const element = this._activeElement || this._getActive();
+    if (!element) {
+      return;
+    }
+    const elementInterval = Number.parseInt(element.getAttribute('data-bs-interval'), 10);
+    this._config.interval = elementInterval || this._config.defaultInterval;
+  }
+  _slide(order, element = null) {
+    if (this._isSliding) {
+      return;
+    }
+    const activeElement = this._getActive();
+    const isNext = order === ORDER_NEXT;
+    const nextElement = element || getNextActiveElement(this._getItems(), activeElement, isNext, this._config.wrap);
+    if (nextElement === activeElement) {
+      return;
+    }
+    const nextElementIndex = this._getItemIndex(nextElement);
+    const triggerEvent = eventName => {
+      return EventHandler.trigger(this._element, eventName, {
+        relatedTarget: nextElement,
+        direction: this._orderToDirection(order),
+        from: this._getItemIndex(activeElement),
+        to: nextElementIndex
+      });
+    };
+    const slideEvent = triggerEvent(EVENT_SLIDE);
+    if (slideEvent.defaultPrevented) {
+      return;
+    }
+    if (!activeElement || !nextElement) {
+      // Some weirdness is happening, so we bail
+      // TODO: change tests that use empty divs to avoid this check
+      return;
+    }
+    const isCycling = Boolean(this._interval);
+    this.pause();
+    this._isSliding = true;
+    this._setActiveIndicatorElement(nextElementIndex);
+    this._activeElement = nextElement;
+    const directionalClassName = isNext ? CLASS_NAME_START : CLASS_NAME_END;
+    const orderClassName = isNext ? CLASS_NAME_NEXT : CLASS_NAME_PREV;
+    nextElement.classList.add(orderClassName);
+    reflow(nextElement);
+    activeElement.classList.add(directionalClassName);
+    nextElement.classList.add(directionalClassName);
+    const completeCallBack = () => {
+      nextElement.classList.remove(directionalClassName, orderClassName);
+      nextElement.classList.add(CLASS_NAME_ACTIVE$2);
+      activeElement.classList.remove(CLASS_NAME_ACTIVE$2, orderClassName, directionalClassName);
+      this._isSliding = false;
+      triggerEvent(EVENT_SLID);
+    };
+    this._queueCallback(completeCallBack, activeElement, this._isAnimated());
+    if (isCycling) {
+      this.cycle();
+    }
+  }
+  _isAnimated() {
+    return this._element.classList.contains(CLASS_NAME_SLIDE);
+  }
+  _getActive() {
+    return SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+  }
+  _getItems() {
+    return SelectorEngine.find(SELECTOR_ITEM, this._element);
+  }
+  _clearInterval() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  }
+  _directionToOrder(direction) {
+    if (isRTL()) {
+      return direction === DIRECTION_LEFT ? ORDER_PREV : ORDER_NEXT;
+    }
+    return direction === DIRECTION_LEFT ? ORDER_NEXT : ORDER_PREV;
+  }
+  _orderToDirection(order) {
+    if (isRTL()) {
+      return order === ORDER_PREV ? DIRECTION_LEFT : DIRECTION_RIGHT;
+    }
+    return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Carousel.getOrCreateInstance(this, config);
+      if (typeof config === 'number') {
+        data.to(config);
+        return;
+      }
+      if (typeof config === 'string') {
+        if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+          throw new TypeError(`No method named "${config}"`);
+        }
+        data[config]();
+      }
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_SLIDE, function (event) {
+  const target = SelectorEngine.getElementFromSelector(this);
+  if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+    return;
+  }
+  event.preventDefault();
+  const carousel = Carousel.getOrCreateInstance(target);
+  const slideIndex = this.getAttribute('data-bs-slide-to');
+  if (slideIndex) {
+    carousel.to(slideIndex);
+    carousel._maybeEnableCycle();
+    return;
+  }
+  if (Manipulator.getDataAttribute(this, 'slide') === 'next') {
+    carousel.next();
+    carousel._maybeEnableCycle();
+    return;
+  }
+  carousel.prev();
+  carousel._maybeEnableCycle();
+});
+EventHandler.on(window, EVENT_LOAD_DATA_API$3, () => {
+  const carousels = SelectorEngine.find(SELECTOR_DATA_RIDE);
+  for (const carousel of carousels) {
+    Carousel.getOrCreateInstance(carousel);
+  }
+});
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Carousel);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap collapse.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$b = 'collapse';
+const DATA_KEY$7 = 'bs.collapse';
+const EVENT_KEY$7 = `.${DATA_KEY$7}`;
+const DATA_API_KEY$4 = '.data-api';
+const EVENT_SHOW$6 = `show${EVENT_KEY$7}`;
+const EVENT_SHOWN$6 = `shown${EVENT_KEY$7}`;
+const EVENT_HIDE$6 = `hide${EVENT_KEY$7}`;
+const EVENT_HIDDEN$6 = `hidden${EVENT_KEY$7}`;
+const EVENT_CLICK_DATA_API$4 = `click${EVENT_KEY$7}${DATA_API_KEY$4}`;
+const CLASS_NAME_SHOW$7 = 'show';
+const CLASS_NAME_COLLAPSE = 'collapse';
+const CLASS_NAME_COLLAPSING = 'collapsing';
+const CLASS_NAME_COLLAPSED = 'collapsed';
+const CLASS_NAME_DEEPER_CHILDREN = `:scope .${CLASS_NAME_COLLAPSE} .${CLASS_NAME_COLLAPSE}`;
+const CLASS_NAME_HORIZONTAL = 'collapse-horizontal';
+const WIDTH = 'width';
+const HEIGHT = 'height';
+const SELECTOR_ACTIVES = '.collapse.show, .collapse.collapsing';
+const SELECTOR_DATA_TOGGLE$4 = '[data-bs-toggle="collapse"]';
+const Default$a = {
+  parent: null,
+  toggle: true
+};
+const DefaultType$a = {
+  parent: '(null|element)',
+  toggle: 'boolean'
+};
+
+/**
+ * Class definition
+ */
+
+class Collapse extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._isTransitioning = false;
+    this._triggerArray = [];
+    const toggleList = SelectorEngine.find(SELECTOR_DATA_TOGGLE$4);
+    for (const elem of toggleList) {
+      const selector = SelectorEngine.getSelectorFromElement(elem);
+      const filterElement = SelectorEngine.find(selector).filter(foundElement => foundElement === this._element);
+      if (selector !== null && filterElement.length) {
+        this._triggerArray.push(elem);
+      }
+    }
+    this._initializeChildren();
+    if (!this._config.parent) {
+      this._addAriaAndCollapsedClass(this._triggerArray, this._isShown());
+    }
+    if (this._config.toggle) {
+      this.toggle();
+    }
+  }
+
+  // Getters
+  static get Default() {
+    return Default$a;
+  }
+  static get DefaultType() {
+    return DefaultType$a;
+  }
+  static get NAME() {
+    return NAME$b;
+  }
+
+  // Public
+  toggle() {
+    if (this._isShown()) {
+      this.hide();
+    } else {
+      this.show();
+    }
+  }
+  show() {
+    if (this._isTransitioning || this._isShown()) {
+      return;
+    }
+    let activeChildren = [];
+
+    // find active children
+    if (this._config.parent) {
+      activeChildren = this._getFirstLevelChildren(SELECTOR_ACTIVES).filter(element => element !== this._element).map(element => Collapse.getOrCreateInstance(element, {
+        toggle: false
+      }));
+    }
+    if (activeChildren.length && activeChildren[0]._isTransitioning) {
+      return;
+    }
+    const startEvent = EventHandler.trigger(this._element, EVENT_SHOW$6);
+    if (startEvent.defaultPrevented) {
+      return;
+    }
+    for (const activeInstance of activeChildren) {
+      activeInstance.hide();
+    }
+    const dimension = this._getDimension();
+    this._element.classList.remove(CLASS_NAME_COLLAPSE);
+    this._element.classList.add(CLASS_NAME_COLLAPSING);
+    this._element.style[dimension] = 0;
+    this._addAriaAndCollapsedClass(this._triggerArray, true);
+    this._isTransitioning = true;
+    const complete = () => {
+      this._isTransitioning = false;
+      this._element.classList.remove(CLASS_NAME_COLLAPSING);
+      this._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
+      this._element.style[dimension] = '';
+      EventHandler.trigger(this._element, EVENT_SHOWN$6);
+    };
+    const capitalizedDimension = dimension[0].toUpperCase() + dimension.slice(1);
+    const scrollSize = `scroll${capitalizedDimension}`;
+    this._queueCallback(complete, this._element, true);
+    this._element.style[dimension] = `${this._element[scrollSize]}px`;
+  }
+  hide() {
+    if (this._isTransitioning || !this._isShown()) {
+      return;
+    }
+    const startEvent = EventHandler.trigger(this._element, EVENT_HIDE$6);
+    if (startEvent.defaultPrevented) {
+      return;
+    }
+    const dimension = this._getDimension();
+    this._element.style[dimension] = `${this._element.getBoundingClientRect()[dimension]}px`;
+    reflow(this._element);
+    this._element.classList.add(CLASS_NAME_COLLAPSING);
+    this._element.classList.remove(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
+    for (const trigger of this._triggerArray) {
+      const element = SelectorEngine.getElementFromSelector(trigger);
+      if (element && !this._isShown(element)) {
+        this._addAriaAndCollapsedClass([trigger], false);
+      }
+    }
+    this._isTransitioning = true;
+    const complete = () => {
+      this._isTransitioning = false;
+      this._element.classList.remove(CLASS_NAME_COLLAPSING);
+      this._element.classList.add(CLASS_NAME_COLLAPSE);
+      EventHandler.trigger(this._element, EVENT_HIDDEN$6);
+    };
+    this._element.style[dimension] = '';
+    this._queueCallback(complete, this._element, true);
+  }
+
+  // Private
+  _isShown(element = this._element) {
+    return element.classList.contains(CLASS_NAME_SHOW$7);
+  }
+  _configAfterMerge(config) {
+    config.toggle = Boolean(config.toggle); // Coerce string values
+    config.parent = getElement(config.parent);
+    return config;
+  }
+  _getDimension() {
+    return this._element.classList.contains(CLASS_NAME_HORIZONTAL) ? WIDTH : HEIGHT;
+  }
+  _initializeChildren() {
+    if (!this._config.parent) {
+      return;
+    }
+    const children = this._getFirstLevelChildren(SELECTOR_DATA_TOGGLE$4);
+    for (const element of children) {
+      const selected = SelectorEngine.getElementFromSelector(element);
+      if (selected) {
+        this._addAriaAndCollapsedClass([element], this._isShown(selected));
+      }
+    }
+  }
+  _getFirstLevelChildren(selector) {
+    const children = SelectorEngine.find(CLASS_NAME_DEEPER_CHILDREN, this._config.parent);
+    // remove children if greater depth
+    return SelectorEngine.find(selector, this._config.parent).filter(element => !children.includes(element));
+  }
+  _addAriaAndCollapsedClass(triggerArray, isOpen) {
+    if (!triggerArray.length) {
+      return;
+    }
+    for (const element of triggerArray) {
+      element.classList.toggle(CLASS_NAME_COLLAPSED, !isOpen);
+      element.setAttribute('aria-expanded', isOpen);
+    }
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    const _config = {};
+    if (typeof config === 'string' && /show|hide/.test(config)) {
+      _config.toggle = false;
+    }
+    return this.each(function () {
+      const data = Collapse.getOrCreateInstance(this, _config);
+      if (typeof config === 'string') {
+        if (typeof data[config] === 'undefined') {
+          throw new TypeError(`No method named "${config}"`);
+        }
+        data[config]();
+      }
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API$4, SELECTOR_DATA_TOGGLE$4, function (event) {
+  // preventDefault only for <a> elements (which change the URL) not inside the collapsible element
+  if (event.target.tagName === 'A' || event.delegateTarget && event.delegateTarget.tagName === 'A') {
+    event.preventDefault();
+  }
+  for (const element of SelectorEngine.getMultipleElementsFromSelector(this)) {
+    Collapse.getOrCreateInstance(element, {
+      toggle: false
+    }).toggle();
+  }
+});
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Collapse);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap dropdown.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$a = 'dropdown';
+const DATA_KEY$6 = 'bs.dropdown';
+const EVENT_KEY$6 = `.${DATA_KEY$6}`;
+const DATA_API_KEY$3 = '.data-api';
+const ESCAPE_KEY$2 = 'Escape';
+const TAB_KEY$1 = 'Tab';
+const ARROW_UP_KEY$1 = 'ArrowUp';
+const ARROW_DOWN_KEY$1 = 'ArrowDown';
+const RIGHT_MOUSE_BUTTON = 2; // MouseEvent.button value for the secondary button, usually the right button
+
+const EVENT_HIDE$5 = `hide${EVENT_KEY$6}`;
+const EVENT_HIDDEN$5 = `hidden${EVENT_KEY$6}`;
+const EVENT_SHOW$5 = `show${EVENT_KEY$6}`;
+const EVENT_SHOWN$5 = `shown${EVENT_KEY$6}`;
+const EVENT_CLICK_DATA_API$3 = `click${EVENT_KEY$6}${DATA_API_KEY$3}`;
+const EVENT_KEYDOWN_DATA_API = `keydown${EVENT_KEY$6}${DATA_API_KEY$3}`;
+const EVENT_KEYUP_DATA_API = `keyup${EVENT_KEY$6}${DATA_API_KEY$3}`;
+const CLASS_NAME_SHOW$6 = 'show';
+const CLASS_NAME_DROPUP = 'dropup';
+const CLASS_NAME_DROPEND = 'dropend';
+const CLASS_NAME_DROPSTART = 'dropstart';
+const CLASS_NAME_DROPUP_CENTER = 'dropup-center';
+const CLASS_NAME_DROPDOWN_CENTER = 'dropdown-center';
+const SELECTOR_DATA_TOGGLE$3 = '[data-bs-toggle="dropdown"]:not(.disabled):not(:disabled)';
+const SELECTOR_DATA_TOGGLE_SHOWN = `${SELECTOR_DATA_TOGGLE$3}.${CLASS_NAME_SHOW$6}`;
+const SELECTOR_MENU = '.dropdown-menu';
+const SELECTOR_NAVBAR = '.navbar';
+const SELECTOR_NAVBAR_NAV = '.navbar-nav';
+const SELECTOR_VISIBLE_ITEMS = '.dropdown-menu .dropdown-item:not(.disabled):not(:disabled)';
+const PLACEMENT_TOP = isRTL() ? 'top-end' : 'top-start';
+const PLACEMENT_TOPEND = isRTL() ? 'top-start' : 'top-end';
+const PLACEMENT_BOTTOM = isRTL() ? 'bottom-end' : 'bottom-start';
+const PLACEMENT_BOTTOMEND = isRTL() ? 'bottom-start' : 'bottom-end';
+const PLACEMENT_RIGHT = isRTL() ? 'left-start' : 'right-start';
+const PLACEMENT_LEFT = isRTL() ? 'right-start' : 'left-start';
+const PLACEMENT_TOPCENTER = 'top';
+const PLACEMENT_BOTTOMCENTER = 'bottom';
+const Default$9 = {
+  autoClose: true,
+  boundary: 'clippingParents',
+  display: 'dynamic',
+  offset: [0, 2],
+  popperConfig: null,
+  reference: 'toggle'
+};
+const DefaultType$9 = {
+  autoClose: '(boolean|string)',
+  boundary: '(string|element)',
+  display: 'string',
+  offset: '(array|string|function)',
+  popperConfig: '(null|object|function)',
+  reference: '(string|element|object)'
+};
+
+/**
+ * Class definition
+ */
+
+class Dropdown extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._popper = null;
+    this._parent = this._element.parentNode; // dropdown wrapper
+    // TODO: v6 revert #37011 & change markup https://getbootstrap.com/docs/5.3/forms/input-group/
+    this._menu = SelectorEngine.next(this._element, SELECTOR_MENU)[0] || SelectorEngine.prev(this._element, SELECTOR_MENU)[0] || SelectorEngine.findOne(SELECTOR_MENU, this._parent);
+    this._inNavbar = this._detectNavbar();
+  }
+
+  // Getters
+  static get Default() {
+    return Default$9;
+  }
+  static get DefaultType() {
+    return DefaultType$9;
+  }
+  static get NAME() {
+    return NAME$a;
+  }
+
+  // Public
+  toggle() {
+    return this._isShown() ? this.hide() : this.show();
+  }
+  show() {
+    if (isDisabled(this._element) || this._isShown()) {
+      return;
+    }
+    const relatedTarget = {
+      relatedTarget: this._element
+    };
+    const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$5, relatedTarget);
+    if (showEvent.defaultPrevented) {
+      return;
+    }
+    this._createPopper();
+
+    // If this is a touch-enabled device we add extra
+    // empty mouseover listeners to the body's immediate children;
+    // only needed because of broken event delegation on iOS
+    // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
+    if ('ontouchstart' in document.documentElement && !this._parent.closest(SELECTOR_NAVBAR_NAV)) {
+      for (const element of [].concat(...document.body.children)) {
+        EventHandler.on(element, 'mouseover', noop);
+      }
+    }
+    this._element.focus();
+    this._element.setAttribute('aria-expanded', true);
+    this._menu.classList.add(CLASS_NAME_SHOW$6);
+    this._element.classList.add(CLASS_NAME_SHOW$6);
+    EventHandler.trigger(this._element, EVENT_SHOWN$5, relatedTarget);
+  }
+  hide() {
+    if (isDisabled(this._element) || !this._isShown()) {
+      return;
+    }
+    const relatedTarget = {
+      relatedTarget: this._element
+    };
+    this._completeHide(relatedTarget);
+  }
+  dispose() {
+    if (this._popper) {
+      this._popper.destroy();
+    }
+    super.dispose();
+  }
+  update() {
+    this._inNavbar = this._detectNavbar();
+    if (this._popper) {
+      this._popper.update();
+    }
+  }
+
+  // Private
+  _completeHide(relatedTarget) {
+    const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$5, relatedTarget);
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+
+    // If this is a touch-enabled device we remove the extra
+    // empty mouseover listeners we added for iOS support
+    if ('ontouchstart' in document.documentElement) {
+      for (const element of [].concat(...document.body.children)) {
+        EventHandler.off(element, 'mouseover', noop);
+      }
+    }
+    if (this._popper) {
+      this._popper.destroy();
+    }
+    this._menu.classList.remove(CLASS_NAME_SHOW$6);
+    this._element.classList.remove(CLASS_NAME_SHOW$6);
+    this._element.setAttribute('aria-expanded', 'false');
+    Manipulator.removeDataAttribute(this._menu, 'popper');
+    EventHandler.trigger(this._element, EVENT_HIDDEN$5, relatedTarget);
+  }
+  _getConfig(config) {
+    config = super._getConfig(config);
+    if (typeof config.reference === 'object' && !isElement(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
+      // Popper virtual elements require a getBoundingClientRect method
+      throw new TypeError(`${NAME$a.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
+    }
+    return config;
+  }
+  _createPopper() {
+    if (typeof _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ === 'undefined') {
+      throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org/docs/v2/)');
+    }
+    let referenceElement = this._element;
+    if (this._config.reference === 'parent') {
+      referenceElement = this._parent;
+    } else if (isElement(this._config.reference)) {
+      referenceElement = getElement(this._config.reference);
+    } else if (typeof this._config.reference === 'object') {
+      referenceElement = this._config.reference;
+    }
+    const popperConfig = this._getPopperConfig();
+    this._popper = _popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper(referenceElement, this._menu, popperConfig);
+  }
+  _isShown() {
+    return this._menu.classList.contains(CLASS_NAME_SHOW$6);
+  }
+  _getPlacement() {
+    const parentDropdown = this._parent;
+    if (parentDropdown.classList.contains(CLASS_NAME_DROPEND)) {
+      return PLACEMENT_RIGHT;
+    }
+    if (parentDropdown.classList.contains(CLASS_NAME_DROPSTART)) {
+      return PLACEMENT_LEFT;
+    }
+    if (parentDropdown.classList.contains(CLASS_NAME_DROPUP_CENTER)) {
+      return PLACEMENT_TOPCENTER;
+    }
+    if (parentDropdown.classList.contains(CLASS_NAME_DROPDOWN_CENTER)) {
+      return PLACEMENT_BOTTOMCENTER;
+    }
+
+    // We need to trim the value because custom properties can also include spaces
+    const isEnd = getComputedStyle(this._menu).getPropertyValue('--bs-position').trim() === 'end';
+    if (parentDropdown.classList.contains(CLASS_NAME_DROPUP)) {
+      return isEnd ? PLACEMENT_TOPEND : PLACEMENT_TOP;
+    }
+    return isEnd ? PLACEMENT_BOTTOMEND : PLACEMENT_BOTTOM;
+  }
+  _detectNavbar() {
+    return this._element.closest(SELECTOR_NAVBAR) !== null;
+  }
+  _getOffset() {
+    const {
+      offset
+    } = this._config;
+    if (typeof offset === 'string') {
+      return offset.split(',').map(value => Number.parseInt(value, 10));
+    }
+    if (typeof offset === 'function') {
+      return popperData => offset(popperData, this._element);
+    }
+    return offset;
+  }
+  _getPopperConfig() {
+    const defaultBsPopperConfig = {
+      placement: this._getPlacement(),
+      modifiers: [{
+        name: 'preventOverflow',
+        options: {
+          boundary: this._config.boundary
+        }
+      }, {
+        name: 'offset',
+        options: {
+          offset: this._getOffset()
+        }
+      }]
+    };
+
+    // Disable Popper if we have a static display or Dropdown is in Navbar
+    if (this._inNavbar || this._config.display === 'static') {
+      Manipulator.setDataAttribute(this._menu, 'popper', 'static'); // TODO: v6 remove
+      defaultBsPopperConfig.modifiers = [{
+        name: 'applyStyles',
+        enabled: false
+      }];
+    }
+    return {
+      ...defaultBsPopperConfig,
+      ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
+    };
+  }
+  _selectMenuItem({
+    key,
+    target
+  }) {
+    const items = SelectorEngine.find(SELECTOR_VISIBLE_ITEMS, this._menu).filter(element => isVisible(element));
+    if (!items.length) {
+      return;
+    }
+
+    // if target isn't included in items (e.g. when expanding the dropdown)
+    // allow cycling to get the last item in case key equals ARROW_UP_KEY
+    getNextActiveElement(items, target, key === ARROW_DOWN_KEY$1, !items.includes(target)).focus();
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Dropdown.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (typeof data[config] === 'undefined') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config]();
+    });
+  }
+  static clearMenus(event) {
+    if (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY$1) {
+      return;
+    }
+    const openToggles = SelectorEngine.find(SELECTOR_DATA_TOGGLE_SHOWN);
+    for (const toggle of openToggles) {
+      const context = Dropdown.getInstance(toggle);
+      if (!context || context._config.autoClose === false) {
+        continue;
+      }
+      const composedPath = event.composedPath();
+      const isMenuTarget = composedPath.includes(context._menu);
+      if (composedPath.includes(context._element) || context._config.autoClose === 'inside' && !isMenuTarget || context._config.autoClose === 'outside' && isMenuTarget) {
+        continue;
+      }
+
+      // Tab navigation through the dropdown menu or events from contained inputs shouldn't close the menu
+      if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY$1 || /input|select|option|textarea|form/i.test(event.target.tagName))) {
+        continue;
+      }
+      const relatedTarget = {
+        relatedTarget: context._element
+      };
+      if (event.type === 'click') {
+        relatedTarget.clickEvent = event;
+      }
+      context._completeHide(relatedTarget);
+    }
+  }
+  static dataApiKeydownHandler(event) {
+    // If not an UP | DOWN | ESCAPE key => not a dropdown command
+    // If input/textarea && if key is other than ESCAPE => not a dropdown command
+
+    const isInput = /input|textarea/i.test(event.target.tagName);
+    const isEscapeEvent = event.key === ESCAPE_KEY$2;
+    const isUpOrDownEvent = [ARROW_UP_KEY$1, ARROW_DOWN_KEY$1].includes(event.key);
+    if (!isUpOrDownEvent && !isEscapeEvent) {
+      return;
+    }
+    if (isInput && !isEscapeEvent) {
+      return;
+    }
+    event.preventDefault();
+
+    // TODO: v6 revert #37011 & change markup https://getbootstrap.com/docs/5.3/forms/input-group/
+    const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$3) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$3)[0] || SelectorEngine.next(this, SELECTOR_DATA_TOGGLE$3)[0] || SelectorEngine.findOne(SELECTOR_DATA_TOGGLE$3, event.delegateTarget.parentNode);
+    const instance = Dropdown.getOrCreateInstance(getToggleButton);
+    if (isUpOrDownEvent) {
+      event.stopPropagation();
+      instance.show();
+      instance._selectMenuItem(event);
+      return;
+    }
+    if (instance._isShown()) {
+      // else is escape and we check if it is shown
+      event.stopPropagation();
+      instance.hide();
+      getToggleButton.focus();
+    }
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_DATA_TOGGLE$3, Dropdown.dataApiKeydownHandler);
+EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_MENU, Dropdown.dataApiKeydownHandler);
+EventHandler.on(document, EVENT_CLICK_DATA_API$3, Dropdown.clearMenus);
+EventHandler.on(document, EVENT_KEYUP_DATA_API, Dropdown.clearMenus);
+EventHandler.on(document, EVENT_CLICK_DATA_API$3, SELECTOR_DATA_TOGGLE$3, function (event) {
+  event.preventDefault();
+  Dropdown.getOrCreateInstance(this).toggle();
+});
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Dropdown);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/backdrop.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$9 = 'backdrop';
+const CLASS_NAME_FADE$4 = 'fade';
+const CLASS_NAME_SHOW$5 = 'show';
+const EVENT_MOUSEDOWN = `mousedown.bs.${NAME$9}`;
+const Default$8 = {
+  className: 'modal-backdrop',
+  clickCallback: null,
+  isAnimated: false,
+  isVisible: true,
+  // if false, we use the backdrop helper without adding any element to the dom
+  rootElement: 'body' // give the choice to place backdrop under different elements
+};
+const DefaultType$8 = {
+  className: 'string',
+  clickCallback: '(function|null)',
+  isAnimated: 'boolean',
+  isVisible: 'boolean',
+  rootElement: '(element|string)'
+};
+
+/**
+ * Class definition
+ */
+
+class Backdrop extends Config {
+  constructor(config) {
+    super();
+    this._config = this._getConfig(config);
+    this._isAppended = false;
+    this._element = null;
+  }
+
+  // Getters
+  static get Default() {
+    return Default$8;
+  }
+  static get DefaultType() {
+    return DefaultType$8;
+  }
+  static get NAME() {
+    return NAME$9;
+  }
+
+  // Public
+  show(callback) {
+    if (!this._config.isVisible) {
+      execute(callback);
+      return;
+    }
+    this._append();
+    const element = this._getElement();
+    if (this._config.isAnimated) {
+      reflow(element);
+    }
+    element.classList.add(CLASS_NAME_SHOW$5);
+    this._emulateAnimation(() => {
+      execute(callback);
+    });
+  }
+  hide(callback) {
+    if (!this._config.isVisible) {
+      execute(callback);
+      return;
+    }
+    this._getElement().classList.remove(CLASS_NAME_SHOW$5);
+    this._emulateAnimation(() => {
+      this.dispose();
+      execute(callback);
+    });
+  }
+  dispose() {
+    if (!this._isAppended) {
+      return;
+    }
+    EventHandler.off(this._element, EVENT_MOUSEDOWN);
+    this._element.remove();
+    this._isAppended = false;
+  }
+
+  // Private
+  _getElement() {
+    if (!this._element) {
+      const backdrop = document.createElement('div');
+      backdrop.className = this._config.className;
+      if (this._config.isAnimated) {
+        backdrop.classList.add(CLASS_NAME_FADE$4);
+      }
+      this._element = backdrop;
+    }
+    return this._element;
+  }
+  _configAfterMerge(config) {
+    // use getElement() with the default "body" to get a fresh Element on each instantiation
+    config.rootElement = getElement(config.rootElement);
+    return config;
+  }
+  _append() {
+    if (this._isAppended) {
+      return;
+    }
+    const element = this._getElement();
+    this._config.rootElement.append(element);
+    EventHandler.on(element, EVENT_MOUSEDOWN, () => {
+      execute(this._config.clickCallback);
+    });
+    this._isAppended = true;
+  }
+  _emulateAnimation(callback) {
+    executeAfterTransition(callback, this._getElement(), this._config.isAnimated);
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/focustrap.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$8 = 'focustrap';
+const DATA_KEY$5 = 'bs.focustrap';
+const EVENT_KEY$5 = `.${DATA_KEY$5}`;
+const EVENT_FOCUSIN$2 = `focusin${EVENT_KEY$5}`;
+const EVENT_KEYDOWN_TAB = `keydown.tab${EVENT_KEY$5}`;
+const TAB_KEY = 'Tab';
+const TAB_NAV_FORWARD = 'forward';
+const TAB_NAV_BACKWARD = 'backward';
+const Default$7 = {
+  autofocus: true,
+  trapElement: null // The element to trap focus inside of
+};
+const DefaultType$7 = {
+  autofocus: 'boolean',
+  trapElement: 'element'
+};
+
+/**
+ * Class definition
+ */
+
+class FocusTrap extends Config {
+  constructor(config) {
+    super();
+    this._config = this._getConfig(config);
+    this._isActive = false;
+    this._lastTabNavDirection = null;
+  }
+
+  // Getters
+  static get Default() {
+    return Default$7;
+  }
+  static get DefaultType() {
+    return DefaultType$7;
+  }
+  static get NAME() {
+    return NAME$8;
+  }
+
+  // Public
+  activate() {
+    if (this._isActive) {
+      return;
+    }
+    if (this._config.autofocus) {
+      this._config.trapElement.focus();
+    }
+    EventHandler.off(document, EVENT_KEY$5); // guard against infinite focus loop
+    EventHandler.on(document, EVENT_FOCUSIN$2, event => this._handleFocusin(event));
+    EventHandler.on(document, EVENT_KEYDOWN_TAB, event => this._handleKeydown(event));
+    this._isActive = true;
+  }
+  deactivate() {
+    if (!this._isActive) {
+      return;
+    }
+    this._isActive = false;
+    EventHandler.off(document, EVENT_KEY$5);
+  }
+
+  // Private
+  _handleFocusin(event) {
+    const {
+      trapElement
+    } = this._config;
+    if (event.target === document || event.target === trapElement || trapElement.contains(event.target)) {
+      return;
+    }
+    const elements = SelectorEngine.focusableChildren(trapElement);
+    if (elements.length === 0) {
+      trapElement.focus();
+    } else if (this._lastTabNavDirection === TAB_NAV_BACKWARD) {
+      elements[elements.length - 1].focus();
+    } else {
+      elements[0].focus();
+    }
+  }
+  _handleKeydown(event) {
+    if (event.key !== TAB_KEY) {
+      return;
+    }
+    this._lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD;
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/scrollBar.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const SELECTOR_FIXED_CONTENT = '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top';
+const SELECTOR_STICKY_CONTENT = '.sticky-top';
+const PROPERTY_PADDING = 'padding-right';
+const PROPERTY_MARGIN = 'margin-right';
+
+/**
+ * Class definition
+ */
+
+class ScrollBarHelper {
+  constructor() {
+    this._element = document.body;
+  }
+
+  // Public
+  getWidth() {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
+    const documentWidth = document.documentElement.clientWidth;
+    return Math.abs(window.innerWidth - documentWidth);
+  }
+  hide() {
+    const width = this.getWidth();
+    this._disableOverFlow();
+    // give padding to element to balance the hidden scrollbar width
+    this._setElementAttributes(this._element, PROPERTY_PADDING, calculatedValue => calculatedValue + width);
+    // trick: We adjust positive paddingRight and negative marginRight to sticky-top elements to keep showing fullwidth
+    this._setElementAttributes(SELECTOR_FIXED_CONTENT, PROPERTY_PADDING, calculatedValue => calculatedValue + width);
+    this._setElementAttributes(SELECTOR_STICKY_CONTENT, PROPERTY_MARGIN, calculatedValue => calculatedValue - width);
+  }
+  reset() {
+    this._resetElementAttributes(this._element, 'overflow');
+    this._resetElementAttributes(this._element, PROPERTY_PADDING);
+    this._resetElementAttributes(SELECTOR_FIXED_CONTENT, PROPERTY_PADDING);
+    this._resetElementAttributes(SELECTOR_STICKY_CONTENT, PROPERTY_MARGIN);
+  }
+  isOverflowing() {
+    return this.getWidth() > 0;
+  }
+
+  // Private
+  _disableOverFlow() {
+    this._saveInitialAttribute(this._element, 'overflow');
+    this._element.style.overflow = 'hidden';
+  }
+  _setElementAttributes(selector, styleProperty, callback) {
+    const scrollbarWidth = this.getWidth();
+    const manipulationCallBack = element => {
+      if (element !== this._element && window.innerWidth > element.clientWidth + scrollbarWidth) {
+        return;
+      }
+      this._saveInitialAttribute(element, styleProperty);
+      const calculatedValue = window.getComputedStyle(element).getPropertyValue(styleProperty);
+      element.style.setProperty(styleProperty, `${callback(Number.parseFloat(calculatedValue))}px`);
+    };
+    this._applyManipulationCallback(selector, manipulationCallBack);
+  }
+  _saveInitialAttribute(element, styleProperty) {
+    const actualValue = element.style.getPropertyValue(styleProperty);
+    if (actualValue) {
+      Manipulator.setDataAttribute(element, styleProperty, actualValue);
+    }
+  }
+  _resetElementAttributes(selector, styleProperty) {
+    const manipulationCallBack = element => {
+      const value = Manipulator.getDataAttribute(element, styleProperty);
+      // We only want to remove the property if the value is `null`; the value can also be zero
+      if (value === null) {
+        element.style.removeProperty(styleProperty);
+        return;
+      }
+      Manipulator.removeDataAttribute(element, styleProperty);
+      element.style.setProperty(styleProperty, value);
+    };
+    this._applyManipulationCallback(selector, manipulationCallBack);
+  }
+  _applyManipulationCallback(selector, callBack) {
+    if (isElement(selector)) {
+      callBack(selector);
+      return;
+    }
+    for (const sel of SelectorEngine.find(selector, this._element)) {
+      callBack(sel);
+    }
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap modal.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$7 = 'modal';
+const DATA_KEY$4 = 'bs.modal';
+const EVENT_KEY$4 = `.${DATA_KEY$4}`;
+const DATA_API_KEY$2 = '.data-api';
+const ESCAPE_KEY$1 = 'Escape';
+const EVENT_HIDE$4 = `hide${EVENT_KEY$4}`;
+const EVENT_HIDE_PREVENTED$1 = `hidePrevented${EVENT_KEY$4}`;
+const EVENT_HIDDEN$4 = `hidden${EVENT_KEY$4}`;
+const EVENT_SHOW$4 = `show${EVENT_KEY$4}`;
+const EVENT_SHOWN$4 = `shown${EVENT_KEY$4}`;
+const EVENT_RESIZE$1 = `resize${EVENT_KEY$4}`;
+const EVENT_CLICK_DISMISS = `click.dismiss${EVENT_KEY$4}`;
+const EVENT_MOUSEDOWN_DISMISS = `mousedown.dismiss${EVENT_KEY$4}`;
+const EVENT_KEYDOWN_DISMISS$1 = `keydown.dismiss${EVENT_KEY$4}`;
+const EVENT_CLICK_DATA_API$2 = `click${EVENT_KEY$4}${DATA_API_KEY$2}`;
+const CLASS_NAME_OPEN = 'modal-open';
+const CLASS_NAME_FADE$3 = 'fade';
+const CLASS_NAME_SHOW$4 = 'show';
+const CLASS_NAME_STATIC = 'modal-static';
+const OPEN_SELECTOR$1 = '.modal.show';
+const SELECTOR_DIALOG = '.modal-dialog';
+const SELECTOR_MODAL_BODY = '.modal-body';
+const SELECTOR_DATA_TOGGLE$2 = '[data-bs-toggle="modal"]';
+const Default$6 = {
+  backdrop: true,
+  focus: true,
+  keyboard: true
+};
+const DefaultType$6 = {
+  backdrop: '(boolean|string)',
+  focus: 'boolean',
+  keyboard: 'boolean'
+};
+
+/**
+ * Class definition
+ */
+
+class Modal extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, this._element);
+    this._backdrop = this._initializeBackDrop();
+    this._focustrap = this._initializeFocusTrap();
+    this._isShown = false;
+    this._isTransitioning = false;
+    this._scrollBar = new ScrollBarHelper();
+    this._addEventListeners();
+  }
+
+  // Getters
+  static get Default() {
+    return Default$6;
+  }
+  static get DefaultType() {
+    return DefaultType$6;
+  }
+  static get NAME() {
+    return NAME$7;
+  }
+
+  // Public
+  toggle(relatedTarget) {
+    return this._isShown ? this.hide() : this.show(relatedTarget);
+  }
+  show(relatedTarget) {
+    if (this._isShown || this._isTransitioning) {
+      return;
+    }
+    const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$4, {
+      relatedTarget
+    });
+    if (showEvent.defaultPrevented) {
+      return;
+    }
+    this._isShown = true;
+    this._isTransitioning = true;
+    this._scrollBar.hide();
+    document.body.classList.add(CLASS_NAME_OPEN);
+    this._adjustDialog();
+    this._backdrop.show(() => this._showElement(relatedTarget));
+  }
+  hide() {
+    if (!this._isShown || this._isTransitioning) {
+      return;
+    }
+    const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$4);
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+    this._isShown = false;
+    this._isTransitioning = true;
+    this._focustrap.deactivate();
+    this._element.classList.remove(CLASS_NAME_SHOW$4);
+    this._queueCallback(() => this._hideModal(), this._element, this._isAnimated());
+  }
+  dispose() {
+    EventHandler.off(window, EVENT_KEY$4);
+    EventHandler.off(this._dialog, EVENT_KEY$4);
+    this._backdrop.dispose();
+    this._focustrap.deactivate();
+    super.dispose();
+  }
+  handleUpdate() {
+    this._adjustDialog();
+  }
+
+  // Private
+  _initializeBackDrop() {
+    return new Backdrop({
+      isVisible: Boolean(this._config.backdrop),
+      // 'static' option will be translated to true, and booleans will keep their value,
+      isAnimated: this._isAnimated()
+    });
+  }
+  _initializeFocusTrap() {
+    return new FocusTrap({
+      trapElement: this._element
+    });
+  }
+  _showElement(relatedTarget) {
+    // try to append dynamic modal
+    if (!document.body.contains(this._element)) {
+      document.body.append(this._element);
+    }
+    this._element.style.display = 'block';
+    this._element.removeAttribute('aria-hidden');
+    this._element.setAttribute('aria-modal', true);
+    this._element.setAttribute('role', 'dialog');
+    this._element.scrollTop = 0;
+    const modalBody = SelectorEngine.findOne(SELECTOR_MODAL_BODY, this._dialog);
+    if (modalBody) {
+      modalBody.scrollTop = 0;
+    }
+    reflow(this._element);
+    this._element.classList.add(CLASS_NAME_SHOW$4);
+    const transitionComplete = () => {
+      if (this._config.focus) {
+        this._focustrap.activate();
+      }
+      this._isTransitioning = false;
+      EventHandler.trigger(this._element, EVENT_SHOWN$4, {
+        relatedTarget
+      });
+    };
+    this._queueCallback(transitionComplete, this._dialog, this._isAnimated());
+  }
+  _addEventListeners() {
+    EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS$1, event => {
+      if (event.key !== ESCAPE_KEY$1) {
+        return;
+      }
+      if (this._config.keyboard) {
+        this.hide();
+        return;
+      }
+      this._triggerBackdropTransition();
+    });
+    EventHandler.on(window, EVENT_RESIZE$1, () => {
+      if (this._isShown && !this._isTransitioning) {
+        this._adjustDialog();
+      }
+    });
+    EventHandler.on(this._element, EVENT_MOUSEDOWN_DISMISS, event => {
+      // a bad trick to segregate clicks that may start inside dialog but end outside, and avoid listen to scrollbar clicks
+      EventHandler.one(this._element, EVENT_CLICK_DISMISS, event2 => {
+        if (this._element !== event.target || this._element !== event2.target) {
+          return;
+        }
+        if (this._config.backdrop === 'static') {
+          this._triggerBackdropTransition();
+          return;
+        }
+        if (this._config.backdrop) {
+          this.hide();
+        }
+      });
+    });
+  }
+  _hideModal() {
+    this._element.style.display = 'none';
+    this._element.setAttribute('aria-hidden', true);
+    this._element.removeAttribute('aria-modal');
+    this._element.removeAttribute('role');
+    this._isTransitioning = false;
+    this._backdrop.hide(() => {
+      document.body.classList.remove(CLASS_NAME_OPEN);
+      this._resetAdjustments();
+      this._scrollBar.reset();
+      EventHandler.trigger(this._element, EVENT_HIDDEN$4);
+    });
+  }
+  _isAnimated() {
+    return this._element.classList.contains(CLASS_NAME_FADE$3);
+  }
+  _triggerBackdropTransition() {
+    const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED$1);
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+    const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
+    const initialOverflowY = this._element.style.overflowY;
+    // return if the following background transition hasn't yet completed
+    if (initialOverflowY === 'hidden' || this._element.classList.contains(CLASS_NAME_STATIC)) {
+      return;
+    }
+    if (!isModalOverflowing) {
+      this._element.style.overflowY = 'hidden';
+    }
+    this._element.classList.add(CLASS_NAME_STATIC);
+    this._queueCallback(() => {
+      this._element.classList.remove(CLASS_NAME_STATIC);
+      this._queueCallback(() => {
+        this._element.style.overflowY = initialOverflowY;
+      }, this._dialog);
+    }, this._dialog);
+    this._element.focus();
+  }
+
+  /**
+   * The following methods are used to handle overflowing modals
+   */
+
+  _adjustDialog() {
+    const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
+    const scrollbarWidth = this._scrollBar.getWidth();
+    const isBodyOverflowing = scrollbarWidth > 0;
+    if (isBodyOverflowing && !isModalOverflowing) {
+      const property = isRTL() ? 'paddingLeft' : 'paddingRight';
+      this._element.style[property] = `${scrollbarWidth}px`;
+    }
+    if (!isBodyOverflowing && isModalOverflowing) {
+      const property = isRTL() ? 'paddingRight' : 'paddingLeft';
+      this._element.style[property] = `${scrollbarWidth}px`;
+    }
+  }
+  _resetAdjustments() {
+    this._element.style.paddingLeft = '';
+    this._element.style.paddingRight = '';
+  }
+
+  // Static
+  static jQueryInterface(config, relatedTarget) {
+    return this.each(function () {
+      const data = Modal.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (typeof data[config] === 'undefined') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config](relatedTarget);
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$2, function (event) {
+  const target = SelectorEngine.getElementFromSelector(this);
+  if (['A', 'AREA'].includes(this.tagName)) {
+    event.preventDefault();
+  }
+  EventHandler.one(target, EVENT_SHOW$4, showEvent => {
+    if (showEvent.defaultPrevented) {
+      // only register focus restorer if modal will actually get shown
+      return;
+    }
+    EventHandler.one(target, EVENT_HIDDEN$4, () => {
+      if (isVisible(this)) {
+        this.focus();
+      }
+    });
+  });
+
+  // avoid conflict when clicking modal toggler while another one is open
+  const alreadyOpen = SelectorEngine.findOne(OPEN_SELECTOR$1);
+  if (alreadyOpen) {
+    Modal.getInstance(alreadyOpen).hide();
+  }
+  const data = Modal.getOrCreateInstance(target);
+  data.toggle(this);
+});
+enableDismissTrigger(Modal);
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Modal);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap offcanvas.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$6 = 'offcanvas';
+const DATA_KEY$3 = 'bs.offcanvas';
+const EVENT_KEY$3 = `.${DATA_KEY$3}`;
+const DATA_API_KEY$1 = '.data-api';
+const EVENT_LOAD_DATA_API$2 = `load${EVENT_KEY$3}${DATA_API_KEY$1}`;
+const ESCAPE_KEY = 'Escape';
+const CLASS_NAME_SHOW$3 = 'show';
+const CLASS_NAME_SHOWING$1 = 'showing';
+const CLASS_NAME_HIDING = 'hiding';
+const CLASS_NAME_BACKDROP = 'offcanvas-backdrop';
+const OPEN_SELECTOR = '.offcanvas.show';
+const EVENT_SHOW$3 = `show${EVENT_KEY$3}`;
+const EVENT_SHOWN$3 = `shown${EVENT_KEY$3}`;
+const EVENT_HIDE$3 = `hide${EVENT_KEY$3}`;
+const EVENT_HIDE_PREVENTED = `hidePrevented${EVENT_KEY$3}`;
+const EVENT_HIDDEN$3 = `hidden${EVENT_KEY$3}`;
+const EVENT_RESIZE = `resize${EVENT_KEY$3}`;
+const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$3}${DATA_API_KEY$1}`;
+const EVENT_KEYDOWN_DISMISS = `keydown.dismiss${EVENT_KEY$3}`;
+const SELECTOR_DATA_TOGGLE$1 = '[data-bs-toggle="offcanvas"]';
+const Default$5 = {
+  backdrop: true,
+  keyboard: true,
+  scroll: false
+};
+const DefaultType$5 = {
+  backdrop: '(boolean|string)',
+  keyboard: 'boolean',
+  scroll: 'boolean'
+};
+
+/**
+ * Class definition
+ */
+
+class Offcanvas extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._isShown = false;
+    this._backdrop = this._initializeBackDrop();
+    this._focustrap = this._initializeFocusTrap();
+    this._addEventListeners();
+  }
+
+  // Getters
+  static get Default() {
+    return Default$5;
+  }
+  static get DefaultType() {
+    return DefaultType$5;
+  }
+  static get NAME() {
+    return NAME$6;
+  }
+
+  // Public
+  toggle(relatedTarget) {
+    return this._isShown ? this.hide() : this.show(relatedTarget);
+  }
+  show(relatedTarget) {
+    if (this._isShown) {
+      return;
+    }
+    const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$3, {
+      relatedTarget
+    });
+    if (showEvent.defaultPrevented) {
+      return;
+    }
+    this._isShown = true;
+    this._backdrop.show();
+    if (!this._config.scroll) {
+      new ScrollBarHelper().hide();
+    }
+    this._element.setAttribute('aria-modal', true);
+    this._element.setAttribute('role', 'dialog');
+    this._element.classList.add(CLASS_NAME_SHOWING$1);
+    const completeCallBack = () => {
+      if (!this._config.scroll || this._config.backdrop) {
+        this._focustrap.activate();
+      }
+      this._element.classList.add(CLASS_NAME_SHOW$3);
+      this._element.classList.remove(CLASS_NAME_SHOWING$1);
+      EventHandler.trigger(this._element, EVENT_SHOWN$3, {
+        relatedTarget
+      });
+    };
+    this._queueCallback(completeCallBack, this._element, true);
+  }
+  hide() {
+    if (!this._isShown) {
+      return;
+    }
+    const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$3);
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+    this._focustrap.deactivate();
+    this._element.blur();
+    this._isShown = false;
+    this._element.classList.add(CLASS_NAME_HIDING);
+    this._backdrop.hide();
+    const completeCallback = () => {
+      this._element.classList.remove(CLASS_NAME_SHOW$3, CLASS_NAME_HIDING);
+      this._element.removeAttribute('aria-modal');
+      this._element.removeAttribute('role');
+      if (!this._config.scroll) {
+        new ScrollBarHelper().reset();
+      }
+      EventHandler.trigger(this._element, EVENT_HIDDEN$3);
+    };
+    this._queueCallback(completeCallback, this._element, true);
+  }
+  dispose() {
+    this._backdrop.dispose();
+    this._focustrap.deactivate();
+    super.dispose();
+  }
+
+  // Private
+  _initializeBackDrop() {
+    const clickCallback = () => {
+      if (this._config.backdrop === 'static') {
+        EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
+        return;
+      }
+      this.hide();
+    };
+
+    // 'static' option will be translated to true, and booleans will keep their value
+    const isVisible = Boolean(this._config.backdrop);
+    return new Backdrop({
+      className: CLASS_NAME_BACKDROP,
+      isVisible,
+      isAnimated: true,
+      rootElement: this._element.parentNode,
+      clickCallback: isVisible ? clickCallback : null
+    });
+  }
+  _initializeFocusTrap() {
+    return new FocusTrap({
+      trapElement: this._element
+    });
+  }
+  _addEventListeners() {
+    EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, event => {
+      if (event.key !== ESCAPE_KEY) {
+        return;
+      }
+      if (this._config.keyboard) {
+        this.hide();
+        return;
+      }
+      EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
+    });
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Offcanvas.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config](this);
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$1, function (event) {
+  const target = SelectorEngine.getElementFromSelector(this);
+  if (['A', 'AREA'].includes(this.tagName)) {
+    event.preventDefault();
+  }
+  if (isDisabled(this)) {
+    return;
+  }
+  EventHandler.one(target, EVENT_HIDDEN$3, () => {
+    // focus on trigger when it is closed
+    if (isVisible(this)) {
+      this.focus();
+    }
+  });
+
+  // avoid conflict when clicking a toggler of an offcanvas, while another is open
+  const alreadyOpen = SelectorEngine.findOne(OPEN_SELECTOR);
+  if (alreadyOpen && alreadyOpen !== target) {
+    Offcanvas.getInstance(alreadyOpen).hide();
+  }
+  const data = Offcanvas.getOrCreateInstance(target);
+  data.toggle(this);
+});
+EventHandler.on(window, EVENT_LOAD_DATA_API$2, () => {
+  for (const selector of SelectorEngine.find(OPEN_SELECTOR)) {
+    Offcanvas.getOrCreateInstance(selector).show();
+  }
+});
+EventHandler.on(window, EVENT_RESIZE, () => {
+  for (const element of SelectorEngine.find('[aria-modal][class*=show][class*=offcanvas-]')) {
+    if (getComputedStyle(element).position !== 'fixed') {
+      Offcanvas.getOrCreateInstance(element).hide();
+    }
+  }
+});
+enableDismissTrigger(Offcanvas);
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Offcanvas);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/sanitizer.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+// js-docs-start allow-list
+const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
+const DefaultAllowlist = {
+  // Global attributes allowed on any supplied element below.
+  '*': ['class', 'dir', 'id', 'lang', 'role', ARIA_ATTRIBUTE_PATTERN],
+  a: ['target', 'href', 'title', 'rel'],
+  area: [],
+  b: [],
+  br: [],
+  col: [],
+  code: [],
+  dd: [],
+  div: [],
+  dl: [],
+  dt: [],
+  em: [],
+  hr: [],
+  h1: [],
+  h2: [],
+  h3: [],
+  h4: [],
+  h5: [],
+  h6: [],
+  i: [],
+  img: ['src', 'srcset', 'alt', 'title', 'width', 'height'],
+  li: [],
+  ol: [],
+  p: [],
+  pre: [],
+  s: [],
+  small: [],
+  span: [],
+  sub: [],
+  sup: [],
+  strong: [],
+  u: [],
+  ul: []
+};
+// js-docs-end allow-list
+
+const uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href']);
+
+/**
+ * A pattern that recognizes URLs that are safe wrt. XSS in URL navigation
+ * contexts.
+ *
+ * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
+ */
+const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
+const allowedAttribute = (attribute, allowedAttributeList) => {
+  const attributeName = attribute.nodeName.toLowerCase();
+  if (allowedAttributeList.includes(attributeName)) {
+    if (uriAttributes.has(attributeName)) {
+      return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue));
+    }
+    return true;
+  }
+
+  // Check if a regular expression validates the attribute.
+  return allowedAttributeList.filter(attributeRegex => attributeRegex instanceof RegExp).some(regex => regex.test(attributeName));
+};
+function sanitizeHtml(unsafeHtml, allowList, sanitizeFunction) {
+  if (!unsafeHtml.length) {
+    return unsafeHtml;
+  }
+  if (sanitizeFunction && typeof sanitizeFunction === 'function') {
+    return sanitizeFunction(unsafeHtml);
+  }
+  const domParser = new window.DOMParser();
+  const createdDocument = domParser.parseFromString(unsafeHtml, 'text/html');
+  const elements = [].concat(...createdDocument.body.querySelectorAll('*'));
+  for (const element of elements) {
+    const elementName = element.nodeName.toLowerCase();
+    if (!Object.keys(allowList).includes(elementName)) {
+      element.remove();
+      continue;
+    }
+    const attributeList = [].concat(...element.attributes);
+    const allowedAttributes = [].concat(allowList['*'] || [], allowList[elementName] || []);
+    for (const attribute of attributeList) {
+      if (!allowedAttribute(attribute, allowedAttributes)) {
+        element.removeAttribute(attribute.nodeName);
+      }
+    }
+  }
+  return createdDocument.body.innerHTML;
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap util/template-factory.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$5 = 'TemplateFactory';
+const Default$4 = {
+  allowList: DefaultAllowlist,
+  content: {},
+  // { selector : text ,  selector2 : text2 , }
+  extraClass: '',
+  html: false,
+  sanitize: true,
+  sanitizeFn: null,
+  template: '<div></div>'
+};
+const DefaultType$4 = {
+  allowList: 'object',
+  content: 'object',
+  extraClass: '(string|function)',
+  html: 'boolean',
+  sanitize: 'boolean',
+  sanitizeFn: '(null|function)',
+  template: 'string'
+};
+const DefaultContentType = {
+  entry: '(string|element|function|null)',
+  selector: '(string|element)'
+};
+
+/**
+ * Class definition
+ */
+
+class TemplateFactory extends Config {
+  constructor(config) {
+    super();
+    this._config = this._getConfig(config);
+  }
+
+  // Getters
+  static get Default() {
+    return Default$4;
+  }
+  static get DefaultType() {
+    return DefaultType$4;
+  }
+  static get NAME() {
+    return NAME$5;
+  }
+
+  // Public
+  getContent() {
+    return Object.values(this._config.content).map(config => this._resolvePossibleFunction(config)).filter(Boolean);
+  }
+  hasContent() {
+    return this.getContent().length > 0;
+  }
+  changeContent(content) {
+    this._checkContent(content);
+    this._config.content = {
+      ...this._config.content,
+      ...content
+    };
+    return this;
+  }
+  toHtml() {
+    const templateWrapper = document.createElement('div');
+    templateWrapper.innerHTML = this._maybeSanitize(this._config.template);
+    for (const [selector, text] of Object.entries(this._config.content)) {
+      this._setContent(templateWrapper, text, selector);
+    }
+    const template = templateWrapper.children[0];
+    const extraClass = this._resolvePossibleFunction(this._config.extraClass);
+    if (extraClass) {
+      template.classList.add(...extraClass.split(' '));
+    }
+    return template;
+  }
+
+  // Private
+  _typeCheckConfig(config) {
+    super._typeCheckConfig(config);
+    this._checkContent(config.content);
+  }
+  _checkContent(arg) {
+    for (const [selector, content] of Object.entries(arg)) {
+      super._typeCheckConfig({
+        selector,
+        entry: content
+      }, DefaultContentType);
+    }
+  }
+  _setContent(template, content, selector) {
+    const templateElement = SelectorEngine.findOne(selector, template);
+    if (!templateElement) {
+      return;
+    }
+    content = this._resolvePossibleFunction(content);
+    if (!content) {
+      templateElement.remove();
+      return;
+    }
+    if (isElement(content)) {
+      this._putElementInTemplate(getElement(content), templateElement);
+      return;
+    }
+    if (this._config.html) {
+      templateElement.innerHTML = this._maybeSanitize(content);
+      return;
+    }
+    templateElement.textContent = content;
+  }
+  _maybeSanitize(arg) {
+    return this._config.sanitize ? sanitizeHtml(arg, this._config.allowList, this._config.sanitizeFn) : arg;
+  }
+  _resolvePossibleFunction(arg) {
+    return execute(arg, [undefined, this]);
+  }
+  _putElementInTemplate(element, templateElement) {
+    if (this._config.html) {
+      templateElement.innerHTML = '';
+      templateElement.append(element);
+      return;
+    }
+    templateElement.textContent = element.textContent;
+  }
+}
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap tooltip.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$4 = 'tooltip';
+const DISALLOWED_ATTRIBUTES = new Set(['sanitize', 'allowList', 'sanitizeFn']);
+const CLASS_NAME_FADE$2 = 'fade';
+const CLASS_NAME_MODAL = 'modal';
+const CLASS_NAME_SHOW$2 = 'show';
+const SELECTOR_TOOLTIP_INNER = '.tooltip-inner';
+const SELECTOR_MODAL = `.${CLASS_NAME_MODAL}`;
+const EVENT_MODAL_HIDE = 'hide.bs.modal';
+const TRIGGER_HOVER = 'hover';
+const TRIGGER_FOCUS = 'focus';
+const TRIGGER_CLICK = 'click';
+const TRIGGER_MANUAL = 'manual';
+const EVENT_HIDE$2 = 'hide';
+const EVENT_HIDDEN$2 = 'hidden';
+const EVENT_SHOW$2 = 'show';
+const EVENT_SHOWN$2 = 'shown';
+const EVENT_INSERTED = 'inserted';
+const EVENT_CLICK$1 = 'click';
+const EVENT_FOCUSIN$1 = 'focusin';
+const EVENT_FOCUSOUT$1 = 'focusout';
+const EVENT_MOUSEENTER = 'mouseenter';
+const EVENT_MOUSELEAVE = 'mouseleave';
+const AttachmentMap = {
+  AUTO: 'auto',
+  TOP: 'top',
+  RIGHT: isRTL() ? 'left' : 'right',
+  BOTTOM: 'bottom',
+  LEFT: isRTL() ? 'right' : 'left'
+};
+const Default$3 = {
+  allowList: DefaultAllowlist,
+  animation: true,
+  boundary: 'clippingParents',
+  container: false,
+  customClass: '',
+  delay: 0,
+  fallbackPlacements: ['top', 'right', 'bottom', 'left'],
+  html: false,
+  offset: [0, 6],
+  placement: 'top',
+  popperConfig: null,
+  sanitize: true,
+  sanitizeFn: null,
+  selector: false,
+  template: '<div class="tooltip" role="tooltip">' + '<div class="tooltip-arrow"></div>' + '<div class="tooltip-inner"></div>' + '</div>',
+  title: '',
+  trigger: 'hover focus'
+};
+const DefaultType$3 = {
+  allowList: 'object',
+  animation: 'boolean',
+  boundary: '(string|element)',
+  container: '(string|element|boolean)',
+  customClass: '(string|function)',
+  delay: '(number|object)',
+  fallbackPlacements: 'array',
+  html: 'boolean',
+  offset: '(array|string|function)',
+  placement: '(string|function)',
+  popperConfig: '(null|object|function)',
+  sanitize: 'boolean',
+  sanitizeFn: '(null|function)',
+  selector: '(string|boolean)',
+  template: 'string',
+  title: '(string|element|function)',
+  trigger: 'string'
+};
+
+/**
+ * Class definition
+ */
+
+class Tooltip extends BaseComponent {
+  constructor(element, config) {
+    if (typeof _popperjs_core__WEBPACK_IMPORTED_MODULE_0__ === 'undefined') {
+      throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org/docs/v2/)');
+    }
+    super(element, config);
+
+    // Private
+    this._isEnabled = true;
+    this._timeout = 0;
+    this._isHovered = null;
+    this._activeTrigger = {};
+    this._popper = null;
+    this._templateFactory = null;
+    this._newContent = null;
+
+    // Protected
+    this.tip = null;
+    this._setListeners();
+    if (!this._config.selector) {
+      this._fixTitle();
+    }
+  }
+
+  // Getters
+  static get Default() {
+    return Default$3;
+  }
+  static get DefaultType() {
+    return DefaultType$3;
+  }
+  static get NAME() {
+    return NAME$4;
+  }
+
+  // Public
+  enable() {
+    this._isEnabled = true;
+  }
+  disable() {
+    this._isEnabled = false;
+  }
+  toggleEnabled() {
+    this._isEnabled = !this._isEnabled;
+  }
+  toggle() {
+    if (!this._isEnabled) {
+      return;
+    }
+    if (this._isShown()) {
+      this._leave();
+      return;
+    }
+    this._enter();
+  }
+  dispose() {
+    clearTimeout(this._timeout);
+    EventHandler.off(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
+    if (this._element.getAttribute('data-bs-original-title')) {
+      this._element.setAttribute('title', this._element.getAttribute('data-bs-original-title'));
+    }
+    this._disposePopper();
+    super.dispose();
+  }
+  show() {
+    if (this._element.style.display === 'none') {
+      throw new Error('Please use show on visible elements');
+    }
+    if (!(this._isWithContent() && this._isEnabled)) {
+      return;
+    }
+    const showEvent = EventHandler.trigger(this._element, this.constructor.eventName(EVENT_SHOW$2));
+    const shadowRoot = findShadowRoot(this._element);
+    const isInTheDom = (shadowRoot || this._element.ownerDocument.documentElement).contains(this._element);
+    if (showEvent.defaultPrevented || !isInTheDom) {
+      return;
+    }
+
+    // TODO: v6 remove this or make it optional
+    this._disposePopper();
+    const tip = this._getTipElement();
+    this._element.setAttribute('aria-describedby', tip.getAttribute('id'));
+    const {
+      container
+    } = this._config;
+    if (!this._element.ownerDocument.documentElement.contains(this.tip)) {
+      container.append(tip);
+      EventHandler.trigger(this._element, this.constructor.eventName(EVENT_INSERTED));
+    }
+    this._popper = this._createPopper(tip);
+    tip.classList.add(CLASS_NAME_SHOW$2);
+
+    // If this is a touch-enabled device we add extra
+    // empty mouseover listeners to the body's immediate children;
+    // only needed because of broken event delegation on iOS
+    // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
+    if ('ontouchstart' in document.documentElement) {
+      for (const element of [].concat(...document.body.children)) {
+        EventHandler.on(element, 'mouseover', noop);
+      }
+    }
+    const complete = () => {
+      EventHandler.trigger(this._element, this.constructor.eventName(EVENT_SHOWN$2));
+      if (this._isHovered === false) {
+        this._leave();
+      }
+      this._isHovered = false;
+    };
+    this._queueCallback(complete, this.tip, this._isAnimated());
+  }
+  hide() {
+    if (!this._isShown()) {
+      return;
+    }
+    const hideEvent = EventHandler.trigger(this._element, this.constructor.eventName(EVENT_HIDE$2));
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+    const tip = this._getTipElement();
+    tip.classList.remove(CLASS_NAME_SHOW$2);
+
+    // If this is a touch-enabled device we remove the extra
+    // empty mouseover listeners we added for iOS support
+    if ('ontouchstart' in document.documentElement) {
+      for (const element of [].concat(...document.body.children)) {
+        EventHandler.off(element, 'mouseover', noop);
+      }
+    }
+    this._activeTrigger[TRIGGER_CLICK] = false;
+    this._activeTrigger[TRIGGER_FOCUS] = false;
+    this._activeTrigger[TRIGGER_HOVER] = false;
+    this._isHovered = null; // it is a trick to support manual triggering
+
+    const complete = () => {
+      if (this._isWithActiveTrigger()) {
+        return;
+      }
+      if (!this._isHovered) {
+        this._disposePopper();
+      }
+      this._element.removeAttribute('aria-describedby');
+      EventHandler.trigger(this._element, this.constructor.eventName(EVENT_HIDDEN$2));
+    };
+    this._queueCallback(complete, this.tip, this._isAnimated());
+  }
+  update() {
+    if (this._popper) {
+      this._popper.update();
+    }
+  }
+
+  // Protected
+  _isWithContent() {
+    return Boolean(this._getTitle());
+  }
+  _getTipElement() {
+    if (!this.tip) {
+      this.tip = this._createTipElement(this._newContent || this._getContentForTemplate());
+    }
+    return this.tip;
+  }
+  _createTipElement(content) {
+    const tip = this._getTemplateFactory(content).toHtml();
+
+    // TODO: remove this check in v6
+    if (!tip) {
+      return null;
+    }
+    tip.classList.remove(CLASS_NAME_FADE$2, CLASS_NAME_SHOW$2);
+    // TODO: v6 the following can be achieved with CSS only
+    tip.classList.add(`bs-${this.constructor.NAME}-auto`);
+    const tipId = getUID(this.constructor.NAME).toString();
+    tip.setAttribute('id', tipId);
+    if (this._isAnimated()) {
+      tip.classList.add(CLASS_NAME_FADE$2);
+    }
+    return tip;
+  }
+  setContent(content) {
+    this._newContent = content;
+    if (this._isShown()) {
+      this._disposePopper();
+      this.show();
+    }
+  }
+  _getTemplateFactory(content) {
+    if (this._templateFactory) {
+      this._templateFactory.changeContent(content);
+    } else {
+      this._templateFactory = new TemplateFactory({
+        ...this._config,
+        // the `content` var has to be after `this._config`
+        // to override config.content in case of popover
+        content,
+        extraClass: this._resolvePossibleFunction(this._config.customClass)
+      });
+    }
+    return this._templateFactory;
+  }
+  _getContentForTemplate() {
+    return {
+      [SELECTOR_TOOLTIP_INNER]: this._getTitle()
+    };
+  }
+  _getTitle() {
+    return this._resolvePossibleFunction(this._config.title) || this._element.getAttribute('data-bs-original-title');
+  }
+
+  // Private
+  _initializeOnDelegatedTarget(event) {
+    return this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
+  }
+  _isAnimated() {
+    return this._config.animation || this.tip && this.tip.classList.contains(CLASS_NAME_FADE$2);
+  }
+  _isShown() {
+    return this.tip && this.tip.classList.contains(CLASS_NAME_SHOW$2);
+  }
+  _createPopper(tip) {
+    const placement = execute(this._config.placement, [this, tip, this._element]);
+    const attachment = AttachmentMap[placement.toUpperCase()];
+    return _popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper(this._element, tip, this._getPopperConfig(attachment));
+  }
+  _getOffset() {
+    const {
+      offset
+    } = this._config;
+    if (typeof offset === 'string') {
+      return offset.split(',').map(value => Number.parseInt(value, 10));
+    }
+    if (typeof offset === 'function') {
+      return popperData => offset(popperData, this._element);
+    }
+    return offset;
+  }
+  _resolvePossibleFunction(arg) {
+    return execute(arg, [this._element, this._element]);
+  }
+  _getPopperConfig(attachment) {
+    const defaultBsPopperConfig = {
+      placement: attachment,
+      modifiers: [{
+        name: 'flip',
+        options: {
+          fallbackPlacements: this._config.fallbackPlacements
+        }
+      }, {
+        name: 'offset',
+        options: {
+          offset: this._getOffset()
+        }
+      }, {
+        name: 'preventOverflow',
+        options: {
+          boundary: this._config.boundary
+        }
+      }, {
+        name: 'arrow',
+        options: {
+          element: `.${this.constructor.NAME}-arrow`
+        }
+      }, {
+        name: 'preSetPlacement',
+        enabled: true,
+        phase: 'beforeMain',
+        fn: data => {
+          // Pre-set Popper's placement attribute in order to read the arrow sizes properly.
+          // Otherwise, Popper mixes up the width and height dimensions since the initial arrow style is for top placement
+          this._getTipElement().setAttribute('data-popper-placement', data.state.placement);
+        }
+      }]
+    };
+    return {
+      ...defaultBsPopperConfig,
+      ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
+    };
+  }
+  _setListeners() {
+    const triggers = this._config.trigger.split(' ');
+    for (const trigger of triggers) {
+      if (trigger === 'click') {
+        EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK$1), this._config.selector, event => {
+          const context = this._initializeOnDelegatedTarget(event);
+          context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK]);
+          context.toggle();
+        });
+      } else if (trigger !== TRIGGER_MANUAL) {
+        const eventIn = trigger === TRIGGER_HOVER ? this.constructor.eventName(EVENT_MOUSEENTER) : this.constructor.eventName(EVENT_FOCUSIN$1);
+        const eventOut = trigger === TRIGGER_HOVER ? this.constructor.eventName(EVENT_MOUSELEAVE) : this.constructor.eventName(EVENT_FOCUSOUT$1);
+        EventHandler.on(this._element, eventIn, this._config.selector, event => {
+          const context = this._initializeOnDelegatedTarget(event);
+          context._activeTrigger[event.type === 'focusin' ? TRIGGER_FOCUS : TRIGGER_HOVER] = true;
+          context._enter();
+        });
+        EventHandler.on(this._element, eventOut, this._config.selector, event => {
+          const context = this._initializeOnDelegatedTarget(event);
+          context._activeTrigger[event.type === 'focusout' ? TRIGGER_FOCUS : TRIGGER_HOVER] = context._element.contains(event.relatedTarget);
+          context._leave();
+        });
+      }
+    }
+    this._hideModalHandler = () => {
+      if (this._element) {
+        this.hide();
+      }
+    };
+    EventHandler.on(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
+  }
+  _fixTitle() {
+    const title = this._element.getAttribute('title');
+    if (!title) {
+      return;
+    }
+    if (!this._element.getAttribute('aria-label') && !this._element.textContent.trim()) {
+      this._element.setAttribute('aria-label', title);
+    }
+    this._element.setAttribute('data-bs-original-title', title); // DO NOT USE IT. Is only for backwards compatibility
+    this._element.removeAttribute('title');
+  }
+  _enter() {
+    if (this._isShown() || this._isHovered) {
+      this._isHovered = true;
+      return;
+    }
+    this._isHovered = true;
+    this._setTimeout(() => {
+      if (this._isHovered) {
+        this.show();
+      }
+    }, this._config.delay.show);
+  }
+  _leave() {
+    if (this._isWithActiveTrigger()) {
+      return;
+    }
+    this._isHovered = false;
+    this._setTimeout(() => {
+      if (!this._isHovered) {
+        this.hide();
+      }
+    }, this._config.delay.hide);
+  }
+  _setTimeout(handler, timeout) {
+    clearTimeout(this._timeout);
+    this._timeout = setTimeout(handler, timeout);
+  }
+  _isWithActiveTrigger() {
+    return Object.values(this._activeTrigger).includes(true);
+  }
+  _getConfig(config) {
+    const dataAttributes = Manipulator.getDataAttributes(this._element);
+    for (const dataAttribute of Object.keys(dataAttributes)) {
+      if (DISALLOWED_ATTRIBUTES.has(dataAttribute)) {
+        delete dataAttributes[dataAttribute];
+      }
+    }
+    config = {
+      ...dataAttributes,
+      ...(typeof config === 'object' && config ? config : {})
+    };
+    config = this._mergeConfigObj(config);
+    config = this._configAfterMerge(config);
+    this._typeCheckConfig(config);
+    return config;
+  }
+  _configAfterMerge(config) {
+    config.container = config.container === false ? document.body : getElement(config.container);
+    if (typeof config.delay === 'number') {
+      config.delay = {
+        show: config.delay,
+        hide: config.delay
+      };
+    }
+    if (typeof config.title === 'number') {
+      config.title = config.title.toString();
+    }
+    if (typeof config.content === 'number') {
+      config.content = config.content.toString();
+    }
+    return config;
+  }
+  _getDelegateConfig() {
+    const config = {};
+    for (const [key, value] of Object.entries(this._config)) {
+      if (this.constructor.Default[key] !== value) {
+        config[key] = value;
+      }
+    }
+    config.selector = false;
+    config.trigger = 'manual';
+
+    // In the future can be replaced with:
+    // const keysWithDifferentValues = Object.entries(this._config).filter(entry => this.constructor.Default[entry[0]] !== this._config[entry[0]])
+    // `Object.fromEntries(keysWithDifferentValues)`
+    return config;
+  }
+  _disposePopper() {
+    if (this._popper) {
+      this._popper.destroy();
+      this._popper = null;
+    }
+    if (this.tip) {
+      this.tip.remove();
+      this.tip = null;
+    }
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Tooltip.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (typeof data[config] === 'undefined') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config]();
+    });
+  }
+}
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Tooltip);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap popover.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$3 = 'popover';
+const SELECTOR_TITLE = '.popover-header';
+const SELECTOR_CONTENT = '.popover-body';
+const Default$2 = {
+  ...Tooltip.Default,
+  content: '',
+  offset: [0, 8],
+  placement: 'right',
+  template: '<div class="popover" role="tooltip">' + '<div class="popover-arrow"></div>' + '<h3 class="popover-header"></h3>' + '<div class="popover-body"></div>' + '</div>',
+  trigger: 'click'
+};
+const DefaultType$2 = {
+  ...Tooltip.DefaultType,
+  content: '(null|string|element|function)'
+};
+
+/**
+ * Class definition
+ */
+
+class Popover extends Tooltip {
+  // Getters
+  static get Default() {
+    return Default$2;
+  }
+  static get DefaultType() {
+    return DefaultType$2;
+  }
+  static get NAME() {
+    return NAME$3;
+  }
+
+  // Overrides
+  _isWithContent() {
+    return this._getTitle() || this._getContent();
+  }
+
+  // Private
+  _getContentForTemplate() {
+    return {
+      [SELECTOR_TITLE]: this._getTitle(),
+      [SELECTOR_CONTENT]: this._getContent()
+    };
+  }
+  _getContent() {
+    return this._resolvePossibleFunction(this._config.content);
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Popover.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (typeof data[config] === 'undefined') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config]();
+    });
+  }
+}
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Popover);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap scrollspy.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$2 = 'scrollspy';
+const DATA_KEY$2 = 'bs.scrollspy';
+const EVENT_KEY$2 = `.${DATA_KEY$2}`;
+const DATA_API_KEY = '.data-api';
+const EVENT_ACTIVATE = `activate${EVENT_KEY$2}`;
+const EVENT_CLICK = `click${EVENT_KEY$2}`;
+const EVENT_LOAD_DATA_API$1 = `load${EVENT_KEY$2}${DATA_API_KEY}`;
+const CLASS_NAME_DROPDOWN_ITEM = 'dropdown-item';
+const CLASS_NAME_ACTIVE$1 = 'active';
+const SELECTOR_DATA_SPY = '[data-bs-spy="scroll"]';
+const SELECTOR_TARGET_LINKS = '[href]';
+const SELECTOR_NAV_LIST_GROUP = '.nav, .list-group';
+const SELECTOR_NAV_LINKS = '.nav-link';
+const SELECTOR_NAV_ITEMS = '.nav-item';
+const SELECTOR_LIST_ITEMS = '.list-group-item';
+const SELECTOR_LINK_ITEMS = `${SELECTOR_NAV_LINKS}, ${SELECTOR_NAV_ITEMS} > ${SELECTOR_NAV_LINKS}, ${SELECTOR_LIST_ITEMS}`;
+const SELECTOR_DROPDOWN = '.dropdown';
+const SELECTOR_DROPDOWN_TOGGLE$1 = '.dropdown-toggle';
+const Default$1 = {
+  offset: null,
+  // TODO: v6 @deprecated, keep it for backwards compatibility reasons
+  rootMargin: '0px 0px -25%',
+  smoothScroll: false,
+  target: null,
+  threshold: [0.1, 0.5, 1]
+};
+const DefaultType$1 = {
+  offset: '(number|null)',
+  // TODO v6 @deprecated, keep it for backwards compatibility reasons
+  rootMargin: 'string',
+  smoothScroll: 'boolean',
+  target: 'element',
+  threshold: 'array'
+};
+
+/**
+ * Class definition
+ */
+
+class ScrollSpy extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+
+    // this._element is the observablesContainer and config.target the menu links wrapper
+    this._targetLinks = new Map();
+    this._observableSections = new Map();
+    this._rootElement = getComputedStyle(this._element).overflowY === 'visible' ? null : this._element;
+    this._activeTarget = null;
+    this._observer = null;
+    this._previousScrollData = {
+      visibleEntryTop: 0,
+      parentScrollTop: 0
+    };
+    this.refresh(); // initialize
+  }
+
+  // Getters
+  static get Default() {
+    return Default$1;
+  }
+  static get DefaultType() {
+    return DefaultType$1;
+  }
+  static get NAME() {
+    return NAME$2;
+  }
+
+  // Public
+  refresh() {
+    this._initializeTargetsAndObservables();
+    this._maybeEnableSmoothScroll();
+    if (this._observer) {
+      this._observer.disconnect();
+    } else {
+      this._observer = this._getNewObserver();
+    }
+    for (const section of this._observableSections.values()) {
+      this._observer.observe(section);
+    }
+  }
+  dispose() {
+    this._observer.disconnect();
+    super.dispose();
+  }
+
+  // Private
+  _configAfterMerge(config) {
+    // TODO: on v6 target should be given explicitly & remove the {target: 'ss-target'} case
+    config.target = getElement(config.target) || document.body;
+
+    // TODO: v6 Only for backwards compatibility reasons. Use rootMargin only
+    config.rootMargin = config.offset ? `${config.offset}px 0px -30%` : config.rootMargin;
+    if (typeof config.threshold === 'string') {
+      config.threshold = config.threshold.split(',').map(value => Number.parseFloat(value));
+    }
+    return config;
+  }
+  _maybeEnableSmoothScroll() {
+    if (!this._config.smoothScroll) {
+      return;
+    }
+
+    // unregister any previous listeners
+    EventHandler.off(this._config.target, EVENT_CLICK);
+    EventHandler.on(this._config.target, EVENT_CLICK, SELECTOR_TARGET_LINKS, event => {
+      const observableSection = this._observableSections.get(event.target.hash);
+      if (observableSection) {
+        event.preventDefault();
+        const root = this._rootElement || window;
+        const height = observableSection.offsetTop - this._element.offsetTop;
+        if (root.scrollTo) {
+          root.scrollTo({
+            top: height,
+            behavior: 'smooth'
+          });
+          return;
+        }
+
+        // Chrome 60 doesn't support `scrollTo`
+        root.scrollTop = height;
+      }
+    });
+  }
+  _getNewObserver() {
+    const options = {
+      root: this._rootElement,
+      threshold: this._config.threshold,
+      rootMargin: this._config.rootMargin
+    };
+    return new IntersectionObserver(entries => this._observerCallback(entries), options);
+  }
+
+  // The logic of selection
+  _observerCallback(entries) {
+    const targetElement = entry => this._targetLinks.get(`#${entry.target.id}`);
+    const activate = entry => {
+      this._previousScrollData.visibleEntryTop = entry.target.offsetTop;
+      this._process(targetElement(entry));
+    };
+    const parentScrollTop = (this._rootElement || document.documentElement).scrollTop;
+    const userScrollsDown = parentScrollTop >= this._previousScrollData.parentScrollTop;
+    this._previousScrollData.parentScrollTop = parentScrollTop;
+    for (const entry of entries) {
+      if (!entry.isIntersecting) {
+        this._activeTarget = null;
+        this._clearActiveClass(targetElement(entry));
+        continue;
+      }
+      const entryIsLowerThanPrevious = entry.target.offsetTop >= this._previousScrollData.visibleEntryTop;
+      // if we are scrolling down, pick the bigger offsetTop
+      if (userScrollsDown && entryIsLowerThanPrevious) {
+        activate(entry);
+        // if parent isn't scrolled, let's keep the first visible item, breaking the iteration
+        if (!parentScrollTop) {
+          return;
+        }
+        continue;
+      }
+
+      // if we are scrolling up, pick the smallest offsetTop
+      if (!userScrollsDown && !entryIsLowerThanPrevious) {
+        activate(entry);
+      }
+    }
+  }
+  _initializeTargetsAndObservables() {
+    this._targetLinks = new Map();
+    this._observableSections = new Map();
+    const targetLinks = SelectorEngine.find(SELECTOR_TARGET_LINKS, this._config.target);
+    for (const anchor of targetLinks) {
+      // ensure that the anchor has an id and is not disabled
+      if (!anchor.hash || isDisabled(anchor)) {
+        continue;
+      }
+      const observableSection = SelectorEngine.findOne(decodeURI(anchor.hash), this._element);
+
+      // ensure that the observableSection exists & is visible
+      if (isVisible(observableSection)) {
+        this._targetLinks.set(decodeURI(anchor.hash), anchor);
+        this._observableSections.set(anchor.hash, observableSection);
+      }
+    }
+  }
+  _process(target) {
+    if (this._activeTarget === target) {
+      return;
+    }
+    this._clearActiveClass(this._config.target);
+    this._activeTarget = target;
+    target.classList.add(CLASS_NAME_ACTIVE$1);
+    this._activateParents(target);
+    EventHandler.trigger(this._element, EVENT_ACTIVATE, {
+      relatedTarget: target
+    });
+  }
+  _activateParents(target) {
+    // Activate dropdown parents
+    if (target.classList.contains(CLASS_NAME_DROPDOWN_ITEM)) {
+      SelectorEngine.findOne(SELECTOR_DROPDOWN_TOGGLE$1, target.closest(SELECTOR_DROPDOWN)).classList.add(CLASS_NAME_ACTIVE$1);
+      return;
+    }
+    for (const listGroup of SelectorEngine.parents(target, SELECTOR_NAV_LIST_GROUP)) {
+      // Set triggered links parents as active
+      // With both <ul> and <nav> markup a parent is the previous sibling of any nav ancestor
+      for (const item of SelectorEngine.prev(listGroup, SELECTOR_LINK_ITEMS)) {
+        item.classList.add(CLASS_NAME_ACTIVE$1);
+      }
+    }
+  }
+  _clearActiveClass(parent) {
+    parent.classList.remove(CLASS_NAME_ACTIVE$1);
+    const activeNodes = SelectorEngine.find(`${SELECTOR_TARGET_LINKS}.${CLASS_NAME_ACTIVE$1}`, parent);
+    for (const node of activeNodes) {
+      node.classList.remove(CLASS_NAME_ACTIVE$1);
+    }
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = ScrollSpy.getOrCreateInstance(this, config);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config]();
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(window, EVENT_LOAD_DATA_API$1, () => {
+  for (const spy of SelectorEngine.find(SELECTOR_DATA_SPY)) {
+    ScrollSpy.getOrCreateInstance(spy);
+  }
+});
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(ScrollSpy);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap tab.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME$1 = 'tab';
+const DATA_KEY$1 = 'bs.tab';
+const EVENT_KEY$1 = `.${DATA_KEY$1}`;
+const EVENT_HIDE$1 = `hide${EVENT_KEY$1}`;
+const EVENT_HIDDEN$1 = `hidden${EVENT_KEY$1}`;
+const EVENT_SHOW$1 = `show${EVENT_KEY$1}`;
+const EVENT_SHOWN$1 = `shown${EVENT_KEY$1}`;
+const EVENT_CLICK_DATA_API = `click${EVENT_KEY$1}`;
+const EVENT_KEYDOWN = `keydown${EVENT_KEY$1}`;
+const EVENT_LOAD_DATA_API = `load${EVENT_KEY$1}`;
+const ARROW_LEFT_KEY = 'ArrowLeft';
+const ARROW_RIGHT_KEY = 'ArrowRight';
+const ARROW_UP_KEY = 'ArrowUp';
+const ARROW_DOWN_KEY = 'ArrowDown';
+const HOME_KEY = 'Home';
+const END_KEY = 'End';
+const CLASS_NAME_ACTIVE = 'active';
+const CLASS_NAME_FADE$1 = 'fade';
+const CLASS_NAME_SHOW$1 = 'show';
+const CLASS_DROPDOWN = 'dropdown';
+const SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
+const SELECTOR_DROPDOWN_MENU = '.dropdown-menu';
+const NOT_SELECTOR_DROPDOWN_TOGGLE = `:not(${SELECTOR_DROPDOWN_TOGGLE})`;
+const SELECTOR_TAB_PANEL = '.list-group, .nav, [role="tablist"]';
+const SELECTOR_OUTER = '.nav-item, .list-group-item';
+const SELECTOR_INNER = `.nav-link${NOT_SELECTOR_DROPDOWN_TOGGLE}, .list-group-item${NOT_SELECTOR_DROPDOWN_TOGGLE}, [role="tab"]${NOT_SELECTOR_DROPDOWN_TOGGLE}`;
+const SELECTOR_DATA_TOGGLE = '[data-bs-toggle="tab"], [data-bs-toggle="pill"], [data-bs-toggle="list"]'; // TODO: could only be `tab` in v6
+const SELECTOR_INNER_ELEM = `${SELECTOR_INNER}, ${SELECTOR_DATA_TOGGLE}`;
+const SELECTOR_DATA_TOGGLE_ACTIVE = `.${CLASS_NAME_ACTIVE}[data-bs-toggle="tab"], .${CLASS_NAME_ACTIVE}[data-bs-toggle="pill"], .${CLASS_NAME_ACTIVE}[data-bs-toggle="list"]`;
+
+/**
+ * Class definition
+ */
+
+class Tab extends BaseComponent {
+  constructor(element) {
+    super(element);
+    this._parent = this._element.closest(SELECTOR_TAB_PANEL);
+    if (!this._parent) {
+      return;
+      // TODO: should throw exception in v6
+      // throw new TypeError(`${element.outerHTML} has not a valid parent ${SELECTOR_INNER_ELEM}`)
+    }
+
+    // Set up initial aria attributes
+    this._setInitialAttributes(this._parent, this._getChildren());
+    EventHandler.on(this._element, EVENT_KEYDOWN, event => this._keydown(event));
+  }
+
+  // Getters
+  static get NAME() {
+    return NAME$1;
+  }
+
+  // Public
+  show() {
+    // Shows this elem and deactivate the active sibling if exists
+    const innerElem = this._element;
+    if (this._elemIsActive(innerElem)) {
+      return;
+    }
+
+    // Search for active tab on same parent to deactivate it
+    const active = this._getActiveElem();
+    const hideEvent = active ? EventHandler.trigger(active, EVENT_HIDE$1, {
+      relatedTarget: innerElem
+    }) : null;
+    const showEvent = EventHandler.trigger(innerElem, EVENT_SHOW$1, {
+      relatedTarget: active
+    });
+    if (showEvent.defaultPrevented || hideEvent && hideEvent.defaultPrevented) {
+      return;
+    }
+    this._deactivate(active, innerElem);
+    this._activate(innerElem, active);
+  }
+
+  // Private
+  _activate(element, relatedElem) {
+    if (!element) {
+      return;
+    }
+    element.classList.add(CLASS_NAME_ACTIVE);
+    this._activate(SelectorEngine.getElementFromSelector(element)); // Search and activate/show the proper section
+
+    const complete = () => {
+      if (element.getAttribute('role') !== 'tab') {
+        element.classList.add(CLASS_NAME_SHOW$1);
+        return;
+      }
+      element.removeAttribute('tabindex');
+      element.setAttribute('aria-selected', true);
+      this._toggleDropDown(element, true);
+      EventHandler.trigger(element, EVENT_SHOWN$1, {
+        relatedTarget: relatedElem
+      });
+    };
+    this._queueCallback(complete, element, element.classList.contains(CLASS_NAME_FADE$1));
+  }
+  _deactivate(element, relatedElem) {
+    if (!element) {
+      return;
+    }
+    element.classList.remove(CLASS_NAME_ACTIVE);
+    element.blur();
+    this._deactivate(SelectorEngine.getElementFromSelector(element)); // Search and deactivate the shown section too
+
+    const complete = () => {
+      if (element.getAttribute('role') !== 'tab') {
+        element.classList.remove(CLASS_NAME_SHOW$1);
+        return;
+      }
+      element.setAttribute('aria-selected', false);
+      element.setAttribute('tabindex', '-1');
+      this._toggleDropDown(element, false);
+      EventHandler.trigger(element, EVENT_HIDDEN$1, {
+        relatedTarget: relatedElem
+      });
+    };
+    this._queueCallback(complete, element, element.classList.contains(CLASS_NAME_FADE$1));
+  }
+  _keydown(event) {
+    if (![ARROW_LEFT_KEY, ARROW_RIGHT_KEY, ARROW_UP_KEY, ARROW_DOWN_KEY, HOME_KEY, END_KEY].includes(event.key)) {
+      return;
+    }
+    event.stopPropagation(); // stopPropagation/preventDefault both added to support up/down keys without scrolling the page
+    event.preventDefault();
+    const children = this._getChildren().filter(element => !isDisabled(element));
+    let nextActiveElement;
+    if ([HOME_KEY, END_KEY].includes(event.key)) {
+      nextActiveElement = children[event.key === HOME_KEY ? 0 : children.length - 1];
+    } else {
+      const isNext = [ARROW_RIGHT_KEY, ARROW_DOWN_KEY].includes(event.key);
+      nextActiveElement = getNextActiveElement(children, event.target, isNext, true);
+    }
+    if (nextActiveElement) {
+      nextActiveElement.focus({
+        preventScroll: true
+      });
+      Tab.getOrCreateInstance(nextActiveElement).show();
+    }
+  }
+  _getChildren() {
+    // collection of inner elements
+    return SelectorEngine.find(SELECTOR_INNER_ELEM, this._parent);
+  }
+  _getActiveElem() {
+    return this._getChildren().find(child => this._elemIsActive(child)) || null;
+  }
+  _setInitialAttributes(parent, children) {
+    this._setAttributeIfNotExists(parent, 'role', 'tablist');
+    for (const child of children) {
+      this._setInitialAttributesOnChild(child);
+    }
+  }
+  _setInitialAttributesOnChild(child) {
+    child = this._getInnerElement(child);
+    const isActive = this._elemIsActive(child);
+    const outerElem = this._getOuterElement(child);
+    child.setAttribute('aria-selected', isActive);
+    if (outerElem !== child) {
+      this._setAttributeIfNotExists(outerElem, 'role', 'presentation');
+    }
+    if (!isActive) {
+      child.setAttribute('tabindex', '-1');
+    }
+    this._setAttributeIfNotExists(child, 'role', 'tab');
+
+    // set attributes to the related panel too
+    this._setInitialAttributesOnTargetPanel(child);
+  }
+  _setInitialAttributesOnTargetPanel(child) {
+    const target = SelectorEngine.getElementFromSelector(child);
+    if (!target) {
+      return;
+    }
+    this._setAttributeIfNotExists(target, 'role', 'tabpanel');
+    if (child.id) {
+      this._setAttributeIfNotExists(target, 'aria-labelledby', `${child.id}`);
+    }
+  }
+  _toggleDropDown(element, open) {
+    const outerElem = this._getOuterElement(element);
+    if (!outerElem.classList.contains(CLASS_DROPDOWN)) {
+      return;
+    }
+    const toggle = (selector, className) => {
+      const element = SelectorEngine.findOne(selector, outerElem);
+      if (element) {
+        element.classList.toggle(className, open);
+      }
+    };
+    toggle(SELECTOR_DROPDOWN_TOGGLE, CLASS_NAME_ACTIVE);
+    toggle(SELECTOR_DROPDOWN_MENU, CLASS_NAME_SHOW$1);
+    outerElem.setAttribute('aria-expanded', open);
+  }
+  _setAttributeIfNotExists(element, attribute, value) {
+    if (!element.hasAttribute(attribute)) {
+      element.setAttribute(attribute, value);
+    }
+  }
+  _elemIsActive(elem) {
+    return elem.classList.contains(CLASS_NAME_ACTIVE);
+  }
+
+  // Try to get the inner element (usually the .nav-link)
+  _getInnerElement(elem) {
+    return elem.matches(SELECTOR_INNER_ELEM) ? elem : SelectorEngine.findOne(SELECTOR_INNER_ELEM, elem);
+  }
+
+  // Try to get the outer element (usually the .nav-item)
+  _getOuterElement(elem) {
+    return elem.closest(SELECTOR_OUTER) || elem;
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Tab.getOrCreateInstance(this);
+      if (typeof config !== 'string') {
+        return;
+      }
+      if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+        throw new TypeError(`No method named "${config}"`);
+      }
+      data[config]();
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
+  if (['A', 'AREA'].includes(this.tagName)) {
+    event.preventDefault();
+  }
+  if (isDisabled(this)) {
+    return;
+  }
+  Tab.getOrCreateInstance(this).show();
+});
+
+/**
+ * Initialize on focus
+ */
+EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
+  for (const element of SelectorEngine.find(SELECTOR_DATA_TOGGLE_ACTIVE)) {
+    Tab.getOrCreateInstance(element);
+  }
+});
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Tab);
+
+/**
+ * --------------------------------------------------------------------------
+ * Bootstrap toast.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ * --------------------------------------------------------------------------
+ */
+
+
+/**
+ * Constants
+ */
+
+const NAME = 'toast';
+const DATA_KEY = 'bs.toast';
+const EVENT_KEY = `.${DATA_KEY}`;
+const EVENT_MOUSEOVER = `mouseover${EVENT_KEY}`;
+const EVENT_MOUSEOUT = `mouseout${EVENT_KEY}`;
+const EVENT_FOCUSIN = `focusin${EVENT_KEY}`;
+const EVENT_FOCUSOUT = `focusout${EVENT_KEY}`;
+const EVENT_HIDE = `hide${EVENT_KEY}`;
+const EVENT_HIDDEN = `hidden${EVENT_KEY}`;
+const EVENT_SHOW = `show${EVENT_KEY}`;
+const EVENT_SHOWN = `shown${EVENT_KEY}`;
+const CLASS_NAME_FADE = 'fade';
+const CLASS_NAME_HIDE = 'hide'; // @deprecated - kept here only for backwards compatibility
+const CLASS_NAME_SHOW = 'show';
+const CLASS_NAME_SHOWING = 'showing';
+const DefaultType = {
+  animation: 'boolean',
+  autohide: 'boolean',
+  delay: 'number'
+};
+const Default = {
+  animation: true,
+  autohide: true,
+  delay: 5000
+};
+
+/**
+ * Class definition
+ */
+
+class Toast extends BaseComponent {
+  constructor(element, config) {
+    super(element, config);
+    this._timeout = null;
+    this._hasMouseInteraction = false;
+    this._hasKeyboardInteraction = false;
+    this._setListeners();
+  }
+
+  // Getters
+  static get Default() {
+    return Default;
+  }
+  static get DefaultType() {
+    return DefaultType;
+  }
+  static get NAME() {
+    return NAME;
+  }
+
+  // Public
+  show() {
+    const showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
+    if (showEvent.defaultPrevented) {
+      return;
+    }
+    this._clearTimeout();
+    if (this._config.animation) {
+      this._element.classList.add(CLASS_NAME_FADE);
+    }
+    const complete = () => {
+      this._element.classList.remove(CLASS_NAME_SHOWING);
+      EventHandler.trigger(this._element, EVENT_SHOWN);
+      this._maybeScheduleHide();
+    };
+    this._element.classList.remove(CLASS_NAME_HIDE); // @deprecated
+    reflow(this._element);
+    this._element.classList.add(CLASS_NAME_SHOW, CLASS_NAME_SHOWING);
+    this._queueCallback(complete, this._element, this._config.animation);
+  }
+  hide() {
+    if (!this.isShown()) {
+      return;
+    }
+    const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE);
+    if (hideEvent.defaultPrevented) {
+      return;
+    }
+    const complete = () => {
+      this._element.classList.add(CLASS_NAME_HIDE); // @deprecated
+      this._element.classList.remove(CLASS_NAME_SHOWING, CLASS_NAME_SHOW);
+      EventHandler.trigger(this._element, EVENT_HIDDEN);
+    };
+    this._element.classList.add(CLASS_NAME_SHOWING);
+    this._queueCallback(complete, this._element, this._config.animation);
+  }
+  dispose() {
+    this._clearTimeout();
+    if (this.isShown()) {
+      this._element.classList.remove(CLASS_NAME_SHOW);
+    }
+    super.dispose();
+  }
+  isShown() {
+    return this._element.classList.contains(CLASS_NAME_SHOW);
+  }
+
+  // Private
+  _maybeScheduleHide() {
+    if (!this._config.autohide) {
+      return;
+    }
+    if (this._hasMouseInteraction || this._hasKeyboardInteraction) {
+      return;
+    }
+    this._timeout = setTimeout(() => {
+      this.hide();
+    }, this._config.delay);
+  }
+  _onInteraction(event, isInteracting) {
+    switch (event.type) {
+      case 'mouseover':
+      case 'mouseout':
+        {
+          this._hasMouseInteraction = isInteracting;
+          break;
+        }
+      case 'focusin':
+      case 'focusout':
+        {
+          this._hasKeyboardInteraction = isInteracting;
+          break;
+        }
+    }
+    if (isInteracting) {
+      this._clearTimeout();
+      return;
+    }
+    const nextElement = event.relatedTarget;
+    if (this._element === nextElement || this._element.contains(nextElement)) {
+      return;
+    }
+    this._maybeScheduleHide();
+  }
+  _setListeners() {
+    EventHandler.on(this._element, EVENT_MOUSEOVER, event => this._onInteraction(event, true));
+    EventHandler.on(this._element, EVENT_MOUSEOUT, event => this._onInteraction(event, false));
+    EventHandler.on(this._element, EVENT_FOCUSIN, event => this._onInteraction(event, true));
+    EventHandler.on(this._element, EVENT_FOCUSOUT, event => this._onInteraction(event, false));
+  }
+  _clearTimeout() {
+    clearTimeout(this._timeout);
+    this._timeout = null;
+  }
+
+  // Static
+  static jQueryInterface(config) {
+    return this.each(function () {
+      const data = Toast.getOrCreateInstance(this, config);
+      if (typeof config === 'string') {
+        if (typeof data[config] === 'undefined') {
+          throw new TypeError(`No method named "${config}"`);
+        }
+        data[config](this);
+      }
+    });
+  }
+}
+
+/**
+ * Data API implementation
+ */
+
+enableDismissTrigger(Toast);
+
+/**
+ * jQuery
+ */
+
+defineJQueryPlugin(Toast);
+
+
+//# sourceMappingURL=bootstrap.esm.js.map
+
+
+/***/ }),
+
+/***/ "@babel/runtime/regenerator":
+/*!*************************************!*\
+  !*** external "regeneratorRuntime" ***!
+  \*************************************/
+/***/ (function(module) {
+
+module.exports = window["regeneratorRuntime"];
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Check if module exists (development only)
+/******/ 		if (__webpack_modules__[moduleId] === undefined) {
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+!function() {
+/*!*************************!*\
+  !*** ./assets/index.js ***!
+  \*************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _main_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.scss */ "./assets/main.scss");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./main.js */ "./assets/main.js");
+
+
+}();
+/******/ })()
+;
+//# sourceMappingURL=index.js.map
