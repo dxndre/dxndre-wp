@@ -64,7 +64,7 @@ function dxndre_editorial_projects_archive($atts = []) {
         </div>
       </div>
       <div class="portfolio-archive" data-projects-archive>
-        <div class="portfolio-archive-heading"><h2>Explore the work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
+        <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
         <div class="filter-inputs">
           <div class="project-search"><span aria-hidden="true">⌕</span><input id="search-box" type="search" placeholder="Search projects…" aria-label="Search projects" data-project-search></div>
           <div class="project-filter-buttons" role="group" aria-label="Filter projects">
@@ -80,7 +80,7 @@ function dxndre_editorial_projects_archive($atts = []) {
           $search = $d['title'] . ' ' . $d['excerpt'] . ' ' . implode(' ', $d['types']) . ' ' . $d['context_label'] . ' ' . $d['year']; ?>
           <li class="project-card" data-type="<?php echo esc_attr(implode(' ', array_map('sanitize_title', $d['types']))); ?>" data-year="<?php echo esc_attr($d['year']); ?>" data-context="<?php echo esc_attr($d['context']); ?>" data-search="<?php echo esc_attr($search); ?>">
             <a href="<?php echo esc_url(get_permalink($project)); ?>" class="project-thumb" aria-label="<?php echo esc_attr('View ' . $d['title'] . ' case study'); ?>">
-              <?php echo dxndre_portfolio_image($project, $d, 'large', 'project-image project-image--default'); ?>
+              <?php echo get_the_post_thumbnail($project, 'large', ['class'=>'project-image project-image--default', 'loading'=>'lazy']) ?: dxndre_portfolio_image($project, $d, 'large', 'project-image project-image--default'); ?><?php echo dxndre_portfolio_image($project,$d,'large','project-image project-image--hover'); ?>
             </a>
             <h3 class="project-title"><a href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo esc_html($d['title']); ?></a></h3>
             <div class="project-meta"><span><?php echo esc_html($d['year']); ?></span><span aria-hidden="true">/</span><span><?php echo esc_html($d['context_label']); ?></span><?php if ($d['status']) : ?><span aria-hidden="true">/</span><span><?php echo esc_html(ucwords(str_replace('_', ' ', $d['status']))); ?></span><?php endif; ?></div>

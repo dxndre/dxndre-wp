@@ -205,16 +205,7 @@ the_post();
 
 						<div class="button-container">
 
-							<?php if ($cv_file && isset($cv_file['url'])) : ?>
-								<a
-									href="<?= esc_url($cv_file['url']); ?>"
-									class="btn btn-primary"
-									target="_blank"
-									rel="noopener"
-								>
-									Download CV <i class="fa-solid fa-download"></i>
-								</a>
-							<?php endif; ?>
+							<a href="<?php echo esc_url(home_url('/cv/')); ?>" class="btn btn-primary">Explore my CV <span aria-hidden="true">↗</span></a>
 
 							<?php if ($linkedin) : ?>
 								<a
@@ -241,6 +232,8 @@ the_post();
 							<?php endif; ?>
 
 						</div>
+
+						<p class="cv-modal-download">Prefer a document? <a href="<?php echo esc_url(dxndre_cv_pdf_url()); ?>" download>Download CV (PDF) <span aria-hidden="true">↧</span></a></p>
 
 						<button
 							class="modal-back"

@@ -1,16 +1,6 @@
 <?php
 /** Search-only presentation and main-query behaviour. */
-add_action('wp_enqueue_scripts', function () {
-    if (!is_search()) return;
-    foreach (['css', 'js'] as $extension) {
-        $file = 'assets/search-experience.' . $extension;
-        if ($extension === 'css') {
-            wp_enqueue_style('dxndre-search', get_theme_file_uri($file), ['dxndre-theme'], filemtime(get_theme_file_path($file)));
-        } else {
-            wp_enqueue_script('dxndre-search', get_theme_file_uri($file), [], filemtime(get_theme_file_path($file)), true);
-        }
-    }
-}, 30);
+// Presentation is bundled in assets/main.scss and assets/main.js.
 
 add_action('pre_get_posts', function ($query) {
     if (is_admin() || !$query->is_main_query() || !$query->is_search()) return;

@@ -1,5 +1,4 @@
 /******/ (function() { // webpackBootstrap
-/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ "./assets/main.js":
@@ -8,16 +7,24 @@
   \************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
-/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/regenerator */ "@babel/runtime/regenerator");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
 
 
 
+
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 // Overall scores use /10 internally; the five middle bands span 14% each.
 var gymOverallBands = [{
@@ -381,7 +388,7 @@ function initGymLeague(archive, cards) {
     var total = panel.querySelector('.league-total');
     var target = Number(card.dataset.overall);
     var rated = card.dataset.overall !== '' && Number.isFinite(target) && target >= 0;
-    var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(panel.querySelectorAll('.dx-score-block[data-score] .dx-score-bar span'));
+    var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(panel.querySelectorAll('.dx-score-block[data-score] .dx-score-bar span'));
     var paint = function paint(progress) {
       if (rated) {
         var current = target * progress;
@@ -428,7 +435,7 @@ function initGymLeague(archive, cards) {
     var style = getComputedStyle(parent);
     if (style.overflowX === 'hidden' || style.overflowY === 'hidden') parent.classList.add('league-sticky-ancestor');
   }
-  var stickyHeaders = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.navbar, #wpadminbar'));
+  var stickyHeaders = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(document.querySelectorAll('.navbar, #wpadminbar'));
   var updateStickyOffset = function updateStickyOffset() {
     var bottom = stickyHeaders.reduce(function (offset, el) {
       var position = getComputedStyle(el).position;
@@ -450,7 +457,7 @@ function initGymLeague(archive, cards) {
     passive: true
   });
   updateStickyOffset();
-  var ranks = new Map((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(cards).sort(function (a, b) {
+  var ranks = new Map((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(cards).sort(function (a, b) {
     return Number(b.dataset.overall) - Number(a.dataset.overall) || a.dataset.branch.localeCompare(b.dataset.branch);
   }).map(function (c, i) {
     return [c, i + 1];
@@ -472,8 +479,8 @@ function initGymLeague(archive, cards) {
     content.append(make('p', 'league-eyebrow', 'BRANCH DETAILS'), make('h3', '', card.dataset.branchLabel), make('p', 'league-detail-chain', card.dataset.chainLabel));
     var loc = card.querySelector('.dx-gym-card__subtitle');
     if (loc) {
-      var location = loc.cloneNode(true);
-      var link = location.querySelector('a');
+      var _location = loc.cloneNode(true);
+      var link = _location.querySelector('a');
       if (link) {
         link.href = card.dataset.mapsUrl || link.href;
         link.target = '_blank';
@@ -482,7 +489,7 @@ function initGymLeague(archive, cards) {
           return event.stopPropagation();
         });
       }
-      content.append(location);
+      content.append(_location);
     }
     var score = make('div', 'league-total');
     score.dataset.tone = overallTone(card.dataset.overall);
@@ -533,7 +540,7 @@ function initGymLeague(archive, cards) {
         entry.append(overall);
         var list = make('dl', 'league-history-scores');
         Object.entries(visit.scores).forEach(function (_ref) {
-          var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref, 2),
+          var _ref2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref, 2),
             label = _ref2[0],
             value = _ref2[1];
           list.append(make('dt', '', label), make('dd', '', value === null ? 'Not assessed' : value === 'unavailable' ? 'Unavailable' : "".concat(value, "/10")));
@@ -692,7 +699,7 @@ function initGymLeague(archive, cards) {
   // Initialize Popovers
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Popover(popoverTriggerEl, {
+    return new bootstrap__WEBPACK_IMPORTED_MODULE_5__.Popover(popoverTriggerEl, {
       trigger: 'focus'
     });
   });
@@ -769,7 +776,7 @@ function initGymLeague(archive, cards) {
     var techStackSection = document.querySelector('.tech-stack');
     if (journeySection) {
       var journeyObserver = new IntersectionObserver(function (_ref3) {
-        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref3, 1),
+        var _ref4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref3, 1),
           entry = _ref4[0];
         if (entry.isIntersecting) {
           body.classList.add('client-journey-section');
@@ -783,7 +790,7 @@ function initGymLeague(archive, cards) {
     }
     if (techStackSection) {
       var techStackObserver = new IntersectionObserver(function (_ref5) {
-        var _ref6 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref5, 1),
+        var _ref6 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref5, 1),
           entry = _ref6[0];
         if (entry.isIntersecting) {
           body.classList.add('tech-stack-section');
@@ -833,7 +840,7 @@ function initGymLeague(archive, cards) {
     }, 5000);
   }
 
-  // Duplicate Footnotes at runtime 
+  // Duplicate Footnotes at runtime
 
   document.addEventListener('DOMContentLoaded', function () {
     var tracks = document.querySelectorAll('.footline-track');
@@ -865,8 +872,8 @@ function initGymLeague(archive, cards) {
     var previouslyFocused = null;
     var isOpen = false;
     var getFocusable = function getFocusable() {
-      var controls = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(menu.querySelectorAll(focusableSelector)), (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('#header .dxndre-nav-left a, ' + '#header .dxndre-nav-left button, ' + '#header .dxndre-nav-left input, ' + '#header .dxndre-navbar-brand-centered')), [toggle]);
-      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(new Set(controls)).filter(function (element) {
+      var controls = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(menu.querySelectorAll(focusableSelector)), (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(document.querySelectorAll('#header .dxndre-nav-left a, ' + '#header .dxndre-nav-left button, ' + '#header .dxndre-nav-left input, ' + '#header .dxndre-navbar-brand-centered')), [toggle]);
+      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(new Set(controls)).filter(function (element) {
         var style = window.getComputedStyle(element);
         return element.getClientRects().length > 0 && style.visibility !== 'hidden' && style.display !== 'none' && !element.closest('[inert]');
       });
@@ -880,6 +887,7 @@ function initGymLeague(archive, cards) {
 
     // Bootstrap starts opening.
     menu.addEventListener('show.bs.collapse', function () {
+      delete menu.dataset.dxClosing;
       previouslyFocused = document.activeElement;
       isOpen = true;
       lockScroll();
@@ -902,6 +910,7 @@ function initGymLeague(archive, cards) {
 
     // Bootstrap starts closing.
     menu.addEventListener('hide.bs.collapse', function () {
+      menu.dataset.dxClosing = 'true';
       isOpen = false;
 
       // Keep focus away from disappearing menu items.
@@ -938,7 +947,7 @@ function initGymLeague(archive, cards) {
       // Escape closes the menu.
       if (event.key === 'Escape') {
         event.preventDefault();
-        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Collapse.getOrCreateInstance(menu, {
+        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_5__.Collapse.getOrCreateInstance(menu, {
           toggle: false
         });
         instance.hide();
@@ -972,7 +981,7 @@ function initGymLeague(archive, cards) {
         var current = new URL(window.location.href);
         var samePage = destination.origin === current.origin && destination.pathname === current.pathname && destination.search === current.search;
         if (!samePage) return;
-        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Collapse.getOrCreateInstance(menu, {
+        var instance = bootstrap__WEBPACK_IMPORTED_MODULE_5__.Collapse.getOrCreateInstance(menu, {
           toggle: false
         });
         instance.hide();
@@ -1042,9 +1051,9 @@ function initGymLeague(archive, cards) {
   var form = document.querySelector('.ticket-reply-form');
   if (form) {
     form.addEventListener('submit', /*#__PURE__*/function () {
-      var _ref7 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(e) {
+      var _ref7 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee(e) {
         var data, res, html;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               e.preventDefault();
@@ -1074,7 +1083,7 @@ function initGymLeague(archive, cards) {
     }());
   }
 
-  // Add image button for client portal support ticket form 
+  // Add image button for client portal support ticket form
 
   document.addEventListener('DOMContentLoaded', function () {
     var addBtn = document.querySelector('.add-image-btn');
@@ -1151,7 +1160,7 @@ function initGymLeague(archive, cards) {
     });
   });
 
-  // Cancel Ticket 
+  // Cancel Ticket
 
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.js-cancel-ticket');
@@ -1167,7 +1176,7 @@ function initGymLeague(archive, cards) {
 
   document.addEventListener('keydown', function (e) {
     if (!document.body.classList.contains('page-dashboard')) return;
-    var tickets = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.ticket'));
+    var tickets = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(document.querySelectorAll('.ticket'));
     var active = document.querySelector('.ticket.is-active');
     if (!active) return;
     var index = tickets.indexOf(active);
@@ -1199,13 +1208,13 @@ function initGymLeague(archive, cards) {
     // Prevent double-init
     if (track.dataset.cloned) return;
     track.dataset.cloned = 'true';
-    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(track.children);
+    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(track.children);
     slides.forEach(function (slide) {
       track.appendChild(slide.cloneNode(true));
     });
   });
 
-  // Duplicating Gallery Carousel 
+  // Duplicating Gallery Carousel
 
   document.querySelectorAll('.wp-block-group.gallery').forEach(function (gallery) {
     var track = gallery.querySelector('.wp-block-gallery');
@@ -1249,14 +1258,14 @@ function initGymLeague(archive, cards) {
     figure.insertBefore(backdrop, img);
   });
 
-  // Homepage Bootstrap Modal (for identifying client) 
+  // Homepage Bootstrap Modal (for identifying client)
   document.addEventListener('DOMContentLoaded', function () {
     var _document$querySelect, _document$querySelect2;
     var hireBtn = document.querySelector('.js-hire-me');
     if (!hireBtn) return;
-    var hireModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#hireMeModal');
-    var clientModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#clientModal');
-    var recruiterModal = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal('#recruiterModal');
+    var hireModal = new bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal('#hireMeModal');
+    var clientModal = new bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal('#clientModal');
+    var recruiterModal = new bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal('#recruiterModal');
     hireBtn.addEventListener('click', function (e) {
       e.preventDefault();
       hireModal.show();
@@ -1343,7 +1352,7 @@ function initGymLeague(archive, cards) {
     if (!track) return;
 
     // Duplicate content for seamless loop
-    var items = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(track.children);
+    var items = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(track.children);
     items.forEach(function (item) {
       return track.appendChild(item.cloneNode(true));
     });
@@ -1379,10 +1388,10 @@ function initGymLeague(archive, cards) {
     var targetModal = backBtn.dataset.backTo;
     var currentModal = backBtn.closest('.modal');
     if (!targetModal || !currentModal) return;
-    var currentInstance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(currentModal);
+    var currentInstance = bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal.getInstance(currentModal);
     currentInstance.hide();
     var nextModalEl = document.querySelector(targetModal);
-    var nextInstance = new bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal(nextModalEl);
+    var nextInstance = new bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal(nextModalEl);
     nextInstance.show();
   });
 
@@ -1398,7 +1407,7 @@ function initGymLeague(archive, cards) {
       if (openModals.length) {
         var remaining = openModals.length;
         openModals.forEach(function (modal) {
-          var instance = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getInstance(modal);
+          var instance = bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal.getInstance(modal);
           if (!instance) {
             remaining--;
             return;
@@ -1423,7 +1432,7 @@ function initGymLeague(archive, cards) {
 
       // 👇 Check if this is YOUR gym modal
       var isGymModal = modalEl.classList.contains('dx-gym-share-modal');
-      var modal = bootstrap__WEBPACK_IMPORTED_MODULE_4__.Modal.getOrCreateInstance(modalEl, {
+      var modal = bootstrap__WEBPACK_IMPORTED_MODULE_5__.Modal.getOrCreateInstance(modalEl, {
         backdrop: isGymModal ? false : 'static',
         focus: true
       });
@@ -1575,262 +1584,90 @@ function initGymLeague(archive, cards) {
   ========================== */
 
   function initStoryController() {
-    var _document$fonts;
-    var wrapper = document.querySelector('.chapters-wrapper');
-    var sections = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-section'));
+    var _nav$querySelector;
+    var sections = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(document.querySelectorAll('.story-section'));
     var nav = document.querySelector('.chapter-selector');
-    var list = nav === null || nav === void 0 ? void 0 : nav.querySelector('ul');
-    if (!wrapper || !sections.length || !list) return;
-    // Only mark successful initialisation; pageshow reuses the existing listeners.
-    if (document.body.dataset.storyInit === 'true') return;
-    var chapters = sections.map(function (section) {
-      var chapter = section.querySelector('.cs-chapter[id]');
-      var title = chapter === null || chapter === void 0 ? void 0 : chapter.querySelector('h2.chapter-title');
-      return chapter && title ? {
-        section: section,
-        id: chapter.id,
-        title: title.textContent.trim()
-      } : null;
-    }).filter(Boolean);
-    if (!chapters.length) return;
+    if (!sections.length || !nav || document.body.dataset.storyInit) return;
     document.body.dataset.storyInit = 'true';
     document.documentElement.classList.add('case-study-document');
-    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var frame = 0;
-    var activeIndex = -1;
-    var entered = false;
-    var pendingIndex = null;
-    var userInteracted = false;
-    var settleTimer = 0;
-    // CSS and explicit navigation share exactly the same landing offset.
-    var offset = function offset() {
-      return parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-    };
-    var destination = function destination(index) {
-      return Math.max(0, window.scrollY + chapters[index].section.getBoundingClientRect().top - offset());
-    };
-    var readHash = function readHash() {
-      try {
-        return decodeURIComponent(window.location.hash.slice(1));
-      } catch (_unused2) {
-        return '';
-      }
-    };
-    var initialIndex = chapters.findIndex(function (chapter) {
-      return chapter.id === readHash();
-    });
-    var links = chapters.map(function (_ref8) {
-      var id = _ref8.id,
-        title = _ref8.title;
-      var li = document.createElement('li');
-      li.dataset.target = id;
-      var link = document.createElement('a');
-      link.href = '#' + encodeURIComponent(id);
-      var label = document.createElement('span');
-      label.textContent = title;
-      link.appendChild(label);
-      li.appendChild(link);
+    var backgrounds = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
+    var links = sections.map(function (section, i) {
+      var _chapter$querySelecto;
+      var chapter = section.querySelector('.cs-chapter');
+      if (!chapter.id) chapter.id = 'chapter-' + (i + 1);
+      var li = document.createElement('li'),
+        a = document.createElement('a');
+      a.href = '#' + chapter.id;
+      a.textContent = String(i + 1).padStart(2, '0');
+      a.setAttribute('aria-label', ((_chapter$querySelecto = chapter.querySelector('h2')) === null || _chapter$querySelecto === void 0 ? void 0 : _chapter$querySelecto.textContent) || 'Chapter ' + (i + 1));
+      a.title = a.getAttribute('aria-label');
+      a.addEventListener('click', function (event) {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        section.scrollIntoView({
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+        });
+        history.replaceState(null, '', a.hash);
+      });
+      li.append(a);
       return {
         li: li,
-        link: link
+        a: a,
+        id: chapter.id
       };
     });
-    list.replaceChildren.apply(list, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(links.map(function (item) {
-      return item.li;
+    (_nav$querySelector = nav.querySelector('ul')).replaceChildren.apply(_nav$querySelector, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(links.map(function (link) {
+      return link.li;
     })));
-    var progress = nav.querySelector('.chapter-progress span');
-    if (!progress) {
-      var track = document.createElement('div');
-      track.className = 'chapter-progress';
-      progress = document.createElement('span');
-      track.appendChild(progress);
-      nav.appendChild(track);
+    sections.forEach(function (section) {
+      return section.querySelectorAll('.cs-panel-track').forEach(function (track) {
+        var hint = document.createElement('p');
+        hint.className = 'cs-card-hint';
+        hint.textContent = 'Swipe or scroll across to explore →';
+        track.before(hint);
+        track.tabIndex = 0;
+        track.setAttribute('role', 'region');
+        track.setAttribute('aria-label', 'Chapter cards — scroll horizontally to explore');
+      });
+    });
+    var queued = false;
+    function update() {
+      queued = false;
+      var active = sections.findIndex(function (section) {
+        var r = section.getBoundingClientRect();
+        return r.top <= innerHeight / 2 && r.bottom > innerHeight / 2;
+      });
+      document.body.classList.toggle('is-in-chapters', active >= 0);
+      nav.inert = active < 0;
+      nav.setAttribute('aria-hidden', String(active < 0));
+      if (active < 0) return;
+      sections.forEach(function (section, i) {
+        return section.classList.toggle('viewport-active', i === active);
+      });
+      links.forEach(function (_ref8, i) {
+        var li = _ref8.li,
+          a = _ref8.a;
+        li.classList.toggle('is-active', i === active);
+        if (i === active) a.setAttribute('aria-current', 'location');else a.removeAttribute('aria-current');
+      });
+      backgrounds.forEach(function (bg) {
+        return bg.classList.toggle('is-active', bg.dataset.bg === links[active].id);
+      });
     }
-    var controls = document.createElement('div');
-    controls.className = 'chapter-step-controls';
-    var previous = document.createElement('button');
-    var next = document.createElement('button');
-    previous.type = next.type = 'button';
-    previous.textContent = '← Previous';
-    next.textContent = 'Next →';
-    previous.setAttribute('aria-label', 'Previous chapter');
-    next.setAttribute('aria-label', 'Next chapter');
-    controls.append(previous, next);
-    nav.appendChild(controls);
-    var backgrounds = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-backgrounds .bg'));
-    var setActive = function setActive(index) {
-      if (index === activeIndex) return;
-      activeIndex = index;
-      previous.disabled = index === 0;
-      next.disabled = index === chapters.length - 1;
-      var chapter = chapters[index];
-      sections.forEach(function (section) {
-        return section.classList.toggle('viewport-active', section === chapter.section);
-      });
-      links.forEach(function (_ref9, i) {
-        var li = _ref9.li,
-          link = _ref9.link;
-        li.classList.toggle('is-active', i === index);
-        if (i === index) link.setAttribute('aria-current', 'location');else link.removeAttribute('aria-current');
-      });
-      backgrounds.forEach(function (bg) {
-        return bg.classList.toggle('is-active', bg.dataset.bg === chapter.id);
-      });
-      progress.style.transform = 'scaleY(' + (index + 1) / chapters.length + ')';
-    };
-    var update = function update() {
-      frame = 0;
-      var top = 0;
-      var height = window.innerHeight;
-      if (!height) return;
-      var rect = wrapper.getBoundingClientRect();
-      var line = height * .35;
-      // Controls only appear once the hero has cleared their reading position.
-      var inChapters = rect.top <= offset() + 1 && rect.bottom > height * .5;
-      document.body.classList.toggle('is-in-chapters', inChapters);
-      nav.inert = !inChapters || chapters.length < 2;
-      nav.setAttribute('aria-hidden', String(!inChapters || chapters.length < 2));
-      if (!inChapters) return;
-      // Use a viewport reading line, not a percentage of the entire chapter.
-      // A very tall chapter can never meet a high intersection-ratio threshold.
-
-      var index = 0;
-      chapters.forEach(function (chapter, i) {
-        if (chapter.section.getBoundingClientRect().top <= line) index = i;
-      });
-      backgrounds.forEach(function (bg) {
-        return bg.classList.toggle('is-active', bg.dataset.bg === chapters[index].id);
-      });
-      if (pendingIndex === null) setActive(index);
-      // Do not rewrite the URL merely because chapter 1 peeks under the hero.
-      if (rect.top <= line) entered = true;
-    };
-    var finishScroll = function finishScroll() {
-      clearTimeout(settleTimer);
-      // If interrupted, settle on the chapter actually reached.
-      pendingIndex = null;
-      update();
-      var currentHash = readHash();
-      var isChapterHash = chapters.some(function (chapter) {
-        return chapter.id === currentHash;
-      });
-      if (entered && document.body.classList.contains('is-in-chapters') && (!currentHash || isChapterHash) && currentHash !== chapters[activeIndex].id) {
-        var url = new URL(window.location.href);
-        url.hash = chapters[activeIndex].id;
-        history.replaceState(history.state, '', url);
-      }
-    };
     var schedule = function schedule() {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    var goTo = function goTo(index) {
-      var smooth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      pendingIndex = index;
-      setActive(index);
-      var top = destination(index);
-      window.scrollTo({
-        top: Math.max(0, top),
-        behavior: smooth && !reducedMotion.matches ? 'smooth' : 'instant'
-      });
-      schedule();
-      clearTimeout(settleTimer);
-      // Also handles clicking the current chapter (no scroll event).
-      settleTimer = setTimeout(finishScroll, 220);
-    };
-    previous.addEventListener('click', function () {
-      userInteracted = true;
-      entered = true;
-      goTo(Math.max(0, activeIndex - 1));
-    });
-    next.addEventListener('click', function () {
-      userInteracted = true;
-      entered = true;
-      goTo(Math.min(chapters.length - 1, activeIndex + 1));
-    });
-    links.forEach(function (_ref0, index) {
-      var link = _ref0.link;
-      return link.addEventListener('click', function (event) {
-        // Preserve modified clicks and opening a chapter in a new tab.
-        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        userInteracted = true;
-        entered = true;
-        goTo(index);
-        // Selection stays on the destination; backgrounds follow the visible chapter.
-      });
-    });
-    var onHashChange = function onHashChange() {
-      var index = chapters.findIndex(function (chapter) {
-        return chapter.id === readHash();
-      });
-      if (index >= 0) {
-        entered = true;
-        goTo(index, false);
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
       }
     };
-    window.addEventListener('scroll', function () {
-      schedule();
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(finishScroll, 180);
-    }, {
+    window.addEventListener('scroll', schedule, {
       passive: true
-    });
-    // Native completion where available; the debounce remains a fallback.
-    document.addEventListener('scrollend', finishScroll);
-    var releaseNavigation = function releaseNavigation() {
-      userInteracted = true;
-      pendingIndex = null;
-      schedule();
-    };
-    window.addEventListener('wheel', releaseNavigation, {
-      passive: true
-    });
-    window.addEventListener('touchstart', releaseNavigation, {
-      passive: true
-    });
-    window.addEventListener('keydown', function (event) {
-      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) releaseNavigation();
     });
     window.addEventListener('resize', schedule, {
       passive: true
     });
-    window.addEventListener('pageshow', function (event) {
-      if (!event.persisted && initialIndex >= 0 && !userInteracted) goTo(initialIndex, false);else schedule();
-    });
-    window.addEventListener('hashchange', onHashChange);
-    // Native wheel, touch and keyboard scrolling remain uninterrupted.
-    if (typeof ResizeObserver !== 'undefined') {
-      var observer = new ResizeObserver(schedule);
-      observer.observe(wrapper);
-      chapters.forEach(function (chapter) {
-        return observer.observe(chapter.section);
-      });
-    }
-    wrapper.addEventListener('load', schedule, true);
-    (_document$fonts = document.fonts) === null || _document$fonts === void 0 || _document$fonts.ready.then(schedule);
-    setActive(initialIndex >= 0 ? initialIndex : 0);
-    if (chapters.length < 2) nav.hidden = true;
+    window.addEventListener('pageshow', schedule);
     update();
-    if (initialIndex >= 0) {
-      var _document$fonts2;
-      entered = true;
-      requestAnimationFrame(function () {
-        return goTo(initialIndex, false);
-      });
-      var eagerImages = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(document.querySelectorAll('.story-hero img')).map(function (img) {
-        return img.complete ? Promise.resolve() : new Promise(function (resolve) {
-          img.addEventListener('load', resolve, {
-            once: true
-          });
-          img.addEventListener('error', resolve, {
-            once: true
-          });
-        });
-      });
-      Promise.all([(_document$fonts2 = document.fonts) === null || _document$fonts2 === void 0 ? void 0 : _document$fonts2.ready].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(eagerImages))).then(function () {
-        if (!userInteracted) goTo(initialIndex, false);
-      });
-    }
   }
   document.addEventListener('DOMContentLoaded', initStoryController);
   window.addEventListener('pageshow', initStoryController);
@@ -1844,11 +1681,11 @@ function initGymLeague(archive, cards) {
     if (!archive) return;
     var grid = archive.querySelector('[data-projects-grid]');
     var search = archive.querySelector('[data-project-search]');
-    var filterButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
+    var filterButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(archive.querySelectorAll('.project-filter-buttons button'));
     var titleEl = archive.querySelector('[data-projects-state-title]');
     var emptyEl = archive.querySelector('[data-projects-empty]');
     if (!grid) return;
-    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(grid.querySelectorAll('.project-card'));
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(grid.querySelectorAll('.project-card'));
     var activeMode = 'filter';
     var activeValue = 'all';
     var LABELS = {
@@ -1932,8 +1769,8 @@ function initGymLeague(archive, cards) {
     var grid = archive.querySelector('[data-gyms-grid]');
     var search = archive.querySelector('[data-gym-search]');
     var sortSel = archive.querySelector('[data-gym-sort]');
-    var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('.gym-filter-buttons button'));
-    var viewBtns = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-gym-view]'));
+    var buttons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(archive.querySelectorAll('.gym-filter-buttons button'));
+    var viewBtns = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(archive.querySelectorAll('[data-gym-view]'));
     var titleEl = archive.querySelector('[data-gyms-state-title]');
     var emptyEl = archive.querySelector('[data-gyms-empty]');
     var loadMore = archive.querySelector('[data-gyms-load-more]');
@@ -1942,7 +1779,7 @@ function initGymLeague(archive, cards) {
     var compareSelected = archive.querySelector('[data-gym-compare-selected]');
     var compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
     var compareClear = archive.querySelector('[data-gym-compare-clear]');
-    var compareShareButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-gym-compare-share]'));
+    var compareShareButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(archive.querySelectorAll('[data-gym-compare-share]'));
     var comparison = archive.querySelector('[data-gym-comparison]');
     var comparisonTable = archive.querySelector('[data-gym-comparison-table]');
     var comparisonClose = archive.querySelector('[data-gym-compare-close]');
@@ -1953,7 +1790,7 @@ function initGymLeague(archive, cards) {
     var shareCopyBtn = archive.querySelector('[data-gym-share-copy]');
     var shareCloseBtn = archive.querySelector('[data-gym-share-close]');
     if (!grid) return;
-    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(grid.querySelectorAll('[data-gym-card]'));
+    var allCards = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(grid.querySelectorAll('[data-gym-card]'));
     var league = initGymLeague(archive, allCards);
     var LABELS = {
       all: 'All',
@@ -1973,10 +1810,10 @@ function initGymLeague(archive, cards) {
     amenityLegend.textContent = 'Assessed amenities';
     amenities.append(amenityLegend);
     var amenityOptions = [['gymScore', 'Gym'], ['swimScore', 'Swimming & Wetside Facilities'], ['cafeScore', 'Café & Work Area'], ['spaScore', 'Spa Retreat / Sauna Facilities']];
-    amenityOptions.forEach(function (_ref1) {
-      var _ref10 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref1, 2),
-        key = _ref10[0],
-        label = _ref10[1];
+    amenityOptions.forEach(function (_ref9) {
+      var _ref0 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref9, 2),
+        key = _ref0[0],
+        label = _ref0[1];
       var option = document.createElement('label');
       var input = document.createElement('input');
       input.type = 'checkbox';
@@ -2042,7 +1879,7 @@ function initGymLeague(archive, cards) {
     var updateTitle = function updateTitle() {
       if (!titleEl) return;
       var label = LABELS[activeChain] || 'All';
-      var signature = "".concat(label, "|").concat((search === null || search === void 0 ? void 0 : search.value) || '', "|").concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(assessedAmenities).join(','));
+      var signature = "".concat(label, "|").concat((search === null || search === void 0 ? void 0 : search.value) || '', "|").concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(assessedAmenities).join(','));
       if (titleEl.dataset.filterSignature !== signature) {
         titleEl.textContent = label;
         titleEl.dataset.filterSignature = signature;
@@ -2060,7 +1897,7 @@ function initGymLeague(archive, cards) {
     };
     var sortCards = function sortCards(cards) {
       var mode = (sortSel === null || sortSel === void 0 ? void 0 : sortSel.value) || 'overall_desc';
-      var sorted = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(cards);
+      var sorted = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(cards);
       sorted.sort(function (a, b) {
         var aBranch = getBranch(a);
         var bBranch = getBranch(b);
@@ -2243,10 +2080,13 @@ function initGymLeague(archive, cards) {
       var mappable = items.filter(function (item) {
         return !Number.isNaN(item.lat) && !Number.isNaN(item.lng);
       });
-      comparisonMapEl.hidden = mappable.length === 0;
-      if (!mappable.length) return;
+      comparisonMapEl.hidden = true;
+      comparisonMapEl.parentElement.hidden = true;
+      if (!mappable.length || typeof L === 'undefined') return;
       var map = initComparisonMap();
       if (!map) return;
+      comparisonMapEl.hidden = false;
+      comparisonMapEl.parentElement.hidden = false;
       compareMarkers.forEach(function (marker) {
         return marker.remove();
       });
@@ -2357,11 +2197,11 @@ function initGymLeague(archive, cards) {
         },
         winners: []
       }];
-      comparisonTable.innerHTML = "\n\t\t\t\t<div class=\"dx-gym-comparison__table\">\n\t\t\t\t\t<div class=\"dx-gym-comparison__row dx-gym-comparison__row--head ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t\t\t").concat(items.map(function (item) {
-        return "\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t\t\t<h3 class=\"branch-name\">".concat(item.branch, "</h3>\n\t\t\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
+      comparisonTable.innerHTML = "\n\t\t\t\t<div class=\"dx-gym-comparison__table\" role=\"table\" aria-label=\"Gym comparison\">\n\t\t\t\t\t<div role=\"row\" class=\"dx-gym-comparison__row dx-gym-comparison__row--head ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t<div role=\"columnheader\" class=\"dx-gym-comparison__metric\">Metric</div>\n\t\t\t\t\t\t").concat(items.map(function (item) {
+        return "\n\t\t\t\t\t\t\t<div role=\"columnheader\" class=\"dx-gym-comparison__cell dx-gym-comparison__cell--gym\">\n\t\t\t\t\t\t\t\t<h3 class=\"branch-name\">".concat(item.branch, "</h3>\n\t\t\t\t\t\t\t\t<span>").concat(item.chain, "</span>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t");
       }).join(''), "\n\t\t\t\t\t</div>\n\t\t\t\t\t").concat(rows.map(function (row) {
-        return "\n\t\t\t\t\t\t<div class=\"dx-gym-comparison__row ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__metric\">").concat(row.label, "</div>\n\t\t\t\t\t\t\t").concat(items.map(function (item) {
-          return "\n\t\t\t\t\t\t\t\t<div class=\"dx-gym-comparison__cell ".concat(row.winners.includes(item.id) ? 'is-winner' : '', "\">\n\t\t\t\t\t\t\t\t\t").concat(row.format(item), "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t");
+        return "\n\t\t\t\t\t\t<div role=\"row\" class=\"dx-gym-comparison__row ".concat(items.length === 2 ? 'is-two-up' : '', "\">\n\t\t\t\t\t\t\t<div role=\"rowheader\" class=\"dx-gym-comparison__metric\">").concat(row.label, "</div>\n\t\t\t\t\t\t\t").concat(items.map(function (item) {
+          return "\n\t\t\t\t\t\t\t\t<div role=\"cell\" class=\"dx-gym-comparison__cell ".concat(row.winners.includes(item.id) ? 'is-winner' : '', "\">\n\t\t\t\t\t\t\t\t\t").concat(row.format(item), "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t");
         }).join(''), "\n\t\t\t\t\t\t</div>\n\t\t\t\t\t");
       }).join(''), "\n\t\t\t\t</div>\n\t\t\t");
       renderComparisonMap(items);
@@ -2409,6 +2249,8 @@ function initGymLeague(archive, cards) {
     };
     var observedLast = null;
     var moreObserver = new IntersectionObserver(function (entries) {
+      var _archive$closest;
+      if (((_archive$closest = archive.closest('.dx-fitness')) === null || _archive$closest === void 0 ? void 0 : _archive$closest.dataset.sectionNavigating) === 'true') return;
       if (!entries.some(function (entry) {
         return entry.isIntersecting && entry.target === observedLast;
       })) return;
@@ -2429,7 +2271,7 @@ function initGymLeague(archive, cards) {
         var chainOk = activeChain === 'all' || chain === activeChain || activeChain === 'other' && !Object.prototype.hasOwnProperty.call(LABELS, chain);
         var haystack = (card.getAttribute('data-search') || '').toLowerCase();
         var searchOk = !q || haystack.includes(q);
-        var amenitiesOk = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(assessedAmenities).every(function (key) {
+        var amenitiesOk = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(assessedAmenities).every(function (key) {
           var value = card.dataset[key];
           return value !== undefined && value.trim() !== '' && Number.isFinite(Number(value)) && Number(value) >= 0;
         });
@@ -2509,7 +2351,7 @@ function initGymLeague(archive, cards) {
         });
       } else {
         if (selectedGyms.length >= 3) return;
-        selectedGyms = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(selectedGyms), [id]);
+        selectedGyms = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(selectedGyms), [id]);
       }
       updateCompareBar();
       renderComparison();
@@ -2573,7 +2415,7 @@ function initGymLeague(archive, cards) {
     var animatedCards = new WeakSet();
     var animateCardBars = function animateCardBars(card) {
       if (!card || animatedCards.has(card)) return;
-      var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(card.querySelectorAll('.dx-score-bar span'));
+      var bars = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(card.querySelectorAll('.dx-score-bar span'));
       if (!bars.length) return;
       animatedCards.add(card);
       bars.forEach(function (bar, index) {
@@ -2623,8 +2465,8 @@ function initGymLeague(archive, cards) {
     var mapEl = busEntry.querySelector('[data-bus-map]');
     var dock = busEntry.querySelector('[data-bus-dock]');
     var paneStage = busEntry.querySelector('[data-bus-pane-stage]');
-    var toggleButtons = dock ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(dock.querySelectorAll('[data-view-toggle]')) : [];
-    var paneViews = paneStage ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(paneStage.querySelectorAll('.bus-pane-view[data-pane-view]')) : [];
+    var toggleButtons = dock ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(dock.querySelectorAll('[data-view-toggle]')) : [];
+    var paneViews = paneStage ? (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(paneStage.querySelectorAll('.bus-pane-view[data-pane-view]')) : [];
 
     /* ==========================
     BUS MAP
@@ -2740,8 +2582,8 @@ function initGymLeague(archive, cards) {
     BUS PANEL TOGGLES
     ========================== */
 
-    var panelToggleButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(busEntry.querySelectorAll('[data-bus-panel-toggle]'));
-    var panels = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(busEntry.querySelectorAll('[data-bus-panel]'));
+    var panelToggleButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(busEntry.querySelectorAll('[data-bus-panel-toggle]'));
+    var panels = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(busEntry.querySelectorAll('[data-bus-panel]'));
     if (panelToggleButtons.length && panels.length) {
       panelToggleButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -2794,9 +2636,9 @@ function initGymLeague(archive, cards) {
       }).join('');
     };
     var loadArrivals = /*#__PURE__*/function () {
-      var _ref11 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee2(stopId, stopName) {
+      var _ref1 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee2(stopId, stopName) {
         var res, data, _t;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context2) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               setStatus("Loading departures for ".concat(stopName, "\u2026"));
@@ -2836,7 +2678,7 @@ function initGymLeague(archive, cards) {
         }, _callee2, null, [[1, 5]]);
       }));
       return function loadArrivals(_x2, _x3) {
-        return _ref11.apply(this, arguments);
+        return _ref1.apply(this, arguments);
       };
     }();
     var renderStops = function renderStops(stops) {
@@ -2849,7 +2691,7 @@ function initGymLeague(archive, cards) {
         var _stop$distance;
         return "\n\t\t\t\t<button\n\t\t\t\t\ttype=\"button\"\n\t\t\t\t\tclass=\"bus-stop-card ".concat(index === 0 ? 'is-active' : '', "\"\n\t\t\t\t\tdata-stop-id=\"").concat(stop.id, "\"\n\t\t\t\t\tdata-stop-name=\"").concat(stop.name, "\"\n\t\t\t\t>\n\t\t\t\t\t<h4>").concat(stop.name, "</h4>\n\t\t\t\t\t<p>").concat((_stop$distance = stop.distance) !== null && _stop$distance !== void 0 ? _stop$distance : '—', "m away ").concat(stop.indicator ? "\u2022 Stop ".concat(stop.indicator) : '', "</p>\n\t\t\t\t</button>\n\t\t\t");
       }).join('');
-      var stopButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(stopsEl.querySelectorAll('[data-stop-id]'));
+      var stopButtons = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(stopsEl.querySelectorAll('[data-stop-id]'));
       stopButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
           stopButtons.forEach(function (b) {
@@ -2873,9 +2715,9 @@ function initGymLeague(archive, cards) {
       stopsEl.innerHTML = '';
       resultsEl.innerHTML = '';
       navigator.geolocation.getCurrentPosition(/*#__PURE__*/function () {
-        var _ref12 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee3(position) {
+        var _ref10 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee3(position) {
           var _position$coords, latitude, longitude, res, data, _t2;
-          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context3) {
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context3) {
             while (1) switch (_context3.prev = _context3.next) {
               case 0:
                 _position$coords = position.coords, latitude = _position$coords.latitude, longitude = _position$coords.longitude;
@@ -2914,7 +2756,7 @@ function initGymLeague(archive, cards) {
           }, _callee3, null, [[1, 5]]);
         }));
         return function (_x4) {
-          return _ref12.apply(this, arguments);
+          return _ref10.apply(this, arguments);
         };
       }(), function (error) {
         switch (error.code) {
@@ -3052,7 +2894,7 @@ function initGymLeague(archive, cards) {
   (function () {
     var archive = document.querySelector('[data-bus-nfs]');
     if (!archive) return;
-    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_2__["default"])(archive.querySelectorAll('[data-bus-slide]'));
+    var slides = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(archive.querySelectorAll('[data-bus-slide]'));
     var prevBtn = archive.querySelector('[data-bus-prev]');
     var nextBtn = archive.querySelector('[data-bus-next]');
     var currentEl = archive.querySelector('[data-bus-current]');
@@ -3652,7 +3494,7 @@ function initHomepageHeroMotion() {
     x += (targetX - x) * smoothing;
     y += (targetY - y) * smoothing;
     paint();
-    if (Math.abs(targetX - x) + Math.abs(targetY - y) > .001) {
+    if (Math.abs(targetX - x) + Math.abs(targetY - y) > 0.001) {
       frame = requestAnimationFrame(_tick3);
     } else {
       x = targetX;
@@ -3767,6 +3609,2344 @@ function initHomepageHeroMotion() {
 }
 document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 
+// Search
+(function () {
+  var root = document.querySelector('[data-dx-search]');
+  if (!root) return;
+  var input = root.querySelector('input[name="s"]');
+  var clear = root.querySelector('.dx-search__clear');
+  var sync = function sync() {
+    clear.hidden = input.value.length === 0;
+  };
+  clear.addEventListener('click', function () {
+    input.value = '';
+    sync();
+    input.focus();
+  });
+  input.addEventListener('input', sync);
+  window.addEventListener('pageshow', sync);
+  sync();
+})();
+
+// CV
+(function () {
+  var cv = document.querySelector('.cv-experience');
+  if (!cv || !('IntersectionObserver' in window)) return;
+  var links = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(cv.querySelectorAll('.cv-nav a[href^="#"]'));
+  var sections = links.map(function (link) {
+    return document.querySelector(link.getAttribute('href'));
+  }).filter(Boolean);
+  var update = function update() {
+    var position = window.innerHeight * 0.35;
+    var active = sections[0];
+    sections.forEach(function (section) {
+      if (section.getBoundingClientRect().top <= position) active = section;
+    });
+    links.forEach(function (link) {
+      if (link.hash === '#' + active.id) link.setAttribute('aria-current', 'location');else link.removeAttribute('aria-current');
+    });
+  };
+  var observer = new IntersectionObserver(update, {
+    rootMargin: '-15% 0px -55% 0px',
+    threshold: 0
+  });
+  sections.forEach(function (section) {
+    return observer.observe(section);
+  });
+  window.addEventListener('hashchange', update);
+  update();
+})();
+
+// Fitness
+(function () {
+  var root = document.querySelector('.dx-fitness');
+  if (!root) return;
+  var nav = root.querySelector('.dxf-nav');
+  var links = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(nav.querySelectorAll('a[href^="#"]'));
+  var sections = links.map(function (link) {
+    return document.getElementById(link.hash.slice(1));
+  }).filter(Boolean);
+  var reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  var frame = 0;
+  var scheduled = false;
+  var offset = function offset() {
+    return Math.max(parseFloat(getComputedStyle(nav).top) || 0, document.querySelector('#header').getBoundingClientRect().bottom) + nav.offsetHeight + 24;
+  };
+  var destination = function destination(target) {
+    // On mobile the story photograph precedes its copy. Land on the story itself.
+    var anchor = target.id === 'fitness-story' ? target.querySelector('.dxf-story-copy') : target;
+    return Math.max(0, window.scrollY + anchor.getBoundingClientRect().top - offset());
+  };
+  var update = function update() {
+    scheduled = false;
+    var active = sections[0];
+    var _iterator = _createForOfIteratorHelper(sections),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var section = _step.value;
+        if (section.getBoundingClientRect().top <= offset() + 50) active = section;
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+    links.forEach(function (link) {
+      if (link.hash === '#' + active.id) link.setAttribute('aria-current', 'location');else link.removeAttribute('aria-current');
+    });
+  };
+  var cancel = function cancel() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    delete root.dataset.sectionNavigating;
+  };
+  var navigate = function navigate(target) {
+    cancel();
+    root.dataset.sectionNavigating = 'true';
+    var start = window.scrollY;
+    var started = performance.now();
+    var duration = reducedMotion.matches ? 0 : 850;
+    var _step2 = function step(now) {
+      var progress = duration ? Math.min(1, (now - started) / duration) : 1;
+      var eased = 1 - Math.pow(1 - progress, 4);
+      window.scrollTo({
+        top: start + (destination(target) - start) * eased,
+        behavior: 'instant'
+      });
+      if (progress < 1) frame = requestAnimationFrame(_step2);else {
+        cancel();
+        update();
+      }
+    };
+    frame = requestAnimationFrame(_step2);
+  };
+  window.addEventListener('scroll', function () {
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+  }, {
+    passive: true
+  });
+  window.addEventListener('resize', update);
+  window.addEventListener('wheel', cancel, {
+    passive: true
+  });
+  window.addEventListener('touchstart', cancel, {
+    passive: true
+  });
+  window.addEventListener('keydown', function (event) {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Escape', ' '].includes(event.key)) cancel();
+  });
+  root.querySelectorAll('a[href^="#"]').forEach(function (link) {
+    if (!sections.some(function (section) {
+      return '#' + section.id === link.hash;
+    })) return;
+    link.addEventListener('click', function (event) {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+      navigate(document.getElementById(link.hash.slice(1)));
+    });
+  });
+  window.addEventListener('hashchange', function () {
+    var target = sections.find(function (section) {
+      return '#' + section.id === location.hash;
+    });
+    if (target) navigate(target);
+  });
+  update();
+})();
+
+// Site presentation
+(function () {
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  var cards = document.querySelectorAll('.dx-principle');
+  if (cards.length && !reduced.matches && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      return entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove('dx-reveal-pending');
+        observer.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.12
+    });
+    cards.forEach(function (card, i) {
+      card.style.transitionDelay = "".concat(i % 3 * 90, "ms");
+      card.classList.add('dx-reveal-pending');
+      observer.observe(card);
+    });
+  }
+  var nav = document.querySelector('.dx-section-nav');
+  if (!nav) return;
+  // A measured fixed bar avoids Safari's overflow/sticky ancestor inconsistencies.
+  var slot = document.createElement('div');
+  slot.className = 'dx-section-nav-slot';
+  nav.before(slot);
+  slot.append(nav);
+  nav.style.marginBottom = '0';
+  var dock = function dock() {
+    var header = document.querySelector('#header');
+    var top = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+    var rect = slot.getBoundingClientRect();
+    if (!nav.classList.contains('is-docked')) {
+      var natural = nav.getBoundingClientRect();
+      slot.dataset.inset = String(natural.left - rect.left);
+      slot.dataset.width = String(natural.width);
+    }
+    slot.style.height = nav.offsetHeight + 'px';
+    var fixed = rect.top <= top;
+    nav.classList.toggle('is-docked', fixed);
+    nav.style.top = top + 'px';
+    nav.style.left = fixed ? rect.left + Number(slot.dataset.inset) + 'px' : '';
+    nav.style.width = fixed ? slot.dataset.width + 'px' : '';
+  };
+  window.addEventListener('resize', function () {
+    nav.classList.remove('is-docked');
+    nav.style.width = '';
+    nav.style.left = '';
+    dock();
+  });
+  var links = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(nav.querySelectorAll('a'));
+  var targets = links.map(function (link) {
+    return document.querySelector(link.hash);
+  });
+  var ticking = false;
+  var update = function update() {
+    ticking = false;
+    dock();
+    var edge = (parseFloat(getComputedStyle(nav).top) || 0) + nav.offsetHeight + 40;
+    var index = 0;
+    targets.forEach(function (target, i) {
+      if (target.getBoundingClientRect().top <= edge) index = i;
+    });
+    links.forEach(function (link, i) {
+      return i === index ? link.setAttribute('aria-current', 'location') : link.removeAttribute('aria-current');
+    });
+  };
+  links.forEach(function (link, i) {
+    return link.addEventListener('click', function (event) {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      history.pushState(null, '', link.hash);
+      var top = window.scrollY + targets[i].getBoundingClientRect().top - (parseFloat(nav.style.top) || 0) - nav.offsetHeight - 24;
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: reduced.matches ? 'instant' : 'smooth'
+      });
+    });
+  });
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }, {
+    passive: true
+  });
+  update();
+})();
+
+// Project enquiries
+(function () {
+  var form = document.querySelector('.enquiry-form');
+  if (!form) return;
+  var steps = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(form.querySelectorAll('[data-step]')),
+    progress = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(form.querySelectorAll('.enquiry-progress li')),
+    error = form.querySelector('.enquiry-error'),
+    next = form.querySelector('[data-next]'),
+    back = form.querySelector('[data-back]'),
+    submit = form.querySelector('[type="submit"]');
+  var step = 0,
+    sending = false;
+  var labels = {
+    'design-build': 'What would you like to create?',
+    wordpress: 'What do you need your WordPress website to do?',
+    'custom-web': 'What would you like your website or application to do?',
+    fixes: 'What’s not working, or what would you like improved?',
+    support: 'What kind of ongoing help do you need?',
+    unsure: 'Tell me about your idea or challenge.'
+  };
+  var storageKey = 'dxndre-project-enquiry';
+  var save = function save() {
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(Object.fromEntries(new FormData(form))));
+    } catch (_) {}
+  };
+  var review = function review() {
+    var data = new FormData(form),
+      selected = form.querySelector('[name="service"]:checked');
+    form.querySelector('[data-brief-label]').textContent = labels[data.get('service')] || labels['design-build'];
+    var target = form.querySelector('[data-review]');
+    target.replaceChildren();
+    for (var _i = 0, _arr = [['Service', selected === null || selected === void 0 ? void 0 : selected.parentElement.querySelector('strong').textContent], ['Project', data.get('brief')], ['Website', data.get('website')], ['Budget', data.get('budget')], ['Timing', data.get('timing')]]; _i < _arr.length; _i++) {
+      var _arr$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_arr[_i], 2),
+        label = _arr$_i[0],
+        value = _arr$_i[1];
+      if (!value) continue;
+      var row = document.createElement('p'),
+        title = document.createElement('strong'),
+        text = document.createElement('span');
+      title.textContent = label;
+      text.textContent = value;
+      row.append(title, text);
+      target.append(row);
+    }
+  };
+  var show = function show(number) {
+    var focus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    step = number;
+    error.hidden = true;
+    steps.forEach(function (el, index) {
+      el.hidden = index !== step;
+    });
+    progress.forEach(function (el, index) {
+      el.removeAttribute('aria-current');
+      if (index === step) el.setAttribute('aria-current', 'step');
+      el.classList.toggle('is-complete', index < step);
+    });
+    back.hidden = step === 0;
+    next.hidden = step === 2;
+    submit.hidden = step !== 2;
+    review();
+    if (focus) {
+      var legend = steps[step].querySelector('legend');
+      legend.tabIndex = -1;
+      legend.focus();
+    }
+  };
+  var validate = function validate(number) {
+    var invalid = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(steps[number].querySelectorAll('input,select,textarea')).find(function (el) {
+      return !el.checkValidity();
+    });
+    if (!invalid) return true;
+    error.textContent = number === 0 ? 'Choose a service to continue.' : 'Please complete the required fields and check their format.';
+    error.hidden = false;
+    invalid.focus();
+    invalid.reportValidity();
+    return false;
+  };
+  try {
+    var saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+    var _loop = function _loop() {
+      var _Object$entries$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_Object$entries[_i2], 2),
+        key = _Object$entries$_i[0],
+        value = _Object$entries$_i[1];
+      var field = form.elements.namedItem(key);
+      if (!field || key === 'company_url') return 1; // continue
+      if (key === 'service') {
+        (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(form.querySelectorAll('[name="service"]')).forEach(function (el) {
+          return el.checked = el.value === value;
+        });
+      } else field.value = value;
+    };
+    for (var _i2 = 0, _Object$entries = Object.entries(saved); _i2 < _Object$entries.length; _i2++) {
+      if (_loop()) continue;
+    }
+  } catch (_) {}
+  if (new URLSearchParams(location.search).get('from_calculator') === '1') {
+    try {
+      var quote = JSON.parse(sessionStorage.getItem('dxndre-calculator-handoff') || 'null');
+      if (quote && Number.isFinite(quote.total) && quote.total >= 0 && Array.isArray(quote.summary)) {
+        var mapping = {
+          design: 'design-build',
+          landing_page: 'custom-web',
+          development: 'custom-web',
+          wp_development: 'wordpress',
+          comprehensive: 'design-build',
+          retainer: 'support',
+          one_off: 'fixes'
+        };
+        (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(form.querySelectorAll('[name="service"]')).forEach(function (el) {
+          return el.checked = el.value === (mapping[quote.service] || 'unsure');
+        });
+        if (!form.elements.brief.value) form.elements.brief.value = 'Calculator project outline:\n' + quote.summary.join('\n') + (quote.reference ? '\nEstimate reference: ' + quote.reference : '') + '\n\nIndicative estimate: ' + new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: 'GBP'
+        }).format(quote.total) + (quote.monthly ? ' per month' : '') + ' (subject to confirming the brief).';
+        if (!form.elements.name.value) form.elements.name.value = quote.name || '';
+        if (!form.elements.company.value) form.elements.company.value = quote.company || '';
+        if (!form.elements.budget.value) form.elements.budget.value = quote.total < 1000 ? 'Under £1,000' : quote.total < 3000 ? '£1,000–£3,000' : quote.total < 5000 ? '£3,000–£5,000' : quote.total < 10000 ? '£5,000–£10,000' : '£10,000+';
+        save();
+      }
+    } catch (_) {}
+  }
+  var incoming = new URLSearchParams(location.search).get('enquiry_service');
+  if (incoming && Object.hasOwn(labels, incoming)) (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(form.querySelectorAll('[name="service"]')).forEach(function (el) {
+    return el.checked = el.value === incoming;
+  });
+  form.addEventListener('input', save);
+  form.addEventListener('change', function () {
+    save();
+    review();
+  });
+  next.addEventListener('click', function () {
+    if (validate(step)) show(step + 1);
+  });
+  back.addEventListener('click', function () {
+    return show(step - 1);
+  });
+  form.querySelectorAll('[data-edit]').forEach(function (button) {
+    return button.addEventListener('click', function () {
+      return show(Number(button.dataset.edit));
+    });
+  });
+  form.addEventListener('submit', /*#__PURE__*/function () {
+    var _ref11 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee4(event) {
+      var n, body, _result$data, response, result, success, _t3;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context4) {
+        while (1) switch (_context4.prev = _context4.next) {
+          case 0:
+            event.preventDefault();
+            if (!sending) {
+              _context4.next = 1;
+              break;
+            }
+            return _context4.abrupt("return");
+          case 1:
+            if (!(step < 2)) {
+              _context4.next = 2;
+              break;
+            }
+            if (validate(step)) show(step + 1);
+            return _context4.abrupt("return");
+          case 2:
+            n = 0;
+          case 3:
+            if (!(n < 3)) {
+              _context4.next = 5;
+              break;
+            }
+            if (validate(n)) {
+              _context4.next = 4;
+              break;
+            }
+            show(n, false);
+            validate(n);
+            return _context4.abrupt("return");
+          case 4:
+            n++;
+            _context4.next = 3;
+            break;
+          case 5:
+            sending = true;
+            submit.disabled = true;
+            submit.textContent = 'Sending…';
+            form.querySelector('.enquiry-status').textContent = 'Sending your enquiry…';
+            error.hidden = true;
+            body = new FormData(form);
+            body.append('action', 'dx_project_enquiry');
+            body.append('nonce', DX_ENQUIRY.nonce);
+            _context4.prev = 6;
+            _context4.next = 7;
+            return fetch(DX_ENQUIRY.url, {
+              method: 'POST',
+              body: body,
+              credentials: 'same-origin'
+            });
+          case 7:
+            response = _context4.sent;
+            _context4.next = 8;
+            return response.json();
+          case 8:
+            result = _context4.sent;
+            if (!(!response.ok || !result.success)) {
+              _context4.next = 9;
+              break;
+            }
+            throw new Error(((_result$data = result.data) === null || _result$data === void 0 ? void 0 : _result$data.message) || 'Please try again.');
+          case 9:
+            form.hidden = true;
+            success = document.querySelector('.enquiry-success');
+            success.hidden = false;
+            success.focus();
+            try {
+              sessionStorage.removeItem(storageKey);
+            } catch (_) {}
+            _context4.next = 11;
+            break;
+          case 10:
+            _context4.prev = 10;
+            _t3 = _context4["catch"](6);
+            error.textContent = _t3.message === 'Failed to fetch' ? 'Connection interrupted. Your answers are preserved; please try again.' : _t3.message;
+            error.hidden = false;
+            error.tabIndex = -1;
+            error.focus();
+          case 11:
+            _context4.prev = 11;
+            sending = false;
+            submit.disabled = false;
+            submit.textContent = 'Send project enquiry ↗';
+            form.querySelector('.enquiry-status').textContent = '';
+            return _context4.finish(11);
+          case 12:
+          case "end":
+            return _context4.stop();
+        }
+      }, _callee4, null, [[6, 10, 11, 12]]);
+    }));
+    return function (_x5) {
+      return _ref11.apply(this, arguments);
+    };
+  }());
+  show(0, false);
+})();
+
+// London by bus
+(function () {
+  'use strict';
+
+  var root = document.querySelector('.dxb');
+  if (!root || !window.DXB) return;
+  var $ = function $(s) {
+    return root.querySelector(s);
+  };
+  var $$ = function $$(s) {
+    return Array.from(root.querySelectorAll(s));
+  };
+  var input = $('#dxb-route-input'),
+    status = $('#dxb-status'),
+    result = $('#dxb-result');
+  var initialPhoto = {
+    src: $('#dxb-route-photo').src,
+    alt: $('#dxb-route-photo').alt,
+    caption: $('#dxb-route-caption').textContent
+  };
+  var controller,
+    arrivalsController,
+    debounce,
+    timer,
+    retryTicker,
+    sequence = 0,
+    current = null,
+    tab = 'overview',
+    failures = 0;
+  var text = function text(tag, value, className) {
+    var el = document.createElement(tag);
+    el.textContent = value;
+    if (className) el.className = className;
+    return el;
+  };
+  var readSaved = function readSaved(key) {
+    try {
+      var v = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(v) ? v.filter(function (x) {
+        return typeof x === 'string' && /^[A-Z0-9]{1,12}$/.test(x);
+      }).slice(0, 12) : [];
+    } catch (_unused2) {
+      return [];
+    }
+  };
+  var saveList = function saveList(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_unused3) {}
+  };
+  var recent = readSaved('dxb-recent-routes'),
+    marked = readSaved('dxb-marked-vehicles'),
+    arrivalRows = [];
+  var recentBox = $('.dxb-recent');
+  function routeSpacing(value) {
+    return /^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(value) ? 'tight' : 'normal';
+  }
+  input.addEventListener('input', function () {
+    input.dataset.spacing = routeSpacing(input.value.trim());
+  });
+  function renderRecent() {
+    recentBox.replaceChildren();
+    recentBox.hidden = !recent.length;
+    recent.forEach(function (route) {
+      var _current;
+      var b = text('button', route);
+      b.type = 'button';
+      b.dataset.route = route;
+      b.dataset.spacing = routeSpacing(route);
+      b.setAttribute('aria-pressed', String(((_current = current) === null || _current === void 0 ? void 0 : _current.name) === route));
+      recentBox.append(b);
+    });
+  }
+  recentBox.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-route]');
+    if (b) search(b.dataset.route);
+  });
+  renderRecent();
+  function remember(route) {
+    recent = [route].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(recent.filter(function (r) {
+      return r !== route;
+    }))).slice(0, 12);
+    saveList('dxb-recent-routes', recent);
+    renderRecent();
+  }
+  function renderMarked() {
+    var box = $('#dxb-marked');
+    var expanded = new Set(Array.from(box.querySelectorAll('details[open]')).map(function (el) {
+      return el.dataset.reg;
+    }));
+    box.replaceChildren();
+    $('#dxb-tracking').replaceChildren();
+    if (!marked.length) return;
+    box.append(text('p', 'PINNED BUSES', 'dxb-pins-heading'), text('p', 'Saved on this browser · expand a bus for its latest arrivals.', 'dxb-small'));
+    marked.forEach(function (reg) {
+      var item = text('details', '', 'dxb-pinned-bus');
+      item.dataset.reg = reg;
+      var summary = text('summary', '📌 ' + formatRegistration(reg));
+      summary.append(text('span', 'Arrivals +', 'dxb-pin-toggle'));
+      var content = text('div', '', 'dxb-pin-content');
+      var actions = text('div', '', 'dxb-pin-actions');
+      var refresh = text('button', 'Refresh arrivals');
+      refresh.type = 'button';
+      var results = text('div', '', 'dxb-pin-results');
+      results.setAttribute('aria-live', 'polite');
+      refresh.addEventListener('click', function () {
+        return trackVehicle(reg, results);
+      });
+      var remove = text('button', 'Dismiss pin ×');
+      remove.type = 'button';
+      remove.setAttribute('aria-label', 'Dismiss pin for ' + formatRegistration(reg));
+      remove.addEventListener('click', function () {
+        marked = marked.filter(function (v) {
+          return v !== reg;
+        });
+        saveList('dxb-marked-vehicles', marked);
+        renderMarked();
+        if ($('#dxb-arrivals') && !$('#panel-arrivals').hidden) renderArrivals();
+      });
+      actions.append(refresh, remove);
+      content.append(results, actions);
+      item.append(summary, content);
+      box.append(item);
+      item.addEventListener('toggle', function () {
+        summary.lastChild.textContent = item.open ? 'Collapse −' : 'Arrivals +';
+        if (item.open) trackVehicle(reg, results);
+      });
+      item.open = expanded.has(reg);
+    });
+  }
+  var trackingSequence = 0;
+  function trackVehicle(_x6, _x7) {
+    return _trackVehicle.apply(this, arguments);
+  }
+  function _trackVehicle() {
+    _trackVehicle = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee8(reg, box) {
+      var token, data, live, _t8;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context8) {
+        while (1) switch (_context8.prev = _context8.next) {
+          case 0:
+            token = ++trackingSequence;
+            box.dataset.request = String(token);
+            box.replaceChildren(text('p', 'Checking ' + reg + '…', 'dxb-small'));
+            _context8.prev = 1;
+            _context8.next = 2;
+            return request('vehicle/' + encodeURIComponent(reg) + '/arrivals');
+          case 2:
+            data = _context8.sent;
+            if (!(!box.isConnected || box.dataset.request !== String(token))) {
+              _context8.next = 3;
+              break;
+            }
+            return _context8.abrupt("return");
+          case 3:
+            box.replaceChildren();
+            live = data.arrivals.filter(function (a) {
+              return Date.parse(a.expected) > Date.now() - 15000;
+            });
+            if (!live.length) box.append(text('p', 'No current TfL predictions for this vehicle. It may be off service or not reporting.', 'dxb-small'));
+            live.forEach(function (a) {
+              return box.append(text('p', "".concat(a.route, " \xB7 ").concat(a.stop, " \xB7 towards ").concat(a.destination, " \xB7 ").concat(new Date(a.expected).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })), 'dxb-small'));
+            });
+            box.append(text('small', 'Checked ' + new Date().toLocaleTimeString('en-GB') + ' · arrival predictions, not a GPS location'));
+            _context8.next = 5;
+            break;
+          case 4:
+            _context8.prev = 4;
+            _t8 = _context8["catch"](1);
+            if (box.isConnected && box.dataset.request === String(token)) box.replaceChildren(text('p', 'Vehicle predictions are temporarily unavailable. Try again shortly.', 'dxb-small'));
+          case 5:
+          case "end":
+            return _context8.stop();
+        }
+      }, _callee8, null, [[1, 4]]);
+    }));
+    return _trackVehicle.apply(this, arguments);
+  }
+  var formatRegistration = function formatRegistration(reg) {
+    return reg.replace(/^([A-Z]{2}\d{2})([A-Z]{3})$/, '$1 $2');
+  };
+  var vehicleCache = new Map();
+  function deckType(value) {
+    var v = String(value || '').toLowerCase();
+    if (/single/.test(v) && /double/.test(v)) return null;
+    if (/double[ -]?decker/.test(v)) return 'double';
+    if (/single[ -]?decker/.test(v)) return 'single';
+    return null;
+  }
+  function unusualAllocation(vehicle, profile) {
+    if (!(vehicle !== null && vehicle !== void 0 && vehicle.found) || vehicle.withdrawn || !profile || profile.error) return null;
+    var actual = deckType(vehicle.type),
+      usual = deckType(profile.vehicle);
+    return actual && usual && actual !== usual ? {
+      actual: actual,
+      usual: usual
+    } : null;
+  }
+  function trackingBreakdown(_x8, _x9, _x0, _x1) {
+    return _trackingBreakdown.apply(this, arguments);
+  }
+  function _trackingBreakdown() {
+    _trackingBreakdown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee0(data, profile, host, token) {
+      var fleet, counts, ids, cursor, finished, summary, render;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context1) {
+        while (1) switch (_context1.prev = _context1.next) {
+          case 0:
+            render = function _render() {
+              summary.replaceChildren();
+              var _loop2 = function _loop2() {
+                var type = _arr2[_i3];
+                var unusual = counts[type] > 0 && deckType(profile.vehicle) && deckType(profile.vehicle) !== type;
+                var pill = text('button', "".concat(unusual ? '⚠ ' : '').concat(counts[type], " ").concat(type.toUpperCase(), " ").concat(counts[type] === 1 ? 'DECKER' : 'DECKERS'), 'dxb-deck-total' + (unusual ? ' is-unusual' : ''));
+                if (unusual) pill.title = "Unusual allocation \xB7 this route usually uses ".concat(deckType(profile.vehicle), " deckers");
+                pill.type = 'button';
+                pill.addEventListener('click', function () {
+                  var _current3;
+                  return openFleet(type, fleet[type], (_current3 = current) === null || _current3 === void 0 ? void 0 : _current3.name);
+                });
+                summary.append(pill);
+              };
+              for (var _i3 = 0, _arr2 = ['single', 'double']; _i3 < _arr2.length; _i3++) {
+                _loop2();
+              }
+              if (counts.unknown) summary.append(text('span', "".concat(counts.unknown, " TYPE UNCONFIRMED"), 'dxb-deck-total'));
+              if (finished < ids.length) summary.append(text('small', "Checking vehicle types \xB7 ".concat(finished, " of ").concat(ids.length), 'dxb-deck-progress'));else if (ids.length !== data.count) summary.append(text('small', 'Vehicle breakdown unavailable', 'dxb-deck-progress'));else if (ids.length) summary.append(text('small', 'Vehicle types · bustimes.org', 'dxb-deck-progress'));
+            };
+            fleet = {
+              single: [],
+              double: []
+            };
+            counts = {
+              single: 0,
+              double: 0,
+              unknown: 0
+            }, ids = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(new Set(data.vehicles || []));
+            cursor = 0, finished = 0;
+            summary = text('div', '', 'dxb-tracking-breakdown');
+            host.append(summary);
+            render();
+            _context1.next = 1;
+            return Promise.all(Array.from({
+              length: Math.min(4, ids.length)
+            }, /*#__PURE__*/(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee9() {
+              var _loop3;
+              return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context0) {
+                while (1) switch (_context0.prev = _context0.next) {
+                  case 0:
+                    _loop3 = /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _loop3() {
+                      var reg, type, vehicle, _t9;
+                      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context9) {
+                        while (1) switch (_context9.prev = _context9.next) {
+                          case 0:
+                            reg = ids[cursor++];
+                            type = null;
+                            _context9.prev = 1;
+                            if (!vehicleCache.has(reg)) vehicleCache.set(reg, request('vehicle/' + encodeURIComponent(reg)).catch(function (e) {
+                              vehicleCache.delete(reg);
+                              throw e;
+                            }));
+                            _context9.next = 2;
+                            return vehicleCache.get(reg);
+                          case 2:
+                            vehicle = _context9.sent;
+                            if (vehicle.found && !vehicle.withdrawn) type = deckType(vehicle.type);
+                            if (type) fleet[type].push(_objectSpread(_objectSpread({}, vehicle), {}, {
+                              registration: reg
+                            }));
+                            _context9.next = 4;
+                            break;
+                          case 3:
+                            _context9.prev = 3;
+                            _t9 = _context9["catch"](1);
+                          case 4:
+                            counts[type || 'unknown']++;
+                            finished++;
+                            if (token === sequence && host.isConnected) render();
+                          case 5:
+                          case "end":
+                            return _context9.stop();
+                        }
+                      }, _loop3, null, [[1, 3]]);
+                    });
+                  case 1:
+                    if (!(cursor < ids.length && token === sequence && host.isConnected)) {
+                      _context0.next = 3;
+                      break;
+                    }
+                    return _context0.delegateYield(_loop3(), "t0", 2);
+                  case 2:
+                    _context0.next = 1;
+                    break;
+                  case 3:
+                  case "end":
+                    return _context0.stop();
+                }
+              }, _callee9);
+            }))));
+          case 1:
+          case "end":
+            return _context1.stop();
+        }
+      }, _callee0);
+    }));
+    return _trackingBreakdown.apply(this, arguments);
+  }
+  function openFleet(type, vehicles, route) {
+    var dialog = text('dialog', '', 'dxb-fleet-modal');
+    dialog.setAttribute('aria-label', "".concat(type, " deckers tracking on route ").concat(route));
+    var heading = text('h2', "".concat(type === 'single' ? 'Single' : 'Double', " Deckers \xB7 Route ").concat(route));
+    var close = text('button', 'Close ×', 'dxb-mark-button');
+    close.type = 'button';
+    close.addEventListener('click', function () {
+      return dialog.close();
+    });
+    dialog.append(close, heading);
+    if (!vehicles.length) dialog.append(text('p', 'No confirmed vehicles of this type are currently tracking.'));
+    vehicles.forEach(function (vehicle) {
+      var card = text('article', '', 'dxb-fleet-item');
+      var identity = text('header', '', 'dxb-fleet-identity');
+      identity.append(text('h3', vehicle.model || 'Model unconfirmed'), text('p', formatRegistration(vehicle.registration) + (vehicle.fleet ? ' · ' + vehicle.fleet : ''), 'dxb-fleet-registration'));
+      card.append(identity);
+      var position = text('div', 'Checking destination and position…', 'dxb-fleet-position');
+      card.append(position);
+      var mark = text('button', '', 'dxb-mark-button');
+      mark.type = 'button';
+      var update = function update() {
+        mark.textContent = (marked.includes(vehicle.registration) ? '📌 Pinned ' : '📌 Pin ') + formatRegistration(vehicle.registration);
+        mark.setAttribute('aria-pressed', String(marked.includes(vehicle.registration)));
+      };
+      update();
+      mark.addEventListener('click', function () {
+        var reg = vehicle.registration;
+        if (marked.includes(reg)) marked = marked.filter(function (item) {
+          return item !== reg;
+        });else if (marked.length < 12) marked.push(reg);else {
+          mark.textContent = '12 buses pinned · remove one first';
+          return;
+        }
+        saveList('dxb-marked-vehicles', marked);
+        renderMarked();
+        update();
+        if ($('#dxb-arrivals') && !$('#panel-arrivals').hidden) renderArrivals();
+      });
+      card.append(mark);
+      dialog.append(card);
+      request('vehicle/' + encodeURIComponent(vehicle.registration) + '/arrivals').then(function (data) {
+        var _data$arrivals;
+        if (!dialog.isConnected) return;
+        var next = (_data$arrivals = data.arrivals) === null || _data$arrivals === void 0 ? void 0 : _data$arrivals.find(function (item) {
+          return item.route.toUpperCase() === String(route).toUpperCase();
+        });
+        position.replaceChildren();
+        if (next) {
+          position.append(vehicleField('Destination', next.destination), vehicleField(next.location ? 'Current location' : 'Next predicted stop', next.location || next.stop));
+        } else position.textContent = 'Destination and current position unavailable.';
+      }).catch(function () {
+        position.textContent = 'Vehicle position temporarily unavailable.';
+      });
+    });
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) {
+        var r = dialog.getBoundingClientRect();
+        if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close();
+      }
+    });
+    dialog.addEventListener('close', function () {
+      return dialog.remove();
+    }, {
+      once: true
+    });
+    root.append(dialog);
+    dialog.showModal();
+  }
+
+  // Animate native details while preserving keyboard activation and open state.
+  root.addEventListener('click', function (event) {
+    var summary = event.target.closest('.dxb-details > summary');
+    if (!summary) return;
+    var detail = summary.parentElement;
+    event.preventDefault();
+    if (detail.dataset.animating) return;
+    var opening = !detail.open;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      detail.open = opening;
+      return;
+    }
+    var start = detail.getBoundingClientRect().height;
+    if (opening) detail.open = true;
+    var end = opening ? detail.getBoundingClientRect().height : summary.getBoundingClientRect().height + parseFloat(getComputedStyle(detail).paddingTop) + parseFloat(getComputedStyle(detail).paddingBottom) + 2;
+    detail.dataset.animating = 'true';
+    detail.style.overflow = 'hidden';
+    var animation = detail.animate([{
+      height: start + 'px'
+    }, {
+      height: end + 'px'
+    }], {
+      duration: 300,
+      easing: 'ease-in-out'
+    });
+    animation.onfinish = function () {
+      detail.open = opening;
+      detail.style.overflow = '';
+      delete detail.dataset.animating;
+    };
+  });
+  function vehicleField(label, value) {
+    var kind = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+    var field = text('div', '', 'dxb-vehicle-field ' + kind);
+    field.append(text('span', label, 'dxb-field-label'), text('strong', value, 'dxb-field-value'));
+    return field;
+  }
+  function plateAge(reg) {
+    var now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+    var m = /^[A-Z]{2}(\d{2})[A-Z]{3}$/.exec(reg);
+    if (!m) return null;
+    var n = Number(m[1]);
+    if (n === 0 || n === 50) return null;
+    var year = 2000 + (n >= 51 ? n - 50 : n),
+      start = new Date(year, n >= 51 ? 8 : 2, 1);
+    if (start > now) return null;
+    var months = (now.getFullYear() - year) * 12 + now.getMonth() - start.getMonth();
+    return {
+      label: months < 6 ? 'NEW · PLATE ESTIMATE' : '≈ ' + Math.floor(months / 12) + ' YEARS · PLATE ESTIMATE',
+      kind: months < 6 ? 'is-new' : months >= 120 ? 'is-vintage' : 'is-age'
+    };
+  }
+  function fillVehicle(_x10, _x11, _x12, _x13, _x14) {
+    return _fillVehicle.apply(this, arguments);
+  }
+  function _fillVehicle() {
+    _fillVehicle = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee1(reg, box, card, route, token) {
+      var _current4, v, types, pills, age, pill, footer, link, surprise, note, _t0;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context10) {
+        while (1) switch (_context10.prev = _context10.next) {
+          case 0:
+            box.replaceChildren(vehicleField('Registration', formatRegistration(reg), 'is-registration'), text('p', 'Loading fleet details…', 'dxb-small'));
+            _context10.prev = 1;
+            if (!vehicleCache.has(reg)) vehicleCache.set(reg, request('vehicle/' + encodeURIComponent(reg)).catch(function (e) {
+              vehicleCache.delete(reg);
+              throw e;
+            }));
+            _context10.next = 2;
+            return vehicleCache.get(reg);
+          case 2:
+            v = _context10.sent;
+            if (!(!box.isConnected || token !== sequence)) {
+              _context10.next = 3;
+              break;
+            }
+            return _context10.abrupt("return");
+          case 3:
+            box.replaceChildren(vehicleField('Registration', formatRegistration(reg), 'is-registration'), vehicleField('Fleet number', v.fleet || 'Not available'));
+            types = text('div', '', 'dxb-vehicle-field');
+            types.append(text('span', 'Vehicle type', 'dxb-field-label'));
+            pills = text('div', '', 'dxb-vehicle-pills');
+            [v.type, v.fuel].filter(Boolean).forEach(function (value) {
+              var fuel = value === v.fuel,
+                label = String(value).toUpperCase();
+              var emoji = fuel ? /hydrogen/i.test(value) ? '💧' : /hybrid/i.test(value) ? '🌿' : /electric/i.test(value) ? '⚡️' : /diesel/i.test(value) ? '⛽' : '' : '🚌';
+              var kind = fuel ? /hydrogen/i.test(value) ? 'hydrogen' : /hybrid/i.test(value) ? 'hybrid' : /electric/i.test(value) ? 'electric' : /diesel/i.test(value) ? 'diesel' : '' : deckType(value);
+              var pill = text('span', '', 'dxb-vehicle-pill' + (kind ? ' is-' + kind : ''));
+              if (emoji) {
+                var icon = text('span', emoji, 'dxb-propulsion-icon');
+                icon.setAttribute('aria-hidden', 'true');
+                pill.append(icon);
+              }
+              pill.append(text('span', label));
+              pills.append(pill);
+            });
+            if (!pills.childNodes.length) pills.append(text('span', 'Not available'));
+            types.append(pills);
+            box.append(types);
+            age = plateAge(reg);
+            if (age) {
+              pill = text('span', age.label, 'dxb-vehicle-pill ' + age.kind);
+              pill.title = 'Estimated from the original UK registration period; transferred plates may differ.';
+              pills.append(pill);
+            }
+            box.append(vehicleField('USB charging', v.usb === true ? 'Available' : v.usb === false ? 'Not fitted' : 'Not confirmed'));
+            footer = card.querySelector('.dxb-arrival-footer');
+            footer.prepend(vehicleField('Make / model', v.model || 'Not available', 'is-model'));
+            if (v.source) {
+              link = sourceLink('View vehicle details ↗', v.source);
+              link.classList.add('dxb-vehicle-source');
+              link.title = 'Fleet information from bustimes.org';
+              footer.insertBefore(link, footer.lastChild);
+            }
+            surprise = unusualAllocation(v, (_current4 = current) === null || _current4 === void 0 ? void 0 : _current4.profile);
+            if (surprise) {
+              card.classList.add('is-surprise');
+              note = text('div', '', 'dxb-route-surprise');
+              note.append(text('span', '✦ Route surprise', 'dxb-surprise-badge'), text('p', "A ".concat(surprise.actual, "-decker on the ").concat(route, "? Usually a ").concat(surprise.usual, "-decker route. \uD83D\uDC40")));
+              card.prepend(note);
+            }
+            if (v.withdrawn) card.append(text('p', 'Fleet source lists this vehicle as withdrawn; live identification may need checking.', 'dxb-small dxb-fleet-warning'));
+            _context10.next = 5;
+            break;
+          case 4:
+            _context10.prev = 4;
+            _t0 = _context10["catch"](1);
+            if (box.isConnected) box.replaceChildren(vehicleField('Registration', formatRegistration(reg), 'is-registration'), text('p', 'Fleet number, type and model are temporarily unavailable.', 'dxb-small'));
+          case 5:
+          case "end":
+            return _context10.stop();
+        }
+      }, _callee1, null, [[1, 4]]);
+    }));
+    return _fillVehicle.apply(this, arguments);
+  }
+  function renderArrivals() {
+    var list = $('#dxb-arrivals');
+    list.replaceChildren();
+    var advanced = $('#dxb-advanced').checked;
+    arrivalRows.forEach(function (a) {
+      var _a$destinationStops;
+      var card = text('div', '', 'dxb-arrival-card'),
+        row = text('div', '', 'dxb-arrival-row');
+      var minutes = Math.max(0, Math.ceil((Date.parse(a.expected) - Date.now()) / 60000));
+      row.append(text('span', '⌖ ' + a.destination, 'dxb-arrival-destination'), text('strong', minutes < 1 ? 'Due' : minutes + ' min', 'dxb-arrival-time'));
+      card.append(row);
+      if (a.shortWorking) {
+        var warning = text('span', '⚠ TERMINATES EARLY', 'dxb-short-working');
+        warning.title = 'This bus terminates before the full route destination for this direction.';
+        row.firstChild.append(warning);
+      }
+      var stopSelect = $('#dxb-stop');
+      var options = Array.from((stopSelect === null || stopSelect === void 0 ? void 0 : stopSelect.options) || []).filter(function (option) {
+        return option.value;
+      });
+      var selectedIndex = options.findIndex(function (option) {
+        return option.value === (stopSelect === null || stopSelect === void 0 ? void 0 : stopSelect.value);
+      });
+      var fallbackStops = selectedIndex >= 0 ? options.length - selectedIndex - 1 : null;
+      var destinationStops = (_a$destinationStops = a.destinationStops) !== null && _a$destinationStops !== void 0 ? _a$destinationStops : fallbackStops;
+      if (destinationStops != null) {
+        var fallback = a.destinationStops == null;
+        var distance = text('small', destinationStops + (destinationStops === 1 ? ' STOP' : ' STOPS') + (fallback ? ' TO ROUTE END' : ''), 'dxb-stop-distance');
+        if (fallback) distance.title = 'Counted from the selected stop to the final stop in this direction. A bus terminating early may serve fewer stops.';
+        row.firstChild.append(distance);
+      } else if (advanced) {
+        row.firstChild.append(text('small', 'STOP COUNT UNAVAILABLE', 'dxb-stop-distance'));
+      }
+      var meta = text('div', '', 'dxb-arrival-meta'),
+        position = text('div', '', 'dxb-arrival-position');
+      if (a.location || a.nextStop) position.append(text('p', a.location ? 'Current location · ' + a.location : 'Next predicted stop · ' + a.nextStop, 'dxb-bus-position'));
+      if (minutes < 1 || a.stopsAway != null) {
+        var arriving = minutes < 1 || a.stopsAway === 0;
+        var _distance = text('span', arriving ? 'ARRIVING' : '≈ ' + a.stopsAway + ' STOPS AWAY', 'dxb-stop-distance');
+        _distance.style.opacity = String(arriving ? 1 : Math.max(0.45, 1 - a.stopsAway * 0.035));
+        position.append(_distance);
+      }
+      if (position.childNodes.length) meta.append(position);
+      if (advanced && a.trip) {
+        var trip = text('p', '', 'dxb-trip');
+        trip.append(text('span', 'TRIP', 'dxb-trip-label'), text('span', String(a.trip), 'dxb-trip-number'));
+        meta.append(trip);
+      }
+      if (meta.childNodes.length) card.append(meta);
+      var reg = (a.vehicle || '').replace(/\s/g, '').toUpperCase();
+      if (advanced) {
+        card.classList.add('has-details');
+        var details = text('div', '', 'dxb-vehicle-details'),
+          footer = text('div', '', 'dxb-arrival-footer');
+        card.append(details, footer);
+        if (/^[A-Z0-9]{3,12}$/.test(reg)) {
+          var _current2;
+          var button = text('button', marked.includes(reg) ? '📌 Pinned ' + formatRegistration(reg) : '📌 Pin ' + formatRegistration(reg), 'dxb-mark-button');
+          button.type = 'button';
+          button.setAttribute('aria-pressed', String(marked.includes(reg)));
+          button.addEventListener('click', function () {
+            if (marked.includes(reg)) marked = marked.filter(function (v) {
+              return v !== reg;
+            });else if (marked.length < 12) marked.push(reg);else {
+              button.textContent = '12 buses pinned · remove one first';
+              return;
+            }
+            saveList('dxb-marked-vehicles', marked);
+            renderMarked();
+            renderArrivals();
+          });
+          footer.append(button);
+          fillVehicle(reg, details, card, ((_current2 = current) === null || _current2 === void 0 ? void 0 : _current2.name) || input.value, sequence);
+        } else {
+          details.append(text('p', 'Vehicle registration not supplied by TfL.', 'dxb-small'));
+          footer.remove();
+        }
+      }
+      list.append(card);
+    });
+    if (!arrivalRows.length) list.append(text('p', $('#dxb-stop').value ? 'No upcoming predictions for this route at this stop.' : 'Choose a stop for live arrival predictions.', 'dxb-small'));
+  }
+  function celebrateEnthusiastMode() {
+    var _document$querySelect6;
+    (_document$querySelect6 = document.querySelector('.dxb-confetti')) === null || _document$querySelect6 === void 0 || _document$querySelect6.remove();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var rect = $('#dxb-advanced').getBoundingClientRect(),
+      burst = text('div', '', 'dxb-confetti');
+    burst.setAttribute('aria-hidden', 'true');
+    var colors = ['#d5ad63', '#ffdc91', '#ff6a00', '#ee0979', '#2657eb', '#de6161'];
+    for (var i = 0; i < 38; i++) {
+      var particle = document.createElement('i'),
+        angle = Math.PI + i / 37 * Math.PI,
+        distance = 70 + Math.random() * 150;
+      particle.style.left = rect.left + rect.width / 2 + 'px';
+      particle.style.top = rect.top + rect.height / 2 + 'px';
+      particle.style.setProperty('--confetti-color', colors[i % colors.length]);
+      particle.style.setProperty('--confetti-x', Math.cos(angle) * distance + 'px');
+      particle.style.setProperty('--confetti-y', Math.sin(angle) * distance + 65 + 'px');
+      particle.style.setProperty('--confetti-turn', Math.random() * 720 - 360 + 'deg');
+      particle.style.animationDelay = Math.random() * 0.12 + 's';
+      burst.append(particle);
+    }
+    document.body.append(burst);
+    setTimeout(function () {
+      return burst.remove();
+    }, 1400);
+  }
+  $('#dxb-advanced').addEventListener('change', function () {
+    var _document$querySelect7;
+    if (!$('.dxb-arrival-retry') && !$('.dxb-schedule-state')) renderArrivals();
+    if ($('#dxb-advanced').checked) celebrateEnthusiastMode();else (_document$querySelect7 = document.querySelector('.dxb-confetti')) === null || _document$querySelect7 === void 0 || _document$querySelect7.remove();
+  });
+  renderMarked();
+  var aside = $('.dxb-explorer-aside'),
+    main = $('.dxb-explorer-main');
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () {
+      aside.style.height = matchMedia('(max-width:700px)').matches ? '310px' : Math.ceil(main.getBoundingClientRect().height) + 'px';
+    }).observe(main);
+  }
+  function request(_x15, _x16) {
+    return _request.apply(this, arguments);
+  }
+  function _request() {
+    _request = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee10(path, signal) {
+      var response, data, error;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context11) {
+        while (1) switch (_context11.prev = _context11.next) {
+          case 0:
+            _context11.next = 1;
+            return fetch(DXB.api + path, {
+              signal: signal,
+              credentials: 'same-origin'
+            });
+          case 1:
+            response = _context11.sent;
+            _context11.next = 2;
+            return response.json();
+          case 2:
+            data = _context11.sent;
+            if (response.ok) {
+              _context11.next = 3;
+              break;
+            }
+            error = new Error(data.message || 'Information is temporarily unavailable. Please try again.');
+            error.code = data.code;
+            throw error;
+          case 3:
+            return _context11.abrupt("return", data);
+          case 4:
+          case "end":
+            return _context11.stop();
+        }
+      }, _callee10);
+    }));
+    return _request.apply(this, arguments);
+  }
+  function announce(message) {
+    var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    status.textContent = message;
+    status.classList.toggle('is-error', error);
+  }
+  function stopArrivals() {
+    var _arrivalsController;
+    clearTimeout(timer);
+    clearInterval(retryTicker);
+    (_arrivalsController = arrivalsController) === null || _arrivalsController === void 0 || _arrivalsController.abort();
+  }
+  function activateTab(name) {
+    tab = name;
+    root.dataset.routeTab = name;
+    $$('[data-tab]').forEach(function (button) {
+      var active = button.dataset.tab === name;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    $$('[role=tabpanel]').forEach(function (panel) {
+      return panel.hidden = panel.id !== "panel-".concat(name);
+    });
+    stopArrivals();
+    if (name === 'news' && current) loadNews();
+    if (name === 'discussion' && current) loadDiscussion();
+    if (name === 'arrivals' && $('#dxb-stop').value && current) refreshArrivals();
+  }
+  $$('[data-tab]').forEach(function (button, i, buttons) {
+    button.addEventListener('click', function () {
+      return activateTab(button.dataset.tab);
+    });
+    button.addEventListener('keydown', function (event) {
+      var next;
+      if (event.key === 'ArrowRight') next = (i + 1) % buttons.length;
+      if (event.key === 'ArrowLeft') next = (i + buttons.length - 1) % buttons.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = buttons.length - 1;
+      if (next !== undefined) {
+        event.preventDefault();
+        buttons[next].focus();
+        activateTab(buttons[next].dataset.tab);
+      }
+    });
+  });
+  function loadDiscussion() {
+    return _loadDiscussion.apply(this, arguments);
+  }
+  function _loadDiscussion() {
+    _loadDiscussion = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee11() {
+      var token, box, data, _t1;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context12) {
+        while (1) switch (_context12.prev = _context12.next) {
+          case 0:
+            token = sequence, box = $('#dxb-comments');
+            box.replaceChildren(text('p', 'Loading discussion…', 'dxb-small'));
+            $('#dxb-comment-form').reset();
+            $('#dxb-comment-status').textContent = '';
+            _context12.prev = 1;
+            _context12.next = 2;
+            return request('discussion/' + encodeURIComponent(current.name));
+          case 2:
+            data = _context12.sent;
+            if (!(token !== sequence)) {
+              _context12.next = 3;
+              break;
+            }
+            return _context12.abrupt("return");
+          case 3:
+            box.replaceChildren();
+            if (!data.items.length) box.append(text('p', 'Start the conversation for this route.', 'dxb-small'));
+            data.items.forEach(function (c) {
+              var item = text('article', '', 'dxb-comment');
+              item.append(text('strong', c.name), text('small', c.date), text('p', c.body));
+              box.append(item);
+            });
+            _context12.next = 5;
+            break;
+          case 4:
+            _context12.prev = 4;
+            _t1 = _context12["catch"](1);
+            if (token === sequence) box.replaceChildren(text('p', 'Discussion is temporarily unavailable.', 'dxb-small'));
+          case 5:
+          case "end":
+            return _context12.stop();
+        }
+      }, _callee11, null, [[1, 4]]);
+    }));
+    return _loadDiscussion.apply(this, arguments);
+  }
+  $('#dxb-comment-form').addEventListener('submit', /*#__PURE__*/function () {
+    var _ref12 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee5(e) {
+      var form, button, token, response, data, _t4;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
+          case 0:
+            e.preventDefault();
+            if (current) {
+              _context5.next = 1;
+              break;
+            }
+            return _context5.abrupt("return");
+          case 1:
+            form = e.currentTarget, button = form.querySelector('button'), token = sequence;
+            button.disabled = true;
+            _context5.prev = 2;
+            _context5.next = 3;
+            return fetch(DXB.api + 'discussion/' + encodeURIComponent(current.name), {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            });
+          case 3:
+            response = _context5.sent;
+            _context5.next = 4;
+            return response.json();
+          case 4:
+            data = _context5.sent;
+            if (response.ok) {
+              _context5.next = 5;
+              break;
+            }
+            throw new Error(data.message);
+          case 5:
+            if (token === sequence) {
+              form.reset();
+              $('#dxb-comment-status').textContent = data.message;
+            }
+            _context5.next = 7;
+            break;
+          case 6:
+            _context5.prev = 6;
+            _t4 = _context5["catch"](2);
+            if (token === sequence) $('#dxb-comment-status').textContent = _t4.message || 'Your comment could not be sent.';
+          case 7:
+            _context5.prev = 7;
+            button.disabled = false;
+            return _context5.finish(7);
+          case 8:
+          case "end":
+            return _context5.stop();
+        }
+      }, _callee5, null, [[2, 6, 7, 8]]);
+    }));
+    return function (_x17) {
+      return _ref12.apply(this, arguments);
+    };
+  }());
+  var newsController, profileController, consultationController, consultationData;
+  function sourceLink(label, url) {
+    var a = text('a', label);
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    return a;
+  }
+  function dateLabel(raw) {
+    if (!raw) return 'Date to be confirmed';
+    var formatted = raw.replace(/\b(\d{1,2})[ .-]+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[ .-]+(\d{4}|\d{2})\b/gi, function (_, d, m, y) {
+      var month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].indexOf(m.slice(0, 3).toLowerCase());
+      var year = y.length === 2 ? 2000 + Number(y) : Number(y),
+        dt = new Date(Date.UTC(year, month, Number(d), 12));
+      return new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'Europe/London'
+      }).format(dt);
+    });
+    return formatted === raw && /\d/.test(raw) && !/\b\d{4}\b/.test(raw) ? raw + ' · year not supplied' : formatted;
+  }
+  function consultationCards() {
+    var box = text('div', '', 'dxb-consultations');
+    box.append(text('h3', 'Consultations'));
+    if (!consultationData) {
+      box.append(text('p', 'Checking the TfL consultation hub…', 'dxb-small'));
+      return box;
+    }
+    if (consultationData.error) box.append(text('p', 'The consultation hub is temporarily unavailable.', 'dxb-small'));else if (!consultationData.items.length) box.append(text('p', 'No matching route mentions were found in the current hub listings.', 'dxb-small'));else consultationData.items.forEach(function (item) {
+      var card = text('article', '', 'dxb-news-item');
+      card.append.apply(card, [text('span', item.status, 'dxb-news-badge'), text('p', item.title)].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(item.published && Number.isFinite(Date.parse(item.published)) ? [text('small', 'Published ' + new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Europe/London',
+        timeZoneName: 'short'
+      }).format(new Date(item.published)))] : []), [sourceLink('Read the proposal and check its status ↗', item.url)]));
+      box.append(card);
+    });
+    if (consultationData.stale) box.append(text('p', 'Showing a saved consultation update.', 'dxb-small'));
+    box.append(sourceLink('TfL Have Your Say ↗', 'https://haveyoursay.tfl.gov.uk/hub-page/londons-buses-taxis-and-phvs'));
+    return box;
+  }
+  function loadConsultations(_x18, _x19) {
+    return _loadConsultations.apply(this, arguments);
+  }
+  function _loadConsultations() {
+    _loadConsultations = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee12(route, token) {
+      var _consultationControll;
+      var notice, data, button, old, _t10;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context13) {
+        while (1) switch (_context13.prev = _context13.next) {
+          case 0:
+            (_consultationControll = consultationController) === null || _consultationControll === void 0 || _consultationControll.abort();
+            consultationController = new AbortController();
+            consultationData = null;
+            notice = $('#dxb-consultation-notice');
+            notice.replaceChildren();
+            _context13.prev = 1;
+            _context13.next = 2;
+            return request('consultations/' + encodeURIComponent(route), consultationController.signal);
+          case 2:
+            data = _context13.sent;
+            if (!(token !== sequence)) {
+              _context13.next = 3;
+              break;
+            }
+            return _context13.abrupt("return");
+          case 3:
+            consultationData = data;
+            if (data.items.length) {
+              button = text('button', "".concat(data.items.length, " related TfL consultation").concat(data.items.length === 1 ? '' : 's', " \xB7 View in News \u2197"));
+              button.type = 'button';
+              button.addEventListener('click', function () {
+                return activateTab('news');
+              });
+              notice.append(button);
+            }
+            _context13.next = 6;
+            break;
+          case 4:
+            _context13.prev = 4;
+            _t10 = _context13["catch"](1);
+            if (!(token !== sequence || _t10.name === 'AbortError')) {
+              _context13.next = 5;
+              break;
+            }
+            return _context13.abrupt("return");
+          case 5:
+            consultationData = {
+              error: true
+            };
+          case 6:
+            old = $('#panel-news .dxb-consultations');
+            if (old) old.replaceWith(consultationCards());
+          case 7:
+          case "end":
+            return _context13.stop();
+        }
+      }, _callee12, null, [[1, 4]]);
+    }));
+    return _loadConsultations.apply(this, arguments);
+  }
+  function displayWorkings(workings) {
+    var key = function key(w) {
+      return w.destinations.trim().replace(/\s+/g, ' ').toLowerCase();
+    };
+    var main = new Set(workings.filter(function (w) {
+      return w.label === 'Main service';
+    }).map(key));
+    var night = new Set(workings.filter(function (w) {
+      return w.label === 'Night service';
+    }).map(key));
+    var combined = new Set((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(main).filter(function (k) {
+      return night.has(k);
+    }));
+    var seen = new Set();
+    return workings.flatMap(function (w) {
+      var item = combined.has(key(w)) && ['Main service', 'Night service'].includes(w.label) ? _objectSpread(_objectSpread({}, w), {}, {
+        label: 'Complete service · 24 hours'
+      }) : w;
+      var identity = key(item) + '|' + item.label;
+      if (seen.has(identity)) return [];
+      seen.add(identity);
+      return [item];
+    });
+  }
+  function applyProfile(profile, token) {
+    var _profile$operators, _profile$garages, _profile$garages2, _profile$serviceNotes, _profile$workings;
+    if (token !== sequence || !current) return;
+    current.profile = profile;
+    if (arrivalRows.length) renderArrivals();
+    var box = $('#dxb-route-facts');
+    box.replaceChildren();
+    var unavailable = profile.error;
+    box.append(text('p', "Operator \xB7 ".concat(((_profile$operators = profile.operators) === null || _profile$operators === void 0 ? void 0 : _profile$operators.join(' / ')) || 'Not confirmed').concat((_profile$garages = profile.garages) !== null && _profile$garages !== void 0 && _profile$garages.length ? ' – ' + profile.garages.join(' / ') : ''), 'dxb-overview-only dxb-operator-fact'), text('p', "Vehicles \xB7 ".concat((deckType(profile.vehicle) ? profile.vehicle + ' (usually)' : profile.vehicle) || 'Not confirmed'), 'dxb-vehicle-fact'));
+    if (profile.frequency) {
+      var frequency = text('div', '', 'dxb-fact-pills dxb-overview-only');
+      profile.frequency.split(' · ').forEach(function (value) {
+        return frequency.append(text('span', value, 'dxb-fact-pill'));
+      });
+      frequency.setAttribute('aria-label', 'Typical frequency');
+      box.append(frequency);
+    }
+    if ((_profile$garages2 = profile.garages) !== null && _profile$garages2 !== void 0 && _profile$garages2.length || profile.frequency) {
+      var _profile$garages3;
+      var sources = text('small', '', 'dxb-fact-sources dxb-overview-only');
+      if ((_profile$garages3 = profile.garages) !== null && _profile$garages3 !== void 0 && _profile$garages3.length) sources.append(sourceLink('Garage allocations ↗', 'http://www.londonbusroutes.net/garages.htm'));
+      if (profile.frequency) sources.append(sourceLink('Typical frequencies ↗', 'http://www.londonbusroutes.net/details.htm'));
+      box.append(sources);
+    }
+    if (profile.crossBoundary) {
+      var badge = sourceLink('Cross-Boundary Route ↗', profile.crossBoundarySource);
+      badge.className = 'dxb-pattern-badge is-boundary';
+      box.append(badge);
+    }
+    if (profile.record) {
+      var _badge = sourceLink('🏆 ' + profile.record, profile.recordSource);
+      _badge.className = 'dxb-pattern-badge is-record';
+      _badge.title = 'Community route records · February 2026 snapshot';
+      box.append(_badge);
+    }
+    if (!current.archive) {
+      var live = text('p', 'Checking live tracking…', 'dxb-live-count dxb-fact-pill');
+      var trackingRow = text('div', '', 'dxb-tracking-row');
+      trackingRow.append(live);
+      box.append(trackingRow);
+      request('running/' + encodeURIComponent(current.name)).then(function (data) {
+        if (token === sequence && live.isConnected) {
+          live.setAttribute('aria-label', data.count === 0 ? 'No buses are tracking' : data.count === 1 ? '1 bus is tracking' : data.count + ' buses are tracking');
+          var total = text('strong', String(data.count), 'dxb-tracking-number'),
+            label = text('span', data.count === 0 ? 'NO BUSES ARE TRACKING' : data.count === 1 ? 'BUS TRACKING' : 'BUSES TRACKING', 'dxb-tracking-label');
+          live.replaceChildren(total, label);
+          live.append(text('small', new Date(data.checked).toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          }) + ' · TFL PREDICTIONS', 'dxb-tracking-source'));
+          trackingBreakdown(data, profile, trackingRow, token);
+        }
+      }).catch(function () {
+        if (live.isConnected) live.textContent = 'Live bus count temporarily unavailable';
+      });
+    }
+    if (profile.source) box.append(sourceLink("Route directory \xB7 ".concat(profile.updated), profile.source));
+    if (profile.listingSource && current.archive) box.append(sourceLink('Route status source ↗', profile.listingSource));
+    if (unavailable) box.append(text('small', 'Route directory temporarily unavailable.'));
+    if (profile.circular || (_profile$serviceNotes = profile.serviceNotes) !== null && _profile$serviceNotes !== void 0 && _profile$serviceNotes.length) {
+      var _profile$serviceNotes2, _profile$serviceNotes3;
+      var patterns = text('div', '', 'dxb-service-patterns');
+      if (profile.circular) patterns.append(text('span', '↻ Circular route', 'dxb-pattern-badge is-circular'));
+      if ((_profile$serviceNotes2 = profile.serviceNotes) !== null && _profile$serviceNotes2 !== void 0 && _profile$serviceNotes2.length) {
+        patterns.append(text('span', 'Limited service', 'dxb-pattern-badge is-limited'));
+        profile.serviceNotes.forEach(function (note) {
+          return patterns.append(text('p', note, 'dxb-pattern-note'));
+        });
+      }
+      if (profile.name === 'SL6' && (_profile$serviceNotes3 = profile.serviceNotes) !== null && _profile$serviceNotes3 !== void 0 && _profile$serviceNotes3.length) patterns.append(text('p', 'Northbound AM · Southbound PM · Weekdays only', 'dxb-pattern-note'));
+      box.append(patterns);
+    }
+    if (profile.badgeType === 'former' && profile.history) {
+      var h = profile.history,
+        _history = text('div', '', 'dxb-route-history');
+      _history.append(text('strong', h.tenure ? 'In service · ' + h.tenure : 'Operating history'));
+      if (h.start) _history.append(text('p', 'Introduced · ' + h.start));
+      if (h.end) _history.append(text('p', 'Withdrawn · ' + h.end));
+      if (!h.tenure) _history.append(text('p', 'Full tenure not confirmed: the introduction date is not available in the linked source.', 'dxb-muted'));
+      if (h.source) _history.append(sourceLink('Route history ↗', h.source));
+      box.append(_history);
+    }
+    var type = profile.badgeType === 'regular' && current.serviceType === '24hour' ? '24hour' : profile.badgeType || current.serviceType || 'regular';
+    $('#dxb-route-number').dataset.serviceType = type;
+    if ((profile.allDay || current.serviceType === '24hour') && !$('#dxb-route-type').textContent.includes('24-hour')) $('#dxb-route-type').append(' · 24-hour service');
+    var labels = {
+      mobility: 'Mobility route',
+      former: 'Former route',
+      future: 'Future route',
+      temporary: 'Temporary route',
+      carnival: 'Notting Hill Carnival special',
+      shuttle: 'Silvertown Tunnel cycle shuttle'
+    };
+    if (labels[type]) $('#dxb-route-type').textContent = labels[type];
+    if (profile.listingNotes && current.archive) $('#dxb-route-description').textContent = profile.listingNotes;
+    if ((_profile$workings = profile.workings) !== null && _profile$workings !== void 0 && _profile$workings.length && !current.archive) {
+      var endpoints = $('#dxb-endpoints');
+      endpoints.replaceChildren();
+      var seen = new Set();
+      displayWorkings(profile.workings).forEach(function (w) {
+        var key = w.destinations + '|' + w.label;
+        if (seen.has(key)) return;
+        seen.add(key);
+        var row = text('div', w.circular ? w.destinations.split(' ↔ ')[0] + ' circular' : w.oneWay ? w.destinations.replace(' ↔ ', ' → ') : w.destinations, 'dxb-endpoint');
+        row.append(text('span', w.label, 'dxb-working-badge' + (w.label === 'School variant' ? ' is-school' : '')));
+        endpoints.append(row);
+      });
+      (profile.workingNotes || []).forEach(function (note) {
+        var row = text('p', note, 'dxb-small dxb-muted');
+        if (/school/i.test(note)) row.append(text('span', 'School variant', 'dxb-working-badge is-school'));else if (/short working/i.test(note)) row.append(text('span', 'Short working', 'dxb-working-badge'));
+        endpoints.append(row);
+      });
+      var pairs = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(new Set(current.branches || []));
+      if (pairs.length > 1) {
+        var detail = document.createElement('details');
+        detail.className = 'dxb-details';
+        detail.append(text('summary', 'TfL destination pairs'));
+        pairs.forEach(function (pair) {
+          return detail.append(text('p', pair, 'dxb-small'));
+        });
+        endpoints.append(detail);
+      }
+    }
+  }
+  function loadProfile(_x20, _x21) {
+    return _loadProfile.apply(this, arguments);
+  }
+  function _loadProfile() {
+    _loadProfile = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee13(route, token) {
+      var _profileController;
+      var _t11, _t12, _t13;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context14) {
+        while (1) switch (_context14.prev = _context14.next) {
+          case 0:
+            (_profileController = profileController) === null || _profileController === void 0 || _profileController.abort();
+            profileController = new AbortController();
+            $('#dxb-route-facts').replaceChildren(text('p', 'Checking operator and vehicle details…'));
+            _context14.prev = 1;
+            _t11 = applyProfile;
+            _t12 = current.profile;
+            if (_t12) {
+              _context14.next = 3;
+              break;
+            }
+            _context14.next = 2;
+            return request('profile/' + encodeURIComponent(route), profileController.signal);
+          case 2:
+            _t12 = _context14.sent;
+          case 3:
+            _t11(_t12, token);
+            _context14.next = 5;
+            break;
+          case 4:
+            _context14.prev = 4;
+            _t13 = _context14["catch"](1);
+            if (_t13.name !== 'AbortError') applyProfile({
+              error: true
+            }, token);
+          case 5:
+          case "end":
+            return _context14.stop();
+        }
+      }, _callee13, null, [[1, 4]]);
+    }));
+    return _loadProfile.apply(this, arguments);
+  }
+  function loadNews() {
+    return _loadNews.apply(this, arguments);
+  }
+  function _loadNews() {
+    _loadNews = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee14() {
+      var _newsController;
+      var token, panel, data, source, link, _t14;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context15) {
+        while (1) switch (_context15.prev = _context15.next) {
+          case 0:
+            (_newsController = newsController) === null || _newsController === void 0 || _newsController.abort();
+            newsController = new AbortController();
+            token = sequence, panel = $('#panel-news');
+            panel.replaceChildren(text('p', 'Checking route news…'));
+            _context15.prev = 1;
+            _context15.next = 2;
+            return request('news/' + encodeURIComponent(current.name), newsController.signal);
+          case 2:
+            data = _context15.sent;
+            if (!(token !== sequence)) {
+              _context15.next = 3;
+              break;
+            }
+            return _context15.abrupt("return");
+          case 3:
+            panel.replaceChildren(text('h3', 'Service changes'));
+            panel.append(text('p', "".concat(data.stale ? 'Saved update · ' : '', "Source updated ").concat(data.updated, ". Planned changes are provisional."), 'dxb-small dxb-muted'));
+            if (!data.items.length) panel.append(text('p', 'No entries for this route are listed in the current source. This is not a live disruption report.'));
+            data.items.forEach(function (item) {
+              var card = text('article', '', 'dxb-news-item');
+              var meta = text('div', '', 'dxb-news-meta');
+              meta.append(text('span', item.category, 'dxb-news-badge'), text('small', dateLabel(item.date)));
+              card.append(meta, text('p', item.summary));
+              var link = text('a', 'Read the full update ↗');
+              link.href = item.url;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              card.append(link);
+              panel.append(card);
+            });
+            source = text('a', 'Source: London Bus Routes ↗');
+            source.href = data.source;
+            source.target = '_blank';
+            source.rel = 'noopener noreferrer';
+            panel.append(source, text('p', 'Dates are shown as supplied by the source; times are not published for date-only entries.', 'dxb-small dxb-muted'), consultationCards());
+            _context15.next = 5;
+            break;
+          case 4:
+            _context15.prev = 4;
+            _t14 = _context15["catch"](1);
+            if (_t14.name !== 'AbortError' && token === sequence) {
+              panel.replaceChildren(text('p', 'Route news is temporarily unavailable. Please try the News tab again shortly.'));
+              link = text('a', 'View London Bus Routes ↗');
+              link.href = 'http://www.londonbusroutes.net/changes.htm';
+              panel.append(link, consultationCards());
+            }
+          case 5:
+          case "end":
+            return _context15.stop();
+        }
+      }, _callee14, null, [[1, 4]]);
+    }));
+    return _loadNews.apply(this, arguments);
+  }
+  var hero = $('.dxb-hero-media'),
+    baseHero = hero.querySelector('img');
+  var routeLayers = [new Image(), new Image()];
+  var activeLayer = 0,
+    heroToken = 0,
+    heroUrl = '';
+  routeLayers.forEach(function (image) {
+    image.alt = '';
+    image.className = 'dxb-route-hero-image';
+    hero.append(image);
+  });
+  function setHero(photo) {
+    var token = ++heroToken;
+    if (!photo) {
+      heroUrl = '';
+      root.classList.remove('has-route-photo');
+      routeLayers.forEach(function (image) {
+        return image.classList.remove('is-visible');
+      });
+      return;
+    }
+    if (heroUrl === photo.image) {
+      updateScene();
+      return;
+    }
+    var preload = new Image();
+    preload.onload = /*#__PURE__*/(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee6() {
+      var next, layer, _t5, _t6;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context6) {
+        while (1) switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.prev = 0;
+            _context6.next = 1;
+            return preload.decode();
+          case 1:
+            _context6.next = 3;
+            break;
+          case 2:
+            _context6.prev = 2;
+            _t5 = _context6["catch"](0);
+          case 3:
+            if (!(token !== heroToken)) {
+              _context6.next = 4;
+              break;
+            }
+            return _context6.abrupt("return");
+          case 4:
+            next = 1 - activeLayer, layer = routeLayers[next];
+            layer.classList.remove('is-visible');
+            layer.src = preload.src;
+            _context6.prev = 5;
+            _context6.next = 6;
+            return layer.decode();
+          case 6:
+            _context6.next = 8;
+            break;
+          case 7:
+            _context6.prev = 7;
+            _t6 = _context6["catch"](5);
+          case 8:
+            if (!(token !== heroToken)) {
+              _context6.next = 9;
+              break;
+            }
+            return _context6.abrupt("return");
+          case 9:
+            void layer.offsetWidth;
+            requestAnimationFrame(function () {
+              if (token !== heroToken) return;
+              layer.classList.add('is-visible');
+              routeLayers[activeLayer].classList.remove('is-visible');
+              activeLayer = next;
+              heroUrl = photo.image;
+              root.classList.add('has-route-photo');
+              updateScene();
+            });
+          case 10:
+          case "end":
+            return _context6.stop();
+        }
+      }, _callee6, null, [[0, 2], [5, 7]]);
+    }));
+    preload.onerror = function () {
+      if (token === heroToken) setHero(null);
+    };
+    preload.src = photo.image;
+  }
+  function sizeHero() {
+    root.style.setProperty('--hero-fade-height', $('#routes').offsetTop + 'px');
+  }
+  new ResizeObserver(sizeHero).observe($('.dxb-hero'));
+  window.addEventListener('resize', sizeHero);
+  sizeHero();
+  function updateScene() {
+    var nav = $('.dxb-nav'),
+      diary = $('#bus-diary');
+    if (nav) nav.classList.toggle('is-stuck', nav.getBoundingClientRect().top <= parseFloat(getComputedStyle(nav).top) + 1);
+    var pastDiary = diary && diary.getBoundingClientRect().top <= window.innerHeight * 0.5;
+    root.classList.toggle('has-route-photo', Boolean(heroUrl) && !pastDiary);
+    if (!root.classList.contains('has-route-photo')) return;
+    var number = $('#dxb-route-number');
+    root.style.setProperty('--route-glow', getComputedStyle(number).backgroundColor);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) hero.style.setProperty('--parallax', Math.min(180, Math.max(0, -root.getBoundingClientRect().top) * 0.12) + 'px');
+  }
+  new MutationObserver(updateScene).observe($('#dxb-route-number'), {
+    attributes: true,
+    attributeFilter: ['data-service-type']
+  });
+  window.addEventListener('scroll', function () {
+    return requestAnimationFrame(updateScene);
+  }, {
+    passive: true
+  });
+  window.addEventListener('resize', updateScene);
+  updateScene();
+  function related(route) {
+    var photos = DXB.photos.map(function (p, i) {
+      return _objectSpread(_objectSpread({}, p), {}, {
+        index: i
+      });
+    }).filter(function (p) {
+      return p.route.toUpperCase() === route;
+    });
+    var stories = DXB.journeys.filter(function (j) {
+      return j.route.toUpperCase() === route;
+    });
+    var panel = $('#panel-photos');
+    panel.replaceChildren();
+    if (photos.length) {
+      var grid = document.createElement('div');
+      grid.className = 'dxb-route-photos';
+      photos.forEach(function (p) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.setAttribute('aria-label', "Open ".concat(p.title));
+        var img = new Image();
+        img.src = p.image;
+        img.alt = p.alt;
+        button.append(img);
+        button.addEventListener('click', function () {
+          return openPhoto(p.index);
+        });
+        grid.append(button);
+      });
+      panel.append(grid);
+    } else panel.append(text('p', "No photographs of ".concat(route, " in the archive yet."), 'dxb-small dxb-muted'));
+    var storyPanel = $('#panel-stories');
+    storyPanel.replaceChildren();
+    if (stories.length) stories.forEach(function (j) {
+      var a = document.createElement('a');
+      a.href = j.url;
+      a.className = 'dxb-route-story';
+      a.append(text('span', "".concat(j.route, " \xB7 Journey notes \u2197")), text('small', "".concat(j.start, " \u2192 ").concat(j.end)));
+      storyPanel.append(a);
+    });else storyPanel.append(text('p', "This route's story is still to come. Explore the diary below.", 'dxb-small dxb-muted'));
+    var photo = photos[0];
+    setHero(photo);
+    $('#dxb-route-photo').src = photo ? photo.image : initialPhoto.src;
+    $('#dxb-route-photo').alt = photo ? photo.alt : initialPhoto.alt;
+    $('#dxb-route-caption').textContent = photo ? "".concat(photo.title).concat(photo.date ? ' · ' + photo.date : '') : "From the wider archive \xB7 ".concat(initialPhoto.caption);
+  }
+  function search(_x22) {
+    return _search.apply(this, arguments);
+  }
+  function _search() {
+    _search = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee15(value) {
+      var _controller2;
+      var direction,
+        preserveTab,
+        token,
+        route,
+        _data$branches,
+        data,
+        directionSelect,
+        serviceType,
+        descriptions,
+        description,
+        number,
+        stops,
+        endpoints,
+        branches,
+        select,
+        url,
+        state,
+        _args16 = arguments,
+        _t15;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context16) {
+        while (1) switch (_context16.prev = _context16.next) {
+          case 0:
+            direction = _args16.length > 1 && _args16[1] !== undefined ? _args16[1] : 'inbound';
+            preserveTab = _args16.length > 2 && _args16[2] !== undefined ? _args16[2] : false;
+            clearTimeout(debounce);
+            (_controller2 = controller) === null || _controller2 === void 0 || _controller2.abort();
+            stopArrivals();
+            token = ++sequence, route = value.trim().toUpperCase().replace(/\s+/g, '');
+            ++heroToken;
+            $('#dxb-route-state').hidden = true;
+            result.hidden = true;
+            current = null;
+            $('#dxb-arrivals').replaceChildren(text('p', 'Choose a stop for live arrival predictions.', 'dxb-small'));
+            $('#dxb-updated').textContent = '';
+            $$('[data-route]').forEach(function (b) {
+              return b.setAttribute('aria-pressed', String(b.dataset.route === route));
+            });
+            if (route) {
+              _context16.next = 1;
+              break;
+            }
+            setHero(null);
+            announce('Choose a route to explore the London bus network.');
+            return _context16.abrupt("return");
+          case 1:
+            if (/^[A-Z0-9]{1,6}$/.test(route)) {
+              _context16.next = 2;
+              break;
+            }
+            setHero(null);
+            announce('Enter a route number such as 8, N8 or H32.', true);
+            return _context16.abrupt("return");
+          case 2:
+            controller = new AbortController();
+            announce("Finding route ".concat(route, "\u2026"));
+            $('#routes').setAttribute('aria-busy', 'true');
+            _context16.prev = 3;
+            _context16.next = 4;
+            return request("route/".concat(encodeURIComponent(route), "?direction=").concat(direction), controller.signal);
+          case 4:
+            data = _context16.sent;
+            if (!(token !== sequence)) {
+              _context16.next = 5;
+              break;
+            }
+            return _context16.abrupt("return");
+          case 5:
+            current = data;
+            input.value = route;
+            remember(route);
+            arrivalRows = [];
+            directionSelect = $('#dxb-direction');
+            directionSelect.replaceChildren(new Option('Loading destination…', data.direction));
+            if (!data.archive) request('directions/' + encodeURIComponent(route), controller.signal).then(function (labels) {
+              if (token !== sequence) return;
+              directionSelect.replaceChildren();
+              Object.entries(labels).forEach(function (_ref16) {
+                var _ref17 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_2__["default"])(_ref16, 2),
+                  key = _ref17[0],
+                  label = _ref17[1];
+                return directionSelect.add(new Option(label.replace(/^Towards\s+/i, 'to '), key));
+              });
+              directionSelect.value = data.direction;
+              directionSelect.disabled = directionSelect.options.length < 2;
+            }).catch(function () {
+              if (token === sequence) {
+                var _data$stops;
+                directionSelect.replaceChildren(new Option('to ' + (((_data$stops = data.stops) === null || _data$stops === void 0 || (_data$stops = _data$stops.at(-1)) === null || _data$stops === void 0 ? void 0 : _data$stops.name) || 'destination'), data.direction));
+                directionSelect.disabled = true;
+              }
+            });
+            $('#dxb-route-number').textContent = data.name;
+            input.dataset.spacing = routeSpacing(data.name);
+            $('#dxb-route-number').dataset.spacing = /^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(data.name) ? 'tight' : 'normal';
+            serviceType = data.serviceType || (/^N\d+$/.test(route) ? 'night' : /^6\d{2}$/.test(route) && route !== '607' ? 'school' : 'regular');
+            descriptions = {
+              eastlondon: ['East London Transit', 'Connecting communities across east London.'],
+              superloop: ['Superloop', 'Express connections across London.'],
+              bakerloop: ['Bakerloop', 'A connection across south London.'],
+              night: ['Night bus', 'Explore the route after dark.'],
+              '24hour': ['24-hour bus', 'Discover the route, day and night.'],
+              school: ['School bus', 'A route for the school-day journey.'],
+              regular: ['London bus route', 'Another way to see the city.']
+            }; // EL1 keeps the East London Transit identity alongside its all-day service.
+            description = route === 'EL1' ? ['East London Transit · 24-hour service', 'Connecting east London, day and night.'] : descriptions[serviceType] || ['London bus route', 'Route directory information.'];
+            $('#dxb-route-type').textContent = description[0];
+            $('#dxb-route-description').textContent = description[1];
+            number = $('#dxb-route-number');
+            number.dataset.serviceType = 'regular';
+            input.dataset.serviceType = serviceType;
+            stops = data.stops || [];
+            endpoints = $('#dxb-endpoints');
+            endpoints.replaceChildren();
+            branches = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(new Set(((_data$branches = data.branches) === null || _data$branches === void 0 ? void 0 : _data$branches.filter(Boolean)) || []));
+            if (!branches.length) branches.push(stops.length ? "".concat(stops[0].name, " \u2192 ").concat(stops[stops.length - 1].name) : 'Stop information is not available for this direction.');
+            branches.forEach(function (branch) {
+              return endpoints.append(text('div', branch, 'dxb-endpoint'));
+            });
+            $('#dxb-route-detail').textContent = data.archive ? 'Current TfL stop information is not available for this route identifier. See the directory source for its status.' : "".concat(stops.length, " stops returned for the ").concat(data.direction, " direction. Select Stops & arrivals to choose a stop.");
+            $('#dxb-direction').value = data.direction;
+            $('.dxb-selects').hidden = Boolean(data.archive);
+            if (data.archive) $('#dxb-arrivals').replaceChildren(text('p', 'Live arrivals are unavailable for this route identifier. See Overview for its listed status.', 'dxb-small'));
+            select = $('#dxb-stop');
+            select.replaceChildren(new Option('Choose a stop', ''));
+            stops.forEach(function (s) {
+              return select.add(new Option(s.name, s.id));
+            });
+            consultationData = null;
+            $('#dxb-consultation-notice').replaceChildren();
+            loadProfile(route, token);
+            loadConsultations(route, token);
+            related(route);
+            result.hidden = false;
+            activateTab(preserveTab ? tab : 'overview');
+            // Commit the neutral colour before beginning the gradual transition.
+            void number.offsetWidth;
+            requestAnimationFrame(function () {
+              if (token === sequence) number.dataset.serviceType = serviceType;
+            });
+            announce("Route ".concat(route, " \xB7 ").concat(data.archive ? data.profile ? 'route directory information' : 'from the personal archive' : 'information from TfL'));
+            url = new URL(location.href);
+            url.searchParams.set('route', route);
+            history.replaceState(null, '', url);
+            _context16.next = 7;
+            break;
+          case 6:
+            _context16.prev = 6;
+            _t15 = _context16["catch"](3);
+            if (_t15.name !== 'AbortError' && token === sequence) {
+              setHero(null);
+              announce(_t15.message, true);
+              state = $('#dxb-route-state');
+              state.replaceChildren(text('h3', _t15.code === 'route_not_found' ? 'Route Not Found' : 'Route Temporarily Unavailable'), text('p', _t15.message));
+              state.hidden = false;
+            }
+          case 7:
+            _context16.prev = 7;
+            if (token === sequence) $('#routes').removeAttribute('aria-busy');
+            return _context16.finish(7);
+          case 8:
+          case "end":
+            return _context16.stop();
+        }
+      }, _callee15, null, [[3, 6, 7, 8]]);
+    }));
+    return _search.apply(this, arguments);
+  }
+  $('#dxb-search').addEventListener('submit', function (event) {
+    event.preventDefault();
+    search(input.value);
+  });
+  input.addEventListener('input', function () {
+    var _controller;
+    input.dataset.serviceType = 'regular';
+    clearTimeout(debounce);
+    (_controller = controller) === null || _controller === void 0 || _controller.abort();
+    stopArrivals();
+    ++sequence;
+    current = null;
+    result.hidden = true;
+    $('#routes').removeAttribute('aria-busy');
+    announce(input.value.trim() ? 'Searching…' : 'Choose a route to explore the London bus network.');
+    debounce = setTimeout(function () {
+      return search(input.value);
+    }, 350);
+  });
+  $('#dxb-direction').addEventListener('change', function (event) {
+    if (current) search(current.name, event.target.value, true);
+  });
+  $('#dxb-stop').addEventListener('change', function () {
+    failures = 0;
+    arrivalRows = [];
+    stopArrivals();
+    $('#dxb-arrivals').replaceChildren(text('p', 'Choose a stop for live arrival predictions.', 'dxb-small'));
+    $('#dxb-updated').textContent = '';
+    if ($('#dxb-stop').value) refreshArrivals();
+  });
+  function showScheduledArrival(_x23, _x24, _x25) {
+    return _showScheduledArrival.apply(this, arguments);
+  }
+  function _showScheduledArrival() {
+    _showScheduledArrival = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee16(route, stop, signal) {
+      var host, box, _current5, data, _t16;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context17) {
+        while (1) switch (_context17.prev = _context17.next) {
+          case 0:
+            host = $('#dxb-arrivals'), box = text('div', '', 'dxb-schedule-state');
+            box.append(text('strong', 'No live arrivals currently showing'), text('p', 'Checking the published timetable…'));
+            host.replaceChildren(box);
+            _context17.prev = 1;
+            _context17.next = 2;
+            return request("timetable/".concat(encodeURIComponent(route), "/").concat(encodeURIComponent(stop)), signal);
+          case 2:
+            data = _context17.sent;
+            if (!(!box.isConnected || ((_current5 = current) === null || _current5 === void 0 ? void 0 : _current5.id) !== route || $('#dxb-stop').value !== stop)) {
+              _context17.next = 3;
+              break;
+            }
+            return _context17.abrupt("return");
+          case 3:
+            box.replaceChildren(text('span', 'TIMETABLE', 'dxb-schedule-label'));
+            if (data.available) {
+              box.append(text('strong', data.ended ? 'Last scheduled departure has passed' : 'Next scheduled bus'));
+              if (data.ended) box.append(text('p', "The last bus was timetabled here at ".concat(data.last, " today.")));
+              box.append(text('p', new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/London',
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+              }).format(new Date(data.next)), 'dxb-schedule-time'));
+              box.append(text('small', 'Timetabled, not a live prediction. Actual running and special services may differ.'));
+            } else {
+              box.append(text('strong', 'No live predictions available'), text('p', 'The next scheduled bus could not be confirmed. This does not necessarily mean service has finished.'));
+            }
+            if (data.source) box.append(sourceLink('View timetable ↗', data.source));
+            _context17.next = 5;
+            break;
+          case 4:
+            _context17.prev = 4;
+            _t16 = _context17["catch"](1);
+            if (_t16.name !== 'AbortError' && box.isConnected) box.replaceChildren(text('strong', 'No live predictions available'), text('p', 'The timetable is temporarily unavailable. Please check again shortly.'));
+          case 5:
+          case "end":
+            return _context17.stop();
+        }
+      }, _callee16, null, [[1, 4]]);
+    }));
+    return _showScheduledArrival.apply(this, arguments);
+  }
+  function arrivalRetryState(delay) {
+    var deadline = Date.now() + delay,
+      box = text('div', '', 'dxb-arrival-retry');
+    var icon = text('span', '↻', 'dxb-retry-icon');
+    icon.setAttribute('aria-hidden', 'true');
+    var body = text('div', '', 'dxb-retry-body');
+    body.append(text('strong', 'Arrival predictions temporarily unavailable', 'dxb-retry-title'), text('p', 'We’ll try again automatically.', 'dxb-retry-description'));
+    var countdown = text('span', '', 'dxb-retry-countdown');
+    countdown.setAttribute('role', 'timer');
+    countdown.setAttribute('aria-live', 'off');
+    var track = text('div', '', 'dxb-retry-track'),
+      fill = text('span', '', 'dxb-retry-fill');
+    track.setAttribute('aria-hidden', 'true');
+    track.append(fill);
+    body.append(countdown, track);
+    box.append(icon, body);
+    $('#dxb-arrivals').replaceChildren(box);
+    function tick() {
+      if (!box.isConnected) {
+        clearInterval(retryTicker);
+        return;
+      }
+      var remaining = Math.max(0, deadline - Date.now());
+      countdown.textContent = remaining ? 'Retrying in ' + Math.ceil(remaining / 1000) + 's' : 'Retrying now…';
+      fill.style.width = 100 * (1 - remaining / delay) + '%';
+    }
+    tick();
+    retryTicker = setInterval(tick, 250);
+  }
+  function refreshArrivals() {
+    return _refreshArrivals.apply(this, arguments);
+  }
+  function _refreshArrivals() {
+    _refreshArrivals = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee17() {
+      var _current8;
+      var route, stop, retry, _current6, data, _current7, delay, _t17;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context18) {
+        while (1) switch (_context18.prev = _context18.next) {
+          case 0:
+            stopArrivals();
+            if (!(!current || tab !== 'arrivals' || document.hidden || !$('#dxb-stop').value)) {
+              _context18.next = 1;
+              break;
+            }
+            return _context18.abrupt("return");
+          case 1:
+            route = current.id, stop = $('#dxb-stop').value;
+            arrivalsController = new AbortController();
+            $('#dxb-updated').textContent = 'Updating arrival predictions…';
+            retry = $('.dxb-arrival-retry');
+            if (retry) {
+              retry.classList.add('is-fetching');
+              retry.querySelector('.dxb-retry-title').textContent = 'Fetching arrival predictions';
+              retry.querySelector('.dxb-retry-description').textContent = 'Connecting to TfL…';
+              retry.querySelector('.dxb-retry-countdown').textContent = 'Retrying now…';
+            }
+            _context18.prev = 2;
+            _context18.next = 3;
+            return request("arrivals/".concat(encodeURIComponent(route), "/").concat(encodeURIComponent(stop)), arrivalsController.signal);
+          case 3:
+            data = _context18.sent;
+            if (!(((_current6 = current) === null || _current6 === void 0 ? void 0 : _current6.id) !== route || $('#dxb-stop').value !== stop)) {
+              _context18.next = 4;
+              break;
+            }
+            return _context18.abrupt("return");
+          case 4:
+            arrivalRows = data.arrivals.filter(function (a) {
+              return Number.isFinite(Date.parse(a.expected)) && Date.parse(a.expected) >= Date.now() - 15000;
+            });
+            renderArrivals();
+            if (!arrivalRows.length) showScheduledArrival(route, stop, arrivalsController.signal);
+            $('#dxb-updated').textContent = "Updated ".concat(new Date().toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            }), " \xB7 TfL predictions \xB7 refreshes every 30 seconds");
+            failures = 0;
+            _context18.next = 8;
+            break;
+          case 5:
+            _context18.prev = 5;
+            _t17 = _context18["catch"](2);
+            if (!(_t17.name === 'AbortError')) {
+              _context18.next = 6;
+              break;
+            }
+            return _context18.abrupt("return");
+          case 6:
+            if (!(((_current7 = current) === null || _current7 === void 0 ? void 0 : _current7.id) !== route || tab !== 'arrivals' || $('#dxb-stop').value !== stop)) {
+              _context18.next = 7;
+              break;
+            }
+            return _context18.abrupt("return");
+          case 7:
+            $('#dxb-updated').textContent = '';
+            failures++;
+          case 8:
+            if (((_current8 = current) === null || _current8 === void 0 ? void 0 : _current8.id) === route && tab === 'arrivals' && $('#dxb-stop').value === stop) {
+              delay = Math.min(120000, 30000 * (failures + 1));
+              if (failures) arrivalRetryState(delay);
+              timer = setTimeout(refreshArrivals, delay);
+            }
+          case 9:
+          case "end":
+            return _context18.stop();
+        }
+      }, _callee17, null, [[2, 5]]);
+    }));
+    return _refreshArrivals.apply(this, arguments);
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopArrivals();else if (tab === 'arrivals') refreshArrivals();
+  });
+  $('#dxb-share').addEventListener('click', /*#__PURE__*/(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee7() {
+    var button, _t7;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context7) {
+      while (1) switch (_context7.prev = _context7.next) {
+        case 0:
+          button = $('#dxb-share');
+          _context7.prev = 1;
+          _context7.next = 2;
+          return navigator.clipboard.writeText(location.href);
+        case 2:
+          button.textContent = 'Route link copied ✓';
+          _context7.next = 4;
+          break;
+        case 3:
+          _context7.prev = 3;
+          _t7 = _context7["catch"](1);
+          button.textContent = 'Copy the route URL from your address bar';
+        case 4:
+          setTimeout(function () {
+            return button.textContent = 'Copy route link ↗';
+          }, 4000);
+        case 5:
+        case "end":
+          return _context7.stop();
+      }
+    }, _callee7, null, [[1, 3]]);
+  })));
+  var indexReady = request('routes').then(function (routes) {
+    var list = $('#dxb-route-options');
+    routes.forEach(function (route) {
+      return list.append(new Option(route.name, route.name));
+    });
+  }).catch(function () {});
+  var initialRoute = new URL(location.href).searchParams.get('route') || 'N8';
+  indexReady.finally(function () {
+    if (sequence === 0) search(initialRoute);
+  });
+  var photoFilter = 'all',
+    photoIndex = 0,
+    lastFocus = null;
+  var lightbox = $('#dxb-lightbox');
+  function filterPhotos() {
+    var query = $('#dxb-photo-search').value.trim().toLowerCase();
+    var count = 0;
+    $$('#dxb-gallery [data-photo]').forEach(function (card) {
+      var show = (photoFilter === 'all' || card.dataset.photoRoute === photoFilter) && card.dataset.photoSearch.includes(query);
+      card.hidden = !show;
+      if (show) count++;
+    });
+    $('#dxb-gallery-empty').hidden = count > 0;
+  }
+  $$('[data-photo-filter]').forEach(function (button) {
+    return button.addEventListener('click', function () {
+      photoFilter = button.dataset.photoFilter;
+      $$('[data-photo-filter]').forEach(function (b) {
+        return b.setAttribute('aria-pressed', String(b === button));
+      });
+      filterPhotos();
+    });
+  });
+  $('#dxb-photo-search').addEventListener('input', filterPhotos);
+  function renderPhoto() {
+    var p = DXB.photos[photoIndex];
+    if (!p) return;
+    $('#dxb-lightbox-image').src = p.full;
+    $('#dxb-lightbox-image').alt = p.alt;
+    $('#dxb-lightbox-route').textContent = p.route ? "Route ".concat(p.route) : 'Bus photography';
+    $('#dxb-lightbox-title').textContent = p.title;
+    $('#dxb-lightbox-caption').textContent = p.caption;
+    $('#dxb-lightbox-meta').textContent = [p.vehicle, p.operator, p.location, p.date].filter(Boolean).join(' · ');
+    $('#dxb-lightbox-count').textContent = "".concat(photoIndex + 1, " / ").concat(DXB.photos.length);
+  }
+  function openPhoto(index) {
+    photoIndex = index;
+    renderPhoto();
+    if (!lightbox.open) {
+      lastFocus = document.activeElement;
+      lightbox.showModal();
+      document.body.classList.add('dxb-lightbox-open');
+    }
+  }
+  $$('#dxb-gallery [data-photo]').forEach(function (card) {
+    return card.addEventListener('click', function (event) {
+      event.preventDefault();
+      openPhoto(Number(card.dataset.photo));
+    });
+  });
+  function movePhoto(delta) {
+    photoIndex = (photoIndex + delta + DXB.photos.length) % DXB.photos.length;
+    renderPhoto();
+  }
+  $('[data-lightbox-prev]').addEventListener('click', function () {
+    return movePhoto(-1);
+  });
+  $('[data-lightbox-next]').addEventListener('click', function () {
+    return movePhoto(1);
+  });
+  $('.dxb-close').addEventListener('click', function () {
+    return lightbox.close();
+  });
+  lightbox.addEventListener('close', function () {
+    var _lastFocus;
+    document.body.classList.remove('dxb-lightbox-open');
+    (_lastFocus = lastFocus) === null || _lastFocus === void 0 || _lastFocus.focus();
+  });
+  lightbox.addEventListener('click', function (event) {
+    if (event.target === lightbox) {
+      var r = lightbox.getBoundingClientRect();
+      if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) lightbox.close();
+    }
+  });
+  lightbox.addEventListener('keydown', function (event) {
+    if (event.key === 'ArrowLeft') movePhoto(-1);
+    if (event.key === 'ArrowRight') movePhoto(1);
+  });
+  var navLinks = $$('.dxb-nav a');
+  var scrollScheduled = false;
+  function updateNavigation() {
+    var active = 'buses-overview';
+    ['routes', 'bus-diary', 'photography', 'news'].forEach(function (id) {
+      if (document.getElementById(id).getBoundingClientRect().top <= 145) active = id;
+    });
+    navLinks.forEach(function (a) {
+      if (a.hash === "#".concat(active)) a.setAttribute('aria-current', 'location');else a.removeAttribute('aria-current');
+    });
+    scrollScheduled = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!scrollScheduled) {
+      scrollScheduled = true;
+      requestAnimationFrame(updateNavigation);
+    }
+  }, {
+    passive: true
+  });
+  updateNavigation();
+})();
+
 /***/ }),
 
 /***/ "./assets/main.scss":
@@ -3775,6 +5955,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
   \**************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
@@ -3787,6 +5968,7 @@ __webpack_require__.r(__webpack_exports__);
   \*********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _arrayLikeToArray; }
@@ -3806,6 +5988,7 @@ function _arrayLikeToArray(r, a) {
   \*******************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _arrayWithHoles; }
@@ -3823,6 +6006,7 @@ function _arrayWithHoles(r) {
   \**********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _arrayWithoutHoles; }
@@ -3842,6 +6026,7 @@ function _arrayWithoutHoles(r) {
   \*********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _asyncToGenerator; }
@@ -3875,12 +6060,38 @@ function _asyncToGenerator(n) {
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _defineProperty; }
+/* harmony export */ });
+/* harmony import */ var _toPropertyKey_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./toPropertyKey.js */ "./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js");
+
+function _defineProperty(e, r, t) {
+  return (r = (0,_toPropertyKey_js__WEBPACK_IMPORTED_MODULE_0__["default"])(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js":
 /*!********************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js ***!
   \********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _iterableToArray; }
@@ -3898,6 +6109,7 @@ function _iterableToArray(r) {
   \*************************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _iterableToArrayLimit; }
@@ -3939,6 +6151,7 @@ function _iterableToArrayLimit(r, l) {
   \********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _nonIterableRest; }
@@ -3956,6 +6169,7 @@ function _nonIterableRest() {
   \**********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _nonIterableSpread; }
@@ -3973,6 +6187,7 @@ function _nonIterableSpread() {
   \******************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _slicedToArray; }
@@ -3998,6 +6213,7 @@ function _slicedToArray(r, e) {
   \**********************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _toConsumableArray; }
@@ -4017,12 +6233,87 @@ function _toConsumableArray(r) {
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/esm/toPrimitive.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ toPrimitive; }
+/* harmony export */ });
+/* harmony import */ var _typeof_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./typeof.js */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+
+function toPrimitive(t, r) {
+  if ("object" != (0,_typeof_js__WEBPACK_IMPORTED_MODULE_0__["default"])(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != (0,_typeof_js__WEBPACK_IMPORTED_MODULE_0__["default"])(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ toPropertyKey; }
+/* harmony export */ });
+/* harmony import */ var _typeof_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./typeof.js */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+/* harmony import */ var _toPrimitive_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./toPrimitive.js */ "./node_modules/@babel/runtime/helpers/esm/toPrimitive.js");
+
+
+function toPropertyKey(t) {
+  var i = (0,_toPrimitive_js__WEBPACK_IMPORTED_MODULE_1__["default"])(t, "string");
+  return "symbol" == (0,_typeof_js__WEBPACK_IMPORTED_MODULE_0__["default"])(i) ? i : i + "";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/typeof.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/typeof.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ _typeof; }
+/* harmony export */ });
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js":
 /*!*******************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
   \*******************************************************************************/
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ _unsupportedIterableToArray; }
@@ -4046,6 +6337,7 @@ function _unsupportedIterableToArray(r, a) {
   \*********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   createPopper: function() { return /* binding */ createPopper; },
@@ -4269,6 +6561,7 @@ var createPopper = /*#__PURE__*/popperGenerator(); // eslint-disable-next-line i
   \***************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ contains; }
@@ -4306,6 +6599,7 @@ function contains(parent, child) {
   \****************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getBoundingClientRect; }
@@ -4364,6 +6658,7 @@ function getBoundingClientRect(element, includeScale, isFixedStrategy) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getClippingRect; }
@@ -4461,6 +6756,7 @@ function getClippingRect(element, boundary, rootBoundary, strategy) {
   \***********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getCompositeRect; }
@@ -4540,6 +6836,7 @@ function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
   \***********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getComputedStyle; }
@@ -4558,6 +6855,7 @@ function getComputedStyle(element) {
   \*************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getDocumentElement; }
@@ -4578,6 +6876,7 @@ function getDocumentElement(element) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getDocumentRect; }
@@ -4625,6 +6924,7 @@ function getDocumentRect(element) {
   \***************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getHTMLElementScroll; }
@@ -4644,6 +6944,7 @@ function getHTMLElementScroll(element) {
   \********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getLayoutRect; }
@@ -4683,6 +6984,7 @@ function getLayoutRect(element) {
   \******************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getNodeName; }
@@ -4699,6 +7001,7 @@ function getNodeName(element) {
   \********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getNodeScroll; }
@@ -4727,6 +7030,7 @@ function getNodeScroll(node) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getOffsetParent; }
@@ -4816,6 +7120,7 @@ function getOffsetParent(element) {
   \********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getParentNode; }
@@ -4851,6 +7156,7 @@ function getParentNode(element) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getScrollParent; }
@@ -4884,6 +7190,7 @@ function getScrollParent(node) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getViewportRect; }
@@ -4932,6 +7239,7 @@ function getViewportRect(element, strategy) {
   \****************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getWindow; }
@@ -4957,6 +7265,7 @@ function getWindow(node) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getWindowScroll; }
@@ -4981,6 +7290,7 @@ function getWindowScroll(node) {
   \**************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getWindowScrollBarX; }
@@ -5010,6 +7320,7 @@ function getWindowScrollBarX(element) {
   \*****************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   isElement: function() { return /* binding */ isElement; },
@@ -5049,6 +7360,7 @@ function isShadowRoot(node) {
   \***********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ isLayoutViewport; }
@@ -5067,6 +7379,7 @@ function isLayoutViewport() {
   \*********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ isScrollParent; }
@@ -5091,6 +7404,7 @@ function isScrollParent(element) {
   \*********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ isTableElement; }
@@ -5109,6 +7423,7 @@ function isTableElement(element) {
   \************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ listScrollParents; }
@@ -5152,6 +7467,7 @@ function listScrollParents(element, list) {
   \**************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   afterMain: function() { return /* binding */ afterMain; },
@@ -5219,6 +7535,7 @@ var modifierPhases = [beforeRead, read, afterRead, beforeMain, main, afterMain, 
   \**************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   afterMain: function() { return /* reexport safe */ _enums_js__WEBPACK_IMPORTED_MODULE_0__.afterMain; },
@@ -5283,6 +7600,7 @@ __webpack_require__.r(__webpack_exports__);
   \******************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _dom_utils_getNodeName_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom-utils/getNodeName.js */ "./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js");
 /* harmony import */ var _dom_utils_instanceOf_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/instanceOf.js */ "./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js");
@@ -5379,6 +7697,7 @@ function effect(_ref2) {
   \************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
 /* harmony import */ var _dom_utils_getLayoutRect_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom-utils/getLayoutRect.js */ "./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js");
@@ -5488,6 +7807,7 @@ function effect(_ref2) {
   \********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   mapToStyles: function() { return /* binding */ mapToStyles; }
@@ -5678,6 +7998,7 @@ function computeStyles(_ref5) {
   \*********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _dom_utils_getWindow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom-utils/getWindow.js */ "./node_modules/@popperjs/core/lib/dom-utils/getWindow.js");
  // eslint-disable-next-line import/no-unused-modules
@@ -5738,6 +8059,7 @@ function effect(_ref) {
   \***********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_getOppositePlacement_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getOppositePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js");
 /* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
@@ -5902,6 +8224,7 @@ function flip(_ref) {
   \***********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
 /* harmony import */ var _utils_detectOverflow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/detectOverflow.js */ "./node_modules/@popperjs/core/lib/utils/detectOverflow.js");
@@ -5975,6 +8298,7 @@ function hide(_ref) {
   \************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   applyStyles: function() { return /* reexport safe */ _applyStyles_js__WEBPACK_IMPORTED_MODULE_0__["default"]; },
@@ -6014,6 +8338,7 @@ __webpack_require__.r(__webpack_exports__);
   \*************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   distanceAndSkiddingToXY: function() { return /* binding */ distanceAndSkiddingToXY; }
@@ -6083,6 +8408,7 @@ function offset(_ref2) {
   \********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_computeOffsets_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/computeOffsets.js */ "./node_modules/@popperjs/core/lib/utils/computeOffsets.js");
 
@@ -6119,6 +8445,7 @@ function popperOffsets(_ref) {
   \**********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _enums_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../enums.js */ "./node_modules/@popperjs/core/lib/enums.js");
 /* harmony import */ var _utils_getBasePlacement_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getBasePlacement.js */ "./node_modules/@popperjs/core/lib/utils/getBasePlacement.js");
@@ -6282,6 +8609,7 @@ function preventOverflow(_ref) {
   \********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   createPopper: function() { return /* binding */ createPopper; },
@@ -6315,6 +8643,7 @@ var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_0__
   \***************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   applyStyles: function() { return /* reexport safe */ _modifiers_index_js__WEBPACK_IMPORTED_MODULE_12__.applyStyles; },
@@ -6374,6 +8703,7 @@ var createPopper = /*#__PURE__*/(0,_createPopper_js__WEBPACK_IMPORTED_MODULE_0__
   \***********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ computeAutoPlacement; }
@@ -6434,6 +8764,7 @@ function computeAutoPlacement(state, options) {
   \*****************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ computeOffsets; }
@@ -6521,6 +8852,7 @@ function computeOffsets(_ref) {
   \***********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ debounce; }
@@ -6549,6 +8881,7 @@ function debounce(fn) {
   \*****************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ detectOverflow; }
@@ -6636,6 +8969,7 @@ function detectOverflow(state, options) {
   \******************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ expandToHashMap; }
@@ -6655,6 +8989,7 @@ function expandToHashMap(value, keys) {
   \*************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getAltAxis; }
@@ -6671,6 +9006,7 @@ function getAltAxis(axis) {
   \*******************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getBasePlacement; }
@@ -6688,6 +9024,7 @@ function getBasePlacement(placement) {
   \*********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getFreshSideObject; }
@@ -6709,6 +9046,7 @@ function getFreshSideObject() {
   \***************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getMainAxisFromPlacement; }
@@ -6725,6 +9063,7 @@ function getMainAxisFromPlacement(placement) {
   \***********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getOppositePlacement; }
@@ -6749,6 +9088,7 @@ function getOppositePlacement(placement) {
   \********************************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getOppositeVariationPlacement; }
@@ -6771,6 +9111,7 @@ function getOppositeVariationPlacement(placement) {
   \***************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getVariation; }
@@ -6787,6 +9128,7 @@ function getVariation(placement) {
   \*******************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   max: function() { return /* binding */ max; },
@@ -6805,6 +9147,7 @@ var round = Math.round;
   \**************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ mergeByName; }
@@ -6832,6 +9175,7 @@ function mergeByName(modifiers) {
   \*********************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ mergePaddingObject; }
@@ -6850,6 +9194,7 @@ function mergePaddingObject(paddingObject) {
   \*****************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ orderModifiers; }
@@ -6908,6 +9253,7 @@ function orderModifiers(modifiers) {
   \*******************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ rectToClientRect; }
@@ -6929,6 +9275,7 @@ function rectToClientRect(rect) {
   \************************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ getUAString; }
@@ -6953,6 +9300,7 @@ function getUAString() {
   \*********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   within: function() { return /* binding */ within; },
@@ -6976,6 +9324,7 @@ function withinMaxClamp(min, value, max) {
   \*********************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Alert: function() { return /* binding */ Alert; },
@@ -11444,12 +13793,759 @@ defineJQueryPlugin(Toast);
 
 /***/ }),
 
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = "object" === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  runtime.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    if (typeof global.process === "object" && global.process.domain) {
+      invoke = global.process.domain.bind(invoke);
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
+  runtime.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof __webpack_require__.g === "object" ? __webpack_require__.g :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
+
+/***/ }),
+
 /***/ "@babel/runtime/regenerator":
 /*!*************************************!*\
   !*** external "regeneratorRuntime" ***!
   \*************************************/
 /***/ (function(module) {
 
+"use strict";
 module.exports = window["regeneratorRuntime"];
 
 /***/ })
@@ -11480,7 +14576,7 @@ module.exports = window["regeneratorRuntime"];
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -11511,6 +14607,18 @@ module.exports = window["regeneratorRuntime"];
 /******/ 		};
 /******/ 	}();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	!function() {
 /******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
@@ -11529,14 +14637,18 @@ module.exports = window["regeneratorRuntime"];
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 !function() {
+"use strict";
 /*!*************************!*\
   !*** ./assets/index.js ***!
   \*************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _main_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.scss */ "./assets/main.scss");
-/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./main.js */ "./assets/main.js");
+/* harmony import */ var regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! regenerator-runtime/runtime.js */ "./node_modules/regenerator-runtime/runtime.js");
+/* harmony import */ var regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(regenerator_runtime_runtime_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _main_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./main.scss */ "./assets/main.scss");
+/* harmony import */ var _main_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./main.js */ "./assets/main.js");
+
 
 
 }();

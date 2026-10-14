@@ -7,8 +7,7 @@ function dxndre_enquiry_services() {
  return ['design-build' => ['Design & build', 'A complete website, from first idea to launch.'], 'wordpress' => ['WordPress development', 'A custom WordPress site built around your needs.'], 'custom-web' => ['Custom web development', 'A website or application beyond WordPress.'], 'fixes' => ['One-time fixes', 'Resolve an issue or improve an existing website.'], 'support' => ['Ongoing support', 'Reliable care and improvements over time.'], 'unsure' => ['Help me decide', 'Let’s find the right approach together.']];
 }
 add_shortcode('dx_project_enquiry', function () {
- wp_enqueue_script('dx-project-enquiry', get_template_directory_uri() . '/assets/project-enquiry.js', [], filemtime(__DIR__ . '/../assets/project-enquiry.js'), true);
- wp_localize_script('dx-project-enquiry', 'DX_ENQUIRY', ['url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('dx_project_enquiry')]);
+ wp_localize_script('dxndre-theme', 'DX_ENQUIRY', ['url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('dx_project_enquiry')]);
  ob_start(); ?>
 <section class="project-enquiry" aria-labelledby="enquiry-title">
  <a class="enquiry-back-site" href="<?php echo esc_url(home_url('/portfolio/')); ?>">← Back to the work</a>

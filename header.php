@@ -68,15 +68,13 @@
 					// Navigation assets.
 					$menu_bus = get_template_directory_uri() . '/assets/img/bus.png';
 
-					// Optional social URLs.
+					// Social profiles from the site's .site-footer-social links.
 					$menu_socials = array(
-						'Instagram' => get_theme_mod( 'social_instagram_url', '' ),
-						'LinkedIn'  => get_theme_mod( 'social_linkedin_url', '' ),
-						'GitHub'    => get_theme_mod( 'social_github_url', '' ),
+						'Instagram' => 'https://www.instagram.com/d.xndre_',
+						'GitHub' => 'https://github.com/dxndre',
+						'X' => 'https://x.com/dxndre1',
+						'LinkedIn' => 'https://www.linkedin.com/in/dxndre/',
 					);
-
-					// Only display configured social profiles.
-					$menu_socials = array_filter( $menu_socials );
 
 					// Portfolio destination.
 					$portfolio_page = get_page_by_path( 'portfolio' );
@@ -103,6 +101,7 @@
 									<span class="dx-menu__eyebrow">
 										<?php esc_html_e( 'Navigation', 'dxndre' ); ?>
 									</span>
+									<h2 class="dx-menu__title"><?php esc_html_e( 'Menu', 'dxndre' ); ?></h2>
 								</div>
 
 								<div class="dx-menu__navigation">

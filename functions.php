@@ -548,14 +548,12 @@ function dxndre_scripts_loader() {
 
 	// 1. Styles.
 	wp_enqueue_style( 'style', get_theme_file_uri( 'style.css' ), array(), $theme_version, 'all' );
-	wp_enqueue_style( 'main', get_theme_file_uri( 'build/main.css' ), array(), $theme_version, 'all' ); // main.scss: Compiled Framework source + custom styles.
 
 	if ( is_rtl() ) {
 		wp_enqueue_style( 'rtl', get_theme_file_uri( 'build/rtl.css' ), array(), $theme_version, 'all' );
 	}
 
 	// 2. Scripts.
-	wp_enqueue_script( 'mainjs', get_theme_file_uri( 'build/main.js' ), array(), $theme_version, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -1084,7 +1082,7 @@ add_action('admin_post_dx_cancel_ticket', function () {
 
 add_action('wp_enqueue_scripts', function () {
 
-	wp_localize_script('mainjs', 'DX_DASHBOARD', [
+	wp_localize_script('dxndre-theme', 'DX_DASHBOARD', [
 		'ajax_url' => admin_url('admin-ajax.php'),
 		'nonce'    => wp_create_nonce('dx_dashboard'),
 	]);
@@ -2412,7 +2410,7 @@ function dx_bus_diary_enqueue_assets() {
 		return;
 	}
 
-	wp_localize_script('mainjs', 'DX_BUS_DIARY', [
+	wp_localize_script('dxndre-theme', 'DX_BUS_DIARY', [
 		'rest_url' => esc_url_raw(rest_url('dx/v1/')),
 		'nonce'    => wp_create_nonce('wp_rest'),
 	]);
@@ -2586,3 +2584,10 @@ require_once get_template_directory() . '/inc/project-enquiry.php';
 
 // Best-match search experience.
 require_once get_template_directory() . '/inc/search-experience.php';
+
+// Editorial CV page and recruiter entry point.
+require_once get_template_directory() . '/inc/cv-experience.php';
+
+require_once get_stylesheet_directory() . '/inc/fitness-experience.php';
+
+require_once get_stylesheet_directory() . '/inc/site-polish.php';
