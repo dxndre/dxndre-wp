@@ -144,7 +144,7 @@
 															rel="noopener noreferrer"
 															aria-label="<?php echo esc_attr( $name ); ?>"
 														>
-															<?php echo esc_html( $name ); ?>
+															<i class="fa-brands fa-<?php echo esc_attr($name === "X" ? "x-twitter" : strtolower($name)); ?>" aria-hidden="true"></i>
 														</a>
 
 													<?php endforeach; ?>

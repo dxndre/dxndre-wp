@@ -9,7 +9,7 @@ if (is_user_logged_in()) {
 ?>
 
 <div class="container">
-	<section class="auth auth-signup">
+	<section class="auth dx-account-photo auth-signup">
 		<div class="login-content">
 			<pre class="headline">Client Portal Register</pre>
 			<h1>Create Account</h1>
@@ -49,7 +49,7 @@ if (is_user_logged_in()) {
 		</div>
 
 		<div class="graphic-content">
-			<img src="<?php echo get_template_directory_uri(); ?>/assets/img/bus.png" alt="">
+			<img src="<?php echo get_template_directory_uri(); ?>/assets/img/account-night.jpeg" alt="">
 		</div>
 	</section>
 

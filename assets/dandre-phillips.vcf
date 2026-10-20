@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Phillips;D’André;;;
+FN:D’André Phillips
+ORG:DXNDRE.CO.UK
+TITLE:Designer & Developer
+EMAIL;TYPE=INTERNET,WORK:hello@dxndre.co.uk
+URL:https://dxndre.co.uk
+ADR;TYPE=WORK:;;;London;;;United Kingdom
+NOTE:Design and development; customer service and client support.
+END:VCARD

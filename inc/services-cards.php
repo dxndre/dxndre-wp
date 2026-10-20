@@ -35,5 +35,11 @@ add_filter('render_block_core/post-template', function($html) {
         . '<div class="service-training-content"><div class="service-training-heading"><p class="service-card-category">Beyond digital</p><span class="service-coming-soon">Coming soon</span></div>'
         . '<h3>Personal Training</h3><p>A new service focused on training, discipline and progress. Details will be announced soon.</p>'
         . '<a class="service-card-link" href="' . esc_url(home_url('/contact/?service=personal-training')) . '"><span>Enquire about training</span><span aria-hidden="true">↗</span></a></div></li>';
-    return substr_replace($html, $training, $closing, 0);
+    $additional = '';
+    foreach ([
+        ['Photography', 'A different perspective', 'Photography with an eye for atmosphere, detail and the moments worth keeping. Tell me what you have in mind and we can shape the brief together.', 'mailto:hello@dxndre.co.uk?subject=Photography%20enquiry', 'Enquire about photography'],
+    ] as $service) {
+        $additional .= '<li class="service-training-card service-personal-card"><div class="service-training-content"><p class="service-card-category">' . esc_html($service[1]) . '</p><h3>' . esc_html($service[0]) . '</h3><p>' . esc_html($service[2]) . '</p><a class="service-card-link" href="' . esc_url(strpos($service[3], 'mailto:') === 0 ? $service[3] : home_url($service[3])) . '"><span>' . esc_html($service[4]) . '</span><span aria-hidden="true">↗</span></a></div></li>';
+    }
+    return substr_replace($html, $training . $additional, $closing, 0);
 });

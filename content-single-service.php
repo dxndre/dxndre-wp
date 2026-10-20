@@ -2,9 +2,11 @@
 /** Shared service detail shell. The main sections remain editable post content. */
 $slug = get_post_field('post_name', get_the_ID());
 $is_fixes = $slug === 'one-time-fixes';
-$enquiry_service = ['one-time-fixes' => 'fixes', 'retainer' => 'support', 'design' => 'design-build', 'comprehensive' => 'design-build', 'wordpress-development' => 'wordpress', 'development' => 'custom-web'][$slug] ?? 'unsure';
+$is_photography = $slug === 'photography';
+$enquiry_service = ['photography' => 'photography', 'one-time-fixes' => 'fixes', 'retainer' => 'support', 'design' => 'design-build', 'comprehensive' => 'design-build', 'wordpress-development' => 'wordpress', 'development' => 'custom-web'][$slug] ?? 'unsure';
 $enquiry_url = add_query_arg('enquiry_service', $enquiry_service, home_url('/start-a-project/'));
 $facts = [
+    'photography' => ['A different perspective', 'People, places & brands', 'Photography', '£40 flat rate', 'Discuss your shoot'],
     'one-time-fixes' => ['Targeted technical support', 'Targeted improvements', 'Existing websites', 'One-off engagement', 'Share your issue'],
     'retainer' => ['Ongoing website support', 'Continuous improvements', 'Existing websites', 'Ongoing engagement', 'Discuss your needs'],
     'design' => ['Considered digital design', 'Interface design', 'New & existing websites', 'Design engagement', 'Share your brief'],
@@ -19,6 +21,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
     <?php if (has_post_thumbnail()) : ?>
       <div class="service-detail-art" aria-hidden="true"><?php echo get_the_post_thumbnail(get_the_ID(), 'full', ['alt' => '', 'fetchpriority' => 'high', 'loading' => 'eager']); ?></div>
     <?php endif; ?>
+    <?php if ($is_photography) : ?><div class="dx-service-slides" aria-hidden="true"><?php foreach ([1698,1696,1690] as $photo_id) echo wp_get_attachment_image($photo_id, 'full', false, ['alt'=>'','loading'=>'lazy']); ?></div><button class="dx-slides-toggle" type="button" aria-pressed="false">Pause slideshow</button><?php endif; ?>
     <div class="service-detail-container service-detail-hero-content">
       <a class="service-back" href="<?php echo esc_url(home_url('/services/')); ?>"><span aria-hidden="true">←</span> All services</a>
       <p class="service-eyebrow"><?php echo esc_html($details[0]); ?></p>
@@ -30,13 +33,13 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
         <p class="service-lead"><?php echo esc_html(get_the_excerpt()); ?></p>
       <?php endif; ?>
       <div class="service-detail-actions">
-        <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_fixes ? 'Tell me about the issue' : 'Tell me about your project'; ?> <span aria-hidden="true">↗</span></a>
+        <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_photography ? 'Tell me about your shoot' : ($is_fixes ? 'Tell me about the issue' : 'Tell me about your project'); ?> <span aria-hidden="true">↗</span></a>
         <a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
       </div>
     </div>
   </header>
   <div class="service-detail-facts"><dl class="service-detail-container">
-    <?php foreach (['Focus', 'Project type', 'Support', 'Next step'] as $index => $label) : ?>
+    <?php foreach (($is_photography ? ['Focus', 'Service', 'Price', 'Next step'] : ['Focus', 'Project type', 'Support', 'Next step']) as $index => $label) : ?>
       <div><dt><?php echo esc_html($label); ?></dt><dd><?php echo esc_html($details[$index + 1]); ?></dd></div>
     <?php endforeach; ?>
   </dl></div>
@@ -45,9 +48,9 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
   </div>
   <section id="service-enquiry" class="service-detail-enquiry service-detail-container" aria-labelledby="service-enquiry-title">
     <div><p class="service-eyebrow"><?php echo $is_fixes ? 'Start with the problem' : 'Let’s work together'; ?></p>
-      <h2 id="service-enquiry-title"><?php echo $is_fixes ? 'Let’s get it<br>working.' : 'Let’s build<br>something meaningful.'; ?></h2>
+      <h2 id="service-enquiry-title"><?php echo $is_fixes ? 'Let’s get it<br>working.' : ($is_photography ? 'Let’s capture<br>your story.' : 'Let’s build<br>something meaningful.'); ?></h2>
       <p><?php echo $is_fixes ? 'Tell me what’s happening and I’ll help you find the next step.' : 'Share your brief and we can discuss the next step.'; ?></p>
-      <p class="service-form-hint">Include your website URL and any useful details in your message.</p>
+      <p class="service-form-hint"><?php echo $is_photography ? 'Share your location, intended use and the kind of images you have in mind.' : 'Include your website URL and any useful details in your message.'; ?></p>
     </div>
     <div class="service-detail-form">
       <?php

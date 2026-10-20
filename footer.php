@@ -145,6 +145,7 @@
 	</footer>
 	</div><!-- /#wrapper -->
 	<?php
+		get_template_part('inc/hire-modals');
 		wp_footer();
 	?>
 </body>

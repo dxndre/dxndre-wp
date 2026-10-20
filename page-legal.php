@@ -11,11 +11,13 @@ the_post();
 ?>
 <div id="post-<?php the_ID(); ?>" <?php post_class( 'content' ); ?>>
 	<div class="container">
-		<div class="legal-banner">
-			<h1 class="entry-title"><?php the_title(); ?></h1>
+		<div class="legal-banner dx-services-intro"><p class="dx-eyebrow">The details / Clear &amp; considered</p>
+			<h1 class="entry-title"><?php the_title(); ?></h1><p><?php echo is_page('terms-of-service') ? 'Clear terms. Considered collaboration.' : 'Your information, handled with care.'; ?></p>
 		</div>
 		<?php
+			echo '<div class="dx-legal-copy">';
 			the_content();
+			echo '</div>';
 
 			wp_link_pages(
 				array(

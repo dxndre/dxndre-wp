@@ -15221,521 +15221,6 @@ body.is-frontend.page-template-page-legal #main > .content .legal-content #cmplz
 body.is-frontend.page-template-page-legal #main > .content .legal-content #cmplz-document #cmplz-manage-consent-container.cmplz-manage-consent-container .cmplz-categories .cmplz-category .cmplz-description[hidden] {
   display: none;
 }
-body.is-frontend.page-template-page-homepage #hireMeModal,
-body.is-frontend.page-template-page-homepage #clientModal,
-body.is-frontend.page-template-page-homepage #recruiterModal {
-  backdrop-filter: blur(25px);
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
-  max-width: 768px !important;
-}
-@media (min-width: 1200px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
-    max-width: 992px !important;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-shell,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-shell,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-shell {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: column-reverse;
-          flex-direction: column-reverse;
-}
-@media (min-width: 768px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-shell,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-shell,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-shell {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-align: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
-  background-color: black;
-  border-radius: 0;
-  border: none;
-  -webkit-box-shadow: 0 0 50px -20px black;
-          box-shadow: 0 0 50px -20px black;
-  min-height: auto;
-  padding: 0;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  width: 90%;
-  margin: 0 auto;
-  opacity: 1;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
-    min-height: 576px;
-  }
-}
-@media (min-width: 768px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
-    width: 100%;
-  }
-}
-@media (min-width: 992px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -webkit-box-align: stretch;
-        -ms-flex-align: stretch;
-            align-items: stretch;
-  }
-}
-@media (min-width: 1200px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content {
-    max-width: 945px;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  padding: 2em;
-  color: white;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  gap: 12px;
-  opacity: 1;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
-  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
-    padding: 3em;
-  }
-}
-@media (min-width: 768px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
-    padding: 4em;
-    width: 100%;
-  }
-}
-@media (min-width: 992px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner {
-    padding: 4em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-content-inner .headline,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-content-inner .headline,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-content-inner .headline {
-  margin-bottom: 0;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
-  width: 100%;
-  height: 220px;
-  -ms-flex-negative: 0;
-      flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-  opacity: 1;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
-  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-@media (min-width: 768px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
-    width: 325px;
-    height: auto;
-  }
-}
-@media (min-width: 992px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image {
-    width: 300px;
-    height: auto;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-image img,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-image img,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-image img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  display: block;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog {
-  /* ========================= DESKTOP LAYOUT ========================= */
-  /* ========================= YOUR EXISTING STYLES ========================= */
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header {
-  padding: 0;
-  border-bottom: none;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header h5, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header .h5,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header h5,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .h5,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header h5,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .h5 {
-  font-size: 1.5em;
-  line-height: 1.25;
-  margin-bottom: 12px;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header h5, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-header .h5,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header h5,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-header .h5,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header h5,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-header .h5 {
-    font-size: 2em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn-close,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn-close,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn-close {
-  opacity: 0.6;
-  position: absolute;
-  top: 3em;
-  left: 3em;
-  z-index: 1;
-  -webkit-transform: scale(1.5);
-          transform: scale(1.5);
-  -webkit-transition: 0.3s ease;
-  transition: 0.3s ease;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn-close:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn-close:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn-close:hover {
-  opacity: 1;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body {
-  padding: 0;
-  -webkit-box-flex: initial;
-      -ms-flex: initial;
-          flex: initial;
-  margin-top: 0em;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body {
-    margin-top: 2em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .question,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .question,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .question {
-  font-size: 1.125em;
-  font-weight: lighter;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .question,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .question,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .question {
-    font-size: 1.5em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  gap: 10px;
-  padding: 4px 20px;
-  margin-bottom: 2em;
-  border-radius: 25px;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  -webkit-box-shadow: 0px 0px 25px -5px;
-          box-shadow: 0px 0px 25px -5px;
-  color: white;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(6px);
-  pointer-events: none;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge .dot,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge .dot,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-  -webkit-box-shadow: 0 0 8px currentColor;
-          box-shadow: 0 0 8px currentColor;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-available,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-available,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-available {
-  color: #4dff9f;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-backlog,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog {
-  color: #ffd479;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog .dot {
-  -webkit-box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
-          box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-casual,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-casual,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-casual {
-  color: #ffd479;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .availability-badge.is-unavailable,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .availability-badge.is-unavailable,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .availability-badge.is-unavailable {
-  color: #888;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p {
-  font-size: 14px;
-  font-weight: lighter;
-  line-height: 1.75;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p {
-    font-size: 1.125em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p:last-of-type,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p:last-of-type,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p:last-of-type {
-  margin-bottom: 1em;
-}
-@media (min-width: 1400px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body p:last-of-type,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body p:last-of-type,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body p:last-of-type {
-    margin-bottom: 2em;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .modal-back,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .modal-back,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .modal-back {
-  margin-top: 2.5em;
-  background: none;
-  border: none;
-  padding: 0;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.9em;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  -webkit-transition: color 0.2s ease;
-  transition: color 0.2s ease;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .modal-body .modal-back:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .modal-body .modal-back:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .modal-body .modal-back:hover {
-  color: white;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .button-container,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .button-container,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .button-container {
-  gap: 1em;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  display: -ms-grid;
-  display: grid;
-}
-@media (min-width: 992px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .button-container,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .button-container,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .button-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
-  border-radius: 0;
-  min-height: 50px;
-  min-width: 250px;
-  background: white;
-  color: black;
-  border: 1px solid white;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  gap: 0.5em;
-  width: 100%;
-  -webkit-transition: 0.7s all ease;
-  transition: 0.7s all ease;
-}
-@media (min-width: 576px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
-    min-height: 60px;
-  }
-}
-@media (min-width: 1200px) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
-  body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
-    width: auto;
-  }
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn i, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link i,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn i,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link i,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn i,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link i {
-  -webkit-transform: scale(1.25);
-          transform: scale(1.25);
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.social, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .social.wp-block-button__link,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.social,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .social.wp-block-button__link,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.social,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .social.wp-block-button__link {
-  min-width: 80px;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn:hover, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link:hover {
-  background: transparent;
-  color: white;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.alternative, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .alternative.wp-block-button__link,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.alternative,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .alternative.wp-block-button__link,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.alternative,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .alternative.wp-block-button__link {
-  background: transparent;
-  color: white;
-  border: 1px solid white;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .btn.alternative:hover, body.is-frontend.page-template-page-homepage #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .alternative.wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .btn.alternative:hover,
-body.is-frontend.page-template-page-homepage #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #clientModal .modal-dialog .alternative.wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .btn.alternative:hover,
-body.is-frontend.page-template-page-homepage #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
-body.is-frontend.page-template-page-homepage .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .alternative.wp-block-button__link:hover {
-  background: white;
-  color: black;
-}
-body.is-frontend.page-template-page-homepage #hireMeModal,
-body.is-frontend.page-template-page-homepage #clientModal,
-body.is-frontend.page-template-page-homepage #recruiterModal {
-  /* ========================= REDUCED MOTION ========================= */
-}
-@media (prefers-reduced-motion: reduce) {
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-content,
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #hireMeModal .modal-image,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-content,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #clientModal .modal-image,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-content,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-content-inner,
-  body.is-frontend.page-template-page-homepage #recruiterModal .modal-image {
-    -webkit-transition: none !important;
-    transition: none !important;
-    -webkit-transform: none !important;
-            transform: none !important;
-  }
-}
 body.is-frontend.page-template-page-homepage #main .hero-background:has(> .wp-block-cover__inner-container > .hero-foreground) {
   background: #050504;
   isolation: isolate;
@@ -31463,6 +30948,39 @@ body.is-frontend.page-services #main section.services .featured-projects .servic
   outline: 2px solid #d5a74e;
   outline-offset: 5px;
 }
+body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card {
+  grid-column: 1/-1;
+  -ms-grid-columns: 1fr;
+  grid-template-columns: 1fr;
+}
+body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1.4fr;
+  grid-template-columns: 1fr 1.4fr;
+  -webkit-column-gap: 32px;
+     -moz-column-gap: 32px;
+          column-gap: 32px;
+}
+body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content > p, body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content .service-card-link {
+  max-width: none;
+}
+body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content > .service-card-category {
+  grid-column: 1/-1;
+  color: #d5ad63;
+  font-size: 11px;
+}
+body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content .service-card-link {
+  -ms-grid-column: 2;
+  grid-column: 2;
+}
+@media (max-width: 767px) {
+  body.is-frontend.page-services #main section.services .featured-projects .service-training-card.service-personal-card .service-training-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+}
 body.is-frontend.page-services #main section.services .featured-projects .service-training-card {
   grid-column: 1/-1;
   display: -ms-grid;
@@ -34615,9 +34133,9 @@ body.is-frontend #main .what-i-do .tab-progress {
 body.is-frontend #main .what-i-do .tab-pane {
   max-width: none !important;
   width: 100% !important;
-  padding: 28px !important;
-  border: 1px solid rgba(213, 173, 99, 0.2078431373) !important;
-  background: #10100e !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
 }
 
 body.is-frontend #main .what-i-do .tab-pane::before,
@@ -35498,7 +35016,8 @@ body.dxb-page .dxb {
   overflow: auto;
   margin-top: 45px;
   scrollbar-width: none;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid transparent;
+  border-bottom-color: var(--line);
 }
 
 .dxb-nav a {
@@ -38139,6 +37658,7 @@ body.dxb-page {
 
 /* Sticky navigation keeps breathing room at both ends. */
 .dxb .dxb-nav.is-stuck {
+  border-color: var(--line);
   padding-inline: clamp(16px, 2vw, 32px);
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
@@ -38146,8 +37666,8 @@ body.dxb-page {
 
 /* Let the selected route photograph show through until navigation sticks. */
 .dxb .dxb-nav {
-  -webkit-transition: background-color 0.4s ease, backdrop-filter 0.4s ease, padding-inline 0.4s ease;
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease, padding-inline 0.4s ease;
+  -webkit-transition: background-color 0.4s ease, backdrop-filter 0.4s ease, padding-inline 0.4s ease, border-color 0.4s ease;
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease, padding-inline 0.4s ease, border-color 0.4s ease;
 }
 
 .dxb.has-route-photo .dxb-nav:not(.is-stuck) {
@@ -38940,5 +38460,2588 @@ body .dxb .dxb-recent [data-spacing=normal] {
   .dxb .dxb-fleet-position {
     -ms-grid-columns: 1fr;
     grid-template-columns: 1fr;
+  }
+}
+/* Services, menu and fitness refinements. */
+body.is-frontend #main .what-i-do,
+body.is-frontend #main .what-i-do .hero-background,
+body.is-frontend #main .what-i-do .services-tabs,
+body.is-frontend #main .what-i-do .tab-content {
+  overflow: visible !important;
+}
+
+body.is-frontend #main .what-i-do .tab-pane {
+  position: relative;
+}
+
+body.is-frontend #main .what-i-do .tab-pane img.background {
+  position: absolute;
+  pointer-events: none;
+}
+
+body.is-frontend #header #navbar .dx-menu__list > li > a[href*="/buses"]:hover, body.is-frontend #header #navbar .dx-menu__list > li > a[href*="/buses"]:focus-visible {
+  color: #ef4444 !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__social-links a {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+}
+
+@-webkit-keyframes menu-item-reveal {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+            transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+}
+
+@keyframes menu-item-reveal {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(12px);
+            transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+}
+body.nav-open #navbar .dx-menu__list > li {
+  -webkit-animation: menu-item-reveal 0.5s ease both;
+          animation: menu-item-reveal 0.5s ease both;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(1) {
+  -webkit-animation-delay: 0s;
+          animation-delay: 0s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(2) {
+  -webkit-animation-delay: 0.065s;
+          animation-delay: 0.065s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(3) {
+  -webkit-animation-delay: 0.13s;
+          animation-delay: 0.13s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(4) {
+  -webkit-animation-delay: 0.195s;
+          animation-delay: 0.195s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(5) {
+  -webkit-animation-delay: 0.26s;
+          animation-delay: 0.26s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(6) {
+  -webkit-animation-delay: 0.325s;
+          animation-delay: 0.325s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(7) {
+  -webkit-animation-delay: 0.39s;
+          animation-delay: 0.39s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(8) {
+  -webkit-animation-delay: 0.455s;
+          animation-delay: 0.455s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(9) {
+  -webkit-animation-delay: 0.52s;
+          animation-delay: 0.52s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(10) {
+  -webkit-animation-delay: 0.585s;
+          animation-delay: 0.585s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(11) {
+  -webkit-animation-delay: 0.65s;
+          animation-delay: 0.65s;
+}
+body.nav-open #navbar .dx-menu__list > li:nth-child(12) {
+  -webkit-animation-delay: 0.715s;
+          animation-delay: 0.715s;
+}
+
+body.is-frontend .service-training-card.service-personal-card {
+  grid-column: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background: linear-gradient(-135deg, #201b12, #0b0b09);
+}
+body.is-frontend .service-training-card.service-personal-card .service-training-content {
+  width: 100%;
+  padding: clamp(24px, 3vw, 48px);
+}
+
+.pricing-calculator .options-group--categories {
+  -ms-grid-columns: 1fr !important;
+  grid-template-columns: 1fr !important;
+}
+.pricing-calculator .options-group--categories .category-card {
+  min-height: 0;
+  padding: 24px;
+}
+.pricing-calculator .options-group--categories .category-card__content {
+  gap: 12px;
+}
+.pricing-calculator .options-group--categories .category-card__description br {
+  display: none;
+}
+.pricing-calculator .options-group--categories .category-card__action {
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.dx-fitness .dxf-nav {
+  top: 104px;
+  z-index: 30;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid transparent;
+  border-bottom-color: var(--dxf-line);
+  -webkit-transition: padding 0.4s ease, border-color 0.4s ease, background-color 0.4s ease, backdrop-filter 0.4s ease;
+  transition: padding 0.4s ease, border-color 0.4s ease, background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+.dx-fitness .dxf-nav.is-stuck {
+  padding-inline: clamp(16px, 2vw, 32px);
+  border-color: var(--dxf-line);
+}
+.dx-fitness .dxf-nav a {
+  -webkit-transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (max-width: 767px) {
+  .dx-fitness .dxf-nav {
+    top: 89px;
+  }
+}
+body.is-frontend .gym-review-rating__number,
+body.is-frontend .league-row-score,
+body.is-frontend .league-total-number,
+body.is-frontend .dx-score-value,
+body.is-frontend .dx-badge--overall .text {
+  font-weight: 200 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.nav-open #navbar .dx-menu__list > li {
+    -webkit-animation: none;
+            animation: none;
+  }
+  .dx-fitness .dxf-nav, .dx-fitness .dxf-nav a {
+    -webkit-transition: none;
+    transition: none;
+  }
+}
+body.is-frontend .pricing-calculator .options-group--categories .category-card {
+  min-height: 0 !important;
+}
+
+/* Live route exploration. */
+.dxb .dxb-tracking-breakdown.is-checking .dxb-deck-total {
+  -webkit-animation: dxb-type-pulse 1.2s ease-in-out infinite;
+          animation: dxb-type-pulse 1.2s ease-in-out infinite;
+  cursor: progress;
+}
+
+@-webkit-keyframes dxb-type-pulse {
+  50% {
+    opacity: 0.4;
+    border-color: #d5ad63;
+  }
+}
+
+@keyframes dxb-type-pulse {
+  50% {
+    opacity: 0.4;
+    border-color: #d5ad63;
+  }
+}
+.dxb .dxb-fleet-header {
+  position: sticky;
+  top: -24px;
+  z-index: 3;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  gap: 20px;
+  background: #10110e;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(213, 173, 99, 0.4);
+}
+.dxb .dxb-fleet-header h2, .dxb .dxb-fleet-header .h2 {
+  margin: 0;
+}
+.dxb .dxb-fleet-header button {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+}
+
+.dxb .dxb-fleet-identity .dxb-fleet-registration {
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 500;
+  color: #f2d48d;
+}
+
+.dxb .dxb-fleet-position.is-warning {
+  display: block;
+  color: #e7c584;
+  border-right: 2px solid currentColor;
+  padding: 10px 14px;
+  background: rgba(213, 173, 99, 0.062745098);
+}
+
+.dxb .dxb-line-detail {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[2];
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  grid-column: 1/-1;
+}
+
+.dxb #dxb-line-direction {
+  margin: 12px 0 24px;
+  max-width: 100%;
+}
+
+.dxb .dxb-line-timeline {
+  list-style: none;
+  padding: 0 16px 0 0;
+  margin: 24px 0;
+}
+
+.dxb .dxb-line-stop {
+  position: relative;
+  border-right: 2px solid rgba(213, 173, 99, 0.4666666667);
+  padding: 0 28px 28px 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 12px;
+}
+.dxb .dxb-line-stop::before {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #d5ad63;
+  border-radius: 50%;
+  background: #10110e;
+}
+.dxb .dxb-line-stop:last-child {
+  border-color: transparent;
+}
+
+.dxb .dxb-line-bus {
+  border: 1px solid rgba(213, 173, 99, 0.4666666667);
+  color: #f1d28d;
+  background: rgba(213, 173, 99, 0.062745098);
+  border-radius: 30px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.dxb #dxb-advanced {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  width: 54px;
+  height: 30px;
+  border: 1px solid #d5ad63;
+  border-radius: 30px;
+  background: #24241e;
+  position: relative;
+  cursor: pointer;
+  -webkit-transition: background 0.3s ease;
+  transition: background 0.3s ease;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+}
+
+.dxb #dxb-advanced::before {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #eee;
+  -webkit-transition: -webkit-transform 0.3s ease;
+  transition: -webkit-transform 0.3s ease;
+  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+}
+
+.dxb #dxb-advanced:checked {
+  background: #d5ad63;
+}
+
+.dxb #dxb-advanced:checked::before {
+  -webkit-transform: translateX(-24px);
+          transform: translateX(-24px);
+}
+
+.dxb #dxb-arrivals .dxb-arrival-card {
+  -webkit-transition: border-color 0.4s ease;
+  transition: border-color 0.4s ease;
+}
+
+.dxb #dxb-arrivals .dxb-arrival-time {
+  -webkit-transition: color 0.4s ease;
+  transition: color 0.4s ease;
+}
+
+.dxb.is-enthusiast #dxb-arrivals .dxb-arrival-card {
+  border-color: #fff;
+}
+
+.dxb.is-enthusiast #dxb-arrivals .dxb-arrival-time {
+  color: #fff;
+}
+
+.dxb-confetti i.is-emoji {
+  background: none;
+  width: auto;
+  height: auto;
+  font-size: 24px;
+  font-style: normal;
+}
+
+.dxb .dxb-retry-icon {
+  font-size: 0;
+  width: 32px;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 32px;
+          flex: 0 0 32px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 2px solid rgba(213, 173, 99, 0.2);
+  border-top-color: #d5ad63;
+  -webkit-transform-origin: center;
+          transform-origin: center;
+}
+
+/* Consistent section navigation and service grouping. */
+.dx-section-nav {
+  border: 1px solid transparent;
+  border-bottom-color: rgba(213, 173, 99, 0.3333333333);
+  -webkit-transition: padding 0.4s ease, border-color 0.4s ease, background-color 0.4s ease;
+  transition: padding 0.4s ease, border-color 0.4s ease, background-color 0.4s ease;
+}
+
+.dx-section-nav.is-docked {
+  border-color: rgba(213, 173, 99, 0.3333333333);
+  padding-inline: clamp(16px, 2vw, 32px);
+}
+
+.dx-section-nav a {
+  -webkit-transition: color 0.3s ease, border-color 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.physical-services {
+  padding-block: 50px;
+  scroll-margin-top: 180px;
+}
+
+.physical-services-list {
+  padding: 0;
+  list-style: none;
+  display: -ms-grid;
+  display: grid;
+  gap: 24px;
+}
+
+.physical-services-list .service-training-card {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1.5fr;
+  grid-template-columns: 1fr 1.5fr;
+  border: 1px solid rgba(213, 173, 99, 0.3333333333);
+}
+
+.physical-services-list figure {
+  margin: 0;
+}
+
+.physical-services-list img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.physical-services-list .service-training-content {
+  padding: 32px;
+}
+
+.physical-services-list .service-personal-card {
+  display: block;
+}
+
+.physical-services-list .service-card-link {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  border-top: 1px solid rgba(213, 173, 99, 0.3333333333);
+  margin-top: 24px;
+  padding-top: 20px;
+  color: #d5ad63;
+}
+
+body.is-frontend #header #navbar .dx-menu__social-links {
+  gap: 6px !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__social-links a {
+  width: 40px;
+  font-size: 28px !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__social-links i {
+  font-size: 28px !important;
+}
+
+body.page-about #main > .content, body.page-about #footer {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Chapter text and imagery share a vertical composition. */
+body.is-frontend.single-project #main .story-section .cs-chapter {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 120px 0 70px;
+}
+
+body.is-frontend.single-project #main .story-section .container {
+  width: 100%;
+  max-width: none;
+  padding-inline: clamp(24px, 6vw, 100px);
+}
+
+body.is-frontend.single-project #main .cs-panel-track {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+body.is-frontend.single-project #main .cs-panel-track .cs-panel.image {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+  padding: 0;
+}
+
+body.is-frontend.single-project #main .cs-panel.image figure {
+  margin: 0;
+  width: auto;
+  max-width: none;
+}
+
+body.is-frontend.single-project #main .cs-panel.image img {
+  width: auto !important;
+  max-width: none !important;
+  height: 42dvh !important;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  body.is-frontend.single-project #main .chapter-selector {
+    right: 12px;
+    left: auto;
+    top: 50%;
+    bottom: auto;
+    -webkit-transform: translateY(-50%) !important;
+            transform: translateY(-50%) !important;
+    max-width: 180px;
+  }
+  body.is-frontend.single-project #main .chapter-selector ul {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+            align-items: stretch;
+  }
+  body.is-frontend.single-project #main .chapter-selector a {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 12px;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    width: auto;
+    height: auto;
+    min-height: 40px;
+    padding: 10px;
+    line-height: 1.4;
+  }
+  body.is-frontend.single-project #main .chapter-selector .chapter-name {
+    font-size: 11px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    min-width: 0;
+    text-align: right;
+  }
+  body.is-frontend.single-project #main .story-section .container {
+    padding-right: 210px;
+  }
+}
+@media (max-width: 767px) {
+  .chapter-selector .chapter-name {
+    display: none;
+  }
+  .physical-services-list .service-training-card {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+  }
+}
+/* Calculator layout and personalisation. */
+body.is-frontend.page-pricing-calculator #main .pricing-calculator .category-card {
+  padding: 20px !important;
+  min-height: 0 !important;
+}
+
+body.is-frontend.page-pricing-calculator #main .pricing-calculator .category-card__content {
+  min-height: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+body.is-frontend.page-pricing-calculator #main .pricing-calculator .category-card__action {
+  margin-bottom: 0 !important;
+}
+
+.calculator-greeting {
+  color: #d5ad63;
+  margin: 0;
+}
+
+[data-journey-word] {
+  border-left: 1px solid #d5ad63;
+  padding-left: 3px;
+}
+
+@media (min-width: 768px) {
+  body.is-frontend.page-pricing-calculator #main .pricing-calculator[data-step] .calculator-step-container {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: minmax(0, 1.22fr) minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr) !important;
+  }
+  body.is-frontend.page-pricing-calculator #main .calculator-summary {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    gap: 30px;
+  }
+  .calculator-summary .calculator-intro-fields {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxb .dxb-tracking-breakdown.is-checking .dxb-deck-total {
+    -webkit-animation: none;
+            animation: none;
+  }
+  .dxb #dxb-advanced, .dxb #dxb-advanced::before, .dxb #dxb-arrivals .dxb-arrival, .dxb #dxb-arrivals .dxb-arrival-time, .dx-section-nav {
+    -webkit-transition: none;
+    transition: none;
+  }
+}
+body.is-frontend.page-pricing-calculator #main .pricing-calculator .category-card__content {
+  gap: 12px;
+}
+
+body.is-frontend .physical-services {
+  color: #f3f0e8;
+}
+
+body.is-frontend .physical-services h2, body.is-frontend .physical-services .h2, body.is-frontend .physical-services h3, body.is-frontend .physical-services .h3, body.is-frontend .physical-services p {
+  color: inherit;
+}
+
+body.is-frontend .physical-services .service-training-kicker {
+  color: #d5ad63;
+}
+
+/* Route detail refinement: shared columns and readable values. */
+.dxb .dxb-fleet-modal .dxb-fleet-item {
+  -ms-grid-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-identity {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+
+.dxb .dxb-fleet-identifiers, .dxb .dxb-fleet-modal .dxb-line-detail, .dxb .dxb-fleet-modal .dxb-fleet-position {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(0, 1fr))[2];
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 32px;
+}
+
+.dxb .dxb-fleet-modal .dxb-field-label {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 13px;
+}
+
+.dxb .dxb-fleet-modal .dxb-field-value {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-identity h3, .dxb .dxb-fleet-modal .dxb-fleet-identity .h3 {
+  font-size: 24px;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-item > button {
+  -ms-grid-column-align: end;
+      justify-self: end;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-position.is-warning {
+  display: block;
+}
+
+.dxb #panel-line > label {
+  display: inline-block;
+  margin-left: 18px;
+}
+
+.dxb .dxb-route-photo-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: -webkit-gradient(linear, right top, left top, from(rgba(4, 9, 10, 0.77)), color-stop(55%, rgba(4, 9, 10, 0.5)), to(rgba(4, 9, 10, 0.08))), -webkit-gradient(linear, right bottom, right top, from(rgba(4, 9, 10, 0.45)), color-stop(70%, transparent));
+  background: linear-gradient(-90deg, rgba(4, 9, 10, 0.77), rgba(4, 9, 10, 0.5) 55%, rgba(4, 9, 10, 0.08)), linear-gradient(0deg, rgba(4, 9, 10, 0.45), transparent 70%);
+  -webkit-transition: opacity 1.1s ease-in-out;
+  transition: opacity 1.1s ease-in-out;
+}
+
+.dxb.has-route-photo .dxb-route-photo-shade {
+  opacity: 1;
+}
+
+body.is-frontend.page-n118-fitness #main .hero-background .wp-block-heading {
+  font-size: clamp(44px, 5.8vw, 88px) !important;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-transform: none;
+  font-weight: 400;
+  margin: 24px auto;
+  max-width: 1000px;
+}
+
+body.is-frontend.page-n118-fitness #main .headline {
+  font-size: 12px !important;
+  letter-spacing: 0.2em;
+  margin-bottom: 18px;
+}
+
+body.is-frontend.page-n118-fitness #main .hero-background .wp-block-paragraph {
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+body.is-frontend.page-n118-fitness #main .hero-background {
+  padding-top: 150px;
+}
+
+body.is-frontend.page-n118-fitness #main .section-content {
+  padding-block: 25px;
+}
+
+@media (max-width: 600px) {
+  .dxb .dxb-fleet-identifiers, .dxb .dxb-fleet-modal .dxb-line-detail, .dxb .dxb-fleet-modal .dxb-fleet-position {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxb .dxb-route-photo-shade {
+    -webkit-transition: none;
+    transition: none;
+  }
+}
+body.is-frontend #main #post-1255 section.text-image:has(#mailpoet_form_1) .hero-background {
+  height: auto;
+  min-height: 100svh !important;
+  padding: 150px 0 80px;
+}
+body.is-frontend #main #post-1255 section.text-image:has(#mailpoet_form_1) .section-content h2, body.is-frontend #main #post-1255 section.text-image:has(#mailpoet_form_1) .section-content .h2 {
+  font-size: clamp(44px, 5.8vw, 88px) !important;
+  line-height: 1.06;
+  text-transform: none;
+}
+body.is-frontend #main #post-1255 section.text-image:has(#mailpoet_form_1) .section-content {
+  padding-block: 20px;
+}
+
+@media (min-width: 768px) {
+  .dxb .dxb-fleet-modal .dxb-fleet-identity {
+    -ms-grid-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: start;
+  }
+}
+/* Editorial direction: October 2026. */
+body.is-frontend #main .dx-eyebrow {
+  font-size: 11px !important;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d7ad57;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+body.is-frontend #main .dx-cta, body.is-frontend #main a.btn, body.is-frontend #main .wp-block-button__link, body.is-frontend #main .service-card-link, body.is-frontend #main button[type=submit], body.is-frontend #main input[type=submit] {
+  border-radius: 0 !important;
+  min-height: 58px;
+  padding: 18px 30px !important;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 24px;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid #d5aa4b !important;
+  background: #d5aa4b;
+  color: #080808;
+  -webkit-transition: background-color 0.3s, color 0.3s, border-color 0.3s, -webkit-transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, -webkit-transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s, -webkit-transform 0.3s;
+}
+body.is-frontend #main .dx-cta:hover, body.is-frontend #main a.btn:hover, body.is-frontend #main .wp-block-button__link:hover, body.is-frontend #main .service-card-link:hover {
+  background: #edd195;
+  color: #080808;
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+}
+body.is-frontend #main .dx-cta--outline, body.is-frontend #main a.btn-outline, body.is-frontend #main a.btn-outline-primary, body.is-frontend #main .wp-block-buttons .wp-block-button.is-style-outline a.wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button.is-style-outline #main a.wp-block-button__link {
+  background: transparent;
+  color: #d5aa4b;
+}
+body.is-frontend #main .dx-cta > span[aria-hidden] {
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+body.is-frontend #main .dx-about-editorial, body.is-frontend #main .dx-services-editorial {
+  overflow: clip;
+  background: #090909;
+  color: #eeede7;
+}
+body.is-frontend #main .dx-about-editorial h1, body.is-frontend #main .dx-about-editorial .h1, body.is-frontend #main .dx-services-editorial h1, body.is-frontend #main .dx-services-editorial .h1, body.is-frontend #main .dx-about-editorial h2, body.is-frontend #main .dx-about-editorial .h2, body.is-frontend #main .dx-services-editorial h2, body.is-frontend #main .dx-services-editorial .h2 {
+  font-weight: 400 !important;
+  letter-spacing: -0.055em;
+  line-height: 1.03;
+  text-transform: none !important;
+  margin: 0;
+}
+body.is-frontend #main .dx-about-editorial em, body.is-frontend #main .dx-services-editorial em {
+  font-style: normal;
+  color: #d7ad57;
+}
+body.is-frontend #main .dx-about-hero {
+  position: relative;
+  min-height: 950px;
+  height: 100svh;
+  max-height: 1200px;
+  padding: 160px 6vw 0;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 50% 80%, #4b3e28 0, transparent 55%);
+}
+body.is-frontend #main .dx-about-hero > .dx-eyebrow {
+  text-align: center;
+}
+body.is-frontend #main .dx-about-hero h1, body.is-frontend #main .dx-about-hero .h1 {
+  font-size: clamp(100px, 18vw, 340px) !important;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+  z-index: -1;
+}
+body.is-frontend #main .dx-about-hero h1 span, body.is-frontend #main .dx-about-hero .h1 span {
+  color: #d7ad57;
+}
+body.is-frontend #main .dx-about-portrait {
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  -webkit-transform: translateX(50%);
+          transform: translateX(50%);
+  width: min(53vw, 670px);
+  height: 72%;
+}
+body.is-frontend #main .dx-about-portrait img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  -o-object-position: bottom;
+     object-position: bottom;
+  display: block;
+  max-width: none;
+}
+body.is-frontend #main .dx-about-intro {
+  position: absolute;
+  right: 6vw;
+  bottom: 110px;
+  max-width: 27%;
+  z-index: 2;
+}
+body.is-frontend #main .dx-about-intro p {
+  font-size: clamp(20px, 2vw, 32px);
+  line-height: 1.35;
+}
+body.is-frontend #main .dx-about-location {
+  position: absolute;
+  left: 5vw;
+  bottom: 80px;
+  -webkit-writing-mode: vertical-rl;
+      -ms-writing-mode: tb-rl;
+          writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+body.is-frontend #main .dx-about-story {
+  padding: 150px 8vw;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px 8vw;
+}
+body.is-frontend #main .dx-about-story > .dx-eyebrow {
+  grid-column: 1/-1;
+}
+body.is-frontend #main .dx-about-story h2, body.is-frontend #main .dx-about-story .h2, body.is-frontend #main .dx-help h2, body.is-frontend #main .dx-help .h2, body.is-frontend #main .dx-about-interests h2, body.is-frontend #main .dx-about-interests .h2, body.is-frontend #main .dx-physical-services h2, body.is-frontend #main .dx-physical-services .h2 {
+  font-size: clamp(46px, 5.5vw, 94px) !important;
+}
+body.is-frontend #main .dx-about-story-copy p {
+  font-size: 18px;
+  line-height: 1.8;
+  max-width: 650px;
+  margin-bottom: 24px;
+}
+body.is-frontend #main .dx-help {
+  background: #e8e4da;
+  color: #161612;
+  padding: 140px 8vw;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 9vw;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+}
+body.is-frontend #main .dx-help .dx-eyebrow {
+  color: #78602c;
+}
+body.is-frontend #main .dx-help em {
+  color: #8d6a24;
+}
+body.is-frontend #main .dx-help-intro {
+  position: sticky;
+  top: 150px;
+}
+body.is-frontend #main .dx-help-intro > p:not(.dx-eyebrow) {
+  margin: 30px 0;
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 430px;
+}
+body.is-frontend #main .dx-tool-tags {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 8px;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  max-width: 440px;
+}
+body.is-frontend #main .dx-tool-tags span {
+  border: 1px solid #a49d8c;
+  padding: 7px 13px;
+  font-size: 12px;
+}
+body.is-frontend #main .dx-help-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: help;
+}
+body.is-frontend #main .dx-help-list li {
+  position: relative;
+  border-top: 1px solid #bbb4a5;
+  padding: 35px 48px 45px 0;
+  counter-increment: help;
+}
+body.is-frontend #main .dx-help-list li:before {
+  content: "0" counter(help);
+  position: absolute;
+  right: 0;
+  top: 40px;
+  font-size: 12px;
+  color: #78602c;
+}
+body.is-frontend #main .dx-help-list h3, body.is-frontend #main .dx-help-list .h3 {
+  font-size: 30px;
+  line-height: 1.2;
+  margin: 0 0 20px;
+  color: inherit;
+}
+body.is-frontend #main .dx-help-list p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #514e45;
+}
+body.is-frontend #main .dx-about-interests {
+  padding: 140px 8vw;
+}
+body.is-frontend #main .dx-about-interests > div {
+  margin-top: 70px;
+}
+body.is-frontend #main .dx-about-interests a {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 40px 1fr 1fr 30px;
+  grid-template-columns: 40px 1fr 1fr 30px;
+  gap: 30px;
+  padding: 32px 0;
+  border-top: 1px solid #55472c;
+  color: inherit;
+  text-decoration: none;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+body.is-frontend #main .dx-about-interests h3, body.is-frontend #main .dx-about-interests .h3 {
+  font-size: 27px;
+  margin: 0;
+}
+body.is-frontend #main .dx-about-interests p {
+  margin: 0;
+  color: #b9b6ad;
+}
+body.is-frontend #main .dx-editorial-contact {
+  padding: 140px 8vw;
+  background: #15140f;
+}
+body.is-frontend #main .dx-editorial-contact h2, body.is-frontend #main .dx-editorial-contact .h2 {
+  font-size: clamp(64px, 9vw, 160px) !important;
+  margin-bottom: 45px;
+}
+body.is-frontend #main .dx-services-intro {
+  padding: 180px 8vw 100px;
+  min-height: 80vh;
+}
+body.is-frontend #main .dx-services-intro h1, body.is-frontend #main .dx-services-intro .h1 {
+  font-size: clamp(75px, 11vw, 180px) !important;
+}
+body.is-frontend #main .dx-services-intro > p:not(.dx-eyebrow) {
+  margin: 35px 0;
+  font-size: 20px;
+}
+body.is-frontend #main .dx-service-index {
+  position: sticky;
+  top: 90px;
+  z-index: 15;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 35px;
+  background: rgba(9, 9, 9, 0.937254902);
+  border: 1px solid #5e4c2a;
+  padding: 23px 4vw;
+  margin: 0 3vw;
+  backdrop-filter: blur(15px);
+}
+body.is-frontend #main .dx-service-index a {
+  color: #d7ad57;
+  font-size: 13px;
+  text-decoration: none;
+}
+body.is-frontend #main .dx-service-scene {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100svh;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+  position: relative;
+  scroll-margin-top: 160px;
+}
+body.is-frontend #main .dx-service-copy {
+  padding: 110px 8vw 100px 5vw;
+  min-height: 100svh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+body.is-frontend #main .dx-service-copy h2, body.is-frontend #main .dx-service-copy .h2 {
+  font-size: clamp(45px, 5.3vw, 90px) !important;
+  margin-bottom: 25px;
+}
+body.is-frontend #main .dx-service-copy h3, body.is-frontend #main .dx-service-copy .h3 {
+  font-size: 20px;
+  color: #d7ad57;
+  line-height: 1.4;
+  margin: 0 0 35px;
+  font-weight: 400;
+}
+body.is-frontend #main .dx-service-spec {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 100px 1fr;
+  grid-template-columns: 100px 1fr;
+  gap: 22px;
+  border-top: 1px solid #51452e;
+  padding-top: 28px;
+}
+body.is-frontend #main .dx-service-spec > span {
+  font-size: 11px;
+  color: #aaa395;
+}
+body.is-frontend #main .dx-service-spec p {
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+body.is-frontend #main .dx-service-actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 24px;
+  margin-top: 45px;
+}
+body.is-frontend #main .dx-service-actions > a:not(.dx-cta) {
+  color: #c8bd9f;
+  text-decoration: none;
+  font-size: 13px;
+}
+body.is-frontend #main .dx-service-visual {
+  position: sticky;
+  top: 155px;
+  height: calc(100svh - 170px);
+  min-height: 480px;
+  margin: 15px 0 15px 15px;
+  overflow: hidden;
+  background: #1e1c16;
+  isolation: isolate;
+}
+body.is-frontend #main .dx-service-visual:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: -webkit-gradient(linear, right bottom, right top, from(rgba(0, 0, 0, 0.8)), color-stop(50%, transparent));
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), transparent 50%);
+  pointer-events: none;
+}
+body.is-frontend #main .dx-service-visual img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -webkit-transform: scale(1.08);
+          transform: scale(1.08);
+  -webkit-transition: -webkit-transform 1.8s cubic-bezier(0.2, 0.65, 0.2, 1);
+  transition: -webkit-transform 1.8s cubic-bezier(0.2, 0.65, 0.2, 1);
+  transition: transform 1.8s cubic-bezier(0.2, 0.65, 0.2, 1);
+  transition: transform 1.8s cubic-bezier(0.2, 0.65, 0.2, 1), -webkit-transform 1.8s cubic-bezier(0.2, 0.65, 0.2, 1);
+}
+body.is-frontend #main .dx-service-scene.is-visible .dx-service-visual img {
+  -webkit-transform: scale(1);
+          transform: scale(1);
+}
+body.is-frontend #main .dx-service-visual figcaption {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  left: 30px;
+  z-index: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+body.is-frontend #main .dx-service-orbit {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  font-size: clamp(24px, 4vw, 65px);
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 80%;
+  mix-blend-mode: screen;
+}
+body.is-frontend #main .dx-physical-services {
+  padding: 130px 8vw;
+}
+body.is-frontend #main .dx-physical-services > div {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 7vw;
+  margin-top: 75px;
+}
+body.is-frontend #main .dx-physical-services article {
+  border-top: 1px solid #615031;
+  padding-top: 35px;
+}
+body.is-frontend #main .dx-physical-services h3, body.is-frontend #main .dx-physical-services .h3 {
+  font-size: 36px;
+  margin: 20px 0;
+}
+body.is-frontend #main .dx-physical-services p {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+body.is-frontend #main .dx-editorial-study .story-section {
+  min-height: 100svh;
+  height: auto;
+  padding: 150px 0;
+  overflow: visible;
+}
+body.is-frontend #main .dx-editorial-study .cs-chapter {
+  display: block !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+body.is-frontend #main .dx-editorial-study .chapter-title {
+  font-size: clamp(48px, 6vw, 100px) !important;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  max-width: 950px;
+  margin: 0 0 30px !important;
+}
+body.is-frontend #main .dx-editorial-study .subtitle {
+  font-size: 24px !important;
+  line-height: 1.5;
+  max-width: 760px;
+  margin: 0 0 75px !important;
+  color: #e0d9c9;
+}
+body.is-frontend #main .dx-study-prose {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(0, 1fr))[2];
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6vw;
+  max-width: 1200px;
+}
+body.is-frontend #main .dx-study-prose article {
+  border-top: 1px solid rgba(255, 255, 255, 0.2509803922);
+  padding-top: 25px;
+}
+body.is-frontend #main .dx-study-prose article:only-child {
+  grid-column: 1/-1;
+  max-width: 790px;
+}
+body.is-frontend #main .dx-study-prose h3, body.is-frontend #main .dx-study-prose .h3 {
+  font-size: 28px;
+  margin: 0 0 25px;
+  color: #dfbc74;
+}
+body.is-frontend #main .dx-study-prose p {
+  font-size: 18px;
+  line-height: 1.85;
+  color: #eeeae1;
+  margin: 0 0 25px;
+}
+body.is-frontend #main .dx-study-image {
+  margin: 70px 0 0;
+  width: 100%;
+}
+body.is-frontend #main .dx-study-image img {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+@media (min-width: 1000px) {
+  body.is-frontend #main .dx-editorial-study .container {
+    width: auto !important;
+    max-width: none !important;
+    margin-right: 250px !important;
+    margin-left: 7vw !important;
+    padding: 0 !important;
+  }
+}
+@media (max-width: 999px) {
+  body.is-frontend #main .dx-about-hero {
+    min-height: 800px;
+  }
+  body.is-frontend #main .dx-about-intro {
+    max-width: 35%;
+  }
+  body.is-frontend #main .dx-about-portrait {
+    width: 65vw;
+    height: 65%;
+  }
+  body.is-frontend #main .dx-help {
+    gap: 5vw;
+    padding: 90px 5vw;
+  }
+  body.is-frontend #main .dx-service-copy {
+    padding: 90px 5vw;
+  }
+  body.is-frontend #main .dx-service-spec {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  body.is-frontend #main .dx-service-spec p {
+    margin-bottom: 20px;
+  }
+  body.is-frontend #main .dx-service-index {
+    top: 80px;
+  }
+  body.is-frontend #main .dx-study-prose {
+    gap: 35px;
+  }
+}
+@media (max-width: 767px) {
+  body.is-frontend #main .dx-about-hero {
+    padding: 140px 5vw 0;
+    min-height: 850px;
+    height: auto;
+  }
+  body.is-frontend #main .dx-about-hero h1, body.is-frontend #main .dx-about-hero .h1 {
+    font-size: 19vw !important;
+  }
+  body.is-frontend #main .dx-about-portrait {
+    width: 95vw;
+    height: 53%;
+  }
+  body.is-frontend #main .dx-about-intro {
+    right: 6vw;
+    left: 6vw;
+    top: 290px;
+    bottom: auto;
+    max-width: none;
+    text-align: center;
+  }
+  body.is-frontend #main .dx-about-intro p {
+    font-size: 21px;
+  }
+  body.is-frontend #main .dx-about-intro .dx-cta {
+    min-height: 44px;
+    padding: 10px 16px !important;
+  }
+  body.is-frontend #main .dx-about-location {
+    display: none;
+  }
+  body.is-frontend #main .dx-about-story, body.is-frontend #main .dx-help {
+    display: block;
+    padding: 80px 6vw;
+  }
+  body.is-frontend #main .dx-about-story-copy {
+    margin-top: 40px;
+  }
+  body.is-frontend #main .dx-help-intro {
+    position: static;
+  }
+  body.is-frontend #main .dx-help-list {
+    margin-top: 60px;
+  }
+  body.is-frontend #main .dx-about-interests, body.is-frontend #main .dx-editorial-contact, body.is-frontend #main .dx-physical-services {
+    padding: 80px 6vw;
+  }
+  body.is-frontend #main .dx-about-interests a {
+    -ms-grid-columns: 24px 1fr;
+    grid-template-columns: 24px 1fr;
+    gap: 15px;
+  }
+  body.is-frontend #main .dx-about-interests a p {
+    -ms-grid-column: 2;
+    grid-column: 2;
+  }
+  body.is-frontend #main .dx-about-interests a > span:last-child {
+    display: none;
+  }
+  body.is-frontend #main .dx-service-index {
+    gap: 18px;
+    padding: 18px;
+    top: 75px;
+    overflow: auto;
+    white-space: nowrap;
+    margin: 0;
+  }
+  body.is-frontend #main .dx-service-index a {
+    font-size: 11px;
+  }
+  body.is-frontend #main .dx-services-intro {
+    padding: 150px 6vw 70px;
+    min-height: 0;
+  }
+  body.is-frontend #main .dx-service-scene {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    min-height: 0;
+  }
+  body.is-frontend #main .dx-service-copy {
+    min-height: 0;
+    padding: 75px 6vw 45px;
+  }
+  body.is-frontend #main .dx-service-visual {
+    position: relative;
+    top: auto;
+    min-height: 0;
+    height: 65vh;
+    width: calc(100% - 32px);
+    margin: 0 16px 35px;
+  }
+  body.is-frontend #main .dx-service-spec {
+    -ms-grid-columns: 90px 1fr;
+    grid-template-columns: 90px 1fr;
+    gap: 18px;
+  }
+  body.is-frontend #main .dx-service-spec p {
+    margin: 0;
+  }
+  body.is-frontend #main .dx-physical-services > div {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+  body.is-frontend #main .dx-editorial-study .story-section {
+    padding: 90px 0;
+  }
+  body.is-frontend #main .dx-study-prose {
+    display: block;
+  }
+  body.is-frontend #main .dx-study-prose article {
+    margin-bottom: 40px;
+  }
+  body.is-frontend #main .dx-editorial-study .subtitle {
+    margin-bottom: 45px !important;
+  }
+  body.is-frontend #main .dx-study-prose p {
+    font-size: 17px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  body.is-frontend #main .dx-reveal {
+    -webkit-transition: opacity 0.8s, -webkit-transform 0.8s;
+    transition: opacity 0.8s, -webkit-transform 0.8s;
+    transition: opacity 0.8s, transform 0.8s;
+    transition: opacity 0.8s, transform 0.8s, -webkit-transform 0.8s;
+  }
+  body.is-frontend #main .dx-reveal.is-pending {
+    opacity: 0;
+    -webkit-transform: translateY(25px);
+            transform: translateY(25px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.is-frontend #main .dx-service-visual img {
+    -webkit-transform: none !important;
+            transform: none !important;
+    -webkit-transition: none !important;
+    transition: none !important;
+  }
+}
+
+body.is-frontend #main #about-story {
+  padding: 150px 8vw !important;
+  background: #090909;
+}
+
+@media (max-width: 767px) {
+  body.is-frontend #main #about-story {
+    padding: 80px 6vw !important;
+  }
+}
+html:has(.dx-services-editorial), body:has(.dx-services-editorial), html:has(.dx-about-editorial), body:has(.dx-about-editorial) {
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
+
+body.is-frontend #main #service-overview.dx-services-intro {
+  padding: 180px 8vw 100px !important;
+}
+
+body.is-frontend #main #service-overview.dx-services-intro p {
+  padding-right: 0;
+  border: 0;
+  margin: 35px 0 !important;
+}
+
+body.is-frontend #main #service-overview.dx-services-intro .dx-eyebrow {
+  margin: 0 0 24px !important;
+  font-size: 11px !important;
+}
+
+body.is-frontend :is(a.btn, body.is-frontend .wp-block-buttons .wp-block-button.is-style-outline a.wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-button__link, .service-card-link, .dx-menu__cta, .dx-standard-cta, a.visit, .project-cta, .site-footer-button) {
+  border-radius: 0 !important;
+  min-height: 58px;
+  padding: 18px 30px !important;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 24px;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid #d5aa4b !important;
+  background: #d5aa4b;
+  color: #080808;
+  -webkit-transition: background-color 0.3s, color 0.3s, border-color 0.3s, -webkit-transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, -webkit-transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s, -webkit-transform 0.3s;
+}
+
+body.is-frontend :is(a.btn, body.is-frontend .wp-block-buttons .wp-block-button.is-style-outline a.wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button a.wp-block-button__link, .wp-block-button__link, .service-card-link, .dx-menu__cta, .dx-standard-cta, a.visit, .project-cta, .site-footer-button):hover {
+  background: #edd195;
+  color: #080808;
+}
+
+body.is-frontend :is(.btn-outline, .btn-outline-primary, body.is-frontend .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link, .is-style-outline .wp-block-button__link) {
+  background: transparent !important;
+  color: #d5aa4b !important;
+}
+
+body.is-frontend .dx-cta-arrow {
+  font-size: 24px !important;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+@media (max-width: 767px) {
+  body.is-frontend #main #service-overview.dx-services-intro {
+    padding: 150px 6vw 70px !important;
+  }
+}
+/* October photography and navigation refinements. */
+html.case-study-document {
+  -ms-scroll-snap-type: none !important;
+      scroll-snap-type: none !important;
+}
+
+body.is-frontend #navbar.dx-menu {
+  background: rgba(0, 0, 0, 0.25) !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__footer, body.is-frontend #header #navbar .dx-menu__socials {
+  border-top: 0 !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__list > li > a:after {
+  background: -webkit-gradient(linear, right top, right bottom, from(#fff), to(#fff)) right center/calc(100% - 33px) 1px no-repeat !important;
+  background: linear-gradient(#fff, #fff) right center/calc(100% - 33px) 1px no-repeat !important;
+}
+
+body.is-frontend #header #navbar .dx-menu__list > li > a:hover:after {
+  background: -webkit-gradient(linear, right top, right bottom, from(#d5aa4b), to(#d5aa4b)) right center/calc(100% - 33px) 1px no-repeat !important;
+  background: linear-gradient(#d5aa4b, #d5aa4b) right center/calc(100% - 33px) 1px no-repeat !important;
+}
+
+body.is-frontend .wp-block-button__link:after {
+  content: none !important;
+}
+
+body.is-frontend.single-project #main .chapter-selector {
+  background: transparent !important;
+  border: 0 !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.dx-read-study {
+  margin-right: 14px;
+}
+
+.dx-related-projects {
+  padding: 100px 8vw;
+  background: #090909;
+  position: relative;
+  z-index: 2;
+}
+
+.dx-related-projects h2, .dx-related-projects .h2 {
+  font-size: clamp(36px, 5vw, 72px);
+  margin-bottom: 40px;
+}
+
+.dx-related-projects > div {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(0, 1fr))[2];
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 35px;
+}
+
+.dx-related-projects a {
+  color: #eee;
+  text-decoration: none;
+}
+
+.dx-related-projects img {
+  width: 100%;
+  height: 300px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.dx-related-projects h3, .dx-related-projects .h3 {
+  font-size: 26px;
+  margin: 22px 0 12px;
+}
+
+.dx-related-projects p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.dx-service-index {
+  top: 130px !important;
+}
+
+.dx-services-intro {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.dx-services-hero-art {
+  position: absolute;
+  left: -4%;
+  top: 0;
+  width: 65%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  z-index: -1;
+  opacity: 0.6;
+  -webkit-mask-image: -webkit-gradient(linear, left top, right top, from(transparent), color-stop(65%, #000)), -webkit-gradient(linear, left bottom, left top, from(transparent), color-stop(75%, #000));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 65%), linear-gradient(0deg, transparent, #000 75%);
+          mask-image: -webkit-gradient(linear, left top, right top, from(transparent), color-stop(65%, #000)), -webkit-gradient(linear, left bottom, left top, from(transparent), color-stop(75%, #000));
+          mask-image: linear-gradient(90deg, transparent, #000 65%), linear-gradient(0deg, transparent, #000 75%);
+  -webkit-mask-composite: source-in, xor;
+          mask-composite: intersect;
+}
+
+body.home #main .cover-content {
+  position: absolute !important;
+  right: 6vw !important;
+  bottom: 7vh !important;
+  top: auto !important;
+  -webkit-transform: none !important;
+          transform: none !important;
+  width: min(60vw, 1050px) !important;
+  max-width: none !important;
+  margin: 0 !important;
+  z-index: 4;
+}
+
+body.home #main .cover-content h2.wp-block-heading, body.home #main .cover-content .wp-block-heading.h2 {
+  font-size: clamp(48px, 5.9vw, 116px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.055em !important;
+  font-weight: 400 !important;
+  max-width: none !important;
+}
+
+body.home #main .cover-content p {
+  max-width: 530px;
+}
+
+.dxb .dxb-fact-pills .dxb-fact-pill {
+  font-size: 10px !important;
+  padding: 7px 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dxb .dxb-gallery {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(0, 1fr))[5];
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+  padding: 0 0 65px;
+}
+
+.dxb .dxb-photo-card {
+  border: 0 !important;
+  overflow: visible;
+  position: relative;
+}
+
+.dxb .dxb-photo-card:nth-child(5n+2), .dxb .dxb-photo-card:nth-child(5n+4) {
+  margin-top: 55px;
+}
+
+.dxb .dxb-photo-card > img {
+  aspect-ratio: 3/4;
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 100%;
+}
+
+.dxb .dxb-photo-card:nth-child(5n+1) > img, .dxb .dxb-photo-card:nth-child(5n+3) > img {
+  aspect-ratio: 1;
+}
+
+.dxb .dxb-photo-card > div {
+  padding: 10px 0;
+}
+
+.dxb .dxb-photo-card h3, .dxb .dxb-photo-card .h3 {
+  font-size: 13px !important;
+}
+
+.dxb .dxb-photo-card .dxb-eyebrow {
+  display: none;
+}
+
+.dxb .dxb-photo-card > div > span:last-child {
+  left: 2px;
+  top: 9px;
+}
+
+.dxb .dxb-gallery-toolbar {
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.dxb .dxb-chips {
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.dxb .dxb-gallery-toolbar input {
+  width: min(100%, 360px);
+}
+
+.dxb #dxb-lightbox {
+  width: min(1250px, 95vw);
+  max-height: 92dvh;
+  border: 0;
+  padding: 0;
+  overflow: auto;
+  background: #101210;
+}
+
+.dxb #dxb-lightbox[open] {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: minmax(0, 1fr) 330px;
+  grid-template-columns: minmax(0, 1fr) 330px;
+}
+
+.dxb #dxb-lightbox-image {
+  width: 100%;
+  height: 85dvh;
+  max-height: 85dvh;
+  -o-object-fit: contain;
+     object-fit: contain;
+  background: #050505;
+}
+
+.dxb .dxb-lightbox-info {
+  padding: 65px 25px 25px;
+}
+
+.dxb .dxb-lightbox-info h2, .dxb .dxb-lightbox-info .h2 {
+  font-size: 24px !important;
+}
+
+.dxb .dxb-lightbox-info p {
+  font-size: 13px;
+}
+
+.dxb .dxb-close {
+  display: -ms-grid !important;
+  display: grid !important;
+  place-items: center !important;
+  left: 12px;
+  top: 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  line-height: 1 !important;
+  border: 0 !important;
+  background: #171917;
+  font-size: 26px;
+  z-index: 3;
+}
+
+#dxb-photo-technical {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  font-size: 12px;
+  margin: 24px 0;
+}
+
+#dxb-photo-technical dt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #bbb;
+}
+
+#dxb-photo-technical dd {
+  margin: 0;
+  text-align: left;
+}
+
+#dxb-photo-map iframe {
+  width: 100%;
+  height: 190px;
+  border: 0;
+}
+
+#dxb-photo-map a {
+  font-size: 12px;
+  color: #d5aa4b;
+}
+
+.dxb-bad-photo {
+  position: relative;
+  font-size: 11px;
+  padding: 6px 10px !important;
+}
+
+.dxb-bad-photo[hidden] {
+  display: none !important;
+}
+
+.dxb-bad-photo span {
+  display: none;
+  position: absolute;
+  z-index: 5;
+  top: 110%;
+  right: 0;
+  width: 230px;
+  padding: 15px;
+  background: #27271e;
+  color: white;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.dxb-bad-photo:hover span, .dxb-bad-photo:focus span {
+  display: block;
+}
+
+.dxb .dxb-fleet-modal {
+  border: 0 !important;
+  padding: 24px;
+}
+
+.dxb .dxb-fleet-modal h2, .dxb .dxb-fleet-modal .h2 {
+  font-size: 20px !important;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-item {
+  background: #1a1c18;
+  border: 0;
+  margin: 16px 0;
+  padding: 22px;
+  border-radius: 8px;
+  gap: 18px;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-identity {
+  display: contents;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-identity h3, .dxb .dxb-fleet-modal .dxb-fleet-identity .h3 {
+  font-size: 18px !important;
+  margin: 0;
+}
+
+.dxb .dxb-fleet-modal .dxb-field-label {
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em;
+}
+
+.dxb .dxb-fleet-modal .dxb-field-value {
+  font-size: 15px !important;
+}
+
+.dxb .dxb-fleet-modal button {
+  font-size: 11px !important;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-identifiers, .dxb .dxb-fleet-modal .dxb-fleet-position {
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 32px;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-position > div:first-child {
+  -webkit-box-ordinal-group: 3;
+      -ms-flex-order: 2;
+          order: 2;
+}
+
+.dxb .dxb-fleet-modal .dxb-fleet-position > div:nth-child(2) {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+}
+
+.dx-photo-hero {
+  padding: 160px 0 70px;
+}
+
+.dx-photo-hero h1, .dx-photo-hero .h1 {
+  font-size: clamp(65px, 10vw, 155px);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.dx-photography .dxb-wrap {
+  max-width: 1800px;
+  width: 90%;
+}
+
+@media (max-width: 1000px) {
+  .dxb .dxb-gallery {
+    -ms-grid-columns: (minmax(0, 1fr))[3];
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .dxb .dxb-photo-card:nth-child(n) {
+    margin-top: 0;
+  }
+  .dxb .dxb-photo-card:nth-child(3n+2) {
+    margin-top: 35px;
+  }
+  .dxb #dxb-lightbox[open] {
+    -ms-grid-columns: minmax(0, 1fr) 290px;
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+  .dx-service-index {
+    top: 115px !important;
+  }
+}
+@media (max-width: 767px) {
+  body.home #main .cover-content {
+    right: 6vw !important;
+    bottom: 6vh !important;
+    width: 88vw !important;
+  }
+  .dxb .dxb-gallery {
+    -ms-grid-columns: (minmax(0, 1fr))[2];
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .dxb .dxb-photo-card:nth-child(n) {
+    margin-top: 0;
+  }
+  .dxb .dxb-photo-card:nth-child(even) {
+    margin-top: 30px;
+  }
+  .dxb #dxb-lightbox[open] {
+    display: block;
+  }
+  .dxb #dxb-lightbox-image {
+    height: 55dvh;
+  }
+  .dxb .dxb-lightbox-info {
+    padding: 25px;
+  }
+  .dx-related-projects > div {
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+  }
+  .dx-service-index {
+    top: 105px !important;
+  }
+  .dx-services-hero-art {
+    width: 100%;
+    opacity: 0.3;
+  }
+  .dx-read-study {
+    margin: 15px 0;
+  }
+}
+body.is-frontend.home #main .hero-foreground > .wp-block-cover__inner-container {
+  position: static !important;
+}
+
+body.is-frontend.home #wrapper #main #post-12 .hero-foreground .cover-content h2.wp-block-heading, body.is-frontend.home #wrapper #main #post-12 .hero-foreground .cover-content .wp-block-heading.h2 {
+  font-size: clamp(48px, 5.8vw, 116px) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.055em !important;
+}
+
+body.is-frontend.home #wrapper #main #post-12 .hero-foreground .cover-content {
+  bottom: 6vh !important;
+}
+
+.dxb .dxb-bad-photo {
+  background: transparent;
+  color: #dbc68d;
+  border: 1px solid #6a5c3c;
+}
+
+.dxb .dxb-gallery [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  body.is-frontend.home #wrapper #main #post-12 .hero-foreground .cover-content h2.wp-block-heading, body.is-frontend.home #wrapper #main #post-12 .hero-foreground .cover-content .wp-block-heading.h2 {
+    font-size: clamp(38px, 8.8vw, 64px) !important;
+  }
+  .dxb .dxb-fleet-modal .dxb-fleet-identifiers, .dxb .dxb-fleet-modal .dxb-fleet-position {
+    gap: 16px;
+  }
+}
+/* Shared enquiry dialogs are available on every page. */
+body.is-frontend #hireMeModal,
+body.is-frontend #clientModal,
+body.is-frontend #recruiterModal {
+  backdrop-filter: blur(25px);
+}
+body.is-frontend #hireMeModal .modal-dialog,
+body.is-frontend #clientModal .modal-dialog,
+body.is-frontend #recruiterModal .modal-dialog {
+  max-width: 768px !important;
+}
+@media (min-width: 1200px) {
+  body.is-frontend #hireMeModal .modal-dialog,
+  body.is-frontend #clientModal .modal-dialog,
+  body.is-frontend #recruiterModal .modal-dialog {
+    max-width: 992px !important;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-shell,
+body.is-frontend #clientModal .modal-dialog .modal-shell,
+body.is-frontend #recruiterModal .modal-dialog .modal-shell {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: column-reverse;
+          flex-direction: column-reverse;
+}
+@media (min-width: 768px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-shell,
+  body.is-frontend #clientModal .modal-dialog .modal-shell,
+  body.is-frontend #recruiterModal .modal-dialog .modal-shell {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-content,
+body.is-frontend #clientModal .modal-dialog .modal-content,
+body.is-frontend #recruiterModal .modal-dialog .modal-content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  background-color: black;
+  border-radius: 0;
+  border: none;
+  -webkit-box-shadow: 0 0 50px -20px black;
+          box-shadow: 0 0 50px -20px black;
+  min-height: auto;
+  padding: 0;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 90%;
+  margin: 0 auto;
+  opacity: 1;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend #clientModal .modal-dialog .modal-content,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content {
+    min-height: 576px;
+  }
+}
+@media (min-width: 768px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend #clientModal .modal-dialog .modal-content,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content {
+    width: 100%;
+  }
+}
+@media (min-width: 992px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend #clientModal .modal-dialog .modal-content,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+            align-items: stretch;
+  }
+}
+@media (min-width: 1200px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content,
+  body.is-frontend #clientModal .modal-dialog .modal-content,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content {
+    max-width: 945px;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-content-inner,
+body.is-frontend #clientModal .modal-dialog .modal-content-inner,
+body.is-frontend #recruiterModal .modal-dialog .modal-content-inner {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  padding: 2em;
+  color: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 12px;
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content-inner,
+  body.is-frontend #clientModal .modal-dialog .modal-content-inner,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content-inner {
+    padding: 3em;
+  }
+}
+@media (min-width: 768px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content-inner,
+  body.is-frontend #clientModal .modal-dialog .modal-content-inner,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content-inner {
+    padding: 4em;
+    width: 100%;
+  }
+}
+@media (min-width: 992px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-content-inner,
+  body.is-frontend #clientModal .modal-dialog .modal-content-inner,
+  body.is-frontend #recruiterModal .modal-dialog .modal-content-inner {
+    padding: 4em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-content-inner .headline,
+body.is-frontend #clientModal .modal-dialog .modal-content-inner .headline,
+body.is-frontend #recruiterModal .modal-dialog .modal-content-inner .headline {
+  margin-bottom: 0;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-image,
+body.is-frontend #clientModal .modal-dialog .modal-image,
+body.is-frontend #recruiterModal .modal-dialog .modal-image {
+  width: 100%;
+  height: 220px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), -webkit-transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 768px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-image,
+  body.is-frontend #clientModal .modal-dialog .modal-image,
+  body.is-frontend #recruiterModal .modal-dialog .modal-image {
+    width: 325px;
+    height: auto;
+  }
+}
+@media (min-width: 992px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-image,
+  body.is-frontend #clientModal .modal-dialog .modal-image,
+  body.is-frontend #recruiterModal .modal-dialog .modal-image {
+    width: 300px;
+    height: auto;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-image img,
+body.is-frontend #clientModal .modal-dialog .modal-image img,
+body.is-frontend #recruiterModal .modal-dialog .modal-image img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+body.is-frontend #hireMeModal .modal-dialog,
+body.is-frontend #clientModal .modal-dialog,
+body.is-frontend #recruiterModal .modal-dialog {
+  /* ========================= DESKTOP LAYOUT ========================= */
+  /* ========================= YOUR EXISTING STYLES ========================= */
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-header,
+body.is-frontend #clientModal .modal-dialog .modal-header,
+body.is-frontend #recruiterModal .modal-dialog .modal-header {
+  padding: 0;
+  border-bottom: none;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-header h5, body.is-frontend #hireMeModal .modal-dialog .modal-header .h5,
+body.is-frontend #clientModal .modal-dialog .modal-header h5,
+body.is-frontend #clientModal .modal-dialog .modal-header .h5,
+body.is-frontend #recruiterModal .modal-dialog .modal-header h5,
+body.is-frontend #recruiterModal .modal-dialog .modal-header .h5 {
+  font-size: 1.5em;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-header h5, body.is-frontend #hireMeModal .modal-dialog .modal-header .h5,
+  body.is-frontend #clientModal .modal-dialog .modal-header h5,
+  body.is-frontend #clientModal .modal-dialog .modal-header .h5,
+  body.is-frontend #recruiterModal .modal-dialog .modal-header h5,
+  body.is-frontend #recruiterModal .modal-dialog .modal-header .h5 {
+    font-size: 2em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .btn-close,
+body.is-frontend #clientModal .modal-dialog .btn-close,
+body.is-frontend #recruiterModal .modal-dialog .btn-close {
+  opacity: 0.6;
+  position: absolute;
+  top: 3em;
+  left: 3em;
+  z-index: 1;
+  -webkit-transform: scale(1.5);
+          transform: scale(1.5);
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+}
+body.is-frontend #hireMeModal .modal-dialog .btn-close:hover,
+body.is-frontend #clientModal .modal-dialog .btn-close:hover,
+body.is-frontend #recruiterModal .modal-dialog .btn-close:hover {
+  opacity: 1;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body,
+body.is-frontend #clientModal .modal-dialog .modal-body,
+body.is-frontend #recruiterModal .modal-dialog .modal-body {
+  padding: 0;
+  -webkit-box-flex: initial;
+      -ms-flex: initial;
+          flex: initial;
+  margin-top: 0em;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-body,
+  body.is-frontend #clientModal .modal-dialog .modal-body,
+  body.is-frontend #recruiterModal .modal-dialog .modal-body {
+    margin-top: 2em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .question,
+body.is-frontend #clientModal .modal-dialog .modal-body .question,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .question {
+  font-size: 1.125em;
+  font-weight: lighter;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-body .question,
+  body.is-frontend #clientModal .modal-dialog .modal-body .question,
+  body.is-frontend #recruiterModal .modal-dialog .modal-body .question {
+    font-size: 1.5em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 10px;
+  padding: 4px 20px;
+  margin-bottom: 2em;
+  border-radius: 25px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  -webkit-box-shadow: 0px 0px 25px -5px;
+          box-shadow: 0px 0px 25px -5px;
+  color: white;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge .dot,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge .dot,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  -webkit-box-shadow: 0 0 8px currentColor;
+          box-shadow: 0 0 8px currentColor;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge.is-available,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge.is-available,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge.is-available {
+  color: #4dff9f;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge.is-backlog,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog {
+  color: #ffd479;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge.is-backlog .dot,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge.is-backlog .dot {
+  -webkit-box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
+          box-shadow: 0 0 10px rgba(255, 212, 121, 0.6);
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge.is-casual,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge.is-casual,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge.is-casual {
+  color: #ffd479;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .availability-badge.is-unavailable,
+body.is-frontend #clientModal .modal-dialog .modal-body .availability-badge.is-unavailable,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .availability-badge.is-unavailable {
+  color: #888;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body p,
+body.is-frontend #clientModal .modal-dialog .modal-body p,
+body.is-frontend #recruiterModal .modal-dialog .modal-body p {
+  font-size: 14px;
+  font-weight: lighter;
+  line-height: 1.75;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-body p,
+  body.is-frontend #clientModal .modal-dialog .modal-body p,
+  body.is-frontend #recruiterModal .modal-dialog .modal-body p {
+    font-size: 1.125em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body p:last-of-type,
+body.is-frontend #clientModal .modal-dialog .modal-body p:last-of-type,
+body.is-frontend #recruiterModal .modal-dialog .modal-body p:last-of-type {
+  margin-bottom: 1em;
+}
+@media (min-width: 1400px) {
+  body.is-frontend #hireMeModal .modal-dialog .modal-body p:last-of-type,
+  body.is-frontend #clientModal .modal-dialog .modal-body p:last-of-type,
+  body.is-frontend #recruiterModal .modal-dialog .modal-body p:last-of-type {
+    margin-bottom: 2em;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .modal-back,
+body.is-frontend #clientModal .modal-dialog .modal-body .modal-back,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .modal-back {
+  margin-top: 2.5em;
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+}
+body.is-frontend #hireMeModal .modal-dialog .modal-body .modal-back:hover,
+body.is-frontend #clientModal .modal-dialog .modal-body .modal-back:hover,
+body.is-frontend #recruiterModal .modal-dialog .modal-body .modal-back:hover {
+  color: white;
+}
+body.is-frontend #hireMeModal .modal-dialog .button-container,
+body.is-frontend #clientModal .modal-dialog .button-container,
+body.is-frontend #recruiterModal .modal-dialog .button-container {
+  gap: 1em;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  display: -ms-grid;
+  display: grid;
+}
+@media (min-width: 992px) {
+  body.is-frontend #hireMeModal .modal-dialog .button-container,
+  body.is-frontend #clientModal .modal-dialog .button-container,
+  body.is-frontend #recruiterModal .modal-dialog .button-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .btn, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
+body.is-frontend #clientModal .modal-dialog .btn,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
+body.is-frontend #recruiterModal .modal-dialog .btn,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
+  border-radius: 0;
+  min-height: 50px;
+  min-width: 250px;
+  background: white;
+  color: black;
+  border: 1px solid white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 0.5em;
+  width: 100%;
+  -webkit-transition: 0.7s all ease;
+  transition: 0.7s all ease;
+}
+@media (min-width: 576px) {
+  body.is-frontend #hireMeModal .modal-dialog .btn, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
+  body.is-frontend #clientModal .modal-dialog .btn,
+  body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
+  body.is-frontend #recruiterModal .modal-dialog .btn,
+  body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
+    min-height: 60px;
+  }
+}
+@media (min-width: 1200px) {
+  body.is-frontend #hireMeModal .modal-dialog .btn, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link,
+  body.is-frontend #clientModal .modal-dialog .btn,
+  body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link,
+  body.is-frontend #recruiterModal .modal-dialog .btn,
+  body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link,
+  body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link {
+    width: auto;
+  }
+}
+body.is-frontend #hireMeModal .modal-dialog .btn i, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link i,
+body.is-frontend #clientModal .modal-dialog .btn i,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link i,
+body.is-frontend #recruiterModal .modal-dialog .btn i,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link i,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link i {
+  -webkit-transform: scale(1.25);
+          transform: scale(1.25);
+}
+body.is-frontend #hireMeModal .modal-dialog .btn.social, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .social.wp-block-button__link,
+body.is-frontend #clientModal .modal-dialog .btn.social,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .social.wp-block-button__link,
+body.is-frontend #recruiterModal .modal-dialog .btn.social,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .social.wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .social.wp-block-button__link {
+  min-width: 80px;
+}
+body.is-frontend #hireMeModal .modal-dialog .btn:hover, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .wp-block-button__link:hover,
+body.is-frontend #clientModal .modal-dialog .btn:hover,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .wp-block-button__link:hover,
+body.is-frontend #recruiterModal .modal-dialog .btn:hover,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .wp-block-button__link:hover,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .wp-block-button__link:hover {
+  background: transparent;
+  color: white;
+}
+body.is-frontend #hireMeModal .modal-dialog .btn.alternative, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .alternative.wp-block-button__link,
+body.is-frontend #clientModal .modal-dialog .btn.alternative,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .alternative.wp-block-button__link,
+body.is-frontend #recruiterModal .modal-dialog .btn.alternative,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .alternative.wp-block-button__link {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+}
+body.is-frontend #hireMeModal .modal-dialog .btn.alternative:hover, body.is-frontend #hireMeModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover, body.is-frontend .wp-block-buttons .wp-block-button #hireMeModal .modal-dialog .alternative.wp-block-button__link:hover,
+body.is-frontend #clientModal .modal-dialog .btn.alternative:hover,
+body.is-frontend #clientModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+body.is-frontend .wp-block-buttons .wp-block-button #clientModal .modal-dialog .alternative.wp-block-button__link:hover,
+body.is-frontend #recruiterModal .modal-dialog .btn.alternative:hover,
+body.is-frontend #recruiterModal .modal-dialog .wp-block-buttons .wp-block-button .alternative.wp-block-button__link:hover,
+body.is-frontend .wp-block-buttons .wp-block-button #recruiterModal .modal-dialog .alternative.wp-block-button__link:hover {
+  background: white;
+  color: black;
+}
+body.is-frontend #hireMeModal,
+body.is-frontend #clientModal,
+body.is-frontend #recruiterModal {
+  /* ========================= REDUCED MOTION ========================= */
+}
+@media (prefers-reduced-motion: reduce) {
+  body.is-frontend #hireMeModal .modal-content,
+  body.is-frontend #hireMeModal .modal-content-inner,
+  body.is-frontend #hireMeModal .modal-image,
+  body.is-frontend #clientModal .modal-content,
+  body.is-frontend #clientModal .modal-content-inner,
+  body.is-frontend #clientModal .modal-image,
+  body.is-frontend #recruiterModal .modal-content,
+  body.is-frontend #recruiterModal .modal-content-inner,
+  body.is-frontend #recruiterModal .modal-image {
+    -webkit-transition: none !important;
+    transition: none !important;
+    -webkit-transform: none !important;
+            transform: none !important;
   }
 }

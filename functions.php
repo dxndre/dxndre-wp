@@ -1335,9 +1335,7 @@ add_shortcode('projects_marquee', function () {
 					<?= esc_html(get_the_title($project)); ?>
 					</h3>
 
-					<p class="project-excerpt">
-					<?= esc_html(get_the_excerpt($project)); ?>
-					</p>
+
 
 					<span class="project-cta">
 					View Case Study →
@@ -2190,7 +2188,7 @@ function dx_render_facility_score_block($label, $rawScore) {
 // Enqueue Leaflet for dark maps on the Bus Pages
 
 function dx_enqueue_leaflet_assets() {
-	if (!is_singular('bus-diary-entry')) {
+	if (!is_singular('bus-diary-entry') && !is_page(['buses', 'photography'])) {
 		return;
 	}
 
@@ -2406,7 +2404,7 @@ function dx_rest_tfl_stop_arrivals(WP_REST_Request $request) {
 }
 
 function dx_bus_diary_enqueue_assets() {
-	if (!is_singular('bus-diary-entry')) {
+	if (!is_singular('bus-diary-entry') && !is_page(['buses', 'photography'])) {
 		return;
 	}
 
@@ -2591,3 +2589,48 @@ require_once get_template_directory() . '/inc/cv-experience.php';
 require_once get_stylesheet_directory() . '/inc/fitness-experience.php';
 
 require_once get_stylesheet_directory() . '/inc/site-polish.php';
+
+add_action('wp_enqueue_scripts', function(){
+ if(is_admin())return;
+ wp_enqueue_style('dx-immersive',get_template_directory_uri().'/assets/immersive.css',[],filemtime(get_template_directory().'/assets/immersive.css'));
+ wp_enqueue_script('dx-immersive',get_template_directory_uri().'/assets/immersive.js',[],filemtime(get_template_directory().'/assets/immersive.js'),true);
+},100);
+
+add_action('wp_footer', function () {
+    $urls = array_values(array_filter(array_map(function($id){ return wp_get_attachment_image_url($id, 'large'); }, [1694,1698,1696,1692,1690,1688,1686])));
+    echo '<script type="application/json" id="dx-promo-images">'.wp_json_encode($urls, JSON_HEX_TAG | JSON_HEX_AMP).'</script>';
+});
+
+// Footer routes open the matching shared Hire Me dialog.
+add_filter('nav_menu_link_attributes', function ($atts, $item, $args) {
+    if (($args->theme_location ?? '') === 'footer_contact' && in_array(html_entity_decode($item->title), ['For Employers & Recruiters', 'For Clients'], true)) {
+        $target = html_entity_decode($item->title) === 'For Clients' ? '#clientModal' : '#recruiterModal';
+        $atts['href'] = $target;
+        $atts['data-bs-toggle'] = 'modal';
+        $atts['data-bs-target'] = $target;
+        $atts['aria-haspopup'] = 'dialog';
+    }
+    return $atts;
+}, 20, 3);
+
+add_filter('wp_nav_menu_objects', function($items, $args) {
+    if (($args->theme_location ?? '') !== 'footer_work') return $items;
+    $links = [['Portfolio','/portfolio/'], ['Selected Case Study','/project/revive-sports-therapy/'], ['My CV','/cv/'], ['Start a Project','/start-a-project/']];
+    foreach (array_values($items) as $index => $item) {
+        if (isset($links[$index])) { $item->title=$links[$index][0]; $item->url=home_url($links[$index][1]); }
+    }
+    return $items;
+}, 20, 2);
+
+// Retire the old photography enquiry URL while retaining the Contact page.
+add_action('template_redirect', function () {
+    if (untrailingslashit(wp_parse_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH)) === untrailingslashit(wp_parse_url(home_url('/contact/'), PHP_URL_PATH)) && isset($_GET['service']) && sanitize_key(wp_unslash($_GET['service'])) === 'photography') {
+        wp_safe_redirect(home_url('/service/photography/'), 301);
+        exit;
+    }
+}, 5);
+
+add_filter('wp_nav_menu_items', function($items, $args) {
+    if (($args->theme_location ?? '') === 'footer_contact') $items .= '<li class="menu-item"><a href="'.esc_url(home_url('/e-business-card/')).'">E-Business Card</a></li>';
+    return $items;
+}, 30, 2);

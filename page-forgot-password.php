@@ -9,7 +9,7 @@ if (is_user_logged_in()) {
 ?>
 
 <div class="container">
-	<section class="auth auth-forgot">
+	<section class="auth dx-account-photo auth-forgot">
 		<div class="login-content">
 			<pre class="headline">Client Portal Regain Access</pre>
 			<h1>Reset Password</h1>
@@ -35,7 +35,7 @@ if (is_user_logged_in()) {
 		</div>
 
 		<div class="graphic-content">
-			<img src="<?php echo get_template_directory_uri(); ?>/assets/img/bus.png" alt="">
+			<img src="<?php echo get_template_directory_uri(); ?>/assets/img/account-night.jpeg" alt="">
 		</div>
 	</section>
 

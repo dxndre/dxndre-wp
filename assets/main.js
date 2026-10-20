@@ -121,6 +121,12 @@ function initGymLeague(archive, cards) {
 	const watermark = make('span', 'league-watermark', String(cards.length));
 	watermark.setAttribute('aria-hidden', 'true');
 	header.append(watermark);
+    watermark.textContent='0';
+    const countObserver=new IntersectionObserver(entries=>{
+        if(!entries.some(e=>e.isIntersecting))return;countObserver.disconnect();
+        const start=performance.now();
+        const tick=now=>{const progress=matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.min(1,(now-start)/1500);watermark.textContent=String(Math.round(cards.length*(1-Math.pow(1-progress,3))));if(progress<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);
+    },{threshold:.1});countObserver.observe(grid);
 	const legend = make('div', 'league-legend');
 	[...bands].reverse().forEach((band) => {
 		const item = make('span', '', `${band.range} ${band.label}`);
@@ -248,7 +254,12 @@ function initGymLeague(archive, cards) {
 	switcher.setAttribute('aria-label', 'Gym view');
 	const listButton = make('button', '', 'List');
 	const mapButton = make('button', '', 'Map');
-	[listButton, mapButton].forEach((button) => {
+	const gridButton = make('button', '', 'Grid');
+	const mosaic = make('div', 'league-mosaic');
+	mosaic.hidden = true;
+	layout.after(mosaic);
+	let gridView = false;
+	[listButton, gridButton, mapButton].forEach((button) => {
 		button.type = 'button';
 		switcher.append(button);
 	});
@@ -382,10 +393,14 @@ function initGymLeague(archive, cards) {
 				mapAssets = null;
 			});
 	}
-	function setLeagueView(useMap) {
+	function setLeagueView(useMap, useGrid = false) {
 		mapView = useMap;
+		gridView = useGrid;
+		layout.hidden = gridView;
+		mosaic.hidden = !gridView;
+		gridButton.setAttribute('aria-pressed', String(gridView));
 		archive.classList.toggle('is-map-view', mapView);
-		listButton.setAttribute('aria-pressed', String(!mapView));
+		listButton.setAttribute('aria-pressed', String(!mapView && !gridView));
 		mapButton.setAttribute('aria-pressed', String(mapView));
 		grid.hidden = mapView;
 		mapPane.hidden = !mapView;
@@ -400,6 +415,8 @@ function initGymLeague(archive, cards) {
 		setLeagueView(true);
 		archive.dispatchEvent(new Event('league-view-change'));
 	});
+	gridButton.addEventListener('click', () => {setLeagueView(false, true);archive.dispatchEvent(new Event('league-view-change'));});
+	gridButton.setAttribute('aria-pressed', 'false');
 	listButton.setAttribute('aria-pressed', 'true');
 	mapButton.setAttribute('aria-pressed', 'false');
 	const count = make('p', 'league-result-count');
@@ -794,7 +811,14 @@ function initGymLeague(archive, cards) {
 		update(ordered, visibleCount) {
 			mapCards = ordered;
 			renderLeagueMap();
-			const shown = mapView ? ordered : ordered.slice(0, visibleCount);
+			const shown = (mapView || gridView) ? ordered : ordered.slice(0, visibleCount);
+            mosaic.replaceChildren();
+            if (gridView) shown.forEach(card => {
+                const tile = make('a', 'league-mosaic-tile'); tile.href = card.dataset.link;
+                if (card.dataset.featuredImage) {const image=make('img','');image.src=card.dataset.featuredImage;image.alt=card.dataset.branchLabel;image.loading='lazy';tile.append(image);}
+                else tile.classList.add('has-no-image');
+                const caption=make('span','league-mosaic-caption');caption.append(make('strong','',card.dataset.branchLabel),make('small','',card.dataset.chainLabel));const score=make('span','league-mosaic-score',card.dataset.overallLabel);const band=overallBand(card.dataset.overall);score.style.color=band.color||'#bcbcb7';tile.append(caption,score);mosaic.append(tile);
+            });
 			count.textContent = `${shown.length} of ${ordered.length} branches shown`;
 			if (!shown.length) {
 				stopAnimation();
@@ -1929,6 +1953,7 @@ import * as bootstrap from 'bootstrap';
 				chapter.querySelector('h2')?.textContent || 'Chapter ' + (i + 1),
 			);
 			a.title = a.getAttribute('aria-label');
+			const chapterName=document.createElement('span'); chapterName.className='chapter-name';chapterName.textContent=a.title;a.append(chapterName);
 			a.addEventListener('click', (event) => {
 				if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
 					return;
@@ -4645,6 +4670,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	};
 	const update = () => {
 		scheduled = false;
+		nav.classList.toggle('is-stuck', nav.getBoundingClientRect().top <= (parseFloat(getComputedStyle(nav).top) || 0) + 1);
 		let active = sections[0];
 		for (const section of sections)
 			if (section.getBoundingClientRect().top <= offset() + 50)
@@ -4748,6 +4774,17 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			observer.observe(card);
 		});
 	}
+	// Separate the physical cards from the digital service listing.
+	if (document.body.classList.contains('page-services')) {
+		const training=document.querySelector('.service-training-card');
+		if(training){
+			const list=training.parentElement, section=document.createElement('section');section.id='service-physical';section.className='physical-services container';
+			const heading=document.createElement('h2');heading.textContent='Physical Services';section.append(heading);
+			const physical=document.createElement('ul');physical.className='physical-services-list';section.append(physical);
+			list.closest('#service-options').after(section);
+			Array.from(list.querySelectorAll('.service-training-card')).forEach(card=>physical.append(card));
+		}
+	}
 	const nav = document.querySelector('.dx-section-nav');
 	if (!nav) return;
 	// A measured fixed bar avoids Safari's overflow/sticky ancestor inconsistencies.
@@ -4758,7 +4795,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	nav.style.marginBottom = '0';
 	const dock = () => {
 		const header = document.querySelector('#header');
-		const top = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+		const top = (header ? Math.max(0, header.getBoundingClientRect().bottom) : 90) + 36;
 		const rect = slot.getBoundingClientRect();
 		if (!nav.classList.contains('is-docked')) {
 			const natural = nav.getBoundingClientRect();
@@ -4840,6 +4877,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	let step = 0,
 		sending = false;
 	const labels = {
+		photography: 'What would you like captured, and where?',
 		'design-build': 'What would you like to create?',
 		wordpress: 'What do you need your WordPress website to do?',
 		'custom-web': 'What would you like your website or application to do?',
@@ -5035,6 +5073,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (!response.ok || !result.success)
 				throw new Error(result.data?.message || 'Please try again.');
 			form.hidden = true;
+			if(form.closest('.enquiry-layout')) form.closest('.enquiry-layout').hidden = true;
 			const success = document.querySelector('.enquiry-success');
 			success.hidden = false;
 			success.focus();
@@ -5245,7 +5284,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		return actual && usual && actual !== usual ? { actual, usual } : null;
 	}
 	async function trackingBreakdown(data, profile, host, token) {
-		const fleet = { single: [], double: [] };
+		const fleet = { single: [], double: [], unknown: [] };
 		const counts = { single: 0, double: 0, unknown: 0 },
 			ids = [...new Set(data.vehicles || [])];
 		let cursor = 0,
@@ -5254,14 +5293,17 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		host.append(summary);
 		function render() {
 			summary.replaceChildren();
-			for (const type of ['single', 'double']) {
+			summary.classList.toggle('is-checking', finished < ids.length);
+			summary.setAttribute('aria-busy', String(finished < ids.length));
+			for (const type of ['single', 'double', 'unknown']) {
+                if(type === 'unknown' && counts.unknown === 0) continue;
 				const unusual =
-					counts[type] > 0 &&
+					type !== 'unknown' && counts[type] > 0 &&
 					deckType(profile.vehicle) &&
 					deckType(profile.vehicle) !== type;
 				const pill = text(
 					'button',
-					`${unusual ? '⚠ ' : ''}${counts[type]} ${type.toUpperCase()} ${
+					type === 'unknown' ? `${counts.unknown} TYPE UNCONFIRMED` : `${unusual ? '⚠ ' : ''}${counts[type]} ${type.toUpperCase()} ${
 						counts[type] === 1 ? 'DECKER' : 'DECKERS'
 					}`,
 					'dxb-deck-total' + (unusual ? ' is-unusual' : ''),
@@ -5271,13 +5313,10 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 						profile.vehicle,
 					)} deckers`;
 				pill.type = 'button';
+				pill.disabled = finished < ids.length;
 				pill.addEventListener('click', () => openFleet(type, fleet[type], current?.name));
 				summary.append(pill);
 			}
-			if (counts.unknown)
-				summary.append(
-					text('span', `${counts.unknown} TYPE UNCONFIRMED`, 'dxb-deck-total'),
-				);
 			if (finished < ids.length)
 				summary.append(
 					text(
@@ -5313,8 +5352,8 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 						const vehicle = await vehicleCache.get(reg);
 						if (vehicle.found && !vehicle.withdrawn)
 							type = deckType(vehicle.type);
-						if (type) fleet[type].push({ ...vehicle, registration: reg });
-					} catch {}
+						fleet[type || 'unknown'].push({ ...vehicle, registration: reg });
+					} catch { fleet.unknown.push({registration: reg}); }
 					counts[type || 'unknown']++;
 					finished++;
 					if (token === sequence && host.isConnected) render();
@@ -5322,20 +5361,24 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			}),
 		);
 	}
+	function sentenceCase(value) { return String(value).replace(/^\w/, c => c.toUpperCase()); }
 	function openFleet(type, vehicles, route) {
 		const dialog = text('dialog', '', 'dxb-fleet-modal');
 		dialog.setAttribute('aria-label', `${type} deckers tracking on route ${route}`);
-		const heading = text('h2', `${type === 'single' ? 'Single' : 'Double'} Deckers · Route ${route}`);
+		const heading = text('h2', type === 'vehicle' ? `Bus details on route ${route}` : type === 'unknown' ? `Type unconfirmed on Route ${route}` : `${type === 'single' ? 'Single' : 'Double'} deckers on Route ${route}`);
 		const close = text('button', 'Close ×', 'dxb-mark-button');
 		close.type = 'button';
 		close.addEventListener('click', () => dialog.close());
-		dialog.append(close, heading);
+		const modalHeader = text('header', '', 'dxb-fleet-header');
+		modalHeader.append(heading, close); dialog.append(modalHeader);
 		if (!vehicles.length) dialog.append(text('p', 'No confirmed vehicles of this type are currently tracking.'));
 		vehicles.forEach((vehicle) => {
 			const card = text('article', '', 'dxb-fleet-item');
 			const identity = text('header', '', 'dxb-fleet-identity');
-			identity.append(text('h3', vehicle.model || 'Model unconfirmed'), text('p', formatRegistration(vehicle.registration) + (vehicle.fleet ? ' · ' + vehicle.fleet : ''), 'dxb-fleet-registration'));
+			identity.append(text('h3', vehicle.model || 'Model unconfirmed'));
+			const identifiers = text('div', '', 'dxb-fleet-identifiers'); identifiers.append(vehicleField('Registration', formatRegistration(vehicle.registration)), vehicleField('Fleet number', vehicle.fleet || 'Unconfirmed')); identity.append(identifiers);
 			card.append(identity);
+			if (type === 'vehicle') { const detail = text('div', '', 'dxb-line-detail'); detail.append(vehicleField('Vehicle type', sentenceCase(vehicle.type || 'Unconfirmed')), vehicleField('Fuel', sentenceCase(vehicle.fuel || 'Unconfirmed')), vehicleField('USB charging', vehicle.usb === true ? 'Available' : 'Not confirmed')); card.append(detail); }
 			const position = text('div', 'Checking destination and position…', 'dxb-fleet-position');
 			card.append(position);
 			const mark = text('button', '', 'dxb-mark-button');
@@ -5356,9 +5399,9 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				const next = data.arrivals?.find((item) => item.route.toUpperCase() === String(route).toUpperCase());
 				position.replaceChildren();
 				if (next) {
-					position.append(vehicleField('Destination', next.destination), vehicleField(next.location ? 'Current location' : 'Next predicted stop', next.location || next.stop));
-				} else position.textContent = 'Destination and current position unavailable.';
-			}).catch(() => { position.textContent = 'Vehicle position temporarily unavailable.'; });
+					position.append(vehicleField('Final destination', next.destination || vehicle.destination || 'Unconfirmed'), vehicleField(next.location ? 'Current location' : 'Next predicted stop', next.location || next.stop));
+				} else { position.textContent = '⚠ Destination and current position unavailable.'; position.classList.add('is-warning'); }
+			}).catch(() => { position.textContent = '⚠ Vehicle position temporarily unavailable.'; position.classList.add('is-warning'); });
 		});
 		dialog.addEventListener('click', (event) => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
 		dialog.addEventListener('close', () => dialog.remove(), { once: true });
@@ -5695,6 +5738,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			const particle = document.createElement('i'),
 				angle = Math.PI + (i / 37) * Math.PI,
 				distance = 70 + Math.random() * 150;
+			if (i % 3 === 0) { particle.textContent = ['🥦', '🥕', '🥬', '🍆', '🥸'][i % 5]; particle.classList.add('is-emoji'); }
 			particle.style.left = rect.left + rect.width / 2 + 'px';
 			particle.style.top = rect.top + rect.height / 2 + 'px';
 			particle.style.setProperty('--confetti-color', colors[i % colors.length]);
@@ -5716,7 +5760,9 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		document.body.append(burst);
 		setTimeout(() => burst.remove(), 1400);
 	}
+	$('#dxb-advanced').setAttribute('role', 'switch');
 	$('#dxb-advanced').addEventListener('change', () => {
+		root.classList.toggle('is-enthusiast', $('#dxb-advanced').checked);
 		if (!$('.dxb-arrival-retry') && !$('.dxb-schedule-state')) renderArrivals();
 		if ($('#dxb-advanced').checked) celebrateEnthusiastMode();
 		else document.querySelector('.dxb-confetti')?.remove();
@@ -5752,6 +5798,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		status.classList.toggle('is-error', error);
 	}
 	function stopArrivals() {
+		lineRequest++;
 		clearTimeout(timer);
 		clearInterval(retryTicker);
 		arrivalsController?.abort();
@@ -5768,6 +5815,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			(panel) => (panel.hidden = panel.id !== `panel-${name}`),
 		);
 		stopArrivals();
+		if (name === 'line' && current) loadLine();
 		if (name === 'news' && current) loadNews();
 		if (name === 'discussion' && current) loadDiscussion();
 		if (name === 'arrivals' && $('#dxb-stop').value && current)
@@ -5789,6 +5837,50 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			}
 		});
 	});
+	let lineRequest = 0;
+	async function loadLine() {
+		const token = ++lineRequest, route = current?.id;
+		const host = $('#dxb-line-stops'), select = $('#dxb-line-direction');
+		if (!route) return;
+		const chosen = select.dataset.route === route ? select.value : current.direction;
+		select.dataset.route = route;
+		host.replaceChildren(text('p', 'Loading route line…', 'dxb-small'));
+		try {
+			const [labels, data, positions] = await Promise.all([
+				request('directions/' + encodeURIComponent(route)),
+				request(`route/${encodeURIComponent(route)}?direction=${chosen || 'inbound'}`),
+				request('line-positions/' + encodeURIComponent(route)).catch(() => null)
+			]);
+			if (token !== lineRequest || current?.id !== route) return;
+			select.replaceChildren(...Object.entries(labels).map(([value, label]) => new Option(label, value)));
+			select.value = data.direction;
+			host.replaceChildren();
+			const note = text('p', positions ? 'Approximate positions from the next predicted stop, not live GPS. Refreshes every 30 seconds.' : '⚠ Vehicle positions temporarily unavailable. Route stops are shown below.', 'dxb-small');
+			host.append(note);
+			const list = text('ol', '', 'dxb-line-timeline');
+			const stops = data.stops || [], ids = new Set(stops.map(stop => stop.id));
+			const buses = (positions?.vehicles || []).filter(bus => ids.has(bus.stopId) && (!bus.direction || bus.direction === data.direction));
+			stops.forEach(stop => {
+				const item = text('li', '', 'dxb-line-stop');
+				item.append(text('span', stop.name, 'dxb-line-stop-name'));
+				buses.filter(bus => bus.stopId === stop.id).forEach(bus => {
+					const button = text('button', '🚌 ' + formatRegistration(bus.registration), 'dxb-line-bus');
+					button.type = 'button'; button.setAttribute('aria-label', `${formatRegistration(bus.registration)}, approximately at ${stop.name}, towards ${bus.destination}. View bus details`);
+					request('vehicle/' + encodeURIComponent(bus.registration)).then(vehicle => { if (!button.isConnected || token !== lineRequest) return; if (vehicle.fleet) { button.textContent = '🚌 ' + formatRegistration(bus.registration) + ' · ' + vehicle.fleet; button.setAttribute('aria-label', `${formatRegistration(bus.registration)}, fleet ${vehicle.fleet}, approximately at ${stop.name}, towards ${bus.destination}. View bus details`); } }).catch(() => {});
+					button.addEventListener('click', async () => {
+						button.disabled = true;
+						try { const vehicle = await request('vehicle/' + encodeURIComponent(bus.registration)).catch(() => ({})); if (current?.id === route && button.isConnected) openFleet('vehicle', [{...vehicle, ...bus}], current.name); }
+						finally { button.disabled = false; }
+					}); item.append(button);
+				}); list.append(item);
+			});
+			host.append(list);
+			if (!buses.length && positions) host.prepend(text('p', 'No buses with a matching predicted stop in this direction.', 'dxb-small'));
+			if (!stops.length) host.append(text('p', 'Stop information is unavailable for this direction.'));
+		} catch { if (token === lineRequest) host.replaceChildren(text('p', '⚠ Route line temporarily unavailable. Retrying shortly.', 'dxb-small')); }
+		if (token === lineRequest && tab === 'line' && current?.id === route) timer = setTimeout(loadLine, 30000);
+	}
+	$('#dxb-line-direction').addEventListener('change', () => { clearTimeout(timer); loadLine(); });
 	async function loadDiscussion() {
 		const token = sequence,
 			box = $('#dxb-comments');
@@ -6089,7 +6181,11 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			const trackingRow = text('div', '', 'dxb-tracking-row');
 			trackingRow.append(live);
 			box.append(trackingRow);
-			request('running/' + encodeURIComponent(current.name))
+			let liveFailures = 0;
+            const refreshLive = () => {
+            if(token !== sequence || !live.isConnected) return;
+            if(document.hidden){setTimeout(refreshLive,30000);return;}
+            request('running/' + encodeURIComponent(current.name))
 				.then((data) => {
 					if (token === sequence && live.isConnected) {
 						live.setAttribute(
@@ -6125,13 +6221,18 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 								'dxb-tracking-source',
 							),
 						);
-						trackingBreakdown(data, profile, trackingRow, token);
+						trackingRow.querySelector('.dxb-tracking-breakdown')?.remove();
+                        trackingBreakdown(data, profile, trackingRow, token);
+                        liveFailures=0;setTimeout(refreshLive,60000);
 					}
 				})
 				.catch(() => {
-					if (live.isConnected)
-						live.textContent = 'Live bus count temporarily unavailable';
-				});
+					if (token === sequence && live.isConnected) {
+                        live.textContent = 'Live bus count temporarily unavailable · retrying automatically';
+                        setTimeout(refreshLive, Math.min(120000,30000 * ++liveFailures));
+                    }
+                });
+            };refreshLive();
 		}
 		if (profile.source)
 			box.append(
@@ -6348,6 +6449,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 
 	const hero = $('.dxb-hero-media'),
 		baseHero = hero.querySelector('img');
+	const photoShade = text('div', '', 'dxb-route-photo-shade'); photoShade.setAttribute('aria-hidden', 'true'); hero.append(photoShade);
 	const routeLayers = [new Image(), new Image()];
 	let activeLayer = 0,
 		heroToken = 0,
@@ -6365,7 +6467,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			routeLayers.forEach((image) => image.classList.remove('is-visible'));
 			return;
 		}
-		if (heroUrl === photo.image) {
+		if (heroUrl === (photo.full || photo.image)) {
 			updateScene();
 			return;
 		}
@@ -6389,7 +6491,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				layer.classList.add('is-visible');
 				routeLayers[activeLayer].classList.remove('is-visible');
 				activeLayer = next;
-				heroUrl = photo.image;
+				heroUrl = (photo.full || photo.image);
 				root.classList.add('has-route-photo');
 				updateScene();
 			});
@@ -6397,7 +6499,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		preload.onerror = () => {
 			if (token === heroToken) setHero(null);
 		};
-		preload.src = photo.image;
+		preload.src = (photo.full || photo.image);
 	}
 	function sizeHero() {
 		root.style.setProperty('--hero-fade-height', $('#routes').offsetTop + 'px');
@@ -6753,14 +6855,15 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				box.append(
 					text(
 						'p',
-						new Intl.DateTimeFormat('en-GB', {
-							timeZone: 'Europe/London',
-							weekday: 'long',
-							day: 'numeric',
-							month: 'long',
-							hour: '2-digit',
-							minute: '2-digit',
-						}).format(new Date(data.next)),
+                        (() => {
+                            const departure = new Date(data.next);
+                            const day = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'});
+                            const sameDay = day.format(departure) === day.format(new Date());
+                            return new Intl.DateTimeFormat('en-GB', {
+                                timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit',
+                                ...(sameDay ? {} : {weekday: 'long', day: 'numeric', month: 'long'}),
+                            }).format(departure);
+                        })(),
 						'dxb-schedule-time',
 					),
 				);
@@ -6913,9 +7016,9 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			);
 		})
 		.catch(() => {});
-	const initialRoute = new URL(location.href).searchParams.get('route') || 'N8';
+	const initialRoute = new URL(location.href).searchParams.get('route') || '';
 	indexReady.finally(() => {
-		if (sequence === 0) search(initialRoute);
+		if (sequence === 0 && initialRoute.trim()) search(initialRoute);
 	});
 
 	let photoFilter = 'all',
@@ -6947,8 +7050,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	function renderPhoto() {
 		const p = DXB.photos[photoIndex];
 		if (!p) return;
-		$('#dxb-lightbox-image').src = p.full;
-		$('#dxb-lightbox-image').alt = p.alt;
+		window.dxSetPhoto?.($('#dxb-lightbox-image'), p);
 		$('#dxb-lightbox-route').textContent = p.route
 			? `Route ${p.route}`
 			: 'Bus photography';
@@ -6962,7 +7064,15 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		]
 			.filter(Boolean)
 			.join(' · ');
-		$('#dxb-lightbox-count').textContent = `${photoIndex + 1} / ${
+		const technical=$('#dxb-photo-technical'), map=$('#dxb-photo-map');
+        technical.replaceChildren();map.replaceChildren();
+        $('#dxb-bad-photo').hidden=!p.bad;
+        Object.entries(p.technical || {}).forEach(([label,value])=>{if(label!=='gps'){technical.append(text('dt',label),text('dd',String(value)));}});
+        const gps=p.technical?.gps;
+        if(gps){
+            window.dxRenderPhotoMap?.(map,gps,p);
+        } else if(p.location){ const label=text('p','📍 '+p.location);label.className='dx-photo-location';map.append(label); }
+        $('#dxb-lightbox-count').textContent = `${photoIndex + 1} / ${
 			DXB.photos.length
 		}`;
 	}
@@ -7012,7 +7122,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	let scrollScheduled = false;
 	function updateNavigation() {
 		let active = 'buses-overview';
-		['routes', 'bus-diary', 'photography', 'news'].forEach((id) => {
+		['routes', 'bus-diary', 'news', 'bus-models', 'photography'].forEach((id) => {
 			if (document.getElementById(id).getBoundingClientRect().top <= 145)
 				active = id;
 		});
@@ -7033,4 +7143,54 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		{ passive: true },
 	);
 	updateNavigation();
+})();
+
+// Stagger the waitlist's content without delaying form availability.
+document.addEventListener('DOMContentLoaded', () => {
+ if (!document.body.classList.contains('page-n118-fitness') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+ const items = document.querySelectorAll('#main .headline, #main h2, #main .wp-block-paragraph, #main .mailpoet_form_columns, #main .mailpoet_paragraph.last');
+ items.forEach((item, index) => item.animate([{opacity: 0, transform: 'translateY(18px)'}, {opacity: 1, transform: 'translateY(0)'}], {duration: 650, delay: Math.min(index * 100, 700), easing: 'ease-out', fill: 'backwards'}));
+});
+
+// Editorial motion leaves native document layout and nested scrolling intact.
+(() => {
+ const init = () => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+   if(entry.isIntersecting){entry.target.classList.remove('is-pending');entry.target.classList.add('is-visible');}
+  }), {threshold:.12});
+  document.querySelectorAll('.dx-reveal,.dx-service-scene').forEach(el=>{if(!reduced.matches && el.classList.contains('dx-reveal'))el.classList.add('is-pending');observer.observe(el);});
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  let target=scrollY, frame=0, last=0;
+  const stop=()=>{cancelAnimationFrame(frame);frame=0;target=scrollY;last=0;};
+  const tick=time=>{const dt=last?Math.min(50,time-last):16;last=time;const next=scrollY+(target-scrollY)*(1-Math.exp(-dt/95));window.scrollTo({top:Math.abs(target-next)<.8?target:next,behavior:'instant'});if(Math.abs(target-scrollY)>.8)frame=requestAnimationFrame(tick);else{frame=0;last=0;}};
+  window.addEventListener('wheel',event=>{
+   if(reduced.matches||event.defaultPrevented||event.ctrlKey||event.metaKey||Math.abs(event.deltaX)>Math.abs(event.deltaY)||document.documentElement.style.overflow==='hidden'||getComputedStyle(document.body).overflow==='hidden')return;
+   for(let el=event.target instanceof Element?event.target:null;el && el!==document.body;el=el.parentElement){if(el.matches('input,textarea,select,[contenteditable],dialog,[role="dialog"]'))return;const style=getComputedStyle(el);if(/auto|scroll/.test(style.overflowY)&&el.scrollHeight>el.clientHeight+2)return;}
+   event.preventDefault();if(!frame)target=scrollY;const delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);target=Math.max(0,Math.min(document.documentElement.scrollHeight-innerHeight,target+delta));if(!frame)frame=requestAnimationFrame(tick);
+  },{passive:false});
+  ['pointerdown','touchstart','keydown','hashchange'].forEach(type=>window.addEventListener(type,stop,{passive:true}));
+  reduced.addEventListener('change',stop);
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+(() => { const styleActions=()=>document.querySelectorAll('a.btn,.wp-block-button__link,.service-card-link,.dx-menu__cta').forEach(a=>{if(!/[↗↘→↓]/.test(a.textContent)&&!a.querySelector('svg,i,[class*=arrow]')){const arrow=document.createElement('span');arrow.className='dx-cta-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='↗';a.append(arrow);}});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',styleActions);else styleActions();})();
+
+// Document scrolling with a soft inertial settle, preserving native nested scrolling.
+(() => {
+ if(!document.body.classList.contains('is-frontend')) return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ let target=window.scrollY, frame=0,last=0;
+ const stop=()=>{cancelAnimationFrame(frame);frame=0;target=window.scrollY;};
+ const step=(time)=>{const dt=Math.min(40,time-last||16);last=time;const y=window.scrollY;const next=y+(target-y)*(1-Math.exp(-dt/115));window.scrollTo({top:next,behavior:'instant'});if(Math.abs(target-next)>0.5)frame=requestAnimationFrame(step);else{window.scrollTo({top:target,behavior:'instant'});frame=0;}};
+ window.addEventListener('wheel',e=>{
+  if(reduced.matches||e.ctrlKey||e.defaultPrevented||Math.abs(e.deltaX)>Math.abs(e.deltaY)||document.querySelector('dialog[open]')||getComputedStyle(document.body).overflow==='hidden')return;
+  for(let el=e.target;el&&el!==document.body;el=el.parentElement){const c=getComputedStyle(el);if(/auto|scroll/.test(c.overflowY)&&el.scrollHeight>el.clientHeight+1)return;}
+  e.preventDefault();if(!frame)target=window.scrollY;target=Math.max(0,Math.min(document.documentElement.scrollHeight-innerHeight,target+e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1)));if(!frame){last=performance.now();frame=requestAnimationFrame(step);}
+ },{passive:false});
+ ['touchstart','pointerdown','keydown'].forEach(name=>window.addEventListener(name,stop,{passive:true}));
+ reduced.addEventListener('change',stop);
+ document.querySelector('[data-read-study]')?.addEventListener('click',e=>{e.preventDefault();stop();document.querySelector('.story-section')?.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});});
+ const intro=document.querySelector('.dx-services-intro'),visual=document.querySelector('.dx-service-visual img');
+ if(intro&&visual){const img=visual.cloneNode();img.className='dx-services-hero-art';img.alt='';img.setAttribute('aria-hidden','true');intro.prepend(img);}
 })();

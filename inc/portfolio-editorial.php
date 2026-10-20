@@ -50,19 +50,9 @@ function dxndre_editorial_projects_archive($atts = []) {
     $lead = dxndre_portfolio_project_data($featured);
     ob_start(); ?>
     <div class="portfolio-editorial">
-      <div class="portfolio-feature" aria-labelledby="portfolio-feature-title">
-        <p class="portfolio-eyebrow">Featured project / 01</p>
-        <div class="portfolio-feature-grid">
-          <a class="portfolio-feature-image" href="<?php echo esc_url(get_permalink($featured)); ?>" aria-label="<?php echo esc_attr('View ' . $lead['title'] . ' case study'); ?>"><?php echo dxndre_portfolio_image($featured, $lead, 'full', 'portfolio-feature-photo', true); ?></a>
-          <div class="portfolio-feature-copy">
-            <h2 id="portfolio-feature-title"><?php echo esc_html($lead['title']); ?></h2>
-            <p class="portfolio-eyebrow"><?php echo esc_html($lead['year'] . ' / ' . $lead['context_label']); ?></p>
-            <p><?php echo esc_html($lead['excerpt']); ?></p>
-            <a class="portfolio-outline-link" href="<?php echo esc_url(get_permalink($featured)); ?>">Explore the case study <span aria-hidden="true">↗</span></a>
-            <ul class="project-types"><?php foreach ($lead['types'] as $type) : ?><li><?php echo esc_html($type); ?></li><?php endforeach; ?></ul>
-          </div>
-        </div>
-      </div>
+      <section class="dx-project-reel" aria-label="Selected projects"><div class="dx-project-reel-sticky"><p class="dx-eyebrow">Selected work / Scroll to explore</p><h2>Ideas, brought to life.</h2><div class="dx-project-track">
+<?php foreach($projects as $project): $d=dxndre_portfolio_project_data($project); ?><a class="dx-project-poster" href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo dxndre_portfolio_image($project,$d,'large','dx-project-poster-image'); ?><div><p class="dx-eyebrow"><?php echo esc_html($d['year'].' / '.$d['context_label']); ?></p><h3><?php echo esc_html($d['title']); ?></h3><p><?php echo esc_html($d['excerpt']); ?></p><span>Read the story ↗</span></div></a><?php endforeach; ?>
+</div></div></section>
       <div class="portfolio-archive" data-projects-archive>
         <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
         <div class="filter-inputs">
@@ -79,9 +69,6 @@ function dxndre_editorial_projects_archive($atts = []) {
         <?php foreach ($projects as $project) : $d = dxndre_portfolio_project_data($project);
           $search = $d['title'] . ' ' . $d['excerpt'] . ' ' . implode(' ', $d['types']) . ' ' . $d['context_label'] . ' ' . $d['year']; ?>
           <li class="project-card" data-type="<?php echo esc_attr(implode(' ', array_map('sanitize_title', $d['types']))); ?>" data-year="<?php echo esc_attr($d['year']); ?>" data-context="<?php echo esc_attr($d['context']); ?>" data-search="<?php echo esc_attr($search); ?>">
-            <a href="<?php echo esc_url(get_permalink($project)); ?>" class="project-thumb" aria-label="<?php echo esc_attr('View ' . $d['title'] . ' case study'); ?>">
-              <?php echo get_the_post_thumbnail($project, 'large', ['class'=>'project-image project-image--default', 'loading'=>'lazy']) ?: dxndre_portfolio_image($project, $d, 'large', 'project-image project-image--default'); ?><?php echo dxndre_portfolio_image($project,$d,'large','project-image project-image--hover'); ?>
-            </a>
             <h3 class="project-title"><a href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo esc_html($d['title']); ?></a></h3>
             <div class="project-meta"><span><?php echo esc_html($d['year']); ?></span><span aria-hidden="true">/</span><span><?php echo esc_html($d['context_label']); ?></span><?php if ($d['status']) : ?><span aria-hidden="true">/</span><span><?php echo esc_html(ucwords(str_replace('_', ' ', $d['status']))); ?></span><?php endif; ?></div>
             <div class="project-card-footer"><ul class="project-types"><?php foreach ($d['types'] as $type) : ?><li><?php echo esc_html($type); ?></li><?php endforeach; ?></ul><a class="project-cta" href="<?php echo esc_url(get_permalink($project)); ?>">View case study <span aria-hidden="true">↗</span></a></div>
