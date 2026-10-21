@@ -536,7 +536,15 @@ body .league-mosaic[hidden],body .league-layout[hidden]{display:none!important}
 .dx-bus-article{max-width:1200px;margin:auto;padding:170px 6vw 100px;color:#eee}
 .dx-bus-article h1{font-size:clamp(3rem,6vw,6rem);line-height:1.06;margin:24px 0;color:#f1f0e9}
 .dx-bus-article-image{display:block;width:100%;max-height:65vh;height:auto;object-fit:cover;margin:50px 0}
-.dx-bus-article-body{max-width:760px;margin:50px auto;line-height:1.85;font-size:18px}
+.dx-bus-article-image.backdrop{    margin: 0;
+    position: absolute;
+    z-index: -1;
+    filter: blur(75px);
+    width: 100%;
+    left: 0;
+    top: 35vh;}
+.dx-bus-article-body{max-width:760px;margin:50px auto;line-height:1.85;font-size:16px}
+.dx-bus-article-body p{font-weight: 300;}
 .dx-bus-article-body h2{color:#f1f0e9;margin-top:40px}
 .dx-sample-note{border-left:2px solid #d4aa48;padding:16px 24px;background:#d4aa4810;color:#d4aa48}
 
