@@ -43,6 +43,36 @@ while ( have_posts() ) :
 
 
 	/**
+	 * Keep review photography on its largest available uploaded source.
+	 * WordPress can regenerate srcset even when false is passed to its image helper.
+	 */
+	$get_review_image = static function ( $attachment_id ) {
+		$full = wp_get_attachment_image_src( $attachment_id, 'full' );
+		$image = [
+			'url'    => $full ? $full[0] : '',
+			'width'  => $full ? (int) $full[1] : 0,
+			'height' => $full ? (int) $full[2] : 0,
+			'alt'    => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+		];
+		$original_path = wp_get_original_image_path( $attachment_id );
+		if ( $original_path && is_readable( $original_path ) ) {
+			$dimensions = wp_getimagesize( $original_path );
+			$original_meta = function_exists( 'exif_read_data' ) ? @exif_read_data( $original_path ) : [];
+			if ( $dimensions && in_array( (int) ( $original_meta['Orientation'] ?? 0 ), [ 5, 6, 7, 8 ], true ) ) {
+				[ $dimensions[0], $dimensions[1] ] = [ $dimensions[1], $dimensions[0] ];
+			}
+			$original_url = wp_get_original_image_url( $attachment_id );
+			if ( $dimensions && $original_url && $dimensions[0] * $dimensions[1] >= $image['width'] * $image['height'] ) {
+				$image['url'] = $original_url;
+				$image['width'] = (int) $dimensions[0];
+				$image['height'] = (int) $dimensions[1];
+			}
+		}
+		return $image;
+	};
+
+
+	/**
 	 * Determine whether an ACF score is valid.
 	 */
 	$is_valid_score = static function ( $score ) {
@@ -71,6 +101,7 @@ while ( have_posts() ) :
 	$notes           = get_field( 'notes', $post_id );
 	$location        = get_field( 'gym_location', $post_id );
 	$google_maps_url = get_field( 'google_maps_url', $post_id );
+	$map_details = dx_gym_map_embed( $google_maps_url );
 
 
 	// ============================================================
@@ -109,12 +140,12 @@ while ( have_posts() ) :
 		],
 
 		'spa' => [
-			'label' => 'Spa Retreat',
+			'label' => $chain_value === 'gymbox' ? 'Sauna Facilities' : 'Spa Retreat',
 			'value' => get_field( 'score_spa', $post_id ),
 		],
 
 		'cafe' => [
-			'label' => 'Café & Work Area',
+			'label' => $chain_value === 'davidlloyds' ? 'Clubroom' : 'Café & Work Area',
 			'value' => get_field( 'score_cafe', $post_id ),
 		],
 
@@ -160,14 +191,22 @@ while ( have_posts() ) :
 		[ 0, 'Diabolical', '#8c354b' ],
 	];
 
-	if ( $overall_score !== null ) {
+	// One threshold map supplies both the weighted rating and each category.
+	$get_score_band = static function ( $percentage ) use ( $overall_bands ) {
+		if ( ! is_numeric( $percentage ) || $percentage < 0 || $percentage > 100 ) {
+			return null;
+		}
 		foreach ( $overall_bands as [ $minimum, $label, $color ] ) {
-			if ( $overall_score >= $minimum ) {
-				$score_label = $label;
-				$score_color = $color;
-				break;
+			if ( $percentage >= $minimum ) {
+				return [ 'label' => $label, 'color' => $color ];
 			}
 		}
+		return null;
+	};
+	$overall_band = $get_score_band( $overall_score );
+	if ( $overall_band ) {
+		$score_label = $overall_band['label'];
+		$score_color = $overall_band['color'];
 	}
 
 
@@ -179,84 +218,52 @@ while ( have_posts() ) :
 	// unavailable without needing another ACF repeater.
 	// ============================================================
 
-	$facilities = [
+	$facilities = [];
+	foreach ( $score_fields as $key => $score ) {
+		if ( $key === 'cleanliness' ) continue;
+		$status = dx_gym_facility_availability( $score['value'] );
+		$facilities[] = [
+			'name' => $score['label'],
+			'status' => $status,
+			'notice' => $status === 'unavailable' ? 'Unavailable' : ( $status === 'unknown' ? 'Not assessed' : '' ),
+		];
+	}
 
-		[
-			'name'   => 'Gym',
-			'status' => $is_valid_score(
-				$score_fields['gym']['value']
-			)
-				? 'available'
-				: 'unavailable',
-		],
-
-		[
-			'name'   => 'Swimming',
-			'status' => $is_valid_score(
-				$score_fields['swim']['value']
-			)
-				? 'available'
-				: 'unavailable',
-		],
-
-		[
-			'name'   => 'Spa Retreat',
-			'status' => $is_valid_score(
-				$score_fields['spa']['value']
-			)
-				? 'available'
-				: 'unavailable',
-		],
-
-		[
-			'name'   => 'Café / Work Area',
-			'status' => $is_valid_score(
-				$score_fields['cafe']['value']
-			)
-				? 'available'
-				: 'unavailable',
-		],
-
-		[
-			'name'   => 'Parking',
-			'status' => $is_valid_score(
-				$score_fields['parking']['value']
-			)
-				? 'available'
-				: 'unavailable',
-		],
-
-	];
 
 ?>
 
 
-<article <?php post_class( 'gym-review-single' ); ?>>
+<article <?php post_class( 'gym-review-single gym-review-editorial' ); ?>>
+	<div class="gym-review-canvas" aria-hidden="true">
+		<div class="gym-review-canvas__layer is-active" data-gym-canvas="ink"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="brass"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="sage"></div>
+	</div>
 
 
 	<!-- =========================================================
 	HERO
 	========================================================= -->
 
-	<section class="gym-review-hero">
+	<section class="gym-review-hero" data-gym-scene="ink">
 
 		<?php if ( has_post_thumbnail() ) : ?>
 
 			<div class="gym-review-hero__media">
 
 				<?php
-				the_post_thumbnail(
-					'full',
-					[
-						'class'         => 'gym-review-hero__image',
-						'srcset'        => false,
-						'sizes'         => false,
-						'loading'       => 'eager',
-						'decoding'      => 'async',
-						'fetchpriority' => 'high',
-					]
-				);
+				$hero_image = $get_review_image( get_post_thumbnail_id() );
 				?>
+				<img
+					class="gym-review-hero__image attachment-full size-full wp-post-image"
+					src="<?php echo esc_url( $hero_image['url'] ); ?>"
+					width="<?php echo esc_attr( $hero_image['width'] ); ?>"
+					height="<?php echo esc_attr( $hero_image['height'] ); ?>"
+					alt="<?php echo esc_attr( $hero_image['alt'] ); ?>"
+					loading="eager"
+					decoding="async"
+					fetchpriority="high"
+				>
 
 			</div>
 
@@ -355,35 +362,14 @@ while ( have_posts() ) :
 			<?php endif; ?>
 
 
-			<div class="gym-review-badges">
-
-				<?php if ( $overall_score >= 85 ) : ?>
-
-					<span class="gym-review-badge">
-						Recommended
-					</span>
-
-				<?php endif; ?>
-
-
-				<?php if ( $score_fields['spa']['value'] >= 9 ) : ?>
-
-					<span class="gym-review-badge">
-						Excellent Spa
-					</span>
-
-				<?php endif; ?>
-
-
-				<?php if ( $score_fields['gym']['value'] >= 9 ) : ?>
-
-					<span class="gym-review-badge">
-						Excellent Gym
-					</span>
-
-				<?php endif; ?>
-
-			</div>
+			<?php $review_badges = dx_gym_review_badges( $valid_scores, $weighted_score, $chain_value ); ?>
+			<?php if ( $review_badges ) : ?>
+				<div class="gym-review-badges">
+					<?php foreach ( $review_badges as $badge ) : ?>
+						<span class="gym-review-badge" data-badge="<?php echo esc_attr( $badge['key'] ); ?>" title="<?php echo esc_attr( $badge['criterion'] ); ?>"><?php echo esc_html( $badge['label'] ); ?></span>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 
 		</div>
 
@@ -395,7 +381,7 @@ while ( have_posts() ) :
 	QUICK FACTS
 	========================================================= -->
 
-	<section class="gym-review-facts">
+	<section class="gym-review-facts" data-gym-scene="ink">
 
 		<div class="container">
 
@@ -496,7 +482,7 @@ while ( have_posts() ) :
 	VERDICT + LOCATION
 	========================================================= -->
 
-	<section class="gym-review-overview">
+	<section class="gym-review-overview" data-gym-scene="ink">
 
 		<div class="container">
 
@@ -505,9 +491,8 @@ while ( have_posts() ) :
 
 				<div class="gym-review-verdict">
 
-					<span class="gym-review-kicker">
-						The Verdict
-					</span>
+					<span class="gym-review-kicker">01 / The verdict</span>
+					<h2 class="gym-review-editorial-title">First impressions.<br>Lasting thoughts.</h2>
 
 
 					<?php if ( $notes ) : ?>
@@ -537,7 +522,7 @@ while ( have_posts() ) :
 				</div>
 
 
-				<?php if ( $location ) : ?>
+				<?php if ( $location || $google_maps_url ) : ?>
 
 					<div class="gym-review-location">
 
@@ -553,8 +538,13 @@ while ( have_posts() ) :
 						<div
 							class="gym-review-map"
 							data-location="<?php echo esc_attr( $location ); ?>"
-							data-title="<?php echo esc_attr( get_the_title() ); ?>"
+							data-title="<?php echo esc_attr( dx_gym_chain_label( $chain_value ) . ' ' . get_the_title() ); ?>"
+							data-map-embed="<?php echo esc_url( $map_details['url'] ); ?>"
+							data-map-precision="<?php echo esc_attr( $map_details['precision'] ); ?>"
 						></div>
+						<?php if ( $map_details['precision'] === 'search' ) : ?>
+							<p class="gym-review-map__note">Map search for <?php echo esc_html( $map_details['label'] ); ?>.</p>
+						<?php endif; ?>
 
 
 						<div class="gym-review-location__address">
@@ -606,15 +596,16 @@ while ( have_posts() ) :
 	SCORES
 	========================================================= -->
 
-	<section class="gym-review-scores">
+	<section class="gym-review-scores" data-gym-scene="brass">
 
 		<div class="container">
 
 			<div class="gym-review-section-heading">
 
-				<span class="gym-review-kicker">
-					Scores
-				</span>
+				<div>
+					<span class="gym-review-kicker">02 / The scorecard</span>
+					<h2 class="gym-review-editorial-title">Every detail.<br>Honestly rated.</h2>
+				</div>
 
 
 				<?php if ( $overall_score !== null ) : ?>
@@ -642,61 +633,28 @@ while ( have_posts() ) :
 
 
 				<?php foreach ( $score_fields as $score ) : ?>
-
 					<?php
-
-					if (
-						! $is_valid_score(
-							$score['value']
-						)
-					) {
-						continue;
-					}
-
-
-					$value =
-						(float) $score['value'];
-
+					$is_assessed = $is_valid_score( $score['value'] );
+					$value = $is_assessed ? (float) $score['value'] : null;
+					$category_band = $is_assessed ? $get_score_band( $value * 10 ) : null;
+					$score_notice = $score['value'] === 'unavailable' ? 'Unavailable' : 'Not assessed';
 					?>
-
-
-					<div
-						class="gym-review-score"
-						data-score="<?php echo esc_attr( $value ); ?>"
-					>
-
+					<div class="gym-review-score<?php echo $is_assessed ? '' : ' gym-review-score--unassessed'; ?>"
+						<?php if ( $is_assessed ) : ?>
+							data-score="<?php echo esc_attr( $value ); ?>"
+							data-score-band="<?php echo esc_attr( $category_band['label'] ?? '' ); ?>"
+							style="--score-colour: <?php echo esc_attr( $category_band['color'] ?? 'currentColor' ); ?>"
+						<?php endif; ?>>
 						<div class="gym-review-score__meta">
-
-							<span>
-								<?php echo esc_html( $score['label'] ); ?>
-							</span>
-
-
-							<strong class="gym-review-score__value">
-
-								<?php
-								echo esc_html(
-									number_format(
-										$value,
-										0
-									)
-								);
-								?>/10
-
-							</strong>
-
+							<span><?php echo esc_html( $score['label'] ); ?></span>
+							<?php if ( $is_assessed ) : ?>
+								<strong class="gym-review-score__value" aria-label="<?php echo esc_attr( sprintf( '%s out of 10 — %s', $value, $category_band['label'] ?? '' ) ); ?>"><?php echo esc_html( $value ); ?>/10</strong>
+							<?php else : ?>
+								<strong class="gym-review-score__notice"><?php echo esc_html( $score_notice ); ?></strong>
+							<?php endif; ?>
 						</div>
-
-
-						<div class="gym-review-score__track">
-
-							<span class="gym-review-score__fill"></span>
-
-						</div>
-
+						<?php if ( $is_assessed ) : ?><div class="gym-review-score__track"><span class="gym-review-score__fill"></span></div><?php endif; ?>
 					</div>
-
-
 				<?php endforeach; ?>
 
 
@@ -712,10 +670,15 @@ while ( have_posts() ) :
 	LIKES / DISLIKES / FACILITIES
 	========================================================= -->
 
-	<section class="gym-review-breakdown">
+	<section class="gym-review-breakdown" data-gym-scene="brass">
 
 		<div class="container">
-
+			<div class="gym-review-section-heading">
+				<div>
+					<span class="gym-review-kicker">03 / The experience</span>
+					<h2 class="gym-review-editorial-title">The good.<br>The room to grow.</h2>
+				</div>
+			</div>
 			<div class="gym-review-breakdown__grid">
 
 
@@ -791,7 +754,7 @@ while ( have_posts() ) :
 									gym-review-facility
 									gym-review-facility--<?php
 									echo esc_attr(
-										$facility['status']
+										$facility['status'] === 'unknown' ? 'unknown gym-review-facility--limited' : $facility['status']
 									);
 									?>
 								"
@@ -804,6 +767,9 @@ while ( have_posts() ) :
 
 								<strong>
 									<?php echo esc_html( $facility['name'] ); ?>
+									<?php if ( $facility['notice'] ) : ?>
+										<br><small><?php echo esc_html( $facility['notice'] ); ?></small>
+									<?php endif; ?>
 								</strong>
 
 							</div>
@@ -838,15 +804,16 @@ while ( have_posts() ) :
 
 	?>
 
-		<section class="gym-review-gallery">
+		<section class="gym-review-gallery" data-gym-scene="sage">
 
 			<div class="container">
 
 				<div class="gym-review-section-heading">
 
-					<span class="gym-review-kicker">
-						Photo Gallery
-					</span>
+					<div>
+						<span class="gym-review-kicker">04 / In the frame</span>
+						<h2 class="gym-review-editorial-title">A closer look.</h2>
+					</div>
 
 					<small>
 						<?php
@@ -873,32 +840,21 @@ while ( have_posts() ) :
 									? $image['ID']
 									: $image;
 
-							$full_image =
-								wp_get_attachment_image_url(
-									$image_id,
-									'full'
-								);
-
+							$gallery_image = $get_review_image( $image_id );
 							?>
 
 
 							<figure>
 
-								<?php
-
-								echo wp_get_attachment_image(
-									$image_id,
-									'large',
-									false,
-									[
-										'loading'   => 'lazy',
-										'data-full' => esc_url(
-											$full_image
-										),
-									]
-								);
-
-								?>
+								<img
+									src="<?php echo esc_url( $gallery_image['url'] ); ?>"
+									data-full="<?php echo esc_url( $gallery_image['url'] ); ?>"
+									width="<?php echo esc_attr( $gallery_image['width'] ); ?>"
+									height="<?php echo esc_attr( $gallery_image['height'] ); ?>"
+									alt="<?php echo esc_attr( $gallery_image['alt'] ); ?>"
+									loading="lazy"
+									decoding="async"
+								>
 
 							</figure>
 
@@ -922,7 +878,7 @@ while ( have_posts() ) :
 
 	<?php if ( trim( get_the_content() ) ) : ?>
 
-		<section class="gym-review-content">
+		<section class="gym-review-content" data-gym-scene="ink">
 
 			<div class="container">
 
@@ -931,9 +887,8 @@ while ( have_posts() ) :
 
 					<div>
 
-						<span class="gym-review-kicker">
-							Full Review
-						</span>
+						<span class="gym-review-kicker">The full review</span>
+						<h2 class="gym-review-editorial-title">Beyond the numbers.</h2>
 
 
 						<div class="gym-review-content__body">
@@ -1008,13 +963,12 @@ while ( have_posts() ) :
 
 	<?php if ( $overall_score !== null ) : ?>
 
-		<section class="gym-review-final">
+		<section class="gym-review-final" data-gym-scene="sage">
 
 			<div class="container">
 
-				<span class="gym-review-kicker">
-					Final Verdict
-				</span>
+				<span class="gym-review-kicker">The final word</span>
+				<h2 class="gym-review-editorial-title">The overall picture.</h2>
 
 
 				<strong
@@ -1053,7 +1007,7 @@ while ( have_posts() ) :
 	PREV / NEXT
 	========================================================= -->
 
-	<section class="gym-review-navigation">
+	<section class="gym-review-navigation" data-gym-scene="ink">
 
 		<div class="container">
 

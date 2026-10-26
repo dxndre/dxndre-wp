@@ -16,7 +16,7 @@ $current_page = max(1, (int) get_query_var('paged'));
         <svg class="dx-search__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.5"/></svg>
         <input id="dx-search-query" name="s" type="search" value="<?php echo esc_attr($search_term); ?>" placeholder="Search the site…" autocomplete="off" enterkeyhint="search">
         <button class="dx-search__clear" type="button" aria-label="Clear search" hidden><span aria-hidden="true">×</span></button>
-        <button class="dx-search__submit" type="submit">Search</button>
+        <button class="dx-search__submit" type="submit"><span>Search</span><svg class="dx-search__submit-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.75"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
       </form>
     </header>
     <div class="dx-search__meta">

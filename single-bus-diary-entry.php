@@ -86,7 +86,7 @@ while (have_posts()) : the_post();
 
 					<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex bus-diary-entry__hero-actions">
 						<div class="wp-block-button primary">
-							<a class="wp-block-button__link wp-element-button" href="#bus-stage">
+							<a class="wp-block-button__link wp-element-button" href="<?php echo get_post_meta(get_the_ID(), '_dx_story_sample', true) ? '#journey-story' : '#bus-stage'; ?>">
 								View Journey Experience
 							</a>
 						</div>
@@ -107,6 +107,7 @@ while (have_posts()) : the_post();
 		</div>
 	</div>
 
+    <?php if(get_post_meta(get_the_ID(),'_dx_story_sample',true)): ?><div id="journey-story" class="dx-story-experience"><?php the_content(); ?></div><?php endif; ?>
 	<div class="wp-block-group bus-diary-entry__content">
 		<div class="wp-block-group">
 			<div class="bus-diary-entry__map-stage" id="bus-stage">
@@ -161,7 +162,7 @@ while (have_posts()) : the_post();
 											<pre class="headline">Story Layer</pre>
 											<h2>Journey Story</h2>
 											<div class="bus-diary-entry__body">
-												<?php the_content(); ?>
+												<?php if(!get_post_meta(get_the_ID(),'_dx_story_sample',true))the_content();else echo '<a href="#journey-story">Read the journey chapters</a>'; ?>
 											</div>
 										</div>
 									</div>

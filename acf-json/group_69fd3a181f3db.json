@@ -46,7 +46,8 @@
                 "mercedes": "Mercedes-Benz",
                 "byd": "BYD",
                 "irizar": "Irizar",
-                "other": "Other"
+                "other": "Other",
+                "mcv": "MCV"
             },
             "default_value": false,
             "return_format": "label",

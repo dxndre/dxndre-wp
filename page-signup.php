@@ -22,17 +22,17 @@ if (is_user_logged_in()) {
 
 			<form method="post">
 
-                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name="username" aria-label="Username" placeholder="Username" required>
 
-                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="email" name="email" aria-label="Email Address" placeholder="Email Address" required>
 
-                <input type="text" name="company" placeholder="Company Name">
+                <input type="text" name="company" aria-label="Company Name" placeholder="Company Name">
 
-                <input type="text" name="projectref" placeholder="Client Reference Number">
+                <input type="text" name="projectref" aria-label="Client Reference Number" placeholder="Client Reference Number">
 
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="password" aria-label="Password" placeholder="Password" required>
 
-                <input type="password" name="password_repeat" placeholder="Repeat Password" required>
+                <input type="password" name="password_repeat" aria-label="Repeat Password" placeholder="Repeat Password" required>
 
                 <label class="terms-checkbox">
                     <input type="checkbox" name="terms" required>

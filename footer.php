@@ -15,6 +15,7 @@
 			<?php
 				endif;
 			?>
+		<?php dx_render_photography_outro(); dx_render_instagram_section(); ?>
 		</main><!-- /#main -->
 		<footer class="site-footer" role="contentinfo">
 			<div class="container">
@@ -107,7 +108,7 @@
 					<h5 class="site-footer-subheading">Email</h5>
 					<a href="mailto:hello@dxndre.co.uk">
 						hello@dxndre.co.uk
-					</a>
+					</a><a href="mailto:dandrephillips@outlook.com">dandrephillips@outlook.com</a>
 					</div>
 				</div>
 
@@ -140,6 +141,26 @@
 					<a href="https://x.com/dxndre1" target="_blank" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
 					<a href="https://www.linkedin.com/in/dxndre/" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
 				</div>
+			</div>
+		</div>
+		<?php
+			$footer_roman_year = static function ( $year ) {
+				$roman = '';
+				foreach ( [ 1000 => 'M', 900 => 'CM', 500 => 'D', 400 => 'CD', 100 => 'C', 90 => 'XC', 50 => 'L', 40 => 'XL', 10 => 'X', 9 => 'IX', 5 => 'V', 4 => 'IV', 1 => 'I' ] as $value => $numeral ) {
+					while ( $year >= $value ) {
+						$roman .= $numeral;
+						$year -= $value;
+					}
+				}
+				return $roman;
+			};
+			$footer_wordmark = 'DXNDRE ' . $footer_roman_year( (int) wp_date( 'Y' ) );
+		?>
+		<div class="dx-footer-wordmark" aria-hidden="true">
+			<div class="dx-footer-wordmark-track">
+				<?php for ( $footer_repeat = 0; $footer_repeat < 3; $footer_repeat++ ) : ?>
+					<span><?php echo esc_html( $footer_wordmark ); ?></span>
+				<?php endfor; ?>
 			</div>
 		</div>
 	</footer>

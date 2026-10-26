@@ -60,8 +60,8 @@ function dx_portal_get_selected_ticket_id(array $tickets): int {
 }
 
 function dx_portal_is_ticket_owned_by_user(int $ticket_id, int $user_id): bool {
-	$client = (int) get_post_meta($ticket_id, 'ticket_client', true);
-	return $client === $user_id;
+    $ticket = get_post($ticket_id);
+    return $ticket && $ticket->post_type === 'ticket' && dxcp_can_access($ticket, $user_id);
 }
 
 function dx_portal_count_tickets(array $tickets, string $status): int {

@@ -23,25 +23,6 @@
 	<header>
 		<nav id="header" class="navbar <?php if ( isset( $navbar_position ) && 'fixed_top' === $navbar_position ) : echo ' fixed-top'; elseif ( isset( $navbar_position ) && 'fixed_bottom' === $navbar_position ) : echo ' fixed-bottom'; endif; if ( is_home() || is_front_page() ) : echo ' home'; endif; ?>">
 			<div class="container position-relative">
-				<div class="dxndre-nav-left">
-					<button id="dxndre-search-toggle" class="header-search" type="button" data-bs-toggle="collapse" data-bs-target="#headerSearch" aria-expanded="false" aria-controls="headerSearch" aria-label="<?php esc_attr_e( 'Toggle search', 'dxndre' ); ?>">
-						<!-- Magnifier SVG -->
-						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-							<path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							<circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</button>
-					<div class="header-search-box">
-						<div class="collapse collapse-horizontal" id="headerSearch">
-							<form class="search-form dxndre-search-box" id="dxndre-search-form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-								<div class="input-group">
-									<input type="text" name="s" class="form-control search-box" placeholder="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" title="<?php esc_attr_e( 'Search', 'dxndre' ); ?>" />
-								</div>
-							</form>
-						</div>
-					</div>
-					
-				</div>
 
 				<a class="navbar-brand dxndre-navbar-brand-centered" href="<?php echo esc_url( home_url() ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
 					<?php
@@ -57,6 +38,7 @@
 					?>
 				</a>
 				<div class="dxndre-nav-right">
+<span class="dx-menu-label" aria-hidden="true"><span class="dx-close-label">CLOSE </span>MENU</span>
 					<button id="dx-menu-toggle" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php esc_attr_e( 'Toggle navigation', 'dxndre' ); ?>">
 						<span class="navbar-toggler-line"></span>
 						<span class="navbar-toggler-line"></span>
@@ -76,12 +58,8 @@
 						'LinkedIn' => 'https://www.linkedin.com/in/dxndre/',
 					);
 
-					// Portfolio destination.
-					$portfolio_page = get_page_by_path( 'portfolio' );
-
-					$portfolio_url = $portfolio_page
-						? get_permalink( $portfolio_page )
-						: home_url( '/portfolio/' );
+					// Shared account entry for clients and hiring teams.
+					$sign_in_url = home_url( '/login/' );
 				?>
 
 				<div id="navbar" class="navbar-collapse collapse dx-menu" aria-label="<?php esc_attr_e( 'Main navigation', 'dxndre' ); ?>">
@@ -104,7 +82,12 @@
 									<h2 class="dx-menu__title"><?php esc_html_e( 'Menu', 'dxndre' ); ?></h2>
 								</div>
 
-								<div class="dx-menu__navigation">
+								<form class="dx-menu__search" role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>">
+                                    <label class="visually-hidden" for="dx-menu-search">Search the site</label>
+                                    <input id="dx-menu-search" type="search" name="s" placeholder="Search the site…" required>
+                                    <button type="submit" aria-label="Submit search">Search <span aria-hidden="true">↗&#xfe0e;</span></button>
+                                </form>
+                                <div class="dx-menu__navigation">
 
 									<?php
 										wp_nav_menu(
@@ -158,11 +141,11 @@
 									</div>
 
 									<a
-										href="<?php echo esc_url( $portfolio_url ); ?>"
+										href="<?php echo esc_url( $sign_in_url ); ?>"
 										class="dx-menu__cta"
 									>
 										<span>
-											<?php esc_html_e( 'View my work', 'dxndre' ); ?>
+											<?php esc_html_e( 'Sign in', 'dxndre' ); ?>
 										</span>
 
 										<svg

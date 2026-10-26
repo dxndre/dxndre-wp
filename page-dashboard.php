@@ -1,326 +1,43 @@
 <?php
-/* Template Name: Dashboard */
-
-if (!is_user_logged_in()) {
-	wp_safe_redirect(home_url('/login'));
-	exit;
-}
-
-$current_user = wp_get_current_user();
-
-if (!in_array('client', (array) $current_user->roles, true)) {
-	wp_safe_redirect(home_url('/'));
-	exit;
-}
-
-get_header();
-
-$user_id     = get_current_user_id();
-$selected_id = isset($_GET['ticket_id']) ? (int) $_GET['ticket_id'] : 0;
-
-if (!$selected_id && !empty($open_tickets)) {
-	$selected_id = $open_tickets[0]->ID;
-}
-
-$view = $_GET['view'] ?? 'open';
-
-if (!in_array($view, ['open', 'resolved', 'cancelled'], true)) {
-	$view = 'open';
-}
-
-/**
- * Fetch tickets for this client
- */
-$tickets = get_posts([
-	'post_type'      => 'ticket',
-	'post_status'    => 'publish',
-	'author'         => $user_id,
-	'posts_per_page' => -1,
-	'orderby'        => 'date',
-	'order'          => 'DESC',
-]);
-
-$open_tickets      = [];
-$resolved_tickets  = [];
-$cancelled_tickets = [];
-
-foreach ($tickets as $ticket) {
-	$status = get_post_meta($ticket->ID, 'ticket_status', true);
-
-	switch ($status) {
-		case 'resolved':
-			$resolved_tickets[] = $ticket;
-			break;
-
-		case 'cancelled':
-			$cancelled_tickets[] = $ticket;
-			break;
-
-		default:
-			$open_tickets[] = $ticket;
-	}
-}
-
-$open_count      = count($open_tickets);
-$resolved_count  = count($resolved_tickets);
-$cancelled_count = count($cancelled_tickets);
-
-$selected_ticket = $selected_id ? get_post($selected_id) : null;
-
-function dx_human_due_date($date) {
-	if (!$date) return '—';
-
-	$today     = strtotime('today');
-	$tomorrow  = strtotime('tomorrow');
-	$target    = strtotime($date);
-
-	if ($target === $today) {
-		return 'Today';
-	}
-
-	if ($target === $tomorrow) {
-		return 'Tomorrow';
-	}
-
-	return date('jS M Y', $target);
-}
-
-$heading = match ($view) {
-    'resolved'  => 'Resolved Tickets',
-    'cancelled' => 'Cancelled Tickets',
-    default     => 'Open Tickets',
-};
-
-$hour = (int) date('H');
-
-if ($hour < 12) {
-	$greeting = 'Morning';
-} elseif ($hour < 18) {
-	$greeting = 'Afternoon';
-} else {
-	$greeting = 'Evening';
-}
-
+/** Template Name: Client workspace */
+if (!defined('ABSPATH')) exit;
+if (!is_user_logged_in()) { wp_safe_redirect(add_query_arg('redirect_to',home_url('/dashboard/'),home_url('/login/'))); exit; }
+if (!dxcp_is_client_user()) { wp_die('Your account does not have a client workspace yet. Please contact D’André if you’re expecting access.','Client workspace',['response'=>403]); }
+nocache_headers();
+header('Cache-Control: private, no-store, max-age=0');
+header('X-Robots-Tag: noindex, nofollow');
+$uid=get_current_user_id(); $user=wp_get_current_user(); $projects=dxcp_projects();
+$requested=absint($_GET['project_id']??($_GET['project']??0));
+$project=$requested?dxcp_project_for_user($requested):($projects[0]??null);
+if ($requested && !$project) wp_die('This project is not available to your account.','Access denied',['response'=>403]);
+$pid=$project?$project->ID:0;
+$service=$pid?(get_post_meta($pid,'_dxcp_service',true)?:'digital'):'digital';
+$service_label=['digital'=>'Digital project','fitness'=>'Fitness coaching','photography'=>'Photography','support'=>'Ongoing support'][$service]??'Client';
+$sections=['overview'=>'Overview','journey'=>'Client journey','tasks'=>'Your to-dos','drive'=>'Your Drive','payments'=>'Quotations & payments','sessions'=>'Coaching sessions','support'=>'Support','profile'=>'Your details'];
+$section=sanitize_key($_GET['section']??'overview'); if(!isset($sections[$section]) || ($section==='sessions' && $service!=='fitness'))$section='overview';
+$tasks=$pid?dxcp_tasks($pid):[]; $tickets=array_values(array_filter(dxcp_tickets(),fn($t)=>!$pid || !absint(get_post_meta($t->ID,'_dxcp_project_id',true)) || absint(get_post_meta($t->ID,'_dxcp_project_id',true))===$pid)); $documents=$pid?dxcp_documents($pid):[]; $sessions=$pid?dxcp_sessions($pid):[]; $quotes=$pid?dxcp_project_quotes($pid):[];
+$billing=$pid?dxcp_billing_data($pid):['agreed_total_cents'=>null,'paid_cents'=>0,'balance_cents'=>null,'payments'=>[],'next_due'=>null,'deferrals'=>[],'agreement_url'=>''];
+$name=$user->first_name?:$user->display_name; $first_name=explode(' ',trim($name))[0];
+$context=compact('uid','user','projects','project','pid','service','service_label','tasks','tickets','documents','sessions','quotes','billing','first_name');
+$notice=sanitize_key($_GET['notice']??($_GET['portal_notice']??''));
+$notices=['quote_linked'=>'Your estimate is now connected to this project.','claim_invalid'=>'We could not verify that estimate. Check the reference and private key, or ask D’André to connect it.','claim_limited'=>'Please wait a little before trying to connect another estimate.','quote_changed'=>'This quotation has changed or is not ready to accept. Please review the latest version.','quote_confirmed'=>'Your quotation response has been recorded.','deferral_invalid'=>'We could not save that request. Choose an outstanding payment, a future date and a reason of at least 10 characters.','profile_saved'=>'Your details have been updated.','onboarding_saved'=>'Your onboarding details have been saved.','update_saved'=>'Your update has been saved.','comment_added'=>'Your comment has been added.','comment_saved'=>'Your comment has been added.','task_updated'=>'Your task progress has been updated.','task_review_requested'=>'Your task is ready for D’André to review.','ticket_created'=>'Your conversation has been started.','ticket_updated'=>'Your conversation has been updated.','quote_claimed'=>'Your estimate is now connected to this project.','brief_confirmed'=>'Your brief has been sent for review.','quote_accepted'=>'Your final quotation acceptance has been recorded.','deferral_requested'=>'Your payment deferral request has been sent for review.','invalid_request'=>'We couldn’t save that request. Please check the details and try again.','save_failed'=>'Your update could not be saved. Please try again.'];
+get_header('client-portal');
 ?>
-
-<main id="main" class="dashboard">
-	<div class="container">
-
-		<section class="dashboard-hero">
-			<pre class="headline">Client Portal</pre>
-			<h1>
-                Good <?php echo esc_html($greeting); ?>,
-                <?php echo esc_html($current_user->display_name); ?>.
-            </h1>
-		</section>
-
-		<section class="dashboard-actions">
-            <div class="dashboard-tabs">
-                <a href="#"
-                class="dashboard-tab tab-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#submitTicketModal">
-                    Submit New Ticket <span>+</span>
-                </a>
-
-                <a href="<?php echo esc_url(add_query_arg('view', 'open')); ?>"
-                class="dashboard-tab <?php echo $view === 'open' ? 'is-active' : ''; ?>">
-                    Open
-                    <span class="tab-count"><?php echo esc_html($open_count); ?></span>
-                </a>
-
-                <a href="<?php echo esc_url(add_query_arg('view', 'resolved')); ?>"
-                class="dashboard-tab <?php echo $view === 'resolved' ? 'is-active' : ''; ?>">
-                    Resolved
-                    <span class="tab-count"><?php echo esc_html($resolved_count); ?></span>
-                </a>
-
-                <a href="<?php echo esc_url(add_query_arg('view', 'cancelled')); ?>"
-                class="dashboard-tab <?php echo $view === 'cancelled' ? 'is-active' : ''; ?>">
-                    Cancelled
-                    <span class="tab-count"><?php echo esc_html($cancelled_count); ?></span>
-                </a>
-            </div>
-        </section>
-
-		<section class="dashboard-content">
-
-			<!-- LEFT: TICKET LIST -->
-			<div class="dashboard-tickets">
-                <h2><?php echo esc_html($heading); ?></h2>
-
-				<?php if (empty($open_tickets)) : ?>
-					<div class="dashboard-empty">
-						No open tickets yet.
-					</div>
-				<?php else : ?>
-					<ul class="ticket-list">
-						<?php 
-                            switch ($view) {
-                            case 'resolved':
-                                $ticket_list = $resolved_tickets;
-                                break;
-
-                            case 'cancelled':
-                                $ticket_list = $cancelled_tickets;
-                                break;
-
-                            default:
-                                $ticket_list = $open_tickets;
-                            }
-                        ?>
-
-                        <?php foreach ($ticket_list as $ticket) :
-							$status = get_post_meta($ticket->ID, 'ticket_status', true);
-							$is_active = ($ticket->ID === $selected_id);
-							?>
-							<li class="ticket <?php echo $is_active ? 'is-active' : ''; ?>" data-status="<?php echo esc_attr($status); ?>" tabindex="0">
-								<a class="ticket-link js-ticket-link" href="#" data-ticket-id="<?php echo esc_attr($ticket->ID); ?>">
-									<div class="ticket-info">
-										<span class="ticket-title">
-											<?php echo esc_html($ticket->post_title); ?>
-										</span>
-										<span class="ticket-date">
-											<?php echo esc_html(get_the_date('', $ticket)); ?>
-										</span>
-									</div>
-
-									<span class="ticket-status <?php echo esc_attr(dx_ticket_status_badge_class($status)); ?>">
-                                        <?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?>
-                                    </span>
-								</a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
-				<?php endif; ?>
-			</div>
-
-			<!-- RIGHT: TICKET META -->
-			<div class="dashboard-panel">
-
-                <?php if ($selected_ticket && (int) $selected_ticket->post_author === (int) $user_id) : ?>
-
-                    <?php
-                    $status         = get_post_meta($selected_ticket->ID, 'ticket_status', true);
-                    $acknowledged   = get_post_meta($selected_ticket->ID, 'ticket_acknowledged', true);
-                    $due_date_raw   = get_post_meta($selected_ticket->ID, 'ticket_due_date', true);
-                    $submitted_date = get_the_date('jS M Y', $selected_ticket);
-                    $submitted_time = get_the_date('H:i', $selected_ticket);
-                    ?>
-
-                    <h3>Ticket Details</h3>
-
-                    <ul class="ticket-meta">
-                        <li>
-                            <span>Status</span>
-                            <strong><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></strong>
-                        </li>
-
-                        <li>
-                            <span>Submitted</span>
-                            <strong>
-                                <?php echo esc_html($submitted_date); ?><br>
-                                <small><?php echo esc_html($submitted_time); ?></small>
-                            </strong>
-                        </li>
-
-                        <li>
-                            <span>Acknowledged</span>
-                            <strong><?php echo $acknowledged ? 'Yes' : 'No'; ?></strong>
-                        </li>
-
-                        <li>
-                            <span>Estimated Completion</span>
-                            <strong><?php echo esc_html(dx_human_due_date($due_date_raw)); ?></strong>
-                        </li>
-                    </ul>
-
-                    <a
-                        href="<?php echo esc_url(home_url('/dashboard/ticket/' . $selected_ticket->ID)); ?>"
-                        class="dashboard-btn outline request-update"
-                    >
-                        View / Update Ticket
-                    </a>
-
-                    <?php if (!in_array($status, ['resolved', 'cancelled'], true)) : ?>
-                        <button
-                            class="dashboard-btn outline danger js-cancel-ticket"
-                            data-ticket-id="<?php echo esc_attr($selected_ticket->ID); ?>"
-                            data-bs-toggle="modal"
-                            data-bs-target="#cancelTicketModal"
-                        >
-                            Cancel Ticket
-                        </button>
-                    <?php endif; ?>
-
-                <?php else : ?>
-
-                    <div class="dashboard-empty">
-                        Select a ticket to view details.
-                    </div>
-
-                <?php endif; ?>
-
-                </div>
-		</section>
-	</div>
-</main>
-
-<!-- SUBMIT TICKET MODAL -->
-<div class="modal fade" id="submitTicketModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-lg">
-		<div class="modal-content">
-
-			<div class="modal-header">
-				<h5 class="modal-title">Submit a support ticket</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-
-			<div class="modal-body">
-				<?php get_template_part('partials/forms/submit-ticket'); ?>
-			</div>
-
-		</div>
-	</div>
+<div class="dxcp-shell" data-dxcp-shell>
+    <div class="dxcp-sidebar-scrim" data-dxcp-close></div>
+    <aside class="dxcp-sidebar" id="dxcp-sidebar" aria-label="Client workspace navigation">
+        <a class="dxcp-brand" href="<?php echo esc_url(dxcp_portal_url('overview',$pid)); ?>" aria-label="DXNDRE client space">dx<span>.</span><small>CLIENT SPACE</small></a>
+        <p class="dxcp-sidebar__label">YOUR WORKSPACE</p>
+        <nav><?php foreach($sections as $key=>$label) : if($key==='sessions' && $service!=='fitness')continue; ?><a class="dxcp-nav-link" href="<?php echo esc_url(dxcp_portal_url($key,$pid)); ?>" data-dxcp-nav="<?php echo esc_attr($key); ?>" <?php echo $section===$key?'aria-current="page"':''; ?>><?php echo dxcp_icon($key); ?><span><?php echo esc_html($label); ?></span><?php if($key==='tasks' && count($tasks)) : ?><small><?php echo count(array_filter($tasks,fn($task)=>get_post_meta($task->ID,'_dxcp_task_status',true)!=='done')); ?></small><?php endif; ?></a><?php endforeach; ?></nav>
+        <div class="dxcp-sidebar__bottom"><div class="dxcp-help-card"><span>✦</span><h2>A little help?</h2><p>Pick up where we left off.</p><a href="<?php echo esc_url(dxcp_portal_url('support',$pid,['new_ticket'=>1])); ?>">Start a conversation <?php echo dxcp_icon('arrow'); ?></a></div><a class="dxcp-nav-link" href="<?php echo esc_url(home_url('/')); ?>"><?php echo dxcp_icon('external'); ?> Back to the website</a><a class="dxcp-nav-link" href="<?php echo esc_url(wp_logout_url(home_url('/login/'))); ?>"><?php echo dxcp_icon('logout'); ?> Sign out</a></div>
+    </aside>
+    <div class="dxcp-workspace"><header class="dxcp-topbar"><div class="dxcp-inline"><button class="dxcp-mobile-toggle" type="button" data-dxcp-menu aria-expanded="false" aria-controls="dxcp-sidebar" aria-label="Open workspace menu"><?php echo dxcp_icon('menu'); ?></button><span class="dxcp-breadcrumb">Your workspace <span>/</span> <strong data-dxcp-breadcrumb><?php echo esc_html($sections[$section]); ?></strong></span></div><div class="dxcp-topbar__account"><span class="dxcp-secure"><?php echo dxcp_icon('check'); ?> Private client space</span><a href="<?php echo esc_url(dxcp_portal_url('profile',$pid)); ?>" class="dxcp-avatar" aria-label="Your account details"><?php echo esc_html(mb_strtoupper(mb_substr($first_name,0,1))); ?></a></div></header>
+    <div class="dxcp-project-switch"><span><?php echo dxcp_icon($service==='fitness'?'sessions':'journey'); ?> <?php echo esc_html($service_label); ?></span><?php if($projects) : ?><form method="get" action="<?php echo esc_url(home_url('/dashboard/')); ?>"><input type="hidden" name="section" value="<?php echo esc_attr($section); ?>"><label for="dxcp-project">Project</label><select id="dxcp-project" name="project_id" data-dxcp-project><?php foreach($projects as $item) : ?><option value="<?php echo absint($item->ID); ?>" <?php selected($pid,$item->ID); ?>><?php echo esc_html($item->post_title); ?></option><?php endforeach; ?></select><button class="dxcp-btn dxcp-btn--small dxcp-project-go" type="submit">Open</button></form><?php endif; ?></div>
+    <?php if(isset($notices[$notice])) : ?><div class="dxcp-notice" role="status"><?php echo dxcp_icon('check'); echo esc_html($notices[$notice]); ?></div><?php endif; ?>
+    <?php if($pid && get_post_meta($pid,'_dxcp_demo',true)) : ?><div class="dxcp-notice dxcp-notice--demo" role="note"><?php echo dxcp_icon('check'); ?>Test workspace · Figures, tasks and sessions here are examples. No payment is due and no session is booked.</div><?php endif; ?>
+    <?php if(dxcp_is_admin()) : ?><div class="dxcp-admin-note">Administrator preview · <a href="<?php echo esc_url(admin_url('edit.php?post_type=dxcp_project')); ?>">Manage client projects</a></div><?php endif; ?>
+    <div class="dxcp-content-grid"><div class="dxcp-content"><?php foreach($sections as $key=>$label) : ?><section class="dxcp-view" data-dxcp-view="<?php echo esc_attr($key); ?>" aria-label="<?php echo esc_attr($label); ?>" <?php echo $key!==$section?'hidden':''; ?> tabindex="-1"><?php call_user_func('dxcp_render_'.$key,$context); ?></section><?php endforeach; ?></div><?php dxcp_render_activity($context); ?></div>
+    <footer class="dxcp-footer"><span>Made with clarity. Built around you.</span><a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>">Privacy policy</a><span>© <?php echo esc_html(wp_date('Y')); ?> DXNDRE</span></footer>
+    </div>
 </div>
-
-<!-- CANCEL TICKET MODAL -->
- <div class="modal fade" id="cancelTicketModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-md">
-		<div class="modal-content">
-
-			<div class="modal-header">
-				<h5 class="modal-title">Cancel Ticket</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-
-			<div class="modal-body">
-				<p>
-					Are you sure you want to cancel this ticket?<br>
-					This action cannot be undone.
-				</p>
-			</div>
-
-			<div class="modal-footer">
-                <div class="buttons">
-                    <button class="dashboard-btn outline" data-bs-dismiss="modal">
-                        Keep Ticket
-                    </button>
-
-                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                        <input type="hidden" name="action" value="dx_cancel_ticket">
-                        <input type="hidden" name="ticket_id" id="cancel-ticket-id">
-                        <?php wp_nonce_field('dx_cancel_ticket', 'dx_cancel_ticket_nonce'); ?>
-
-                        <button class="dashboard-btn outline danger">
-                            Yes, Cancel Ticket
-                        </button>
-                    </form>
-                </div>
-			</div>
-
-		</div>
-	</div>
-</div>
-
-<?php get_footer(); ?>
+<?php get_footer('client-portal'); ?>

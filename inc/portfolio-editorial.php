@@ -79,3 +79,17 @@ function dxndre_editorial_projects_archive($atts = []) {
     </div>
     <?php return ob_get_clean();
 }
+
+add_action('wp_enqueue_scripts', function () {
+    if (!is_page('portfolio')) return;
+    $slides=[];
+    foreach (get_posts(['post_type'=>'project','post_status'=>'publish','numberposts'=>-1,'has_password'=>false]) as $project) {
+        $data=dxndre_portfolio_project_data($project);
+        $preview=$data['hover'];
+        $image_id=is_array($preview) ? (int)($preview['ID'] ?? $preview['id'] ?? 0) : (is_numeric($preview) ? (int)$preview : 0);
+        $url=$image_id ? wp_get_attachment_image_url($image_id,'full') : (is_array($preview) ? ($preview['url'] ?? '') : (is_string($preview) ? $preview : ''));
+        $url=esc_url_raw($url);
+        if ($url) $slides[]=['src'=>$url,'title'=>get_the_title($project)];
+    }
+    wp_localize_script('dxndre-theme','DX_PROJECT_SLIDES',array_values($slides));
+},30);

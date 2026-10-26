@@ -854,93 +854,7 @@ add_action('admin_post_dx_submit_ticket', 'dx_handle_ticket_submission');
 add_action('admin_post_nopriv_dx_submit_ticket', 'dx_handle_ticket_submission');
 
 function dx_handle_ticket_submission() {
-
-	if (!isset($_POST['dx_ticket_nonce']) ||
-		!wp_verify_nonce($_POST['dx_ticket_nonce'], 'dx_submit_ticket')) {
-		wp_die('Invalid request');
-	}
-
-	if (!is_user_logged_in()) {
-		wp_die('Not allowed');
-	}
-
-	if (empty($_POST['ticket_confirm'])) {
-		wp_die('You must confirm ticket details');
-	}
-
-	$user_id = get_current_user_id();
-
-	$ticket_id = wp_insert_post([
-		'post_type'    => 'ticket',
-		'post_title'   => sanitize_text_field($_POST['ticket_title']),
-		'post_content' => sanitize_textarea_field($_POST['ticket_message']),
-		'post_status'  => 'publish',
-		'post_author'  => $user_id,
-	]);
-
-	if (is_wp_error($ticket_id)) {
-		wp_die('Ticket creation failed');
-	}
-
-	// Save extra fields
-	update_post_meta($ticket_id, 'project_name',
-		sanitize_text_field($_POST['project_name'] ?? '')
-	);
-
-	update_post_meta($ticket_id, 'project_url',
-		esc_url_raw($_POST['project_url'] ?? '')
-	);
-
-	update_post_meta($ticket_id, 'ticket_status', 'open');
-
-	// Handle image uploads
-
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-	require_once ABSPATH . 'wp-admin/includes/media.php';
-	require_once ABSPATH . 'wp-admin/includes/image.php';
-
-	for ($i = 1; $i <= 10; $i++) {
-
-		$key = 'ticket_image_' . $i;
-
-		if (
-			empty($_FILES[$key]['name']) ||
-			$_FILES[$key]['error'] !== UPLOAD_ERR_OK
-		) {
-			continue;
-		}
-
-		$attachment_id = media_handle_upload($key, $ticket_id);
-
-		if (!is_wp_error($attachment_id)) {
-			if (function_exists('update_field')) {
-				update_field($key, $attachment_id, $ticket_id);
-			} else {
-				update_post_meta($ticket_id, $key, $attachment_id);
-			}
-		}
-	}
-
-	if (
-		!empty($_FILES['ticket_file']['name']) &&
-		$_FILES['ticket_file']['error'] === UPLOAD_ERR_OK
-	) {
-		$file_id = media_handle_upload('ticket_file', $ticket_id);
-
-		if (!is_wp_error($file_id)) {
-			if (function_exists('update_field')) {
-				update_field('ticket_file', $file_id, $ticket_id);
-			} else {
-				update_post_meta($ticket_id, 'ticket_file', $file_id);
-			}
-		}
-	}
-
-	// Redirect to ticket view
-	wp_safe_redirect(
-		home_url('/dashboard/ticket/' . $ticket_id)
-	);
-	exit;
+    dxcp_legacy_submit_ticket();
 }
 
 // Client Ticket update logging
@@ -948,55 +862,7 @@ function dx_handle_ticket_submission() {
 add_action('admin_post_dx_update_ticket', 'dx_handle_ticket_update');
 
 function dx_handle_ticket_update() {
-
-	if (
-		!isset($_POST['dx_update_ticket_nonce']) ||
-		!wp_verify_nonce($_POST['dx_update_ticket_nonce'], 'dx_update_ticket')
-	) {
-		wp_die('Invalid request');
-	}
-
-	if (!is_user_logged_in()) {
-		wp_die('Not logged in');
-	}
-
-	$ticket_id = intval($_POST['ticket_id']);
-	$message   = sanitize_textarea_field($_POST['update_message']);
-	$user_id   = get_current_user_id();
-
-	if (!$ticket_id || !$message) {
-		wp_die('Invalid update');
-	}
-
-	// Store updates as comments (best approach)
-	wp_insert_comment([
-		'comment_post_ID' => $ticket_id,
-		'comment_content' => $message,
-		'user_id'         => $user_id,
-		'comment_approved'=> 1,
-	]);
-
-	update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
-
-	// Email notifications
-	$client = get_user_by('id', get_post_field('post_author', $ticket_id));
-
-	wp_mail(
-		get_option('admin_email'),
-		'Ticket Updated #' . $ticket_id,
-		$message
-	);
-
-	if ($client) {
-		wp_mail(
-			$client->user_email,
-			'Your ticket has been updated',
-			$message
-		);
-	}
-
-	wp_safe_redirect(home_url('/dashboard/ticket/' . $ticket_id));
-	exit;
+    dxcp_legacy_update_ticket();
 }
 
 // Rewrite rule after ticket submission - client gets redirected to see the ticket they've created
@@ -1039,7 +905,7 @@ function dx_load_ticket_panel() {
 	if (
 		!$ticket ||
 		$ticket->post_type !== 'ticket' ||
-		(int) $ticket->post_author !== get_current_user_id()
+		!dxcp_can_access($ticket)
 	) {
 		wp_send_json_error('Unauthorized');
 	}
@@ -1108,13 +974,6 @@ function dxndre_client_login_logout_menu($items, $args) {
 			<li class="menu-item menu-item-client">
 				<a href="' . esc_url($logout_url) . '">
 					Log out
-				</a>
-			</li>';
-	} else {
-		$items .= '
-			<li class="menu-item menu-item-client">
-				<a href="' . esc_url(home_url('/login')) . '">
-					Client Login
 				</a>
 			</li>';
 	}
@@ -1575,6 +1434,67 @@ function dx_gym_map_coordinates($url) {
 	return ['lat' => '', 'lng' => ''];
 }
 
+/**
+ * Build the single-review map from the same saved URL used by the league.
+ * The !3d/!4d pair is the establishment, whereas @lat,lng is only the camera.
+ * Search-only links stay searches; missing data never silently becomes an area map.
+ */
+function dx_gym_map_embed($url) {
+	$url = html_entity_decode(trim((string) $url), ENT_QUOTES);
+	$empty = ['url' => '', 'precision' => 'unavailable', 'label' => ''];
+	$host = strtolower((string) wp_parse_url($url, PHP_URL_HOST));
+	if (!preg_match('/(^|\.)google\.(com|co\.uk)$/', $host)) return $empty;
+
+	$decoded = rawurldecode($url);
+	$path = (string) wp_parse_url($url, PHP_URL_PATH);
+	parse_str((string) wp_parse_url($url, PHP_URL_QUERY), $query);
+	if (strpos($path, '/maps/embed') === 0 && !empty($query['pb']) && is_string($query['pb'])) {
+		return ['url' => $url, 'precision' => 'place', 'label' => ''];
+	}
+
+	$coordinates = dx_gym_map_coordinates($url);
+	if ($coordinates['lat'] !== '' && $coordinates['lng'] !== '') {
+		$point = $coordinates['lat'] . ',' . $coordinates['lng'];
+		return ['url' => 'https://www.google.com/maps?q=' . rawurlencode($point) . '&z=16&output=embed', 'precision' => 'coordinates', 'label' => ''];
+	}
+
+	foreach (['query_place_id', 'destination_place_id'] as $key) {
+		if (!empty($query[$key]) && is_string($query[$key]) && preg_match('/^[A-Za-z0-9_-]+$/', $query[$key])) {
+			return ['url' => 'https://www.google.com/maps?q=' . rawurlencode('place_id:' . $query[$key]) . '&output=embed', 'precision' => 'place', 'label' => ''];
+		}
+	}
+
+	// Some supplied place links (e.g. Colliers Wood) contain a CID but no coordinates.
+	// Convert the unsigned hex CID using decimal strings to avoid 64-bit rounding.
+	if (preg_match('/!1s0x[0-9a-f]+:0x([0-9a-f]+)/i', $decoded, $match)) {
+		$cid = '0';
+		foreach (str_split(strtolower($match[1])) as $hex) {
+			$carry = hexdec($hex);
+			$next = '';
+			for ($i = strlen($cid) - 1; $i >= 0; $i--) {
+				$value = ((int) $cid[$i]) * 16 + $carry;
+				$next = ($value % 10) . $next;
+				$carry = intdiv($value, 10);
+			}
+			$cid = ($carry ? (string) $carry : '') . $next;
+		}
+		return ['url' => 'https://www.google.com/maps?cid=' . $cid . '&output=embed', 'precision' => 'place', 'label' => ''];
+	}
+
+	$search = '';
+	foreach (['query', 'q', 'destination'] as $key) {
+		if (!empty($query[$key]) && is_string($query[$key])) {
+			$search = $query[$key];
+			break;
+		}
+	}
+	if (!$search && preg_match('~/maps/(?:place|search)/([^/@]+)~', $path, $match)) {
+		$search = urldecode($match[1]);
+	}
+	if (!$search) return $empty;
+	return ['url' => 'https://www.google.com/maps?q=' . rawurlencode($search) . '&z=16&output=embed', 'precision' => 'search', 'label' => $search];
+}
+
 function dx_shortcode_gym_table($atts) {
 	$atts = shortcode_atts([
 		'chain' => '',
@@ -1666,12 +1586,12 @@ function dx_shortcode_gym_table($atts) {
 	}
 
 	$category_winners = [
-		'gym'     => ['score' => null, 'id' => null],
-		'swim'    => ['score' => null, 'id' => null],
-		'spa'     => ['score' => null, 'id' => null],
-		'cafe'    => ['score' => null, 'id' => null],
-		'clean'   => ['score' => null, 'id' => null],
-		'parking' => ['score' => null, 'id' => null],
+		'gym'     => ['score' => null, 'ids' => []],
+		'swim'    => ['score' => null, 'ids' => []],
+		'spa'     => ['score' => null, 'ids' => []],
+		'cafe'    => ['score' => null, 'ids' => []],
+		'clean'   => ['score' => null, 'ids' => []],
+		'parking' => ['score' => null, 'ids' => []],
 	];
 
 	if ($q->have_posts()) {
@@ -1692,9 +1612,13 @@ function dx_shortcode_gym_table($atts) {
 					continue;
 				}
 
+				// Gymbox's score describes a sauna, not a Spa Retreat.
+				if ($key === 'spa' && get_field('gym_chain', $post_id) === 'gymbox') continue;
 				if ($category_winners[$key]['score'] === null || $score > $category_winners[$key]['score']) {
 					$category_winners[$key]['score'] = $score;
-					$category_winners[$key]['id']    = $post_id;
+					$category_winners[$key]['ids'] = [$post_id];
+				} elseif ($score === $category_winners[$key]['score']) {
+					$category_winners[$key]['ids'][] = $post_id;
 				}
 			}
 		}
@@ -1928,23 +1852,27 @@ function dx_shortcode_gym_table($atts) {
 
 		$category_badges = [];
 
-		if (get_the_ID() === ($category_winners['gym']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['gym']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">🏋️ Best Gym</span>';
 		}
-		if (get_the_ID() === ($category_winners['swim']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['swim']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">🏊 Best Wetside</span>';
 		}
-		if (get_the_ID() === ($category_winners['spa']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['spa']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">💎 Best Spa</span>';
 		}
-		if (get_the_ID() === ($category_winners['cafe']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['cafe']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">☕ Best Work Area</span>';
 		}
-		if (get_the_ID() === ($category_winners['clean']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['clean']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">🧼 Cleanest</span>';
 		}
-		if (get_the_ID() === ($category_winners['parking']['id'] ?? 0)) {
+		if (in_array(get_the_ID(), $category_winners['parking']['ids'], true)) {
 			$category_badges[] = '<span class="dx-badge dx-badge--category">🚗 Best Parking</span>';
+		}
+
+		foreach (dx_gym_review_badges(['gym' => $sGym, 'spa' => $sSpa], $overall, $chain_val) as $review_badge) {
+			$category_badges[] = '<span class="dx-badge dx-badge--category dx-badge--excellence" data-badge="' . esc_attr($review_badge['key']) . '" title="' . esc_attr($review_badge['criterion']) . '">' . esc_html($review_badge['label']) . '</span>';
 		}
 
 		$category_badges_html = implode('', $category_badges);
@@ -1975,6 +1903,7 @@ function dx_shortcode_gym_table($atts) {
 				data-visited-label="' . esc_attr($visited) . '"
 				data-overall="' . esc_attr($overall !== null ? number_format($overall, 2, '.', '') : -1) . '"
 				data-overall-label="' . esc_attr($overall !== null ? number_format($overall * 10, 1, '.', '') . '%' : 'No rating') . '"
+				data-score-states="' . esc_attr(wp_json_encode(['gym' => $sGym, 'swim' => $sSwim, 'spa' => $sSpa, 'cafe' => $sCafe, 'clean' => $sClean, 'parking' => $sPark])) . '"
 				data-gym-score="' . esc_attr(is_numeric($sGym) ? $sGym : '') . '"
 				data-swim-score="' . esc_attr(is_numeric($sSwim) ? $sSwim : '') . '"
 				data-spa-score="' . esc_attr(is_numeric($sSpa) ? $sSpa : '') . '"
@@ -2081,14 +2010,40 @@ function dx_score_to_emoji($score) {
 }
 
 function dx_normalise_facility_score($raw) {
-	// supports: '', null, 'didnt_use', 'unavailable', numeric
-	if ($raw === null || $raw === '' || $raw === 'didnt_use') return null;
+	// Zero is an assessed score. Unknown text, booleans and out-of-range values
+	// are never converted into a rating or used to award a facility badge.
+	$raw = is_string($raw) ? trim($raw) : $raw;
 	if ($raw === 'unavailable') return 'unavailable';
+	if (!is_numeric($raw)) return null;
+	$score = (float) $raw;
+	if (!is_finite($score) || $score < 0 || $score > 10) return null;
+	return floor($score) === $score ? (int) $score : $score;
+}
 
-	$n = (int) $raw;
-	if ($n < 0) $n = 0;
-	if ($n > 10) $n = 10;
-	return $n;
+/** A rating confirms use; a missing rating does not confirm availability. */
+function dx_gym_facility_availability($raw) {
+	$score = dx_normalise_facility_score($raw);
+	if (is_numeric($score)) return 'available';
+	return $score === 'unavailable' ? 'unavailable' : 'unknown';
+}
+
+/**
+ * Absolute review badges shared by the single review and league detail panel.
+ * Numeric scores confirm that a facility was present and assessed on that visit.
+ * Unavailable / unassessed facilities never qualify, irrespective of overall score.
+ */
+function dx_gym_review_badges($scores, $overall, $chain = '') {
+	$badges = [];
+	if (is_numeric($overall) && (float) $overall >= 8.5 && (float) $overall <= 10) {
+		$badges[] = ['key' => 'recommended', 'label' => 'Recommended', 'criterion' => 'Overall rating of at least 85%'];
+	}
+	foreach (['gym' => 'Gym', 'spa' => ($chain === 'gymbox' ? 'Sauna' : 'Spa')] as $key => $label) {
+		$score = dx_normalise_facility_score($scores[$key] ?? null);
+		if (dx_gym_facility_availability($score) === 'available' && $score >= 9) {
+			$badges[] = ['key' => 'excellent-' . $key, 'label' => 'Excellent ' . $label, 'criterion' => $label . ' assessed at ' . $score . '/10 on this visit'];
+		}
+	}
+	return $badges;
 }
 
 function dx_overall_score_class($score) {
@@ -2590,11 +2545,7 @@ require_once get_stylesheet_directory() . '/inc/fitness-experience.php';
 
 require_once get_stylesheet_directory() . '/inc/site-polish.php';
 
-add_action('wp_enqueue_scripts', function(){
- if(is_admin())return;
- wp_enqueue_style('dx-immersive',get_template_directory_uri().'/assets/immersive.css',[],filemtime(get_template_directory().'/assets/immersive.css'));
- wp_enqueue_script('dx-immersive',get_template_directory_uri().'/assets/immersive.js',[],filemtime(get_template_directory().'/assets/immersive.js'),true);
-},100);
+
 
 add_action('wp_footer', function () {
     $urls = array_values(array_filter(array_map(function($id){ return wp_get_attachment_image_url($id, 'large'); }, [1694,1698,1696,1692,1690,1688,1686])));
@@ -2634,3 +2585,36 @@ add_filter('wp_nav_menu_items', function($items, $args) {
     if (($args->theme_location ?? '') === 'footer_contact') $items .= '<li class="menu-item"><a href="'.esc_url(home_url('/e-business-card/')).'">E-Business Card</a></li>';
     return $items;
 }, 30, 2);
+
+require_once __DIR__ . "/inc/post-launch.php";
+
+require_once get_template_directory() . '/inc/recruiter-room.php';
+
+// Keep the upcoming fitness offering in the footer, outside the main menu for now.
+add_filter('wp_nav_menu_objects', function ($items, $args) {
+    if (($args->theme_location ?? '') !== 'main-menu') return $items;
+    return array_values(array_filter($items, function ($item) {
+        return untrailingslashit((string) wp_parse_url($item->url, PHP_URL_PATH)) !== '/n118-fitness';
+    }));
+}, 20, 2);
+
+// Shared FAQ content and non-visual search metadata.
+require_once get_template_directory() . '/inc/faq.php';
+require_once get_template_directory() . '/inc/seo.php';
+
+require_once get_template_directory() . '/inc/instagram.php';
+
+require_once get_template_directory() . '/inc/photography-outro.php';
+
+require_once get_template_directory() . '/inc/london-sun.php';
+
+// Private client workspace: records, billing, collaboration and presentation.
+require_once __DIR__.'/inc/client-portal/core.php';
+require_once __DIR__.'/inc/client-portal/billing.php';
+require_once __DIR__.'/inc/client-portal/collaboration.php';
+require_once __DIR__.'/inc/client-portal/render.php';
+
+add_filter('show_admin_bar', function($show) { return is_page(['dashboard','client-dashboard']) ? false : $show; });
+add_filter('pre_get_document_title', function($title) { return is_page(['dashboard','client-dashboard']) ? 'Your client space – DXNDRE' : $title; }, 100);
+
+add_filter('private_title_format', function($format) { return is_page(['dashboard','client-dashboard']) ? '%s' : $format; });

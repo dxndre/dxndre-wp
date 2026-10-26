@@ -24,7 +24,7 @@ if (is_user_logged_in()) {
 				<input
 					type="email"
 					name="user_login"
-					placeholder="Email Address"
+					aria-label="Email Address" placeholder="Email Address"
 					required
 				>
 

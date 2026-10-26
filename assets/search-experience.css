@@ -1,0 +1,14 @@
+.dx-search .dx-search__submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.dx-search .dx-search__submit-icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+	color: inherit;
+}

@@ -1,67 +1,1535 @@
+// Theme entry: emitted as build/index.js and build/index.css.
+import "regenerator-runtime/runtime.js";
+import "./main.scss";
+import * as bootstrap from "bootstrap";
+
+// faq-motion — private module scope.
+const { initFaqMotion } = (() => {
+	/** Smooth native FAQ disclosure motion, including interrupted closing transitions. */
+	function initFaqMotion() {
+		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+		document.querySelectorAll(".dx-faq-item").forEach((detail) => {
+			const summary = detail.querySelector(":scope > summary");
+			const answer = detail.querySelector(":scope > .dx-faq-answer");
+			if (!summary || !answer || detail.dataset.faqMotionBound) return;
+			detail.dataset.faqMotionBound = "true";
+			detail.classList.add("is-faq-motion");
+
+			let expanded = detail.open;
+			let heightMotion = null;
+			let answerMotion = null;
+			let revision = 0;
+			detail.dataset.faqExpanded = String(expanded);
+
+			const cancelMotion = () => {
+				if (heightMotion) {
+					heightMotion.onfinish = null;
+					heightMotion.cancel();
+					heightMotion = null;
+				}
+				answerMotion?.cancel();
+				answerMotion = null;
+			};
+
+			const settle = () => {
+				cancelMotion();
+				detail.open = expanded;
+				detail.style.height = "";
+				detail.style.overflow = "";
+				delete detail.dataset.faqAnimating;
+			};
+
+			const animateTo = (nextExpanded) => {
+				expanded = nextExpanded;
+				detail.dataset.faqExpanded = String(expanded);
+				const currentRevision = ++revision;
+				if (reducedMotion.matches || typeof detail.animate !== "function") {
+					settle();
+					return;
+				}
+
+				// Read the current painted state before cancelling so repeated clicks reverse smoothly.
+				const startHeight = detail.getBoundingClientRect().height;
+				const startOpacity = detail.open
+					? Number.parseFloat(getComputedStyle(answer).opacity)
+					: 0;
+				cancelMotion();
+				detail.open = true;
+				detail.style.height = "auto";
+				const expandedHeight = detail.getBoundingClientRect().height;
+				const style = getComputedStyle(detail);
+				const inset = [
+					"borderTopWidth",
+					"borderBottomWidth",
+					"paddingTop",
+					"paddingBottom",
+				].reduce(
+					(total, property) =>
+						total + (Number.parseFloat(style[property]) || 0),
+					0,
+				);
+				const collapsedHeight = summary.getBoundingClientRect().height + inset;
+				const endHeight = expanded ? expandedHeight : collapsedHeight;
+				const distance = Math.abs(endHeight - startHeight);
+				const duration = Math.max(
+					140,
+					Math.min(
+						380,
+						(380 * distance) / Math.max(1, expandedHeight - collapsedHeight),
+					),
+				);
+
+				detail.style.height = `${startHeight}px`;
+				detail.style.overflow = "hidden";
+				detail.dataset.faqAnimating = "true";
+				const timing = {
+					duration,
+					easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+					fill: "both",
+				};
+				heightMotion = detail.animate(
+					[{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+					timing,
+				);
+				answerMotion = answer.animate(
+					[{ opacity: startOpacity }, { opacity: expanded ? 1 : 0 }],
+					timing,
+				);
+				heightMotion.onfinish = () => {
+					if (currentRevision === revision) settle();
+				};
+			};
+
+			summary.addEventListener("click", (event) => {
+				if (event.target.closest("a, button, input, select, textarea")) return;
+				event.preventDefault();
+				animateTo(!expanded);
+			});
+
+			// Keep the native open state in sync with external attribute changes.
+			detail.addEventListener("toggle", () => {
+				if (heightMotion) return;
+				expanded = detail.open;
+				detail.dataset.faqExpanded = String(expanded);
+			});
+
+			if (typeof ResizeObserver === "function") {
+				const contentSize = new ResizeObserver(() => {
+					if (heightMotion) animateTo(expanded);
+				});
+				contentSize.observe(summary);
+				contentSize.observe(answer);
+			}
+			reducedMotion.addEventListener("change", () => {
+				if (reducedMotion.matches) settle();
+			});
+		});
+	}
+	return { initFaqMotion };
+})();
+
+// motion-refinements — private module scope.
+const { initFooterScrollMotion, initN118PortraitMotion } = (() => {
+	/** Horizontal footer lettering follows scroll direction without an idle animation loop. */
+	function initFooterScrollMotion() {
+		const wordmark = document.querySelector(".dx-footer-wordmark");
+		const track = wordmark?.querySelector(".dx-footer-wordmark-track");
+		if (!track || track.dataset.motionReady) return;
+		track.dataset.motionReady = "true";
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let period = 0,
+			phase = 0,
+			lastY = scrollY,
+			pending = 0,
+			frame = 0,
+			inView = false;
+		const paint = () => {
+			frame = 0;
+			if (reduced.matches) {
+				pending = 0;
+				track.style.setProperty("--dx-wordmark-x", "0px");
+				return;
+			}
+			if (period) {
+				phase = (((phase - pending * 0.45) % period) + period) % period;
+				track.style.setProperty(
+					"--dx-wordmark-x",
+					(-period + phase).toFixed(2) + "px",
+				);
+			}
+			pending = 0;
+		};
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		const measure = () => {
+			const first = track.firstElementChild;
+			if (!first) return;
+			const normalized = period ? phase / period : 0;
+			period =
+				first.getBoundingClientRect().width +
+				(parseFloat(getComputedStyle(track).columnGap) || 0);
+			if (!period) return;
+			phase = normalized * period;
+			const copies = Math.max(3, Math.ceil(wordmark.clientWidth / period) + 3);
+			while (track.children.length < copies)
+				track.append(first.cloneNode(true));
+			while (track.children.length > copies) track.lastElementChild.remove();
+			schedule();
+		};
+		const visibility = new IntersectionObserver(
+			(entries) => {
+				inView = entries[0].isIntersecting;
+				lastY = scrollY;
+			},
+			{ rootMargin: "120px" },
+		);
+		visibility.observe(wordmark.closest("footer") || wordmark);
+		addEventListener(
+			"scroll",
+			() => {
+				const current = scrollY,
+					delta = current - lastY;
+				lastY = current;
+				if (reduced.matches || !inView || delta === 0) return;
+				wordmark.dataset.scrollDirection = delta > 0 ? "down" : "up";
+				pending += Math.max(-180, Math.min(180, delta));
+				schedule();
+			},
+			{ passive: true },
+		);
+		const sizeObserver = new ResizeObserver(measure);
+		sizeObserver.observe(wordmark);
+		document.fonts?.ready.then(measure);
+		reduced.addEventListener("change", () => {
+			phase = 0;
+			pending = 0;
+			lastY = scrollY;
+			schedule();
+		});
+		measure();
+	}
+
+	/** Let the N118 portrait travel more slowly than the hero while scrolling. */
+	function initN118PortraitMotion() {
+		const portrait = document.querySelector(".dx-n118 .dx-about-portrait");
+		const hero = portrait?.closest(".dx-about-hero");
+		if (!hero || portrait.dataset.parallaxReady) return;
+		portrait.dataset.parallaxReady = "true";
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let visible = true,
+			frame = 0;
+		const paint = () => {
+			frame = 0;
+			if (!visible && !reduced.matches) return;
+			const phone = innerWidth <= 767;
+			const offset = reduced.matches
+				? 0
+				: Math.max(
+						-16,
+						Math.min(
+							phone ? 36 : 90,
+							-hero.getBoundingClientRect().top * (phone ? 0.075 : 0.15),
+						),
+				  );
+			portrait.style.setProperty(
+				"--dx-n118-portrait-y",
+				offset.toFixed(2) + "px",
+			);
+		};
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		new IntersectionObserver(
+			(entries) => {
+				visible = entries[0].isIntersecting;
+				if (visible) schedule();
+			},
+			{ rootMargin: "120px" },
+		).observe(hero);
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule, { passive: true });
+		reduced.addEventListener("change", schedule);
+		paint();
+	}
+	return { initFooterScrollMotion, initN118PortraitMotion };
+})();
+
+// photo-orbit — private module scope.
+const { initPhotoOrbit } = (() => {
+	const SVG_NS = "http://www.w3.org/2000/svg";
+
+	/** A photo's own EXIF engraving follows the hero's slideshow and scroll position. */
+	function initPhotoOrbit() {
+		const heroes = document.querySelectorAll(
+			".service-detail--photography .service-detail-hero,.dx-photo-hero",
+		);
+		if (!heroes.length) return;
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		const photoKey = (source) => {
+			try {
+				return new URL(source, location.href).pathname
+					.replace(/-\d+x\d+(?=\.[^.]+$)/, "")
+					.replace(/-scaled(?=\.[^.]+$)/, "");
+			} catch {
+				return "";
+			}
+		};
+		const gallery = new Map();
+		(window.DXB?.photos || []).forEach((photo) => {
+			[photo.full, photo.image].filter(Boolean).forEach((src) => {
+				gallery.set(photoKey(src), photo.technical || {});
+			});
+		});
+		const svgElement = (tag, attributes = {}) => {
+			const node = document.createElementNS(SVG_NS, tag);
+			Object.entries(attributes).forEach(([key, value]) =>
+				node.setAttribute(key, value),
+			);
+			return node;
+		};
+		const engraving = (technical) => {
+			const fields = [
+				"Camera",
+				"Focal length",
+				"Aperture",
+				"ISO",
+				"Shutter",
+				"Dimensions",
+			];
+			const values = fields
+				.filter((key) => technical[key] && typeof technical[key] !== "object")
+				.map((key) => `${key} ${technical[key]}`.toUpperCase());
+			if (!values.length) return "";
+			const phrase = values.join(" · ") + " · ";
+			return phrase.repeat(Math.max(1, Math.ceil(115 / phrase.length)));
+		};
+		const irisPath = (radius) => {
+			const point = (angle) => `${(250 + Math.cos(angle * Math.PI / 180) * radius).toFixed(2)} ${(250 + Math.sin(angle * Math.PI / 180) * radius).toFixed(2)}`;
+			return `M250 105A145 145 0 0 1 375.57 177.5L${point(5)}L${point(-55)}Z`;
+		};
+		const instances = [];
+		heroes.forEach((hero, index) => {
+			if (hero.dataset.photoOrbitReady) return;
+			hero.dataset.photoOrbitReady = "true";
+			const orbit = document.createElement("div");
+			orbit.className = "dx-photo-orbit";
+			orbit.setAttribute("aria-hidden", "true");
+			const svg = svgElement("svg", {
+				viewBox: "0 0 500 500",
+				focusable: "false",
+			});
+			const defs = svgElement("defs");
+			const pathId = `dx-photo-orbit-path-${index}`;
+			defs.append(
+				svgElement("path", {
+					id: pathId,
+					d: "M250,28 a222,222 0 1,1 0,444 a222,222 0 1,1 0,-444",
+				}),
+			);
+			svg.append(defs);
+			const shell = svgElement("g", { class: "dx-lens-shell" });
+			[248, 241, 235, 208, 201, 192, 154, 144].forEach((r) =>
+				shell.append(svgElement("circle", { cx: 250, cy: 250, r })),
+			);
+			svg.append(shell);
+			const ticks = svgElement("g", { class: "dx-lens-ticks" });
+			for (let tick = 0; tick < 120; tick++) {
+				const angle = (tick * 3 * Math.PI) / 180,
+					outside = 248,
+					inside = tick % 5 === 0 ? 239 : 244;
+				ticks.append(
+					svgElement("path", {
+						d: `M${250 + Math.sin(angle) * inside} ${
+							250 - Math.cos(angle) * inside
+						}L${250 + Math.sin(angle) * outside} ${
+							250 - Math.cos(angle) * outside
+						}`,
+					}),
+				);
+			}
+			svg.append(ticks);
+			const focus = svgElement("g", { class: "dx-lens-focus" });
+			focus.append(
+				svgElement("circle", {
+					class: "dx-lens-shell",
+					cx: 250,
+					cy: 250,
+					r: 184,
+					"stroke-dasharray": "1 10",
+				}),
+			);
+			const marker = svgElement("path", {
+				class: "dx-lens-marker",
+				d: "M250 60l-4 8h8Z",
+			});
+			focus.append(marker);
+			["FOCUS / ∞", "DX / OPTICS"].forEach((value, i) => {
+				const label = svgElement("text", {
+					class: "dx-lens-label",
+					x: 250,
+					y: i ? 426 : 82,
+					"text-anchor": "middle",
+				});
+				label.textContent = value;
+				focus.append(label);
+			});
+			svg.append(
+				focus,
+				svgElement("circle", {
+					class: "dx-lens-glass",
+					cx: 250,
+					cy: 250,
+					r: 145,
+				}),
+			);
+			const aperture = svgElement("g", { class: "dx-lens-aperture" });
+			for (let blade = 0; blade < 6; blade++)
+				aperture.append(
+					svgElement("path", {
+						d: irisPath(92),
+						transform: `rotate(${blade * 60} 250 250)`,
+					}),
+				);
+			svg.append(aperture);
+
+			const layers = [0, 1].map(() => {
+				const layer = svgElement("g", { class: "dx-photo-orbit__layer" });
+				const text = svgElement("text", {
+					textLength: "1370",
+					lengthAdjust: "spacing",
+				});
+				const path = svgElement("textPath", {
+					href: `#${pathId}`,
+					startOffset: "0",
+				});
+				text.append(path);
+				layer.append(text);
+				svg.append(layer);
+				return { layer, text, path };
+			});
+			orbit.append(svg);
+			hero.append(orbit);
+			let current = "",
+				active = 1,
+				syncFrame = 0;
+			const sourceImage = () => {
+				if (hero.classList.contains("dx-photo-hero")) {
+					return hero.querySelector(".dx-page-hero-art:not(.dx-slide-hidden)");
+				}
+				return (
+					hero.querySelector(".dx-service-slides img.is-visible") ||
+					hero.querySelector(".service-detail-art img")
+				);
+			};
+			const syncPhoto = () => {
+				syncFrame = 0;
+				const image = sourceImage();
+				if (!image) return;
+				let technical =
+					gallery.get(photoKey(image.currentSrc || image.src)) || {};
+				if (image.dataset.photoTechnical) {
+					try {
+						technical = JSON.parse(image.dataset.photoTechnical);
+					} catch {
+						/* No invented camera values. */
+					}
+				}
+				const value = engraving(technical);
+				if (value === current) return;
+				current = value;
+				if (!value) {
+					orbit.classList.remove("is-ready");
+					return;
+				}
+				const next = 1 - active;
+				layers[next].path.textContent = value;
+				layers[next].text.style.fontSize = `${Math.min(
+					16,
+					1370 / (value.length * 0.7),
+				).toFixed(2)}px`;
+				layers[active].layer.classList.remove("is-active");
+				layers[next].layer.classList.add("is-active");
+				active = next;
+				orbit.classList.add("is-ready");
+			};
+			const scheduleSync = () => {
+				if (!syncFrame) syncFrame = requestAnimationFrame(syncPhoto);
+			};
+			new MutationObserver((records) => {
+				if (records.some((record) => !orbit.contains(record.target)))
+					scheduleSync();
+			}).observe(hero, {
+				subtree: true,
+				childList: true,
+				attributes: true,
+				attributeFilter: ["class", "src", "srcset", "data-photo-technical"],
+			});
+			hero.addEventListener("load", scheduleSync, true);
+			instances.push({ hero, orbit, aperture, visible: true, radius: -1 });
+			syncPhoto();
+		});
+		if (!instances.length) return;
+		let frame = 0;
+		const paint = () => {
+			frame = 0;
+			instances.forEach((instance) => {
+				const { hero, orbit, aperture, visible } = instance;
+				if (!visible && !reduced.matches) return;
+				const rect = hero.getBoundingClientRect();
+				const travel = reduced.matches ? 0 : -rect.top;
+				const progress = Math.max(0, Math.min(1, travel / Math.max(320, rect.height * 0.75)));
+				const eased = progress * progress * (3 - 2 * progress);
+				const radius = Math.round((92 - 87 * eased) * 100) / 100;
+				if (radius !== instance.radius) {
+					[...aperture.children].forEach((blade) => blade.setAttribute("d", irisPath(radius)));
+					instance.radius = radius;
+					orbit.style.setProperty("--dx-lens-opening", `${radius}`);
+				}
+				orbit.style.setProperty(
+					"--dx-lens-focus-turn",
+					`${(travel * -0.035).toFixed(2)}deg`,
+				);
+				orbit.style.setProperty(
+					"--dx-lens-aperture-turn",
+					`${(travel * 0.025).toFixed(2)}deg`,
+				);
+				orbit.style.setProperty(
+					"--dx-lens-aperture-scale",
+					"1",
+				);
+				orbit.style.setProperty(
+					"--dx-photo-orbit-turn",
+					`${(-24 + travel * 0.065).toFixed(2)}deg`,
+				);
+				orbit.style.setProperty(
+					"--dx-photo-orbit-y",
+					`${Math.max(-35, Math.min(35, travel * 0.09)).toFixed(2)}px`,
+				);
+			});
+		};
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		const visibility = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					const instance = instances.find(({ hero }) => hero === entry.target);
+					if (instance) instance.visible = entry.isIntersecting;
+				});
+				schedule();
+			},
+			{ rootMargin: "100px" },
+		);
+		instances.forEach(({ hero }) => visibility.observe(hero));
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule);
+		reduced.addEventListener("change", schedule);
+		schedule();
+	}
+	return { initPhotoOrbit };
+})();
+
+// instagram — private module scope.
+const { initInstagramProfiles } = (() => {
+	/** Use Instagram's own public-profile renderer; retain profile links if unavailable. */
+	function initInstagramProfiles() {
+		const sections = [...document.querySelectorAll("[data-instagram-profile]")];
+		if (!sections.length) return;
+		let scriptPromise;
+		const loadRenderer = () => {
+			if (window.instgrm?.Embeds) return Promise.resolve();
+			if (scriptPromise) return scriptPromise;
+			scriptPromise = new Promise((resolve, reject) => {
+				let script = document.querySelector(
+					'script[src="https://www.instagram.com/embed.js"]',
+				);
+				if (!script) {
+					script = document.createElement("script");
+					script.src = "https://www.instagram.com/embed.js";
+					script.async = true;
+					script.dataset.dxInstagram = "true";
+					document.head.append(script);
+				}
+				script.addEventListener("load", resolve, { once: true });
+				script.addEventListener("error", reject, { once: true });
+			});
+			return scriptPromise;
+		};
+		const start = (section) => {
+			if (section.dataset.instagramReady) return;
+			section.dataset.instagramReady = "true";
+			const feed = section.querySelector("[data-instagram-feed]");
+			const embed = section.querySelector("[data-instagram-embed]");
+			const message = section.querySelector("[data-instagram-message]");
+			let timeout;
+			const setState = (state) => {
+				feed.dataset.state = state;
+				message.textContent =
+					state === "loading"
+						? "Loading Instagram…"
+						: state === "loaded"
+						? "On Instagram"
+						: "Open Instagram to see the latest posts.";
+				if (state !== "loading") clearTimeout(timeout);
+			};
+			setState("loading");
+			const observer = new MutationObserver(() => {
+				const frame = embed.querySelector("iframe");
+				if (!frame) return;
+				frame.title = `Instagram profile: @${section.dataset.instagramProfile}`;
+				frame.setAttribute("loading", "lazy");
+				// The iframe remains the official Instagram UI; a loaded embed can still
+				// show an account's privacy/embedding restriction, so keep the profile link.
+				frame.addEventListener("load", () => setState("loaded"), {
+					once: true,
+				});
+				observer.disconnect();
+			});
+			observer.observe(embed, { childList: true, subtree: true });
+			timeout = setTimeout(() => setState("unavailable"), 14000);
+			loadRenderer()
+				.then(() => window.instgrm?.Embeds?.process())
+				.catch(() => setState("unavailable"));
+		};
+		if (!("IntersectionObserver" in window)) {
+			sections.forEach(start);
+			return;
+		}
+		const visibility = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return;
+					visibility.unobserve(entry.target);
+					start(entry.target);
+				});
+			},
+			{ rootMargin: "350px" },
+		);
+		sections.forEach((section) => visibility.observe(section));
+	}
+	return { initInstagramProfiles };
+})();
+
+// contact-canvas — private module scope.
+const { initContactCanvas } = (() => {
+	// The page owns its artwork so the form shares the same full-width canvas.
+	function initContactCanvas() {
+		const page = document.querySelector(".dx-contact-page");
+		if (!page || page.dataset.contactCanvasReady) return;
+		page.dataset.contactCanvasReady = "true";
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let scheduled = false;
+		let visible = true;
+		const paint = () => {
+			scheduled = false;
+			if (reduced.matches) {
+				page.style.setProperty("--dx-contact-drift", "0px");
+				return;
+			}
+			if (!visible) return;
+			const rect = page.getBoundingClientRect();
+			const strength = innerWidth < 768 ? 0.04 : 0.07;
+			const drift = Math.max(-60, Math.min(60, -rect.top * strength));
+			page.style.setProperty("--dx-contact-drift", `${drift.toFixed(1)}px`);
+		};
+		const schedule = () => {
+			if (scheduled) return;
+			scheduled = true;
+			requestAnimationFrame(paint);
+		};
+		if ("IntersectionObserver" in window) {
+			const observer = new IntersectionObserver(([entry]) => {
+				visible = entry.isIntersecting;
+				if (visible) schedule();
+			});
+			observer.observe(page);
+		}
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule, { passive: true });
+		reduced.addEventListener("change", schedule);
+		schedule();
+	}
+	return { initContactCanvas };
+})();
+
+// services-hover — private module scope.
+const { initServicesHover } = (() => {
+	/** Decorative previews behind the existing Beyond digital service layout. */
+	function initServicesHover() {
+		const section = document.querySelector(
+			"#physical-services.dx-physical-services",
+		);
+		if (!section || section.dataset.servicesHoverReady) return;
+		const articles = [...section.querySelectorAll(":scope > div > article")];
+		const links = articles.map((article) => article.querySelector("a.dx-cta"));
+		if (links.length < 2 || links.some((link) => !link)) return;
+		section.dataset.servicesHoverReady = "true";
+
+		const stylesheet = document.querySelector("link#dxndre-theme-css");
+		const themeBase = stylesheet
+			? new URL("../", stylesheet.href)
+			: new URL("/wp-content/themes/dxndre/", location.href);
+		const sources = [
+			new URL("../../uploads/2026/01/on-the-gym-floor.jpeg", themeBase).href,
+			new URL("assets/img/photography-portrait-illustrated.webp", themeBase)
+				.href,
+		];
+		const backdrop = document.createElement("figure");
+		backdrop.className = "dx-services-preview";
+		backdrop.setAttribute("aria-hidden", "true");
+		const layers = sources.map((source, index) => {
+			const layer = document.createElement("div");
+			layer.className = "dx-services-preview__layer";
+			layer.dataset.preview = index === 0 ? "fitness" : "photography";
+			const image = document.createElement("img");
+			image.alt = "";
+			image.loading = "lazy";
+			image.decoding = "async";
+			image.src = source;
+			layer.append(image);
+			backdrop.append(layer);
+			return { layer, image };
+		});
+		section.prepend(backdrop);
+		section.classList.add("has-services-preview");
+
+		const touch = matchMedia("(hover: none), (pointer: coarse)");
+		let pointerIndex = -1;
+		let focusIndex = -1;
+		let touchIndex = 0;
+		let requestedIndex = -1;
+		let visibleIndex = -1;
+
+		const paint = () => {
+			// Keep the current photograph visible until the replacement has decoded.
+			if (
+				requestedIndex >= 0 &&
+				(!layers[requestedIndex].image.complete ||
+					!layers[requestedIndex].image.naturalWidth)
+			)
+				return;
+			visibleIndex = requestedIndex;
+			layers.forEach(({ layer }, index) =>
+				layer.classList.toggle("is-active", index === visibleIndex),
+			);
+			section.dataset.servicePreview =
+				visibleIndex < 0
+					? "none"
+					: visibleIndex === 0
+					? "fitness"
+					: "photography";
+		};
+		const update = () => {
+			requestedIndex =
+				pointerIndex >= 0
+					? pointerIndex
+					: focusIndex >= 0
+					? focusIndex
+					: touch.matches
+					? touchIndex
+					: -1;
+			paint();
+		};
+		layers.forEach(({ image }) => image.addEventListener("load", paint));
+		links.forEach((link, index) => {
+			link.addEventListener("pointerenter", (event) => {
+				if (event.pointerType === "touch") return;
+				pointerIndex = index;
+				update();
+			});
+			link.addEventListener("pointerleave", () => {
+				pointerIndex = -1;
+				update();
+			});
+			link.addEventListener("focus", () => {
+				focusIndex = index;
+				update();
+			});
+			link.addEventListener("blur", () => {
+				focusIndex = -1;
+				update();
+			});
+		});
+
+		// Touch visitors see a preview for the card currently in view, with no extra tap.
+		if ("IntersectionObserver" in window) {
+			const visibility = new Map();
+			const cardObserver = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) =>
+						visibility.set(entry.target, entry.intersectionRatio),
+					);
+					if (!touch.matches) return;
+					const candidate = articles
+						.map((article, index) => ({
+							index,
+							ratio: visibility.get(article) || 0,
+							distance: Math.abs(
+								article.getBoundingClientRect().top +
+									article.getBoundingClientRect().height / 2 -
+									innerHeight / 2,
+							),
+						}))
+						.sort((a, b) => b.ratio - a.ratio || a.distance - b.distance)[0];
+					if (candidate?.ratio > 0) touchIndex = candidate.index;
+					update();
+				},
+				{ threshold: [0, 0.25, 0.5, 0.75, 1] },
+			);
+			articles.forEach((article) => cardObserver.observe(article));
+		}
+		touch.addEventListener("change", update);
+		update();
+	}
+	return { initServicesHover };
+})();
+
+// service-index-motion — private module scope.
+const { initServiceIndexMotion } = (() => {
+	// Keep each link row in the same place while its surface opens to full width.
+	function initServiceIndexMotion() {
+		const bars = [...document.querySelectorAll(
+			".dx-service-index,.dxf-nav,.dxb-nav,.dx-section-nav,.cv-nav",
+		)];
+		const header = document.getElementById("header");
+		if (!bars.length || !header || header.dataset.serviceIndexMotionReady) return;
+		header.dataset.serviceIndexMotionReady = "true";
+		const root = document.documentElement;
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let frame = 0;
+		let followUntil = 0;
+		let needsMeasure = true;
+		let lastOffset = "";
+		const entries = bars.map((bar) => {
+			let slot = bar.parentElement;
+			if (!slot.matches(".dx-section-nav-slot,.dx-secondary-nav-slot")) {
+				slot = document.createElement("div");
+				bar.before(slot);
+				slot.append(bar);
+			}
+			slot.classList.add("dx-secondary-nav-slot");
+			const inner = document.createElement("div");
+			inner.className = "dx-secondary-nav__inner";
+			while (bar.firstChild) inner.append(bar.firstChild);
+			bar.append(inner);
+			bar.dataset.secondaryDockReady = "true";
+			inner.tabIndex = -1;
+			return {
+				bar, slot, inner,
+				limit: bar.closest(".dx-services-editorial,.dx-fitness,.dxb,.cv-experience,#main"),
+				marginTop: 0, marginBottom: 0, inset: 0, width: 0, height: 0,
+			};
+		});
+		const measure = (entry) => {
+			const { bar, slot } = entry;
+			const stuck = bar.classList.contains("dx-secondary-nav-stuck");
+			const nativeStates = ["is-stuck", "is-docked"].filter((name) => bar.classList.contains(name));
+			bar.classList.remove("dx-secondary-nav", "dx-secondary-nav-stuck", ...nativeStates);
+			bar.style.removeProperty("left");
+			bar.style.removeProperty("width");
+			const style = getComputedStyle(bar);
+			const natural = bar.getBoundingClientRect();
+			const slotRect = slot.getBoundingClientRect();
+			const padding = ["Top", "Right", "Bottom", "Left"].map((side) => style[`padding${side}`]);
+			entry.marginTop = parseFloat(style.marginTop) || 0;
+			entry.marginBottom = parseFloat(style.marginBottom) || 0;
+			entry.inset = natural.left - slotRect.left;
+			entry.width = natural.width;
+			bar.style.setProperty("--dx-secondary-row-gap", style.columnGap);
+			bar.style.setProperty("--dx-secondary-row-padding", padding.join(" "));
+			bar.style.setProperty("--dx-secondary-row-padding-top", padding[0]);
+			bar.style.setProperty("--dx-secondary-top-border", style.borderTopWidth);
+			bar.classList.add("dx-secondary-nav", ...nativeStates);
+			entry.height = bar.getBoundingClientRect().height;
+			if (stuck) bar.classList.add("dx-secondary-nav-stuck");
+		};
+		const paint = () => {
+			frame = 0;
+			if (needsMeasure) {
+				entries.forEach(measure);
+				needsMeasure = false;
+			}
+			// Read the transformed bottom every frame of the header's own transition.
+			// A hidden header therefore leaves no empty strip above the secondary nav.
+			const offset = Math.max(0, header.getBoundingClientRect().bottom);
+			const value = `${offset.toFixed(2)}px`;
+			if (lastOffset !== value) {
+				root.style.setProperty("--dx-service-index-offset", value);
+				lastOffset = value;
+			}
+			entries.forEach((entry) => {
+				const { bar, slot } = entry;
+				const slotRect = slot.getBoundingClientRect();
+				const left = slotRect.left + entry.inset;
+				bar.style.setProperty("--dx-secondary-native-left", `${left.toFixed(2)}px`);
+				bar.style.setProperty("--dx-secondary-native-width", `${entry.width.toFixed(2)}px`);
+				bar.style.setProperty("--dx-secondary-bleed-left", `${(-left).toFixed(2)}px`);
+				bar.style.setProperty("--dx-secondary-bleed-right", `${(-((root.clientWidth || innerWidth) - left - entry.width)).toFixed(2)}px`);
+				const height = bar.getBoundingClientRect().height || entry.height;
+				entry.height = height;
+				const stuck = slotRect.top + entry.marginTop <= offset + 0.5;
+				// This slot has the same height before, during and after the hand-off.
+				slot.style.height = stuck ? `${height + entry.marginTop + entry.marginBottom}px` : "";
+				bar.classList.toggle("dx-secondary-nav-stuck", stuck);
+				const end = (entry.limit || slot.parentElement).getBoundingClientRect().bottom;
+				const top = stuck ? Math.min(offset, end - height) : offset;
+				bar.style.setProperty("--dx-secondary-nav-top", `${top.toFixed(2)}px`);
+				bar.style.top = `${top.toFixed(2)}px`;
+				const cv = bar.closest(".cv-experience");
+				if (cv) cv.style.setProperty("--cv-nav-height", `${height.toFixed(2)}px`);
+			});
+			if (!reduced.matches && performance.now() < followUntil) frame = requestAnimationFrame(paint);
+		};
+		const schedule = (duration = 0) => {
+			if (!reduced.matches) followUntil = Math.max(followUntil, performance.now() + duration);
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		new MutationObserver(() => schedule(600)).observe(header, {
+			attributes: true, attributeFilter: ["class", "style"],
+		});
+		new MutationObserver(() => schedule(600)).observe(document.body, {
+			attributes: true, attributeFilter: ["class"],
+		});
+		const toggle = document.getElementById("dx-menu-toggle");
+		if (toggle) new MutationObserver(() => schedule(600)).observe(toggle, {
+			attributes: true, attributeFilter: ["aria-expanded"],
+		});
+		if ("ResizeObserver" in window) {
+			new ResizeObserver(() => schedule(100)).observe(header);
+			const rows = new ResizeObserver(() => schedule());
+			entries.forEach(({ inner }) => rows.observe(inner));
+		}
+		const isHeaderMotion = (event) => event.target === header &&
+			["transform", "padding-top", "padding-bottom", "height"].includes(event.propertyName);
+		header.addEventListener("transitionrun", (event) => { if (isHeaderMotion(event)) schedule(600); });
+		header.addEventListener("transitionend", (event) => { if (isHeaderMotion(event)) schedule(); });
+		header.addEventListener("transitioncancel", (event) => { if (isHeaderMotion(event)) schedule(); });
+		addEventListener("scroll", () => schedule(), { passive: true });
+		addEventListener("resize", () => { needsMeasure = true; schedule(600); }, { passive: true });
+		addEventListener("pageshow", () => schedule(600));
+		reduced.addEventListener("change", () => { followUntil = 0; schedule(); });
+		paint();
+	}
+	return { initServiceIndexMotion };
+})();
+
+// fitness-story — private module scope.
+const { initFitnessStory } = (() => {
+	/** Keep the long-form story index aligned with the visible navigation stack. */
+	function initFitnessStory() {
+		const story = document.querySelector("#fitness-story.dxf-story--longform");
+		const contents = story?.querySelector(".dxf-story-contents");
+		if (!story || !contents || story.dataset.fitnessStoryReady) return;
+		const chapters = [
+			...story.querySelectorAll(".dxf-story-article .dxf-story-chapter[id]"),
+		];
+		const byId = new Map(chapters.map((chapter) => [chapter.id, chapter]));
+		const links = [...contents.querySelectorAll('a[href^="#"]')].filter(
+			(link) => byId.has(link.hash.slice(1)),
+		);
+		const jumpLinks = [
+			...story.querySelectorAll('a[href^="#fitness-story-"]'),
+		].filter((link) => byId.has(link.hash.slice(1)));
+		if (!chapters.length || !links.length) return;
+		story.dataset.fitnessStoryReady = "true";
+		const header = document.getElementById("header");
+		const fitnessNav = document.querySelector(".dx-fitness .dxf-nav");
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let frame = 0;
+		let followUntil = 0;
+		let lastOffset = "";
+		let navigation = 0;
+		const stackOffset = () => {
+			let bottom = Math.max(0, header?.getBoundingClientRect().bottom || 0);
+			if (fitnessNav) {
+				const rect = fitnessNav.getBoundingClientRect();
+				// Count only the portion docked beside the visible main header.
+				if (rect.height && rect.top <= bottom + 1 && rect.bottom > 0)
+					bottom = Math.max(bottom, rect.bottom);
+			}
+			return bottom + 24;
+		};
+		const paint = () => {
+			frame = 0;
+			const offset = stackOffset();
+			const value = `${offset.toFixed(2)}px`;
+			if (value !== lastOffset) {
+				story.style.setProperty("--dxf-story-nav-offset", value);
+				lastOffset = value;
+			}
+			let active = chapters[0];
+			for (const chapter of chapters) {
+				if (chapter.getBoundingClientRect().top <= offset + 8) active = chapter;
+				else break;
+			}
+			links.forEach((link) => {
+				if (link.hash === `#${active.id}`)
+					link.setAttribute("aria-current", "location");
+				else link.removeAttribute("aria-current");
+			});
+			if (!reduced.matches && performance.now() < followUntil)
+				frame = requestAnimationFrame(paint);
+		};
+		const schedule = (duration = 0) => {
+			if (!reduced.matches)
+				followUntil = Math.max(followUntil, performance.now() + duration);
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		const cancelNavigation = () => {
+			if (navigation) cancelAnimationFrame(navigation);
+			navigation = 0;
+		};
+		jumpLinks.forEach((link) => {
+			link.addEventListener("click", (event) => {
+				if (
+					event.button ||
+					event.metaKey ||
+					event.ctrlKey ||
+					event.shiftKey ||
+					event.altKey
+				)
+					return;
+				const chapter = byId.get(link.hash.slice(1));
+				if (!chapter) return;
+				event.preventDefault();
+				cancelNavigation();
+				history.replaceState(history.state, "", link.hash);
+				const destination = () =>
+					Math.max(
+						0,
+						scrollY + chapter.getBoundingClientRect().top - stackOffset(),
+					);
+				if (reduced.matches) {
+					window.scrollTo({ top: destination(), behavior: "auto" });
+					schedule();
+					return;
+				}
+				const start = scrollY;
+				const started = performance.now();
+				const duration = Math.min(
+					900,
+					Math.max(500, Math.abs(destination() - start) * 0.18),
+				);
+				const step = (now) => {
+					const progress = Math.min(1, (now - started) / duration);
+					const eased = 1 - Math.pow(1 - progress, 4);
+					// Follow a hiding/showing header during the same smooth scroll.
+					window.scrollTo({
+						top: start + (destination() - start) * eased,
+						behavior: "instant",
+					});
+					if (progress < 1) navigation = requestAnimationFrame(step);
+					else {
+						navigation = 0;
+						schedule();
+					}
+				};
+				navigation = requestAnimationFrame(step);
+			});
+		});
+		const stateChanged = () => schedule(600);
+		const observeState = (element, attributes) => {
+			if (!element) return;
+			new MutationObserver(stateChanged).observe(element, {
+				attributes: true,
+				attributeFilter: attributes,
+			});
+		};
+		observeState(header, ["class", "style"]);
+		observeState(fitnessNav, ["class"]);
+		observeState(document.body, ["class"]);
+		if (header) {
+			header.addEventListener("transitionrun", (event) => {
+				if (event.target === header) schedule(600);
+			});
+			header.addEventListener("transitionend", (event) => {
+				if (event.target === header) schedule();
+			});
+		}
+		if ("ResizeObserver" in window) {
+			const observer = new ResizeObserver(() => schedule());
+			[header, fitnessNav, story]
+				.filter(Boolean)
+				.forEach((element) => observer.observe(element));
+		}
+		addEventListener("scroll", () => schedule(), { passive: true });
+		addEventListener("resize", () => schedule(600), { passive: true });
+		addEventListener("pageshow", () => schedule(600));
+		addEventListener("hashchange", () => schedule());
+		addEventListener("wheel", cancelNavigation, { passive: true });
+		addEventListener("touchstart", cancelNavigation, { passive: true });
+		addEventListener("keydown", (event) => {
+			if (
+				[
+					"ArrowUp",
+					"ArrowDown",
+					"PageUp",
+					"PageDown",
+					"Home",
+					"End",
+					"Escape",
+					" ",
+				].includes(event.key)
+			)
+				cancelNavigation();
+		});
+		reduced.addEventListener("change", () => {
+			cancelNavigation();
+			followUntil = 0;
+			schedule();
+		});
+		paint();
+	}
+	return { initFitnessStory };
+})();
+
+// calculator-experience — private module scope.
+const { initCalculatorExperience } = (() => {
+	/** Decorate the existing proposal theme control without replacing its behaviour. */
+	function initCalculatorExperience() {
+		const toggle = document.querySelector("[data-proposal-theme]");
+		if (!toggle || toggle.dataset.dxThemeIconBound) return;
+		toggle.dataset.dxThemeIconBound = "true";
+		const svgNamespace = "http://www.w3.org/2000/svg";
+
+		const decorate = () => {
+			const label = /dark mode/i.test(toggle.textContent)
+				? "Dark mode"
+				: "Light mode";
+			const mode = label === "Dark mode" ? "dark" : "light";
+			const currentIcon = toggle.querySelector(".dx-theme-toggle-icon");
+			const currentLabel = toggle.querySelector(".dx-theme-toggle-label");
+			if (
+				currentIcon?.dataset.mode === mode &&
+				currentLabel?.textContent === label
+			)
+				return;
+
+			const icon = document.createElementNS(svgNamespace, "svg");
+			icon.classList.add("dx-theme-toggle-icon");
+			icon.dataset.mode = mode;
+			icon.setAttribute("width", "18");
+			icon.setAttribute("height", "18");
+			icon.setAttribute("viewBox", "0 0 24 24");
+			icon.setAttribute("fill", "none");
+			icon.setAttribute("stroke", "currentColor");
+			icon.setAttribute("stroke-width", "1.7");
+			icon.setAttribute("stroke-linecap", "round");
+			icon.setAttribute("stroke-linejoin", "round");
+			icon.setAttribute("aria-hidden", "true");
+			icon.setAttribute("focusable", "false");
+
+			if (mode === "light") {
+				const circle = document.createElementNS(svgNamespace, "circle");
+				circle.setAttribute("cx", "12");
+				circle.setAttribute("cy", "12");
+				circle.setAttribute("r", "4");
+				const rays = document.createElementNS(svgNamespace, "path");
+				rays.setAttribute(
+					"d",
+					"M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42",
+				);
+				icon.append(circle, rays);
+			} else {
+				const moon = document.createElementNS(svgNamespace, "path");
+				moon.setAttribute(
+					"d",
+					"M20.5 13.3A8.7 8.7 0 0 1 10.7 3.5a8.8 8.8 0 1 0 9.8 9.8Z",
+				);
+				icon.append(moon);
+			}
+			const labelElement = document.createElement("span");
+			labelElement.className = "dx-theme-toggle-label";
+			labelElement.textContent = label;
+			toggle.replaceChildren(icon, labelElement);
+		};
+
+		// Both the plugin and the theme fallback update textContent on mode changes.
+		// Reapply the decorative icon after either existing handler, without rebinding it.
+		const observer = new MutationObserver(decorate);
+		observer.observe(toggle, {
+			childList: true,
+			characterData: true,
+			subtree: true,
+		});
+		decorate();
+	}
+	return { initCalculatorExperience };
+})();
+
+// account-sky — private module scope.
+const { initAccountSky } = (() => {
+	/** Atmospheric decoration; the account clock remains the sole time-period source. */
+	function initAccountSky() {
+		const svgNS = "http://www.w3.org/2000/svg";
+		const makeSvg = (className, viewBox, path) => {
+			const svg = document.createElementNS(svgNS, "svg");
+			svg.setAttribute("class", className);
+			svg.setAttribute("viewBox", viewBox);
+			svg.setAttribute("aria-hidden", "true");
+			svg.setAttribute("focusable", "false");
+			const shape = document.createElementNS(svgNS, "path");
+			shape.setAttribute("d", path);
+			svg.append(shape);
+			return svg;
+		};
+		const add = (parent, className) => {
+			const element = document.createElement("span");
+			element.className = className;
+			parent.append(element);
+			return element;
+		};
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+
+		document.querySelectorAll(".auth.dx-account-photo").forEach((auth) => {
+			const graphic = auth.querySelector(".graphic-content");
+			if (!graphic || graphic.querySelector(".dx-account-sky")) return;
+			const sky = document.createElement("div");
+			sky.className = "dx-account-sky";
+			sky.setAttribute("aria-hidden", "true");
+			sky.inert = true;
+			graphic.prepend(sky);
+
+			const daytime = add(sky, "dx-account-sky__daytime");
+			add(daytime, "dx-account-sky__sun-glare");
+			add(daytime, "dx-account-sky__flare dx-account-sky__flare--one");
+			add(daytime, "dx-account-sky__flare dx-account-sky__flare--two");
+
+			[
+				[17, 24, 38, -11],
+				[22, 42, 49, -28],
+				[25, 16, 61, -42],
+			].forEach(([width, top, duration, delay]) => {
+				const flight = add(daytime, "dx-account-sky__bird-flight");
+				flight.style.setProperty("--bird-width", `${width}px`);
+				flight.style.setProperty("--flight-top", `${top}%`);
+				flight.style.setProperty("--flight-duration", `${duration}s`);
+				flight.style.setProperty("--flight-delay", `${delay}s`);
+				flight.append(
+					makeSvg(
+						"dx-account-sky__bird",
+						"0 0 25 14",
+						"M1 8C5 3 9 4 12.5 8C16 4 20 3 24 8C19 5.5 16 7 12.5 10C9 7 6 5.5 1 8Z",
+					),
+				);
+			});
+			const planeFlight = add(daytime, "dx-account-sky__plane-flight");
+			planeFlight.append(
+				makeSvg(
+					"dx-account-sky__plane",
+					"0 0 32 32",
+					"M30 14.5 19 10V4a3 3 0 0 0-6 0v6L2 14.5V18l11-3v9l-4 3v3l7-2 7 2v-3l-4-3v-9l11 3Z",
+				),
+			);
+
+			const moon = add(sky, "dx-account-sky__moon");
+			moon.append(
+				makeSvg(
+					"dx-account-sky__moon-disc",
+					"0 0 64 64",
+					"M42 4A27 27 0 1 0 59 48A25 25 0 0 1 42 4Z",
+				),
+			);
+			const nighttime = add(sky, "dx-account-sky__nighttime");
+			const positions = [
+				[47, 12],
+				[61, 22],
+				[76, 9],
+				[90, 18],
+				[56, 35],
+				[84, 41],
+				[95, 32],
+				[68, 49],
+				[40, 29],
+				[73, 31],
+				[87, 57],
+				[50, 58],
+				[59, 67],
+				[96, 68],
+				[78, 71],
+				[35, 17],
+				[65, 11],
+				[92, 81],
+				[46, 77],
+				[69, 82],
+				[80, 51],
+				[38, 53],
+				[92, 8],
+				[57, 6],
+			];
+			positions.forEach(([left, top], index) => {
+				const star = add(
+					nighttime,
+					"dx-account-sky__star" + (index % 3 === 0 ? " is-twinkling" : ""),
+				);
+				star.style.left = `${left}%`;
+				star.style.top = `${top}%`;
+				star.style.setProperty(
+					"--star-size",
+					`${index % 7 === 0 ? 4 : 1.3 + (index % 3) * 0.65}px`,
+				);
+				star.style.setProperty(
+					"--twinkle-duration",
+					`${4 + (index % 5) * 0.8}s`,
+				);
+				star.style.setProperty("--twinkle-delay", `${index * -1.7}s`);
+			});
+			add(
+				nighttime,
+				"dx-account-sky__shooting-star dx-account-sky__shooting-star--one",
+			);
+			add(
+				nighttime,
+				"dx-account-sky__shooting-star dx-account-sky__shooting-star--two",
+			);
+
+			let visible = true;
+			const syncPause = () => {
+				sky.dataset.skyPaused = String(
+					document.hidden || !visible || reduced.matches,
+				);
+			};
+			const syncPeriod = () => {
+				const period = ["day", "dawn", "dusk", "night"].includes(
+					auth.dataset.londonPeriod,
+				)
+					? auth.dataset.londonPeriod
+					: "night";
+				if (sky.dataset.skyPeriod !== period) sky.dataset.skyPeriod = period;
+			};
+			new MutationObserver(syncPeriod).observe(auth, {
+				attributes: true,
+				attributeFilter: ["data-london-period"],
+			});
+			if ("IntersectionObserver" in window) {
+				new IntersectionObserver(
+					([entry]) => {
+						visible = entry.isIntersecting;
+						syncPause();
+					},
+					{ rootMargin: "50px" },
+				).observe(auth);
+			}
+			document.addEventListener("visibilitychange", syncPause);
+			reduced.addEventListener("change", syncPause);
+			syncPeriod();
+			syncPause();
+		});
+	}
+	return { initAccountSky };
+})();
+
+// photo-watermark — private module scope.
+const { initPhotoWatermarks } = (() => {
+	/** Use only a photo's capture metadata, never upload dates or today's year. */
+	function photoCaptureYear(photo = {}) {
+		const taken = photo.technical?.Taken || photo.technical?.taken;
+		for (const value of [photo.captured, taken, photo.date]) {
+			if (typeof value !== "string") continue;
+			const match = value.match(/(?:^|\D)([12]\d{3})(?=\D|$)/);
+			if (match) return match[1];
+		}
+		return "";
+	}
+
+	/** Add presentation-only marks; the original media files are never modified. */
+	function initPhotoWatermarks() {
+		const gallery = document.querySelector(".dxb");
+		if (!gallery || gallery.dataset.photoWatermarksReady) return;
+		gallery.dataset.photoWatermarksReady = "true";
+		const photos = window.DXB?.photos || [];
+		const bySource = new Map();
+		const sourceKey = (source) => {
+			if (!source) return "";
+			try {
+				const url = new URL(source, location.href);
+				return (
+					url.origin +
+					url.pathname
+						.replace(/-\d+x\d+(?=\.[^.]+$)/, "")
+						.replace(/-scaled(?=\.[^.]+$)/, "")
+				);
+			} catch {
+				return "";
+			}
+		};
+		photos.forEach((photo) => {
+			[photo.full, photo.image].filter(Boolean).forEach((source) => {
+				bySource.set(sourceKey(source), photo);
+			});
+		});
+		const marks = new WeakMap();
+		const mark = (host, photo) => {
+			let label = marks.get(host);
+			if (!label) {
+				label = document.createElement("span");
+				label.className = "dx-photo-watermark";
+				label.setAttribute("aria-hidden", "true");
+				host.classList.add("dx-photo-watermark-frame");
+				host.append(label);
+				marks.set(host, label);
+			}
+			const year = photoCaptureYear(photo);
+			const text = `© ${year ? `${year} ` : ""}DXNDRE`;
+			if (label.textContent !== text) label.textContent = text;
+			label.dataset.captureYear = year;
+			return label;
+		};
+		const decorateCard = (card) => {
+			const image = card.querySelector("img");
+			if (!image) return;
+			const photo =
+				photos[Number(card.dataset.photo)] ||
+				bySource.get(sourceKey(image.currentSrc || image.src)) ||
+				{};
+			mark(card, photo);
+		};
+		gallery.querySelectorAll("#dxb-gallery [data-photo]").forEach(decorateCard);
+		const related = gallery.querySelector("#panel-photos");
+		if (related) {
+			const decorateRelated = () => {
+				related
+					.querySelectorAll(".dxb-route-photos button")
+					.forEach((button) => {
+						const image = button.querySelector("img");
+						if (image)
+							mark(
+								button,
+								bySource.get(sourceKey(image.currentSrc || image.src)) || {},
+							);
+					});
+			};
+			new MutationObserver(decorateRelated).observe(related, {
+				childList: true,
+				subtree: true,
+			});
+			decorateRelated();
+		}
+		const lightbox = gallery.querySelector("#dxb-lightbox");
+		const image = lightbox?.querySelector("#dxb-lightbox-image");
+		const viewport = image?.closest(".dxb-photo-viewport");
+		if (!lightbox || !image || !viewport) return;
+		let label;
+		let frame = 0;
+		const align = () => {
+			frame = 0;
+			if (!label || !image.naturalWidth || !image.naturalHeight) return;
+			const width = viewport.clientWidth;
+			const height = viewport.clientHeight;
+			const fit = Math.min(
+				width / image.naturalWidth,
+				height / image.naturalHeight,
+			);
+			const zoomed = lightbox.classList.contains("is-zoomed");
+			// In fit mode the mark sits on the photograph, including portrait images.
+			// In zoom mode keep the mark visible inside the pan area.
+			label.style.right = `${
+				zoomed ? 12 : Math.max(12, (width - image.naturalWidth * fit) / 2 + 12)
+			}px`;
+			label.style.bottom = `${
+				zoomed
+					? 12
+					: Math.max(12, (height - image.naturalHeight * fit) / 2 + 12)
+			}px`;
+		};
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(align);
+		};
+		const syncLightbox = () => {
+			const source = image.getAttribute("src");
+			if (!source) return;
+			label = mark(viewport, bySource.get(sourceKey(source)) || {});
+			schedule();
+		};
+		new MutationObserver(syncLightbox).observe(image, {
+			attributes: true,
+			attributeFilter: ["src"],
+		});
+		new MutationObserver(schedule).observe(lightbox, {
+			attributes: true,
+			attributeFilter: ["class", "open"],
+		});
+		image.addEventListener("load", syncLightbox);
+		if ("ResizeObserver" in window)
+			new ResizeObserver(schedule).observe(viewport);
+		addEventListener("resize", schedule, { passive: true });
+		syncLightbox();
+	}
+	return { initPhotoWatermarks };
+})();
+
+function dxOnPageReady(callback) {
+	const run = () => Promise.resolve(window.dxPageReady).then(callback);
+	if (document.readyState === "loading")
+		document.addEventListener("DOMContentLoaded", run, { once: true });
+	else run();
+}
 // Overall scores use /10 internally; the five middle bands span 14% each.
 const gymOverallBands = [
 	{
-		tone: 'maroon',
-		label: 'Diabolical',
-		range: '0–<15%',
+		tone: "maroon",
+		label: "Diabolical",
+		range: "0–<15%",
 		min: 0,
 		width: 15,
-		color: '#8c354b',
-		emoji: '💩',
+		color: "#8c354b",
+		emoji: "💩",
 	},
 	{
-		tone: 'bad',
-		label: 'Bad',
-		range: '15–<29%',
+		tone: "bad",
+		label: "Bad",
+		range: "15–<29%",
 		min: 1.5,
 		width: 14,
-		color: '#d85b70',
-		emoji: '😡',
+		color: "#d85b70",
+		emoji: "😡",
 	},
 	{
-		tone: 'red',
-		label: 'Poor',
-		range: '29–<43%',
+		tone: "red",
+		label: "Poor",
+		range: "29–<43%",
 		min: 2.9,
 		width: 14,
-		color: '#ef8585',
-		emoji: '👎🏾',
+		color: "#ef8585",
+		emoji: "👎🏾",
 	},
 	{
-		tone: 'amber',
-		label: 'Mixed',
-		range: '43–<57%',
+		tone: "amber",
+		label: "Mixed",
+		range: "43–<57%",
 		min: 4.3,
 		width: 14,
-		color: '#e5a653',
-		emoji: '🤷🏽‍♂️',
+		color: "#e5a653",
+		emoji: "🤷🏽‍♂️",
 	},
 	{
-		tone: 'green',
-		label: 'Positive',
-		range: '57–<71%',
+		tone: "green",
+		label: "Positive",
+		range: "57–<71%",
 		min: 5.7,
 		width: 14,
-		color: '#82c995',
-		emoji: '👍🏾',
+		color: "#82c995",
+		emoji: "👍🏾",
 	},
 	{
-		tone: 'great',
-		label: 'Excellent',
-		range: '71–<85%',
+		tone: "great",
+		label: "Excellent",
+		range: "71–<85%",
 		min: 7.1,
 		width: 14,
-		color: '#6ed9c5',
-		emoji: '🤩',
+		color: "#6ed9c5",
+		emoji: "🤩",
 	},
 	{
-		tone: 'diamond',
-		label: 'Outstanding',
-		range: '85–100%',
+		tone: "diamond",
+		label: "Outstanding",
+		range: "85–100%",
 		min: 8.5,
 		width: 15,
-		color: '#b9eaff',
-		emoji: '💎',
+		color: "#b9eaff",
+		emoji: "💎",
 	},
 ];
 
@@ -79,116 +1547,123 @@ function initGymLeague(archive, cards) {
 	};
 	const tone = (value) => {
 		const n = Number(value);
-		return value === '' || !Number.isFinite(n) || n < 0
-			? 'unrated'
+		return value === "" || !Number.isFinite(n) || n < 0
+			? "unrated"
 			: n >= 9
-			? 'diamond'
+			? "diamond"
 			: n >= 7
-			? 'green'
+			? "green"
 			: n >= 5
-			? 'amber'
+			? "amber"
 			: n >= 3
-			? 'red'
-			: 'maroon';
+			? "red"
+			: "maroon";
 	};
 	const bands = gymOverallBands;
 	const overallBand = (value) => {
 		const n = Number(value);
-		return value === '' || !Number.isFinite(n) || n < 0
-			? { tone: 'unrated', label: 'Not assessed', emoji: '' }
+		return value === "" || !Number.isFinite(n) || n < 0
+			? { tone: "unrated", label: "Not assessed", emoji: "" }
 			: [...bands].reverse().find((band) => n >= band.min);
 	};
 	const overallTone = (value) => overallBand(value).tone;
 	const ratingEmoji = Object.fromEntries(
 		bands.map((band) => [band.tone, band.emoji]),
 	);
-	ratingEmoji.unrated = '';
-	const grid = archive.querySelector('[data-gyms-grid]');
-	const header = make('header', 'league-heading');
+	ratingEmoji.unrated = "";
+	const grid = archive.querySelector("[data-gyms-grid]");
+	const header = make("header", "league-heading");
 	header.append(
 		make(
-			'p',
-			'league-eyebrow',
+			"p",
+			"league-eyebrow",
 			`THE GYM LEAGUE · ${cards.length} BRANCHES LOGGED`,
 		),
-		make('h2', '', 'The full field.'),
+		make("h2", "", "The full field."),
 		make(
-			'p',
-			'league-intro',
-			'Personally visited. Honestly rated. Find your next place to train.',
+			"p",
+			"league-intro",
+			"Personally visited. Honestly rated. Find your next place to train.",
 		),
 	);
-	const watermark = make('span', 'league-watermark', String(cards.length));
-	watermark.setAttribute('aria-hidden', 'true');
+	const watermark = make("span", "league-watermark", String(cards.length));
+	watermark.setAttribute("aria-hidden", "true");
 	header.append(watermark);
-    watermark.textContent='0';
-    const countObserver=new IntersectionObserver(entries=>{
-        if(!entries.some(e=>e.isIntersecting))return;countObserver.disconnect();
-        const start=performance.now();
-        const tick=now=>{const progress=matchMedia('(prefers-reduced-motion: reduce)').matches?1:Math.min(1,(now-start)/1500);watermark.textContent=String(Math.round(cards.length*(1-Math.pow(1-progress,3))));if(progress<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);
-    },{threshold:.1});countObserver.observe(grid);
-	const legend = make('div', 'league-legend');
-	[...bands].reverse().forEach((band) => {
-		const item = make('span', '', `${band.range} ${band.label}`);
-		item.dataset.tone = band.tone;
-		legend.append(item);
-	});
-	legend.append(make('span', '', '— Not assessed / N/A Unavailable'));
-	header.append(legend);
-	const method = make('button', 'league-method-trigger', 'How I score gyms');
-	method.type = 'button';
-	method.setAttribute('aria-haspopup', 'dialog');
-	method.setAttribute('aria-controls', 'league-scoring-guide');
-	const guide = make('dialog', 'league-scoring-guide');
-	guide.id = 'league-scoring-guide';
-	guide.setAttribute('aria-labelledby', 'league-scoring-title');
-	const close = make('button', 'league-scoring-close', 'Close ×');
-	close.type = 'button';
-	close.setAttribute('aria-label', 'Close scoring guide');
-	const title = make('h2', '', 'How I score gyms');
-	title.id = 'league-scoring-title';
+	watermark.textContent = "0";
+	const countObserver = new IntersectionObserver(
+		(entries) => {
+			if (!entries.some((e) => e.isIntersecting)) return;
+			countObserver.disconnect();
+			const start = performance.now();
+			const tick = (now) => {
+				const progress = matchMedia("(prefers-reduced-motion: reduce)").matches
+					? 1
+					: Math.min(1, (now - start) / 1500);
+				watermark.textContent = String(
+					Math.round(cards.length * (1 - Math.pow(1 - progress, 3))),
+				);
+				if (progress < 1) requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		},
+		{ threshold: 0.1 },
+	);
+	countObserver.observe(grid);
+	// Rating bands are presented in the scoring guide, keeping the league header compact.
+	const method = make("button", "league-method-trigger", "How I score gyms");
+	method.type = "button";
+	method.setAttribute("aria-haspopup", "dialog");
+	method.setAttribute("aria-controls", "league-scoring-guide");
+	const guide = make("dialog", "league-scoring-guide");
+	guide.id = "league-scoring-guide";
+	guide.setAttribute("aria-labelledby", "league-scoring-title");
+	const close = make("button", "league-scoring-close", "Close ×");
+	close.type = "button";
+	close.setAttribute("aria-label", "Close scoring guide");
+	const title = make("h2", "", "How I score gyms");
+	title.id = "league-scoring-title";
 	guide.append(
 		close,
 		title,
 		make(
-			'p',
-			'',
-			'Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.',
+			"p",
+			"",
+			"Ratings reflect my visits, membership tier and personal experience. The latest dated visit sets each branch’s league rating.",
 		),
 	);
 	guide.append(
 		make(
-			'p',
-			'',
-			'The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×2, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.',
+			"p",
+			"",
+			"The overall percentage is a weighted average: gym ×2, wetside ×1.5, spa ×2, café / work ×1, cleanliness ×2.5 and parking ×1. Unassessed and unavailable facilities are excluded; zero is a scored result.",
 		),
 	);
-	guide.append(make('h3', '', 'Overall rating scale'));
-	const scale = make('div', 'league-scale');
-	scale.setAttribute('aria-hidden', 'true');
+	guide.append(make("h3", "", "Overall rating scale"));
+	const scale = make("div", "league-scale");
+	scale.setAttribute("aria-hidden", "true");
 	bands.forEach((band) => {
-		const segment = make('span', '');
+		const segment = make("span", "");
 		segment.style.width = `${band.width}%`;
 		segment.style.backgroundColor = band.color;
 		scale.append(segment);
 	});
-	const axis = make('div', 'league-scale-axis');
-	axis.setAttribute('aria-hidden', 'true');
+	const axis = make("div", "league-scale-axis");
+	axis.setAttribute("aria-hidden", "true");
 	[0, 25, 50, 75, 100].forEach((value) => {
-		const tick = make('span', '', `${value}%`);
+		const tick = make("span", "", `${value}%`);
 		tick.style.left = `${value}%`;
 		axis.append(tick);
 	});
-	const key = make('ul', 'league-scale-key');
+	const key = make("ul", "league-scale-key");
 	[...bands].reverse().forEach((band) => {
-		const row = make('li', '');
-		const swatch = make('span', 'league-scale-swatch');
+		const row = make("li", "");
+		const swatch = make("span", "league-scale-swatch");
 		swatch.style.backgroundColor = band.color;
-		swatch.setAttribute('aria-hidden', 'true');
+		swatch.setAttribute("aria-hidden", "true");
 		row.append(
 			swatch,
-			make('span', '', `${band.emoji} ${band.label}`),
-			make('span', 'league-scale-range', band.range),
+			make("span", "", `${band.emoji} ${band.label}`),
+			make("span", "league-scale-range", band.range),
 		);
 		key.append(row);
 	});
@@ -197,15 +1672,15 @@ function initGymLeague(archive, cards) {
 		axis,
 		key,
 		make(
-			'p',
-			'league-scoring-note',
-			'Individual category scores retain their own scale: Outstanding 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.',
+			"p",
+			"league-scoring-note",
+			"Individual category scores retain their own scale: Outstanding 9–10, Positive 7–<9, Mixed 5–<7, Poor 3–<5, Diabolical below 3.",
 		),
 	);
 	document.body.append(guide);
-	method.addEventListener('click', () => guide.showModal());
-	close.addEventListener('click', () => guide.close());
-	guide.addEventListener('click', (event) => {
+	method.addEventListener("click", () => guide.showModal());
+	close.addEventListener("click", () => guide.close());
+	guide.addEventListener("click", (event) => {
 		if (event.target !== guide) return;
 		const bounds = guide.getBoundingClientRect();
 		if (
@@ -216,54 +1691,54 @@ function initGymLeague(archive, cards) {
 		)
 			guide.close();
 	});
-	guide.addEventListener('close', () => method.focus({ preventScroll: true }));
+	guide.addEventListener("close", () => method.focus({ preventScroll: true }));
 	header.append(method);
 	archive.prepend(header);
-	archive.querySelector('.gym-view-toggle')?.remove();
+	archive.querySelector(".gym-view-toggle")?.remove();
 	archive
-		.querySelectorAll('.gym-filter-buttons button')
+		.querySelectorAll(".gym-filter-buttons button")
 		.forEach((b) =>
-			b.setAttribute('aria-pressed', String(b.classList.contains('is-active'))),
+			b.setAttribute("aria-pressed", String(b.classList.contains("is-active"))),
 		);
-	const tray = archive.querySelector('[data-gym-compare-bar]');
+	const tray = archive.querySelector("[data-gym-compare-bar]");
 	if (tray) archive.append(tray);
-	const layout = make('div', 'league-layout');
+	const layout = make("div", "league-layout");
 	grid.before(layout);
-	const left = make('div', 'league-list-pane');
+	const left = make("div", "league-list-pane");
 	layout.append(left);
 	left.append(grid);
-	archive.querySelector('.gym-pagination')?.remove();
-	const panel = make('aside', 'league-detail');
-	panel.id = 'gym-branch-detail';
-	panel.setAttribute('aria-label', 'Selected branch details');
+	archive.querySelector(".gym-pagination")?.remove();
+	const panel = make("aside", "league-detail");
+	panel.id = "gym-branch-detail";
+	panel.setAttribute("aria-label", "Selected branch details");
 	layout.append(panel);
 	// Map assets load only when requested; list browsing needs no external map requests.
-	const mapPane = make('div', 'league-map-pane');
-	const mapStatus = make('p', 'league-map-status');
-	mapStatus.setAttribute('role', 'status');
-	const mapCanvas = make('div', 'league-map-canvas');
-	mapCanvas.setAttribute('aria-label', 'Gym review locations');
-	const mapChoices = make('div', 'league-map-choices');
+	const mapPane = make("div", "league-map-pane");
+	const mapStatus = make("p", "league-map-status");
+	mapStatus.setAttribute("role", "status");
+	const mapCanvas = make("div", "league-map-canvas");
+	mapCanvas.setAttribute("aria-label", "Gym review locations");
+	const mapChoices = make("div", "league-map-choices");
 	const mapChoiceCards = new Map();
-	mapChoices.setAttribute('aria-label', 'Matching gym reviews');
+	mapChoices.setAttribute("aria-label", "Matching gym reviews");
 	mapPane.append(mapStatus, mapCanvas, mapChoices);
 	mapPane.hidden = true;
 	left.append(mapPane);
-	const switcher = make('div', 'league-view-switch');
-	switcher.setAttribute('role', 'group');
-	switcher.setAttribute('aria-label', 'Gym view');
-	const listButton = make('button', '', 'List');
-	const mapButton = make('button', '', 'Map');
-	const gridButton = make('button', '', 'Grid');
-	const mosaic = make('div', 'league-mosaic');
+	const switcher = make("div", "league-view-switch");
+	switcher.setAttribute("role", "group");
+	switcher.setAttribute("aria-label", "Gym view");
+	const listButton = make("button", "", "List");
+	const mapButton = make("button", "", "Map");
+	const gridButton = make("button", "", "Grid");
+	const mosaic = make("div", "league-mosaic");
 	mosaic.hidden = true;
 	layout.after(mosaic);
 	let gridView = false;
 	[listButton, gridButton, mapButton].forEach((button) => {
-		button.type = 'button';
+		button.type = "button";
 		switcher.append(button);
 	});
-	archive.querySelector('.filter-inputs').append(switcher);
+	archive.querySelector(".filter-inputs").append(switcher);
 	let mapView = false,
 		mapInstance,
 		mapMarkers,
@@ -285,12 +1760,12 @@ function initGymLeague(archive, cards) {
 		if (window.L) return Promise.resolve();
 		if (mapAssets) return mapAssets;
 		mapAssets = new Promise((resolve, reject) => {
-			const css = document.createElement('link');
-			css.rel = 'stylesheet';
-			css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+			const css = document.createElement("link");
+			css.rel = "stylesheet";
+			css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
 			document.head.append(css);
-			const script = document.createElement('script');
-			script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+			const script = document.createElement("script");
+			script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
 			script.onload = resolve;
 			script.onerror = reject;
 			document.head.append(script);
@@ -299,7 +1774,7 @@ function initGymLeague(archive, cards) {
 	};
 	function renderLeagueMap() {
 		if (!mapView) return;
-		mapStatus.textContent = 'Loading map…';
+		mapStatus.textContent = "Loading map…";
 		return loadMapAssets()
 			.then(() => {
 				if (!mapView) return;
@@ -308,16 +1783,16 @@ function initGymLeague(archive, cards) {
 						scrollWheelZoom: false,
 					}).setView([54, -2], 5);
 					const baseTiles = window.L.tileLayer(
-						'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9',
+						"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 						{
 							attribution:
 								'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
 							maxZoom: 19,
 						},
 					).addTo(mapInstance);
-					baseTiles.on('tileerror', () => {
+					baseTiles.on("tileerror", () => {
 						mapStatus.textContent =
-							'Map background could not load. Check the CARTO key’s website restrictions; gym pins and reviews are still available.';
+							"Map background could not load. Check the CARTO key’s website restrictions; gym pins and reviews are still available.";
 					});
 					mapMarkers = window.L.layerGroup().addTo(mapInstance);
 				}
@@ -327,39 +1802,39 @@ function initGymLeague(archive, cards) {
 				const points = [];
 				mapCards.forEach((card) => {
 					const point = coordinates(card);
-					const choice = make('button', 'league-map-choice');
-					const info = make('span', 'league-map-choice-info');
+					const choice = make("button", "league-map-choice");
+					const info = make("span", "league-map-choice-info");
 					info.append(
-						make('strong', '', card.dataset.branchLabel),
+						make("strong", "", card.dataset.branchLabel),
 						make(
-							'small',
-							'',
-							`${card.dataset.chainLabel}${point ? '' : ' · Pin unavailable'}`,
+							"small",
+							"",
+							`${card.dataset.chainLabel}${point ? "" : " · Pin unavailable"}`,
 						),
 					);
 					const score = make(
-						'span',
-						'league-map-choice-score',
+						"span",
+						"league-map-choice-score",
 						card.dataset.overallLabel,
 					);
 					score.dataset.tone = overallTone(card.dataset.overall);
 					choice.append(info, score);
-					choice.setAttribute('aria-pressed', String(card === selected));
+					choice.setAttribute("aria-pressed", String(card === selected));
 					mapChoiceCards.set(choice, card);
-					choice.type = 'button';
-					choice.addEventListener('click', () => {
+					choice.type = "button";
+					choice.addEventListener("click", () => {
 						select(card);
 						if (point) mapInstance.setView(point, 13);
 					});
 					mapChoices.append(choice);
 					if (!point) return;
 					points.push(point);
-					const pin = make('span', 'league-map-pin', card.dataset.overallLabel);
+					const pin = make("span", "league-map-pin", card.dataset.overallLabel);
 					pin.dataset.tone = overallTone(card.dataset.overall);
 					const marker = window.L.marker(point, {
 						title: `${card.dataset.chainLabel} · ${card.dataset.branchLabel}: ${card.dataset.overallLabel}`,
 						icon: window.L.divIcon({
-							className: 'league-map-marker',
+							className: "league-map-marker",
 							html: pin.outerHTML,
 							iconSize: [66, 30],
 							iconAnchor: [33, 30],
@@ -370,18 +1845,18 @@ function initGymLeague(archive, cards) {
 							`${card.dataset.chainLabel} · ${card.dataset.branchLabel}`,
 						),
 					);
-					marker.on('click', () => {
+					marker.on("click", () => {
 						select(card);
 						if (!media.matches)
 							panel.scrollIntoView({
-								block: 'start',
-								behavior: reducedMotion.matches ? 'instant' : 'smooth',
+								block: "start",
+								behavior: reducedMotion.matches ? "instant" : "smooth",
 							});
 					});
 				});
 				const missing = mapCards.length - points.length;
 				mapStatus.textContent = `${points.length} gyms on the map${
-					missing ? ` · ${missing} without a pin` : ''
+					missing ? ` · ${missing} without a pin` : ""
 				}. Select a pin or branch below.`;
 				mapInstance.invalidateSize();
 				if (points.length)
@@ -389,7 +1864,7 @@ function initGymLeague(archive, cards) {
 			})
 			.catch(() => {
 				mapStatus.textContent =
-					'The map could not load. Please use List view and try again later.';
+					"The map could not load. Please use List view and try again later.";
 				mapAssets = null;
 			});
 	}
@@ -398,40 +1873,43 @@ function initGymLeague(archive, cards) {
 		gridView = useGrid;
 		layout.hidden = gridView;
 		mosaic.hidden = !gridView;
-		gridButton.setAttribute('aria-pressed', String(gridView));
-		archive.classList.toggle('is-map-view', mapView);
-		listButton.setAttribute('aria-pressed', String(!mapView && !gridView));
-		mapButton.setAttribute('aria-pressed', String(mapView));
+		gridButton.setAttribute("aria-pressed", String(gridView));
+		archive.classList.toggle("is-map-view", mapView);
+		listButton.setAttribute("aria-pressed", String(!mapView && !gridView));
+		mapButton.setAttribute("aria-pressed", String(mapView));
 		grid.hidden = mapView;
 		mapPane.hidden = !mapView;
 		place();
 		renderLeagueMap();
 	}
-	listButton.addEventListener('click', () => {
+	listButton.addEventListener("click", () => {
 		setLeagueView(false);
-		archive.dispatchEvent(new Event('league-view-change'));
+		archive.dispatchEvent(new Event("league-view-change"));
 	});
-	mapButton.addEventListener('click', () => {
+	mapButton.addEventListener("click", () => {
 		setLeagueView(true);
-		archive.dispatchEvent(new Event('league-view-change'));
+		archive.dispatchEvent(new Event("league-view-change"));
 	});
-	gridButton.addEventListener('click', () => {setLeagueView(false, true);archive.dispatchEvent(new Event('league-view-change'));});
-	gridButton.setAttribute('aria-pressed', 'false');
-	listButton.setAttribute('aria-pressed', 'true');
-	mapButton.setAttribute('aria-pressed', 'false');
-	const count = make('p', 'league-result-count');
-	count.setAttribute('role', 'status');
+	gridButton.addEventListener("click", () => {
+		setLeagueView(false, true);
+		archive.dispatchEvent(new Event("league-view-change"));
+	});
+	gridButton.setAttribute("aria-pressed", "false");
+	listButton.setAttribute("aria-pressed", "true");
+	mapButton.setAttribute("aria-pressed", "false");
+	const count = make("p", "league-result-count");
+	count.setAttribute("role", "status");
 	layout.before(count);
-	const columns = make('div', 'league-columns');
-	columns.setAttribute('aria-hidden', 'true');
-	['POS', 'BRANCH', 'OVERALL', 'COMPARE'].forEach((s) =>
-		columns.append(make('span', '', s)),
+	const columns = make("div", "league-columns");
+	columns.setAttribute("aria-hidden", "true");
+	["POS", "BRANCH", "OVERALL", "READ", "COMPARE"].forEach((s) =>
+		columns.append(make("span", "", s)),
 	);
 	grid.prepend(columns);
 	let selected = null;
-	const media = window.matchMedia('(min-width: 992px)');
+	const media = window.matchMedia("(min-width: 992px)");
 	const details = new Map();
-	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	let animationFrame = 0;
 	let pendingAnimation = null;
 	const animationObserver = new IntersectionObserver(
@@ -452,35 +1930,35 @@ function initGymLeague(archive, cards) {
 	}
 	function animateDetails(card) {
 		stopAnimation();
-		const total = panel.querySelector('.league-total');
+		const total = panel.querySelector(".league-total");
 		const target = Number(card.dataset.overall);
 		const rated =
-			card.dataset.overall !== '' && Number.isFinite(target) && target >= 0;
+			card.dataset.overall !== "" && Number.isFinite(target) && target >= 0;
 		const bars = [
 			...panel.querySelectorAll(
-				'.dx-score-block[data-score] .dx-score-bar span',
+				".dx-score-block[data-score] .dx-score-bar span",
 			),
 		];
 		const paint = (progress) => {
 			if (rated) {
 				const current = target * progress;
-				total.querySelector('.league-total-number').textContent =
+				total.querySelector(".league-total-number").textContent =
 					progress === 1
 						? card.dataset.overallLabel
 						: `${(current * 10).toFixed(1)}%`;
 				total.dataset.tone = overallTone(current);
-				total.querySelector('.league-total-emoji').textContent =
+				total.querySelector(".league-total-emoji").textContent =
 					overallBand(current).emoji;
-				total.querySelector('.league-total-rating-label').textContent =
+				total.querySelector(".league-total-rating-label").textContent =
 					overallBand(current).label;
 			}
 			bars.forEach((bar) => {
-				const block = bar.closest('[data-score]');
+				const block = bar.closest("[data-score]");
 				const value = Number(block.dataset.score);
 				block.dataset.tone = tone(value * progress);
-				const label = block.querySelector('.dx-score-value');
+				const label = block.querySelector(".dx-score-value");
 				if (label) {
-					label.setAttribute('aria-label', `${value}/10`);
+					label.setAttribute("aria-label", `${value}/10`);
 					label.textContent = `${
 						progress === 1 ? value : Math.floor(value * progress)
 					}/10`;
@@ -518,28 +1996,28 @@ function initGymLeague(archive, cards) {
 		parent = parent.parentElement
 	) {
 		const style = getComputedStyle(parent);
-		if (style.overflowX === 'hidden' || style.overflowY === 'hidden')
-			parent.classList.add('league-sticky-ancestor');
+		if (style.overflowX === "hidden" || style.overflowY === "hidden")
+			parent.classList.add("league-sticky-ancestor");
 	}
-	const stickyHeaders = [...document.querySelectorAll('.navbar, #wpadminbar')];
+	const stickyHeaders = [...document.querySelectorAll(".navbar, #wpadminbar")];
 	const updateStickyOffset = () => {
 		const bottom = stickyHeaders.reduce((offset, el) => {
 			const position = getComputedStyle(el).position;
-			return position === 'fixed' || position === 'sticky'
+			return position === "fixed" || position === "sticky"
 				? Math.max(offset, el.getBoundingClientRect().bottom)
 				: offset;
 		}, 0);
 		const safeTop = Math.max(16, bottom + 16);
-		archive.style.setProperty('--league-sticky-safe-top', `${safeTop}px`);
+		archive.style.setProperty("--league-sticky-safe-top", `${safeTop}px`);
 		const height = panel.getBoundingClientRect().height;
 		const available = Math.max(0, window.innerHeight - safeTop - 16);
 		const centered = safeTop + Math.max(0, (available - height) / 2);
-		archive.style.setProperty('--league-sticky-top', `${centered}px`);
+		archive.style.setProperty("--league-sticky-top", `${centered}px`);
 	};
 	const headerObserver = new ResizeObserver(updateStickyOffset);
 	stickyHeaders.forEach((el) => headerObserver.observe(el));
 	headerObserver.observe(panel);
-	window.addEventListener('resize', updateStickyOffset, { passive: true });
+	window.addEventListener("resize", updateStickyOffset, { passive: true });
 	updateStickyOffset();
 	const ranks = new Map(
 		[...cards]
@@ -551,173 +2029,173 @@ function initGymLeague(archive, cards) {
 			.map((c, i) => [c, i + 1]),
 	);
 	cards.forEach((card) => {
-		const content = make('div', 'league-detail-content');
+		const content = make("div", "league-detail-content");
 		if (card.dataset.featuredImage) {
-			const image = make('img', 'league-detail-image');
-			image.alt = '';
-			image.setAttribute('aria-hidden', 'true');
-			image.loading = 'lazy';
-			image.decoding = 'async';
+			const image = make("img", "league-detail-image");
+			image.alt = "";
+			image.setAttribute("aria-hidden", "true");
+			image.loading = "lazy";
+			image.decoding = "async";
 			image.src = card.dataset.featuredImage;
-			const frame = make('div', 'league-detail-image-frame');
+			const frame = make("div", "league-detail-image-frame");
 			frame.append(image);
 			content.append(frame);
 		}
 		content.append(
-			make('p', 'league-eyebrow', 'BRANCH DETAILS'),
-			make('h3', '', card.dataset.branchLabel),
-			make('p', 'league-detail-chain', card.dataset.chainLabel),
+			make("p", "league-eyebrow", "BRANCH DETAILS"),
+			make("h3", "", card.dataset.branchLabel),
+			make("p", "league-detail-chain", card.dataset.chainLabel),
 		);
-		const loc = card.querySelector('.dx-gym-card__subtitle');
+		const loc = card.querySelector(".dx-gym-card__subtitle");
 		if (loc) {
 			const location = loc.cloneNode(true);
-			const link = location.querySelector('a');
+			const link = location.querySelector("a");
 			if (link) {
 				link.href = card.dataset.mapsUrl || link.href;
-				link.target = '_blank';
-				link.rel = 'noopener noreferrer';
-				link.addEventListener('click', (event) => event.stopPropagation());
+				link.target = "_blank";
+				link.rel = "noopener noreferrer";
+				link.addEventListener("click", (event) => event.stopPropagation());
 			}
 			content.append(location);
 		}
-		const score = make('div', 'league-total');
+		const score = make("div", "league-total");
 		score.dataset.tone = overallTone(card.dataset.overall);
 		const number = make(
-			'span',
-			'league-total-number',
+			"span",
+			"league-total-number",
 			card.dataset.overallLabel,
 		);
 		const emoji = make(
-			'span',
-			'league-total-emoji',
+			"span",
+			"league-total-emoji",
 			ratingEmoji[overallTone(card.dataset.overall)],
 		);
-		emoji.setAttribute('aria-hidden', 'true');
-		const badge = make('span', 'league-total-rating');
-		badge.setAttribute('aria-hidden', 'true');
+		emoji.setAttribute("aria-hidden", "true");
+		const badge = make("span", "league-total-rating");
+		badge.setAttribute("aria-hidden", "true");
 		badge.append(
 			emoji,
 			make(
-				'span',
-				'league-total-rating-label',
+				"span",
+				"league-total-rating-label",
 				overallBand(card.dataset.overall).label,
 			),
 		);
 		score.append(number, badge);
-		score.setAttribute('role', 'img');
+		score.setAttribute("role", "img");
 		score.setAttribute(
-			'aria-label',
+			"aria-label",
 			`${card.dataset.overallLabel} overall rating, ${
 				overallBand(card.dataset.overall).label
 			}`,
 		);
-		content.append(score, make('p', 'league-total-label', 'OVERALL RATING'));
-		const awards = make('div', 'league-awards');
+		content.append(score, make("p", "league-total-label", "OVERALL RATING"));
+		const awards = make("div", "league-awards");
 		card
-			.querySelectorAll('.dx-badge--rank,.dx-badge--category')
+			.querySelectorAll(".dx-badge--rank,.dx-badge--category")
 			.forEach((b) => awards.append(b.cloneNode(true)));
 		content.append(awards);
-		const scores = card.querySelector('.dx-gym-card__scores')?.cloneNode(true);
+		const scores = card.querySelector(".dx-gym-card__scores")?.cloneNode(true);
 		if (scores) {
-			scores.querySelectorAll('.dx-score-block').forEach((block) => {
-				block.dataset.tone = tone(block.dataset.score ?? '');
+			scores.querySelectorAll(".dx-score-block").forEach((block) => {
+				block.dataset.tone = tone(block.dataset.score ?? "");
 			});
 			content.append(scores);
 		}
-		content.append(make('h4', 'league-notes-title', 'Field notes'));
-		const notes = make('div', 'league-notes');
-		const original = card.querySelector('[data-notes-panel]');
+		content.append(make("h4", "league-notes-title", "Field notes"));
+		const notes = make("div", "league-notes");
+		const original = card.querySelector("[data-notes-panel]");
 		if (original) notes.innerHTML = original.innerHTML;
 		content.append(notes);
 		content.append(
 			make(
-				'p',
-				'league-visit',
+				"p",
+				"league-visit",
 				`Visited ${card.dataset.visitedLabel} · ${card.dataset.membership}`,
 			),
 		);
 		let history = [];
 		try {
-			history = JSON.parse(card.dataset.visitHistory || '[]');
+			history = JSON.parse(card.dataset.visitHistory || "[]");
 		} catch {
 			history = [];
 		}
 		if (history.length) {
-			const visits = make('details', 'league-history');
+			const visits = make("details", "league-history");
 			visits.append(
-				make('summary', '', `Visit history · ${history.length + 1} reviews`),
+				make("summary", "", `Visit history · ${history.length + 1} reviews`),
 			);
 			visits.append(
 				make(
-					'p',
-					'league-visit',
-					'The latest dated visit sets the league rating. Earlier visits are retained below.',
+					"p",
+					"league-visit",
+					"The latest dated visit sets the league rating. Earlier visits are retained below.",
 				),
 			);
 			history.forEach((visit) => {
-				const entry = make('article', 'league-history-entry');
-				entry.append(make('h4', '', visit.date || 'Date not recorded'));
+				const entry = make("article", "league-history-entry");
+				entry.append(make("h4", "", visit.date || "Date not recorded"));
 				const overall = make(
-					'strong',
-					'',
+					"strong",
+					"",
 					visit.overall === null
-						? 'Not assessed'
+						? "Not assessed"
 						: `${(visit.overall * 10).toFixed(1)}%`,
 				);
 				overall.dataset.tone = overallTone(
-					visit.overall === null ? '' : visit.overall,
+					visit.overall === null ? "" : visit.overall,
 				);
 				entry.append(overall);
-				const list = make('dl', 'league-history-scores');
+				const list = make("dl", "league-history-scores");
 				Object.entries(visit.scores).forEach(([label, value]) => {
 					list.append(
-						make('dt', '', label),
+						make("dt", "", label),
 						make(
-							'dd',
-							'',
+							"dd",
+							"",
 							value === null
-								? 'Not assessed'
-								: value === 'unavailable'
-								? 'Unavailable'
+								? "Not assessed"
+								: value === "unavailable"
+								? "Unavailable"
 								: `${value}/10`,
 						),
 					);
 				});
-				entry.append(list, make('p', '', visit.notes));
-				const link = make('a', '', 'Read this visit ↗');
+				entry.append(list, make("p", "", visit.notes));
+				const link = make("a", "", "Read this visit ↗");
 				link.href = visit.url;
 				entry.append(link);
 				visits.append(entry);
 			});
 			content.append(visits);
 		}
-		const review = make('a', 'league-review', 'Read full review ↗');
+		const review = make("a", "league-review", "Read full review ↗");
 		review.href = card.dataset.link;
 		content.append(review);
 		details.set(card, content);
-		const btn = make('button', 'league-select');
-		btn.type = 'button';
-		btn.setAttribute('aria-controls', panel.id);
-		btn.setAttribute('aria-expanded', 'false');
-		const info = make('span', 'league-row-info');
+		const btn = make("button", "league-select");
+		btn.type = "button";
+		btn.setAttribute("aria-controls", panel.id);
+		btn.setAttribute("aria-expanded", "false");
+		const info = make("span", "league-row-info");
 		info.append(
-			make('strong', '', card.dataset.branchLabel),
+			make("strong", "", card.dataset.branchLabel),
 			make(
-				'small',
-				'',
+				"small",
+				"",
 				`${card.dataset.chainLabel}${
-					loc ? ' · ' + loc.textContent.replace('📍', '').trim() : ''
+					loc ? " · " + loc.textContent.replace("📍", "").trim() : ""
 				}`,
 			),
 		);
-		const value = make('strong', 'league-row-score', card.dataset.overallLabel);
+		const value = make("strong", "league-row-score", card.dataset.overallLabel);
 		value.dataset.tone = overallTone(card.dataset.overall);
 		btn.append(
-			make('span', 'league-rank', String(ranks.get(card)).padStart(2, '0')),
+			make("span", "league-rank", String(ranks.get(card)).padStart(2, "0")),
 			info,
 			value,
 		);
-		btn.addEventListener('click', () => {
+		btn.addEventListener("click", () => {
 			if (selected === card && !media.matches) {
 				stopAnimation();
 				selected = null;
@@ -725,22 +2203,22 @@ function initGymLeague(archive, cards) {
 				syncSelection();
 			} else select(card, true);
 		});
-		const compare = card.querySelector('[data-gym-compare-toggle]');
+		const compare = card.querySelector("[data-gym-compare-toggle]");
 		if (compare) {
-			compare.setAttribute('aria-label', `Compare ${card.dataset.branchLabel}`);
-			compare.querySelector('.label-add').textContent = '+';
-			compare.querySelector('.label-remove').textContent = '✓';
+			compare.setAttribute("aria-label", `Compare ${card.dataset.branchLabel}`);
+			compare.querySelector(".label-add").textContent = "+";
+			compare.querySelector(".label-remove").textContent = "✓";
 		}
 		card.prepend(btn);
 	});
 	function syncSelection() {
 		mapChoiceCards.forEach((card, button) =>
-			button.setAttribute('aria-pressed', String(card === selected)),
+			button.setAttribute("aria-pressed", String(card === selected)),
 		);
 		cards.forEach((c) => {
-			c.classList.toggle('is-current', c === selected);
-			c.querySelector('.league-select').setAttribute(
-				'aria-expanded',
+			c.classList.toggle("is-current", c === selected);
+			c.querySelector(".league-select").setAttribute(
+				"aria-expanded",
 				String(c === selected && !panel.hidden),
 			);
 		});
@@ -753,22 +2231,22 @@ function initGymLeague(archive, cards) {
 	}
 	// Wait for the photograph before fading it in, including cached images.
 	function revealDetailImage() {
-		const image = panel.querySelector('.league-detail-image');
+		const image = panel.querySelector(".league-detail-image");
 		if (!image) return;
 		image.getAnimations().forEach((animation) => animation.cancel());
-		image.style.opacity = '0';
+		image.style.opacity = "0";
 		image
 			.decode()
 			.then(() => {
 				if (!panel.contains(image)) return;
-				image.style.removeProperty('opacity');
-				if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				image.style.removeProperty("opacity");
+				if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 					image.animate(
 						[
-							{ opacity: 0, transform: 'scale(1)' },
-							{ opacity: 0.66, transform: 'scale(1.04)' },
+							{ opacity: 0, transform: "scale(1)" },
+							{ opacity: 0.66, transform: "scale(1.04)" },
 						],
-						{ duration: 400, easing: 'ease-out' },
+						{ duration: 400, easing: "ease-out" },
 					);
 				}
 			})
@@ -793,32 +2271,62 @@ function initGymLeague(archive, cards) {
 				updateStickyOffset();
 				const offset =
 					parseFloat(
-						archive.style.getPropertyValue('--league-sticky-safe-top'),
+						archive.style.getPropertyValue("--league-sticky-safe-top"),
 					) || 16;
 				window.scrollTo({
 					top: Math.max(
 						0,
 						window.scrollY + card.getBoundingClientRect().top - offset,
 					),
-					behavior: reducedMotion.matches ? 'instant' : 'smooth',
+					behavior: reducedMotion.matches ? "instant" : "smooth",
 				});
 			});
 		}
 	}
-	media.addEventListener('change', place);
-	archive.classList.add('is-premium-league');
+	media.addEventListener("change", place);
+	archive.classList.add("is-premium-league");
+	if (matchMedia("(max-width: 767.98px)").matches) setLeagueView(false, true);
 	return {
 		update(ordered, visibleCount) {
 			mapCards = ordered;
 			renderLeagueMap();
-			const shown = (mapView || gridView) ? ordered : ordered.slice(0, visibleCount);
-            mosaic.replaceChildren();
-            if (gridView) shown.forEach(card => {
-                const tile = make('a', 'league-mosaic-tile'); tile.href = card.dataset.link;
-                if (card.dataset.featuredImage) {const image=make('img','');image.src=card.dataset.featuredImage;image.alt=card.dataset.branchLabel;image.loading='lazy';tile.append(image);}
-                else tile.classList.add('has-no-image');
-                const caption=make('span','league-mosaic-caption');caption.append(make('strong','',card.dataset.branchLabel),make('small','',card.dataset.chainLabel));const score=make('span','league-mosaic-score',card.dataset.overallLabel);const band=overallBand(card.dataset.overall);score.style.color=band.color||'#bcbcb7';tile.append(caption,score);mosaic.append(tile);
-            });
+			const shown =
+				mapView || gridView ? ordered : ordered.slice(0, visibleCount);
+			mosaic.replaceChildren();
+			if (gridView)
+				shown.forEach((card) => {
+					const tile = make("a", "league-mosaic-tile");
+					tile.href = card.dataset.link;
+					if (card.dataset.featuredImage) {
+						const image = make("img", "");
+						image.src = card.dataset.featuredImage;
+						image.alt = card.dataset.branchLabel;
+						image.loading = "lazy";
+						tile.append(image);
+					} else {
+						tile.classList.add("has-no-image");
+						const image = make("img", "");
+						image.src =
+							"/wp-content/themes/dxndre/assets/img/gym-placeholder.svg";
+						image.alt = "Gym photograph coming soon";
+						image.loading = "lazy";
+						tile.append(image);
+					}
+					const caption = make("span", "league-mosaic-caption");
+					caption.append(
+						make("strong", "", card.dataset.branchLabel),
+						make("small", "", card.dataset.chainLabel),
+					);
+					const score = make(
+						"span",
+						"league-mosaic-score",
+						card.dataset.overallLabel,
+					);
+					const band = overallBand(card.dataset.overall);
+					score.style.color = band.color || "#bcbcb7";
+					tile.append(caption, score);
+					mosaic.append(tile);
+				});
 			count.textContent = `${shown.length} of ${ordered.length} branches shown`;
 			if (!shown.length) {
 				stopAnimation();
@@ -832,32 +2340,50 @@ function initGymLeague(archive, cards) {
 	};
 }
 
-// Webpack Imports
-import * as bootstrap from 'bootstrap';
+// Page interactions and shared controllers.
 
 (function () {
-	'use strict';
+	"use strict";
 
 	// n
 	// Navbar scroll state toggle
 	function initNavbarScrolled() {
-		const nav = document.querySelector('.navbar');
+		const nav = document.querySelector(".navbar");
 		if (!nav) return;
 
+		let previous = window.scrollY;
 		const onScroll = () => {
-			nav.classList.toggle('scrolled', window.scrollY > 10);
+			const y = Math.max(0, window.scrollY),
+				delta = y - previous;
+			nav.classList.toggle("scrolled", y > 10);
+			if (Math.abs(delta) > 6 || y < 80) {
+				const open = document.querySelector(
+					'#dx-menu-toggle[aria-expanded="true"]',
+				);
+				nav.classList.toggle(
+					"dx-nav-hidden",
+					y > 140 &&
+						delta > 0 &&
+						!open &&
+						!nav.contains(document.activeElement),
+				);
+				previous = y;
+			}
 		};
+		nav.addEventListener("focusin", () =>
+			nav.classList.remove("dx-nav-hidden"),
+		);
 
-		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener("scroll", onScroll, { passive: true });
 		onScroll();
 	}
 
-	document.addEventListener('DOMContentLoaded', initNavbarScrolled);
+	dxOnPageReady(initNavbarScrolled);
 
 	// Focus input if Searchform is empty
-	[].forEach.call(document.querySelectorAll('.search-form'), (el) => {
-		el.addEventListener('submit', function (e) {
-			var search = el.querySelector('input');
+	[].forEach.call(document.querySelectorAll(".search-form"), (el) => {
+		el.addEventListener("submit", function (e) {
+			var search = el.querySelector("input");
 			if (search.value.length < 1) {
 				e.preventDefault();
 				search.focus();
@@ -871,38 +2397,38 @@ import * as bootstrap from 'bootstrap';
 	);
 	popoverTriggerList.map(function (popoverTriggerEl) {
 		return new bootstrap.Popover(popoverTriggerEl, {
-			trigger: 'focus',
+			trigger: "focus",
 		});
 	});
 
-	document.addEventListener('DOMContentLoaded', () => {
+	dxOnPageReady(() => {
 		/* ==========================
 		   VIEWPORT-ACTIVE SECTIONS
 		========================== */
 
-		const sections = document.querySelectorAll('section');
+		const sections = document.querySelectorAll("section");
 
 		const sectionObserver = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (
-						entry.target.classList.contains('story-section') ||
-						entry.target.classList.contains('story-hero') ||
-						entry.target.querySelector('[data-gyms-archive]')
+						entry.target.classList.contains("story-section") ||
+						entry.target.classList.contains("story-hero") ||
+						entry.target.querySelector("[data-gyms-archive]")
 					) {
 						return;
 					}
 
 					if (entry.isIntersecting) {
-						entry.target.classList.add('viewport-active');
+						entry.target.classList.add("viewport-active");
 					} else {
-						entry.target.classList.remove('viewport-active');
+						entry.target.classList.remove("viewport-active");
 					}
 				});
 			},
 			{
 				threshold: 0.1,
-				rootMargin: '-20% 0px -20% 0px',
+				rootMargin: "-20% 0px -20% 0px",
 			},
 		);
 
@@ -911,7 +2437,7 @@ import * as bootstrap from 'bootstrap';
 		/* ==========================
 		   STAT COUNTER ANIMATION
 		========================== */
-		const counters = document.querySelectorAll('.stat-figure');
+		const counters = document.querySelectorAll(".stat-figure");
 
 		const animateCounter = (el) => {
 			const raw = el.textContent.trim();
@@ -931,12 +2457,12 @@ import * as bootstrap from 'bootstrap';
 				const progress = Math.min((timestamp - startTime) / duration, 1);
 				const value = Math.floor(progress * target);
 
-				el.textContent = `${value}${suffix ? suffix : ''}`;
+				el.textContent = `${value}${suffix ? suffix : ""}`;
 
 				if (progress < 1) {
 					requestAnimationFrame(tick);
 				} else {
-					el.textContent = `${target}${suffix ? suffix : ''}`;
+					el.textContent = `${target}${suffix ? suffix : ""}`;
 				}
 			};
 
@@ -961,16 +2487,16 @@ import * as bootstrap from 'bootstrap';
 		   BODY STATE: CLIENT JOURNEY
 		========================== */
 		const body = document.body;
-		const journeySection = document.querySelector('.client-journey');
-		const techStackSection = document.querySelector('.tech-stack');
+		const journeySection = document.querySelector(".client-journey");
+		const techStackSection = document.querySelector(".tech-stack");
 
 		if (journeySection) {
 			const journeyObserver = new IntersectionObserver(
 				([entry]) => {
 					if (entry.isIntersecting) {
-						body.classList.add('client-journey-section');
+						body.classList.add("client-journey-section");
 					} else {
-						body.classList.remove('client-journey-section');
+						body.classList.remove("client-journey-section");
 					}
 				},
 				{ threshold: 0.35 },
@@ -983,9 +2509,9 @@ import * as bootstrap from 'bootstrap';
 			const techStackObserver = new IntersectionObserver(
 				([entry]) => {
 					if (entry.isIntersecting) {
-						body.classList.add('tech-stack-section');
+						body.classList.add("tech-stack-section");
 					} else {
-						body.classList.remove('tech-stack-section');
+						body.classList.remove("tech-stack-section");
 					}
 				},
 				{ threshold: 0.35 },
@@ -999,31 +2525,31 @@ import * as bootstrap from 'bootstrap';
 	PROCESS STEP CYCLER (DEBUG MODE)
 	========================== */
 
-	const processSteps = document.querySelectorAll('.process-step');
+	const processSteps = document.querySelectorAll(".process-step");
 
 	if (processSteps.length) {
 		let currentIndex = 0;
 
 		// Clear any existing state
-		processSteps.forEach((step) => step.classList.remove('is-active'));
+		processSteps.forEach((step) => step.classList.remove("is-active"));
 
 		// Activate first step
-		processSteps[0].classList.add('is-active');
+		processSteps[0].classList.add("is-active");
 
 		setInterval(() => {
 			// Remove active from current
-			processSteps[currentIndex].classList.remove('is-active');
+			processSteps[currentIndex].classList.remove("is-active");
 
 			// Move to next
 			currentIndex = (currentIndex + 1) % processSteps.length;
 
 			// Add active to next
-			processSteps[currentIndex].classList.add('is-active');
+			processSteps[currentIndex].classList.add("is-active");
 		}, 5000);
 	}
 
 	const processTrack = document.querySelector(
-		'.process-area > .wp-block-group__inner-container',
+		".process-area > .wp-block-group__inner-container",
 	);
 
 	if (processTrack && processSteps.length) {
@@ -1041,14 +2567,14 @@ import * as bootstrap from 'bootstrap';
 
 	// Duplicate Footnotes at runtime
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const tracks = document.querySelectorAll('.footline-track');
+	dxOnPageReady(() => {
+		const tracks = document.querySelectorAll(".footline-track");
 		if (!tracks.length) return;
 
 		const DUPLICATES = 2;
 
 		tracks.forEach((track) => {
-			const item = track.querySelector('.footline');
+			const item = track.querySelector(".footline");
 			if (!item) return;
 
 			for (let i = 0; i < DUPLICATES; i++) {
@@ -1062,26 +2588,26 @@ import * as bootstrap from 'bootstrap';
 	========================================================== */
 
 	function initDxndreNavigation() {
-		const menu = document.getElementById('navbar');
-		const toggle = document.getElementById('dx-menu-toggle');
+		const menu = document.getElementById("navbar");
+		const toggle = document.getElementById("dx-menu-toggle");
 
 		if (!menu || !toggle) return;
 
 		// Prevent duplicate initialisation.
-		if (menu.dataset.dxInitialized === 'true') return;
+		if (menu.dataset.dxInitialized === "true") return;
 
-		menu.dataset.dxInitialized = 'true';
+		menu.dataset.dxInitialized = "true";
 
 		const body = document.body;
 
 		const focusableSelector = [
-			'a[href]',
-			'button:not([disabled])',
-			'input:not([disabled])',
-			'select:not([disabled])',
-			'textarea:not([disabled])',
+			"a[href]",
+			"button:not([disabled])",
+			"input:not([disabled])",
+			"select:not([disabled])",
+			"textarea:not([disabled])",
 			'[tabindex]:not([tabindex="-1"])',
-		].join(',');
+		].join(",");
 
 		let previouslyFocused = null;
 		let isOpen = false;
@@ -1090,10 +2616,10 @@ import * as bootstrap from 'bootstrap';
 			const controls = [
 				...menu.querySelectorAll(focusableSelector),
 				...document.querySelectorAll(
-					'#header .dxndre-nav-left a, ' +
-						'#header .dxndre-nav-left button, ' +
-						'#header .dxndre-nav-left input, ' +
-						'#header .dxndre-navbar-brand-centered',
+					"#header .dxndre-nav-left a, " +
+						"#header .dxndre-nav-left button, " +
+						"#header .dxndre-nav-left input, " +
+						"#header .dxndre-navbar-brand-centered",
 				),
 				toggle,
 			];
@@ -1103,23 +2629,23 @@ import * as bootstrap from 'bootstrap';
 
 				return (
 					element.getClientRects().length > 0 &&
-					style.visibility !== 'hidden' &&
-					style.display !== 'none' &&
-					!element.closest('[inert]')
+					style.visibility !== "hidden" &&
+					style.display !== "none" &&
+					!element.closest("[inert]")
 				);
 			});
 		};
 
 		const lockScroll = () => {
-			body.classList.add('nav-open');
+			body.classList.add("nav-open");
 		};
 
 		const unlockScroll = () => {
-			body.classList.remove('nav-open');
+			body.classList.remove("nav-open");
 		};
 
 		// Bootstrap starts opening.
-		menu.addEventListener('show.bs.collapse', () => {
+		menu.addEventListener("show.bs.collapse", () => {
 			delete menu.dataset.dxClosing;
 
 			previouslyFocused = document.activeElement;
@@ -1128,19 +2654,19 @@ import * as bootstrap from 'bootstrap';
 
 			lockScroll();
 
-			menu.removeAttribute('inert');
-			menu.setAttribute('aria-hidden', 'false');
+			menu.removeAttribute("inert");
+			menu.setAttribute("aria-hidden", "false");
 		});
 
 		// Bootstrap completes opening.
-		menu.addEventListener('shown.bs.collapse', () => {
+		menu.addEventListener("shown.bs.collapse", () => {
 			isOpen = true;
 
 			const currentLink = menu.querySelector(
-				'.current-menu-item > a, ' + '.current_page_item > a',
+				".current-menu-item > a, " + ".current_page_item > a",
 			);
 
-			const firstLink = menu.querySelector('.dx-menu__list > li > a');
+			const firstLink = menu.querySelector(".dx-menu__list > li > a");
 
 			const target = currentLink || firstLink;
 
@@ -1150,8 +2676,8 @@ import * as bootstrap from 'bootstrap';
 		});
 
 		// Bootstrap starts closing.
-		menu.addEventListener('hide.bs.collapse', () => {
-			menu.dataset.dxClosing = 'true';
+		menu.addEventListener("hide.bs.collapse", () => {
+			menu.dataset.dxClosing = "true";
 
 			isOpen = false;
 
@@ -1162,20 +2688,20 @@ import * as bootstrap from 'bootstrap';
 		});
 
 		// Bootstrap completes closing.
-		menu.addEventListener('hidden.bs.collapse', () => {
+		menu.addEventListener("hidden.bs.collapse", () => {
 			isOpen = false;
 
 			unlockScroll();
 
-			menu.setAttribute('inert', '');
-			menu.setAttribute('aria-hidden', 'true');
+			menu.setAttribute("inert", "");
+			menu.setAttribute("aria-hidden", "true");
 
 			const restoreFocus = previouslyFocused;
 
 			if (
 				restoreFocus &&
 				restoreFocus.isConnected &&
-				typeof restoreFocus.focus === 'function'
+				typeof restoreFocus.focus === "function"
 			) {
 				restoreFocus.focus({ preventScroll: true });
 			} else {
@@ -1186,11 +2712,11 @@ import * as bootstrap from 'bootstrap';
 		});
 
 		// Handle keyboard accessibility.
-		document.addEventListener('keydown', (event) => {
+		document.addEventListener("keydown", (event) => {
 			if (!isOpen) return;
 
 			// Escape closes the menu.
-			if (event.key === 'Escape') {
+			if (event.key === "Escape") {
 				event.preventDefault();
 
 				const instance = bootstrap.Collapse.getOrCreateInstance(menu, {
@@ -1203,7 +2729,7 @@ import * as bootstrap from 'bootstrap';
 			}
 
 			// Trap focus inside navigation controls.
-			if (event.key !== 'Tab') return;
+			if (event.key !== "Tab") return;
 
 			const focusable = getFocusable();
 
@@ -1228,8 +2754,8 @@ import * as bootstrap from 'bootstrap';
 		});
 
 		// Close when navigating to a section on the same page.
-		menu.querySelectorAll('a[href]').forEach((link) => {
-			link.addEventListener('click', () => {
+		menu.querySelectorAll("a[href]").forEach((link) => {
+			link.addEventListener("click", () => {
 				const destination = new URL(link.href, window.location.href);
 
 				const current = new URL(window.location.href);
@@ -1250,89 +2776,89 @@ import * as bootstrap from 'bootstrap';
 		});
 
 		// Ensure overlay is inaccessible while closed.
-		if (!menu.classList.contains('show')) {
-			menu.setAttribute('inert', '');
-			menu.setAttribute('aria-hidden', 'true');
+		if (!menu.classList.contains("show")) {
+			menu.setAttribute("inert", "");
+			menu.setAttribute("aria-hidden", "true");
 		} else {
 			isOpen = true;
 			lockScroll();
 
-			menu.removeAttribute('inert');
-			menu.setAttribute('aria-hidden', 'false');
+			menu.removeAttribute("inert");
+			menu.setAttribute("aria-hidden", "false");
 		}
 
 		// Safety net for returning from browser history.
-		window.addEventListener('pageshow', () => {
-			if (!menu.classList.contains('show')) {
+		window.addEventListener("pageshow", () => {
+			if (!menu.classList.contains("show")) {
 				isOpen = false;
 				unlockScroll();
 
-				menu.setAttribute('inert', '');
-				menu.setAttribute('aria-hidden', 'true');
+				menu.setAttribute("inert", "");
+				menu.setAttribute("aria-hidden", "true");
 			}
 		});
 	}
 
-	document.addEventListener('DOMContentLoaded', initDxndreNavigation);
+	dxOnPageReady(initDxndreNavigation);
 
 	// Client Dashboard Loading Test
 
-	document.addEventListener('DOMContentLoaded', () => {
-		if (!document.body.classList.contains('page-dashboard')) return;
+	dxOnPageReady(() => {
+		if (!document.body.classList.contains("page-dashboard")) return;
 
 		// Dashboard-specific JS here
-		console.log('Client dashboard loaded');
+		console.log("Client dashboard loaded");
 	});
 
-	console.log('DX DASHBOARD JS LOADED');
+	console.log("DX DASHBOARD JS LOADED");
 
 	// Client Dashboard Request Update
 
-	document.addEventListener('DOMContentLoaded', () => {
-		if (!document.body.classList.contains('page-dashboard')) return;
+	dxOnPageReady(() => {
+		if (!document.body.classList.contains("page-dashboard")) return;
 
 		// UX: if modal fails / Bootstrap not present, send them to fallback page
 		const newTicketBtn = document.querySelector(
 			'[data-bs-target="#newTicketModal"]',
 		);
-		if (newTicketBtn && typeof window.bootstrap === 'undefined') {
-			newTicketBtn.addEventListener('click', (e) => {
+		if (newTicketBtn && typeof window.bootstrap === "undefined") {
+			newTicketBtn.addEventListener("click", (e) => {
 				e.preventDefault();
-				window.location.href = '/submit-ticket/';
+				window.location.href = "/submit-ticket/";
 			});
 		}
 
 		// Request update button UX-only (you can wire AJAX later)
-		const requestBtn = document.querySelector('.request-update');
+		const requestBtn = document.querySelector(".request-update");
 		if (requestBtn) {
-			requestBtn.addEventListener('click', () => {
-				requestBtn.textContent = 'Request Sent ✓';
+			requestBtn.addEventListener("click", () => {
+				requestBtn.textContent = "Request Sent ✓";
 				requestBtn.disabled = true;
-				requestBtn.classList.add('is-disabled');
+				requestBtn.classList.add("is-disabled");
 			});
 		}
 	});
 
 	// AJAX Message posting for Client Portal status update agent
 
-	const form = document.querySelector('.ticket-reply-form');
+	const form = document.querySelector(".ticket-reply-form");
 
 	if (form) {
-		form.addEventListener('submit', async (e) => {
+		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
 
 			const data = new FormData(form);
 
 			const res = await fetch(form.action, {
-				method: 'POST',
+				method: "POST",
 				body: data,
 			});
 
 			const html = await res.text();
 
 			document
-				.querySelector('.ticket-thread')
-				.insertAdjacentHTML('beforeend', html);
+				.querySelector(".ticket-thread")
+				.insertAdjacentHTML("beforeend", html);
 
 			form.reset();
 		});
@@ -1340,111 +2866,111 @@ import * as bootstrap from 'bootstrap';
 
 	// Add image button for client portal support ticket form
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const addBtn = document.querySelector('.add-image-btn');
-		const fields = document.querySelectorAll('.ticket-image-field');
+	dxOnPageReady(() => {
+		const addBtn = document.querySelector(".add-image-btn");
+		const fields = document.querySelectorAll(".ticket-image-field");
 
 		if (!addBtn || !fields.length) return;
 
 		let visibleCount = 1;
 
-		addBtn.addEventListener('click', () => {
+		addBtn.addEventListener("click", () => {
 			if (visibleCount < fields.length) {
-				fields[visibleCount].classList.remove('is-hidden');
+				fields[visibleCount].classList.remove("is-hidden");
 				visibleCount++;
 			}
 
 			if (visibleCount >= fields.length) {
 				addBtn.disabled = true;
-				addBtn.textContent = 'Maximum images added';
+				addBtn.textContent = "Maximum images added";
 			}
 		});
 	});
 
 	// AJAX Tab Switching
 
-	document.addEventListener('click', (e) => {
-		const link = e.target.closest('.js-ticket-link');
+	document.addEventListener("click", (e) => {
+		const link = e.target.closest(".js-ticket-link");
 		if (!link) return;
 
 		e.preventDefault();
 
-		console.log('Ticket clicked', link.dataset.ticketId);
+		console.log("Ticket clicked", link.dataset.ticketId);
 
 		const ticketId = link.dataset.ticketId;
-		const panel = document.querySelector('.dashboard-panel');
+		const panel = document.querySelector(".dashboard-panel");
 
-		console.log('Sending AJAX for ticket', ticketId);
+		console.log("Sending AJAX for ticket", ticketId);
 
-		panel.classList.add('is-loading');
+		panel.classList.add("is-loading");
 
 		const formData = new FormData();
-		formData.append('action', 'dx_load_ticket_panel');
-		formData.append('ticket_id', ticketId);
-		formData.append('nonce', DX_DASHBOARD.nonce);
+		formData.append("action", "dx_load_ticket_panel");
+		formData.append("ticket_id", ticketId);
+		formData.append("nonce", DX_DASHBOARD.nonce);
 
 		fetch(DX_DASHBOARD.ajax_url, {
-			method: 'POST',
-			credentials: 'same-origin',
+			method: "POST",
+			credentials: "same-origin",
 			body: formData,
 		})
 			.then((res) => res.json())
 			.then((res) => {
 				if (!res.success || !res.data.html) {
-					panel.innerHTML = '<p>Unable to load ticket.</p>';
+					panel.innerHTML = "<p>Unable to load ticket.</p>";
 					return;
 				}
 
 				panel.innerHTML = res.data.html;
-				panel.classList.remove('is-loading');
+				panel.classList.remove("is-loading");
 
 				document
-					.querySelectorAll('.ticket')
-					.forEach((t) => t.classList.remove('is-active'));
+					.querySelectorAll(".ticket")
+					.forEach((t) => t.classList.remove("is-active"));
 
-				link.closest('.ticket').classList.add('is-active');
+				link.closest(".ticket").classList.add("is-active");
 			})
 			.catch((err) => {
-				console.error('FETCH FAILED', err);
-				panel.classList.remove('is-loading');
+				console.error("FETCH FAILED", err);
+				panel.classList.remove("is-loading");
 			});
 	});
 
 	// Tab JS for Client Portal
 
-	document.addEventListener('click', (e) => {
-		const tab = e.target.closest('.dashboard-tab[data-status]');
+	document.addEventListener("click", (e) => {
+		const tab = e.target.closest(".dashboard-tab[data-status]");
 		if (!tab) return;
 
 		const status = tab.dataset.status;
 
 		document
-			.querySelectorAll('.dashboard-tab')
-			.forEach((t) => t.classList.remove('is-active'));
-		tab.classList.add('is-active');
+			.querySelectorAll(".dashboard-tab")
+			.forEach((t) => t.classList.remove("is-active"));
+		tab.classList.add("is-active");
 
-		document.querySelectorAll('.ticket').forEach((ticket) => {
+		document.querySelectorAll(".ticket").forEach((ticket) => {
 			const ticketStatus = ticket.dataset.status;
 
-			if (status === 'open') {
+			if (status === "open") {
 				ticket.style.display =
-					ticketStatus !== 'resolved' && ticketStatus !== 'cancelled'
-						? ''
-						: 'none';
+					ticketStatus !== "resolved" && ticketStatus !== "cancelled"
+						? ""
+						: "none";
 			} else {
-				ticket.style.display = ticketStatus === status ? '' : 'none';
+				ticket.style.display = ticketStatus === status ? "" : "none";
 			}
 		});
 	});
 
 	// Cancel Ticket
 
-	document.addEventListener('click', (e) => {
-		const btn = e.target.closest('.js-cancel-ticket');
+	document.addEventListener("click", (e) => {
+		const btn = e.target.closest(".js-cancel-ticket");
 		if (!btn) return;
 
 		const ticketId = btn.dataset.ticketId;
-		const input = document.getElementById('cancel-ticket-id');
+		const input = document.getElementById("cancel-ticket-id");
 
 		if (input) {
 			input.value = ticketId;
@@ -1453,44 +2979,44 @@ import * as bootstrap from 'bootstrap';
 
 	// Tab Switching using keyboard
 
-	document.addEventListener('keydown', (e) => {
-		if (!document.body.classList.contains('page-dashboard')) return;
+	document.addEventListener("keydown", (e) => {
+		if (!document.body.classList.contains("page-dashboard")) return;
 
-		const tickets = [...document.querySelectorAll('.ticket')];
-		const active = document.querySelector('.ticket.is-active');
+		const tickets = [...document.querySelectorAll(".ticket")];
+		const active = document.querySelector(".ticket.is-active");
 		if (!active) return;
 
 		let index = tickets.indexOf(active);
 
-		if (e.key === 'ArrowDown') {
+		if (e.key === "ArrowDown") {
 			e.preventDefault();
 			index = Math.min(index + 1, tickets.length - 1);
-			tickets[index].querySelector('.js-ticket-link').click();
+			tickets[index].querySelector(".js-ticket-link").click();
 		}
 
-		if (e.key === 'ArrowUp') {
+		if (e.key === "ArrowUp") {
 			e.preventDefault();
 			index = Math.max(index - 1, 0);
-			tickets[index].querySelector('.js-ticket-link').click();
+			tickets[index].querySelector(".js-ticket-link").click();
 		}
 	});
 
 	// Make the panel load once
-	document.addEventListener('DOMContentLoaded', () => {
-		const first = document.querySelector('.js-ticket-link');
+	dxOnPageReady(() => {
+		const first = document.querySelector(".js-ticket-link");
 		if (first) {
 			first.click();
 		}
 	});
 
 	// Converting Gallery into carousel
-	document.querySelectorAll('.wp-block-group.gallery').forEach((gallery) => {
-		const track = gallery.querySelector('.wp-block-gallery');
+	document.querySelectorAll(".wp-block-group.gallery").forEach((gallery) => {
+		const track = gallery.querySelector(".wp-block-gallery");
 		if (!track) return;
 
 		// Prevent double-init
 		if (track.dataset.cloned) return;
-		track.dataset.cloned = 'true';
+		track.dataset.cloned = "true";
 
 		const slides = [...track.children];
 
@@ -1501,70 +3027,70 @@ import * as bootstrap from 'bootstrap';
 
 	// Duplicating Gallery Carousel
 
-	document.querySelectorAll('.wp-block-group.gallery').forEach((gallery) => {
-		const track = gallery.querySelector('.wp-block-gallery');
+	document.querySelectorAll(".wp-block-group.gallery").forEach((gallery) => {
+		const track = gallery.querySelector(".wp-block-gallery");
 		if (!track) return;
 
 		// Prevent double backdrop creation
-		if (gallery.querySelector('.gallery-backdrop')) return;
+		if (gallery.querySelector(".gallery-backdrop")) return;
 
 		// Clone the gallery
 		const backdrop = track.cloneNode(true);
 
 		// Mark + style hook
-		backdrop.classList.add('gallery-backdrop');
-		backdrop.setAttribute('aria-hidden', 'true');
+		backdrop.classList.add("gallery-backdrop");
+		backdrop.setAttribute("aria-hidden", "true");
 
 		// Insert backdrop before the original
 		track.parentNode.insertBefore(backdrop, track);
 
 		// Ensure stacking context
-		gallery.style.position = 'relative';
+		gallery.style.position = "relative";
 	});
 
 	// Adding glowing backgrounds to all images via duplication and class additions
-	document.querySelectorAll('#main section.about figure').forEach((figure) => {
-		const img = figure.querySelector('img');
+	document.querySelectorAll("#main section.about figure").forEach((figure) => {
+		const img = figure.querySelector("img");
 		if (!img) return;
 
 		// Prevent double cloning
-		if (figure.dataset.backdrop === 'true') return;
-		figure.dataset.backdrop = 'true';
+		if (figure.dataset.backdrop === "true") return;
+		figure.dataset.backdrop = "true";
 
 		// Ensure positioning context
-		figure.style.position = 'relative';
+		figure.style.position = "relative";
 
 		// Clone image
 		const backdrop = img.cloneNode(true);
-		backdrop.classList.add('image-backdrop');
-		backdrop.setAttribute('aria-hidden', 'true');
+		backdrop.classList.add("image-backdrop");
+		backdrop.setAttribute("aria-hidden", "true");
 
 		// Insert behind original
 		figure.insertBefore(backdrop, img);
 	});
 
 	// Homepage Bootstrap Modal (for identifying client)
-	document.addEventListener('DOMContentLoaded', () => {
-		const hireBtn = document.querySelector('.js-hire-me');
+	dxOnPageReady(() => {
+		const hireBtn = document.querySelector(".js-hire-me");
 		if (!hireBtn) return;
 
-		const hireModal = new bootstrap.Modal('#hireMeModal');
-		const clientModal = new bootstrap.Modal('#clientModal');
-		const recruiterModal = new bootstrap.Modal('#recruiterModal');
+		const hireModal = new bootstrap.Modal("#hireMeModal");
+		const clientModal = new bootstrap.Modal("#clientModal");
+		const recruiterModal = new bootstrap.Modal("#recruiterModal");
 
-		hireBtn.addEventListener('click', (e) => {
+		hireBtn.addEventListener("click", (e) => {
 			e.preventDefault();
 			hireModal.show();
 		});
 
-		document.querySelector('.js-client-path')?.addEventListener('click', () => {
+		document.querySelector(".js-client-path")?.addEventListener("click", () => {
 			hireModal.hide();
 			setTimeout(() => clientModal.show(), 200);
 		});
 
 		document
-			.querySelector('.js-recruiter-path')
-			?.addEventListener('click', () => {
+			.querySelector(".js-recruiter-path")
+			?.addEventListener("click", () => {
 				hireModal.hide();
 				setTimeout(() => recruiterModal.show(), 200);
 			});
@@ -1572,8 +3098,8 @@ import * as bootstrap from 'bootstrap';
 
 	// Auto-rotation of services tabs
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const tabs = document.querySelectorAll('.services-nav .nav-link');
+	dxOnPageReady(() => {
+		const tabs = document.querySelectorAll(".services-nav .nav-link");
 		if (!tabs.length) return;
 
 		let index = 0;
@@ -1601,15 +3127,15 @@ import * as bootstrap from 'bootstrap';
 
 		// Pause on hover / interaction
 		tabs.forEach((tab, i) => {
-			tab.addEventListener('mouseenter', stopRotation);
-			tab.addEventListener('focus', stopRotation);
+			tab.addEventListener("mouseenter", stopRotation);
+			tab.addEventListener("focus", stopRotation);
 
-			tab.addEventListener('mouseleave', () => {
+			tab.addEventListener("mouseleave", () => {
 				index = i;
 				startRotation();
 			});
 
-			tab.addEventListener('click', () => {
+			tab.addEventListener("click", () => {
 				index = i;
 			});
 		});
@@ -1622,18 +3148,18 @@ import * as bootstrap from 'bootstrap';
 
 		// Duplicating Services Tab images for glowing backdrop effect
 
-		document.querySelectorAll('.service-image.foreground').forEach((img) => {
+		document.querySelectorAll(".service-image.foreground").forEach((img) => {
 			// Prevent duplicate cloning
 			if (img.dataset.hasBackdrop) return;
 
 			const clone = img.cloneNode(true);
 
-			clone.classList.remove('foreground');
-			clone.classList.add('background');
-			clone.setAttribute('aria-hidden', 'true');
-			clone.loading = 'eager';
+			clone.classList.remove("foreground");
+			clone.classList.add("background");
+			clone.setAttribute("aria-hidden", "true");
+			clone.loading = "eager";
 
-			img.dataset.hasBackdrop = 'true';
+			img.dataset.hasBackdrop = "true";
 
 			img.parentNode.insertBefore(clone, img);
 		});
@@ -1642,8 +3168,8 @@ import * as bootstrap from 'bootstrap';
 	// Projects Marquee
 
 	(() => {
-		const marquee = document.querySelector('.projects-marquee');
-		const track = marquee?.querySelector('.marquee-track');
+		const marquee = document.querySelector(".projects-marquee");
+		const track = marquee?.querySelector(".marquee-track");
 		if (!track) return;
 
 		// Duplicate content for seamless loop
@@ -1670,11 +3196,11 @@ import * as bootstrap from 'bootstrap';
 			requestAnimationFrame(animate);
 		}
 
-		marquee.addEventListener('mouseenter', () => {
+		marquee.addEventListener("mouseenter", () => {
 			speed = 0.05; // slow glide instead of stop
 		});
 
-		marquee.addEventListener('mouseleave', () => {
+		marquee.addEventListener("mouseleave", () => {
 			speed = 0.6;
 		});
 
@@ -1683,12 +3209,12 @@ import * as bootstrap from 'bootstrap';
 
 	// Previous modal back button functionality
 
-	document.addEventListener('click', (e) => {
-		const backBtn = e.target.closest('.modal-back');
+	document.addEventListener("click", (e) => {
+		const backBtn = e.target.closest(".modal-back");
 		if (!backBtn) return;
 
 		const targetModal = backBtn.dataset.backTo;
-		const currentModal = backBtn.closest('.modal');
+		const currentModal = backBtn.closest(".modal");
 
 		if (!targetModal || !currentModal) return;
 
@@ -1702,12 +3228,12 @@ import * as bootstrap from 'bootstrap';
 
 	// Make sure only mone modal is open at a time
 
-	document.addEventListener('DOMContentLoaded', () => {
+	dxOnPageReady(() => {
 		// -----------------------------
 		// Modal controller
 		// -----------------------------
 		function showModalSafely(targetSelector) {
-			const openModals = document.querySelectorAll('.modal.show');
+			const openModals = document.querySelectorAll(".modal.show");
 
 			if (openModals.length) {
 				let remaining = openModals.length;
@@ -1720,7 +3246,7 @@ import * as bootstrap from 'bootstrap';
 					}
 
 					modal.addEventListener(
-						'hidden.bs.modal',
+						"hidden.bs.modal",
 						() => {
 							remaining--;
 							if (remaining === 0) {
@@ -1742,35 +3268,35 @@ import * as bootstrap from 'bootstrap';
 			if (!modalEl) return;
 
 			// 👇 Check if this is YOUR gym modal
-			const isGymModal = modalEl.classList.contains('dx-gym-share-modal');
+			const isGymModal = modalEl.classList.contains("dx-gym-share-modal");
 
 			const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
-				backdrop: isGymModal ? false : 'static',
+				backdrop: isGymModal ? false : "static",
 				focus: true,
 			});
 
 			// 🔥 ONLY run custom backdrop logic for gym modal
 			if (isGymModal) {
-				const archiveSection = document.querySelector('[data-gyms-archive]');
+				const archiveSection = document.querySelector("[data-gyms-archive]");
 
 				if (archiveSection) {
 					archiveSection
-						.querySelectorAll('.modal-backdrop')
+						.querySelectorAll(".modal-backdrop")
 						.forEach((el) => el.remove());
 
-					const backdrop = document.createElement('div');
-					backdrop.className = 'modal-backdrop fade show';
+					const backdrop = document.createElement("div");
+					backdrop.className = "modal-backdrop fade show";
 
 					archiveSection.appendChild(backdrop);
 
-					backdrop.addEventListener('click', () => modal.hide());
+					backdrop.addEventListener("click", () => modal.hide());
 				}
 
 				modalEl.addEventListener(
-					'hidden.bs.modal',
+					"hidden.bs.modal",
 					() => {
 						document
-							.querySelectorAll('[data-gyms-archive] .modal-backdrop')
+							.querySelectorAll("[data-gyms-archive] .modal-backdrop")
 							.forEach((el) => el.remove());
 					},
 					{ once: true },
@@ -1785,20 +3311,20 @@ import * as bootstrap from 'bootstrap';
 		// -----------------------------
 
 		// Client path
-		document.querySelector('.js-client-path')?.addEventListener('click', () => {
-			showModalSafely('#clientModal');
+		document.querySelector(".js-client-path")?.addEventListener("click", () => {
+			showModalSafely("#clientModal");
 		});
 
 		// Recruiter path
 		document
-			.querySelector('.js-recruiter-path')
-			?.addEventListener('click', () => {
-				showModalSafely('#recruiterModal');
+			.querySelector(".js-recruiter-path")
+			?.addEventListener("click", () => {
+				showModalSafely("#recruiterModal");
 			});
 
 		// Back buttons (delegated)
-		document.addEventListener('click', (e) => {
-			const backBtn = e.target.closest('.modal-back');
+		document.addEventListener("click", (e) => {
+			const backBtn = e.target.closest(".modal-back");
 			if (!backBtn) return;
 
 			const target = backBtn.dataset.backTo;
@@ -1810,19 +3336,19 @@ import * as bootstrap from 'bootstrap';
 		// -----------------------------
 		// Step 3: Cleanup safety net
 		// -----------------------------
-		document.addEventListener('hidden.bs.modal', () => {
-			document.body.classList.remove('modal-open');
-			document.querySelectorAll('.modal-backdrop').forEach((b) => b.remove());
+		document.addEventListener("hidden.bs.modal", () => {
+			document.body.classList.remove("modal-open");
+			document.querySelectorAll(".modal-backdrop").forEach((b) => b.remove());
 		});
 	});
 
 	// Gallery marquee for Portfolio page
 
-	document.querySelectorAll('.gallery-marquee').forEach((marquee) => {
-		const track = marquee.querySelector('.gallery-track');
+	document.querySelectorAll(".gallery-marquee").forEach((marquee) => {
+		const track = marquee.querySelector(".gallery-track");
 		if (!track) return;
 
-		const galleries = track.querySelectorAll('.wp-block-gallery');
+		const galleries = track.querySelectorAll(".wp-block-gallery");
 		if (galleries.length < 2) return;
 
 		let position = 0;
@@ -1847,8 +3373,8 @@ import * as bootstrap from 'bootstrap';
 		}
 
 		// Pause on hover
-		marquee.addEventListener('mouseenter', () => (paused = true));
-		marquee.addEventListener('mouseleave', () => (paused = false));
+		marquee.addEventListener("mouseenter", () => (paused = true));
+		marquee.addEventListener("mouseleave", () => (paused = false));
 
 		// Pause when off-screen
 		const observer = new IntersectionObserver(
@@ -1864,13 +3390,13 @@ import * as bootstrap from 'bootstrap';
 	});
 
 	function initSmartSearchSuggestions() {
-		const suggestionsEl = document.querySelector('.search-suggestions');
-		if (!suggestionsEl || suggestionsEl.dataset.enhance !== 'true') return;
+		const suggestionsEl = document.querySelector(".search-suggestions");
+		if (!suggestionsEl || suggestionsEl.dataset.enhance !== "true") return;
 
 		const searchInput = document.querySelector('input[type="search"]');
 
 		const params = new URLSearchParams(window.location.search);
-		const query = searchInput?.value.trim() || params.get('s')?.trim();
+		const query = searchInput?.value.trim() || params.get("s")?.trim();
 
 		if (!query) return;
 
@@ -1886,13 +3412,13 @@ import * as bootstrap from 'bootstrap';
 					if (!item.title || seen.has(item.title)) return;
 					seen.add(item.title);
 
-					const li = document.createElement('li');
-					li.style.setProperty('--delay', index);
+					const li = document.createElement("li");
+					li.style.setProperty("--delay", index);
 
 					li.innerHTML = `
 						<a href="${item.url}" class="search-suggestion">
 							<span class="suggestion-type">
-								${item.subtype.replace('-', ' ')}
+								${item.subtype.replace("-", " ")}
 							</span>
 							<div class="suggestion-content">
 								<span class="suggestion-label">${item.title}</span>
@@ -1906,25 +3432,25 @@ import * as bootstrap from 'bootstrap';
 
 				if (!fragment.childNodes.length) return;
 
-				suggestionsEl.innerHTML = '';
+				suggestionsEl.innerHTML = "";
 				suggestionsEl.appendChild(fragment);
-				suggestionsEl.classList.add('is-visible');
+				suggestionsEl.classList.add("is-visible");
 			})
 			.catch(() => {
 				// silent fail
 			});
 	}
 
-	document.addEventListener('DOMContentLoaded', () => {
+	dxOnPageReady(() => {
 		// Initialise search suggestions
 		initSmartSearchSuggestions();
 
 		// Visibility listener for Homepage Hero inner content
-		const hero = document.querySelector('.cover-content');
+		const hero = document.querySelector(".cover-content");
 		if (!hero) return;
 
 		requestAnimationFrame(() => {
-			hero.classList.add('is-revealed');
+			hero.classList.add("is-revealed");
 		});
 	});
 
@@ -1933,53 +3459,56 @@ import * as bootstrap from 'bootstrap';
 	========================== */
 
 	function initStoryController() {
-		const sections = [...document.querySelectorAll('.story-section')];
-		const nav = document.querySelector('.chapter-selector');
+		const sections = [...document.querySelectorAll(".story-section")];
+		const nav = document.querySelector(".chapter-selector");
 		if (!sections.length || !nav || document.body.dataset.storyInit) return;
-		document.body.dataset.storyInit = 'true';
-		document.documentElement.classList.add('case-study-document');
+		document.body.dataset.storyInit = "true";
+		document.documentElement.classList.add("case-study-document");
 		const backgrounds = [
-			...document.querySelectorAll('.story-backgrounds .bg'),
+			...document.querySelectorAll(".story-backgrounds .bg"),
 		];
 		const links = sections.map((section, i) => {
-			const chapter = section.querySelector('.cs-chapter');
-			if (!chapter.id) chapter.id = 'chapter-' + (i + 1);
-			const li = document.createElement('li'),
-				a = document.createElement('a');
-			a.href = '#' + chapter.id;
-			a.textContent = String(i + 1).padStart(2, '0');
+			const chapter = section.querySelector(".cs-chapter");
+			if (!chapter.id) chapter.id = "chapter-" + (i + 1);
+			const li = document.createElement("li"),
+				a = document.createElement("a");
+			a.href = "#" + chapter.id;
+			a.textContent = String(i + 1).padStart(2, "0");
 			a.setAttribute(
-				'aria-label',
-				chapter.querySelector('h2')?.textContent || 'Chapter ' + (i + 1),
+				"aria-label",
+				chapter.querySelector("h2")?.textContent || "Chapter " + (i + 1),
 			);
-			a.title = a.getAttribute('aria-label');
-			const chapterName=document.createElement('span'); chapterName.className='chapter-name';chapterName.textContent=a.title;a.append(chapterName);
-			a.addEventListener('click', (event) => {
+			a.title = a.getAttribute("aria-label");
+			const chapterName = document.createElement("span");
+			chapterName.className = "chapter-name";
+			chapterName.textContent = a.title;
+			a.append(chapterName);
+			a.addEventListener("click", (event) => {
 				if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
 					return;
 				event.preventDefault();
 				section.scrollIntoView({
-					behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-						? 'instant'
-						: 'smooth',
+					behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+						? "instant"
+						: "smooth",
 				});
-				history.replaceState(null, '', a.hash);
+				history.replaceState(null, "", a.hash);
 			});
 			li.append(a);
 			return { li, a, id: chapter.id };
 		});
-		nav.querySelector('ul').replaceChildren(...links.map((link) => link.li));
+		nav.querySelector("ul").replaceChildren(...links.map((link) => link.li));
 		sections.forEach((section) =>
-			section.querySelectorAll('.cs-panel-track').forEach((track) => {
-				const hint = document.createElement('p');
-				hint.className = 'cs-card-hint';
-				hint.textContent = 'Swipe or scroll across to explore →';
+			section.querySelectorAll(".cs-panel-track").forEach((track) => {
+				const hint = document.createElement("p");
+				hint.className = "cs-card-hint";
+				hint.textContent = "Swipe or scroll across to explore →";
 				track.before(hint);
 				track.tabIndex = 0;
-				track.setAttribute('role', 'region');
+				track.setAttribute("role", "region");
 				track.setAttribute(
-					'aria-label',
-					'Chapter cards — scroll horizontally to explore',
+					"aria-label",
+					"Chapter cards — scroll horizontally to explore",
 				);
 			}),
 		);
@@ -1990,20 +3519,20 @@ import * as bootstrap from 'bootstrap';
 				const r = section.getBoundingClientRect();
 				return r.top <= innerHeight / 2 && r.bottom > innerHeight / 2;
 			});
-			document.body.classList.toggle('is-in-chapters', active >= 0);
+			document.body.classList.toggle("is-in-chapters", active >= 0);
 			nav.inert = active < 0;
-			nav.setAttribute('aria-hidden', String(active < 0));
+			nav.setAttribute("aria-hidden", String(active < 0));
 			if (active < 0) return;
 			sections.forEach((section, i) =>
-				section.classList.toggle('viewport-active', i === active),
+				section.classList.toggle("viewport-active", i === active),
 			);
 			links.forEach(({ li, a }, i) => {
-				li.classList.toggle('is-active', i === active);
-				if (i === active) a.setAttribute('aria-current', 'location');
-				else a.removeAttribute('aria-current');
+				li.classList.toggle("is-active", i === active);
+				if (i === active) a.setAttribute("aria-current", "location");
+				else a.removeAttribute("aria-current");
 			});
 			backgrounds.forEach((bg) =>
-				bg.classList.toggle('is-active', bg.dataset.bg === links[active].id),
+				bg.classList.toggle("is-active", bg.dataset.bg === links[active].id),
 			);
 		}
 		const schedule = () => {
@@ -2012,58 +3541,58 @@ import * as bootstrap from 'bootstrap';
 				requestAnimationFrame(update);
 			}
 		};
-		window.addEventListener('scroll', schedule, { passive: true });
-		window.addEventListener('resize', schedule, { passive: true });
-		window.addEventListener('pageshow', schedule);
+		window.addEventListener("scroll", schedule, { passive: true });
+		window.addEventListener("resize", schedule, { passive: true });
+		window.addEventListener("pageshow", schedule);
 		update();
 	}
 
-	document.addEventListener('DOMContentLoaded', initStoryController);
-	window.addEventListener('pageshow', initStoryController);
+	dxOnPageReady(initStoryController);
+	window.addEventListener("pageshow", initStoryController);
 
 	/* ==========================
 	PROJECTS ARCHIVE
 	========================== */
 
 	(() => {
-		const archive = document.querySelector('[data-projects-archive]');
+		const archive = document.querySelector("[data-projects-archive]");
 		if (!archive) return;
 
-		const grid = archive.querySelector('[data-projects-grid]');
-		const search = archive.querySelector('[data-project-search]');
+		const grid = archive.querySelector("[data-projects-grid]");
+		const search = archive.querySelector("[data-project-search]");
 		const filterButtons = [
-			...archive.querySelectorAll('.project-filter-buttons button'),
+			...archive.querySelectorAll(".project-filter-buttons button"),
 		];
-		const titleEl = archive.querySelector('[data-projects-state-title]');
-		const emptyEl = archive.querySelector('[data-projects-empty]');
+		const titleEl = archive.querySelector("[data-projects-state-title]");
+		const emptyEl = archive.querySelector("[data-projects-empty]");
 
 		if (!grid) return;
 
-		const allCards = [...grid.querySelectorAll('.project-card')];
+		const allCards = [...grid.querySelectorAll(".project-card")];
 
-		let activeMode = 'filter';
-		let activeValue = 'all';
+		let activeMode = "filter";
+		let activeValue = "all";
 
 		const LABELS = {
-			all: 'All',
-			design: 'Design',
-			development: 'WordPress',
-			static: 'Static',
-			shopify: 'Shopify',
-			freelance: 'Freelance',
-			commercial: 'Commercial',
+			all: "All",
+			design: "Design",
+			development: "WordPress",
+			static: "Static",
+			shopify: "Shopify",
+			freelance: "Freelance",
+			commercial: "Commercial",
 		};
 
 		const updateTitle = () => {
 			if (!titleEl) return;
-			titleEl.textContent = LABELS[activeValue] || 'All';
+			titleEl.textContent = LABELS[activeValue] || "All";
 		};
 
 		const matchesFilter = (card) => {
-			if (activeValue === 'all') return true;
+			if (activeValue === "all") return true;
 
-			if (activeMode === 'filter') {
-				const types = (card.getAttribute('data-type') || '')
+			if (activeMode === "filter") {
+				const types = (card.getAttribute("data-type") || "")
 					.split(/\s+/)
 					.map((value) => value.trim())
 					.filter(Boolean);
@@ -2071,20 +3600,20 @@ import * as bootstrap from 'bootstrap';
 				return types.includes(activeValue);
 			}
 
-			if (activeMode === 'context') {
-				return (card.getAttribute('data-context') || '') === activeValue;
+			if (activeMode === "context") {
+				return (card.getAttribute("data-context") || "") === activeValue;
 			}
 
 			return true;
 		};
 
 		const update = () => {
-			const q = (search?.value || '').trim().toLowerCase();
+			const q = (search?.value || "").trim().toLowerCase();
 
 			let visibleCount = 0;
 
 			allCards.forEach((card) => {
-				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
+				const haystack = (card.getAttribute("data-search") || "").toLowerCase();
 				const searchOk = !q || haystack.includes(q);
 				const filterOk = matchesFilter(card);
 				const show = searchOk && filterOk;
@@ -2100,38 +3629,38 @@ import * as bootstrap from 'bootstrap';
 				emptyEl.hidden = visibleCount !== 0;
 			}
 
-			const count = archive.querySelector('[data-projects-count]');
+			const count = archive.querySelector("[data-projects-count]");
 			if (count) count.textContent = String(visibleCount);
-			const countLabel = archive.querySelector('[data-projects-count-label]');
+			const countLabel = archive.querySelector("[data-projects-count-label]");
 			if (countLabel)
-				countLabel.textContent = visibleCount === 1 ? 'project' : 'projects';
+				countLabel.textContent = visibleCount === 1 ? "project" : "projects";
 			filterButtons.forEach((button) =>
 				button.setAttribute(
-					'aria-pressed',
-					String(button.classList.contains('is-active')),
+					"aria-pressed",
+					String(button.classList.contains("is-active")),
 				),
 			);
 			updateTitle();
 		};
 
 		filterButtons.forEach((button) => {
-			button.addEventListener('click', () => {
-				filterButtons.forEach((btn) => btn.classList.remove('is-active'));
-				button.classList.add('is-active');
+			button.addEventListener("click", () => {
+				filterButtons.forEach((btn) => btn.classList.remove("is-active"));
+				button.classList.add("is-active");
 
-				if (button.hasAttribute('data-filter')) {
-					activeMode = 'filter';
-					activeValue = button.getAttribute('data-filter') || 'all';
-				} else if (button.hasAttribute('data-context')) {
-					activeMode = 'context';
-					activeValue = button.getAttribute('data-context') || 'all';
+				if (button.hasAttribute("data-filter")) {
+					activeMode = "filter";
+					activeValue = button.getAttribute("data-filter") || "all";
+				} else if (button.hasAttribute("data-context")) {
+					activeMode = "context";
+					activeValue = button.getAttribute("data-context") || "all";
 				}
 
 				update();
 			});
 		});
 
-		search?.addEventListener('input', update);
+		search?.addEventListener("input", update);
 
 		update();
 	})();
@@ -2141,76 +3670,76 @@ import * as bootstrap from 'bootstrap';
 	========================== */
 
 	(() => {
-		const archive = document.querySelector('[data-gyms-archive]');
+		const archive = document.querySelector("[data-gyms-archive]");
 		if (!archive) return;
 
-		const grid = archive.querySelector('[data-gyms-grid]');
-		const search = archive.querySelector('[data-gym-search]');
-		const sortSel = archive.querySelector('[data-gym-sort]');
-		const buttons = [...archive.querySelectorAll('.gym-filter-buttons button')];
-		const viewBtns = [...archive.querySelectorAll('[data-gym-view]')];
-		const titleEl = archive.querySelector('[data-gyms-state-title]');
-		const emptyEl = archive.querySelector('[data-gyms-empty]');
-		const loadMore = archive.querySelector('[data-gyms-load-more]');
+		const grid = archive.querySelector("[data-gyms-grid]");
+		const search = archive.querySelector("[data-gym-search]");
+		const sortSel = archive.querySelector("[data-gym-sort]");
+		const buttons = [...archive.querySelectorAll(".gym-filter-buttons button")];
+		const viewBtns = [...archive.querySelectorAll("[data-gym-view]")];
+		const titleEl = archive.querySelector("[data-gyms-state-title]");
+		const emptyEl = archive.querySelector("[data-gyms-empty]");
+		const loadMore = archive.querySelector("[data-gyms-load-more]");
 
-		const compareBar = archive.querySelector('[data-gym-compare-bar]');
-		const compareCount = archive.querySelector('[data-gym-compare-count]');
+		const compareBar = archive.querySelector("[data-gym-compare-bar]");
+		const compareCount = archive.querySelector("[data-gym-compare-count]");
 		const compareSelected = archive.querySelector(
-			'[data-gym-compare-selected]',
+			"[data-gym-compare-selected]",
 		);
-		const compareTrigger = archive.querySelector('[data-gym-compare-trigger]');
-		const compareClear = archive.querySelector('[data-gym-compare-clear]');
+		const compareTrigger = archive.querySelector("[data-gym-compare-trigger]");
+		const compareClear = archive.querySelector("[data-gym-compare-clear]");
 		const compareShareButtons = [
-			...archive.querySelectorAll('[data-gym-compare-share]'),
+			...archive.querySelectorAll("[data-gym-compare-share]"),
 		];
-		const comparison = archive.querySelector('[data-gym-comparison]');
+		const comparison = archive.querySelector("[data-gym-comparison]");
 		const comparisonTable = archive.querySelector(
-			'[data-gym-comparison-table]',
+			"[data-gym-comparison-table]",
 		);
-		const comparisonClose = archive.querySelector('[data-gym-compare-close]');
-		const comparisonMapEl = archive.querySelector('[data-gym-comparison-map]');
+		const comparisonClose = archive.querySelector("[data-gym-compare-close]");
+		const comparisonMapEl = archive.querySelector("[data-gym-comparison-map]");
 
-		const sharePanel = archive.querySelector('[data-gym-share-panel]');
-		const shareInput = archive.querySelector('[data-gym-share-input]');
-		const shareStatus = archive.querySelector('[data-gym-share-status]');
-		const shareCopyBtn = archive.querySelector('[data-gym-share-copy]');
-		const shareCloseBtn = archive.querySelector('[data-gym-share-close]');
+		const sharePanel = archive.querySelector("[data-gym-share-panel]");
+		const shareInput = archive.querySelector("[data-gym-share-input]");
+		const shareStatus = archive.querySelector("[data-gym-share-status]");
+		const shareCopyBtn = archive.querySelector("[data-gym-share-copy]");
+		const shareCloseBtn = archive.querySelector("[data-gym-share-close]");
 
 		if (!grid) return;
 
-		const allCards = [...grid.querySelectorAll('[data-gym-card]')];
+		const allCards = [...grid.querySelectorAll("[data-gym-card]")];
 		const league = initGymLeague(archive, allCards);
 
 		const LABELS = {
-			all: 'All',
-			davidlloyds: 'David Lloyd',
-			puregym: 'PureGym',
-			fitnessfirst: 'Fitness First',
-			gymbox: 'Gymbox',
-			virginactive: 'Virgin Active',
-			bodyworks: 'Bodyworks Gym',
-			thegymgroup: 'The Gym Group',
-			other: 'Other',
+			all: "All",
+			davidlloyds: "David Lloyd",
+			puregym: "PureGym",
+			fitnessfirst: "Fitness First",
+			gymbox: "Gymbox",
+			virginactive: "Virgin Active",
+			bodyworks: "Bodyworks Gym",
+			thegymgroup: "The Gym Group",
+			other: "Other",
 		};
 
 		const assessedAmenities = new Set();
-		const amenities = document.createElement('fieldset');
-		amenities.className = 'league-amenity-filters';
-		const amenityLegend = document.createElement('legend');
-		amenityLegend.textContent = 'Assessed amenities';
+		const amenities = document.createElement("fieldset");
+		amenities.className = "league-amenity-filters";
+		const amenityLegend = document.createElement("legend");
+		amenityLegend.textContent = "Assessed amenities";
 		amenities.append(amenityLegend);
 		const amenityOptions = [
-			['gymScore', 'Gym'],
-			['swimScore', 'Swimming & Wetside Facilities'],
-			['cafeScore', 'Café & Work Area'],
-			['spaScore', 'Spa Retreat / Sauna Facilities'],
+			["gymScore", "Gym"],
+			["swimScore", "Swimming & Wetside Facilities"],
+			["cafeScore", "Café & Work Area"],
+			["spaScore", "Spa Retreat / Sauna Facilities"],
 		];
 		amenityOptions.forEach(([key, label]) => {
-			const option = document.createElement('label');
-			const input = document.createElement('input');
-			input.type = 'checkbox';
+			const option = document.createElement("label");
+			const input = document.createElement("input");
+			input.type = "checkbox";
 			input.value = key;
-			input.addEventListener('change', () => {
+			input.addEventListener("change", () => {
 				if (input.checked) assessedAmenities.add(key);
 				else assessedAmenities.delete(key);
 				visibleCount = 10;
@@ -2219,78 +3748,78 @@ import * as bootstrap from 'bootstrap';
 			option.append(input, document.createTextNode(label));
 			amenities.append(option);
 		});
-		const toolbar = archive.querySelector('.filter-inputs');
-		const filterDisclosure = document.createElement('details');
-		filterDisclosure.className = 'league-filter-disclosure';
-		const filterSummary = document.createElement('summary');
-		filterSummary.textContent = 'Filters';
-		const filterPanel = document.createElement('div');
-		filterPanel.className = 'league-filter-panel';
-		const chainTitle = document.createElement('p');
-		chainTitle.textContent = 'Gym chains';
-		const resetFilters = document.createElement('button');
-		resetFilters.type = 'button';
-		resetFilters.textContent = 'Clear filters';
-		resetFilters.addEventListener('click', () => {
+		const toolbar = archive.querySelector(".filter-inputs");
+		const filterDisclosure = document.createElement("details");
+		filterDisclosure.className = "league-filter-disclosure";
+		const filterSummary = document.createElement("summary");
+		filterSummary.textContent = "Filters";
+		const filterPanel = document.createElement("div");
+		filterPanel.className = "league-filter-panel";
+		const chainTitle = document.createElement("p");
+		chainTitle.textContent = "Gym chains";
+		const resetFilters = document.createElement("button");
+		resetFilters.type = "button";
+		resetFilters.textContent = "Clear filters";
+		resetFilters.addEventListener("click", () => {
 			assessedAmenities.clear();
-			amenities.querySelectorAll('input').forEach((input) => {
+			amenities.querySelectorAll("input").forEach((input) => {
 				input.checked = false;
 			});
-			buttons.find((button) => button.dataset.chain === 'all')?.click();
+			buttons.find((button) => button.dataset.chain === "all")?.click();
 		});
 		filterPanel.append(
 			chainTitle,
-			archive.querySelector('.gym-filter-buttons'),
+			archive.querySelector(".gym-filter-buttons"),
 			amenities,
 			resetFilters,
 		);
 		filterDisclosure.append(filterSummary, filterPanel);
 		toolbar.append(filterDisclosure);
-		filterDisclosure.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape') {
+		filterDisclosure.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") {
 				filterDisclosure.open = false;
 				filterSummary.focus();
 			}
 		});
-		document.addEventListener('click', (event) => {
+		document.addEventListener("click", (event) => {
 			if (!filterDisclosure.contains(event.target))
 				filterDisclosure.open = false;
 		});
 
 		let activeChain =
-			buttons.find((btn) => btn.classList.contains('is-active'))?.dataset
-				.chain || 'all';
+			buttons.find((btn) => btn.classList.contains("is-active"))?.dataset
+				.chain || "all";
 		let visibleCount = 10;
 		let selectedGyms = [];
 		let compareMap = null;
 		let compareMarkers = [];
 
 		const getBranch = (el) =>
-			(el.getAttribute('data-branch') || '').trim().toLowerCase();
-		const getOverall = (el) => parseFloat(el.getAttribute('data-overall')) || 0;
+			(el.getAttribute("data-branch") || "").trim().toLowerCase();
+		const getOverall = (el) => parseFloat(el.getAttribute("data-overall")) || 0;
 		const getVisitedTs = (el) =>
-			parseInt(el.getAttribute('data-visited-ts'), 10) || 0;
+			parseInt(el.getAttribute("data-visited-ts"), 10) || 0;
 
 		const updateTitle = () => {
 			if (!titleEl) return;
-			const label = LABELS[activeChain] || 'All';
-			const signature = `${label}|${search?.value || ''}|${[
+			const label = LABELS[activeChain] || "All";
+			const signature = `${label}|${search?.value || ""}|${[
 				...assessedAmenities,
-			].join(',')}`;
+			].join(",")}`;
 			if (titleEl.dataset.filterSignature !== signature) {
 				titleEl.textContent = label;
 				titleEl.dataset.filterSignature = signature;
-				if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 					titleEl.animate(
-						[{ backgroundSize: '0% 2px' }, { backgroundSize: '100% 2px' }],
-						{ duration: 450, easing: 'ease-out' },
+						[{ backgroundSize: "0% 2px" }, { backgroundSize: "100% 2px" }],
+						{ duration: 450, easing: "ease-out" },
 					);
 				}
 			}
 		};
 
 		const sortCards = (cards) => {
-			const mode = sortSel?.value || 'overall_desc';
+			const mode = sortSel?.value || "overall_desc";
 			const sorted = [...cards];
 
 			sorted.sort((a, b) => {
@@ -2302,17 +3831,17 @@ import * as bootstrap from 'bootstrap';
 				const bDate = getVisitedTs(b);
 
 				switch (mode) {
-					case 'overall_desc':
+					case "overall_desc":
 						return bOverall - aOverall || aBranch.localeCompare(bBranch);
-					case 'overall_asc':
+					case "overall_asc":
 						return aOverall - bOverall || aBranch.localeCompare(bBranch);
-					case 'date_desc':
+					case "date_desc":
 						return bDate - aDate || aBranch.localeCompare(bBranch);
-					case 'date_asc':
+					case "date_asc":
 						return aDate - bDate || aBranch.localeCompare(bBranch);
-					case 'za':
+					case "za":
 						return bBranch.localeCompare(aBranch);
-					case 'az':
+					case "az":
 					default:
 						return aBranch.localeCompare(bBranch);
 				}
@@ -2322,34 +3851,34 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		const getCardData = (card) => {
-			if (!card || typeof card.getAttribute !== 'function') {
+			if (!card || typeof card.getAttribute !== "function") {
 				return null;
 			}
 
 			return {
-				id: card.getAttribute('data-gym-id') || '',
-				branch: card.getAttribute('data-branch-label') || '',
-				chain: card.getAttribute('data-chain-label') || '',
-				link: card.getAttribute('data-link') || '',
-				visited: card.getAttribute('data-visited-label') || '—',
-				overall: parseFloat(card.getAttribute('data-overall')),
-				overallLabel: card.getAttribute('data-overall-label') || 'No rating',
-				membership: card.getAttribute('data-membership') || '—',
-				lat: parseFloat(card.getAttribute('data-lat')),
-				lng: parseFloat(card.getAttribute('data-lng')),
+				id: card.getAttribute("data-gym-id") || "",
+				branch: card.getAttribute("data-branch-label") || "",
+				chain: card.getAttribute("data-chain-label") || "",
+				link: card.getAttribute("data-link") || "",
+				visited: card.getAttribute("data-visited-label") || "—",
+				overall: parseFloat(card.getAttribute("data-overall")),
+				overallLabel: card.getAttribute("data-overall-label") || "No rating",
+				membership: card.getAttribute("data-membership") || "—",
+				lat: parseFloat(card.getAttribute("data-lat")),
+				lng: parseFloat(card.getAttribute("data-lng")),
 				scores: {
-					gym: card.getAttribute('data-gym-score') || '',
-					swim: card.getAttribute('data-swim-score') || '',
-					spa: card.getAttribute('data-spa-score') || '',
-					cafe: card.getAttribute('data-cafe-score') || '',
-					clean: card.getAttribute('data-clean-score') || '',
-					parking: card.getAttribute('data-parking-score') || '',
+					gym: card.getAttribute("data-gym-score") || "",
+					swim: card.getAttribute("data-swim-score") || "",
+					spa: card.getAttribute("data-spa-score") || "",
+					cafe: card.getAttribute("data-cafe-score") || "",
+					clean: card.getAttribute("data-clean-score") || "",
+					parking: card.getAttribute("data-parking-score") || "",
 				},
 			};
 		};
 
 		const scoreLabel = (value) => {
-			if (value === '' || value === null || value === undefined) return '—';
+			if (value === "" || value === null || value === undefined) return "—";
 			return `${value}/10`;
 		};
 
@@ -2361,10 +3890,12 @@ import * as bootstrap from 'bootstrap';
 				const value = getter(item);
 
 				if (
-					value === '' ||
+					value === "" ||
 					value === null ||
 					value === undefined ||
-					Number.isNaN(Number(value))
+					!Number.isFinite(Number(value)) ||
+					Number(value) < 0 ||
+					Number(value) > 10
 				) {
 					return;
 				}
@@ -2386,9 +3917,9 @@ import * as bootstrap from 'bootstrap';
 		const getShareUrl = () => {
 			const url = new URL(window.location.href);
 			if (selectedGyms.length) {
-				url.searchParams.set('compare', selectedGyms.join(','));
+				url.searchParams.set("compare", selectedGyms.join(","));
 			} else {
-				url.searchParams.delete('compare');
+				url.searchParams.delete("compare");
 			}
 			return url.toString();
 		};
@@ -2396,11 +3927,11 @@ import * as bootstrap from 'bootstrap';
 		const syncShareUrl = () => {
 			const url = new URL(window.location.href);
 			if (selectedGyms.length) {
-				url.searchParams.set('compare', selectedGyms.join(','));
+				url.searchParams.set("compare", selectedGyms.join(","));
 			} else {
-				url.searchParams.delete('compare');
+				url.searchParams.delete("compare");
 			}
-			window.history.replaceState({}, '', url.toString());
+			window.history.replaceState({}, "", url.toString());
 		};
 
 		const openSharePanel = () => {
@@ -2414,7 +3945,7 @@ import * as bootstrap from 'bootstrap';
 			}
 
 			if (shareStatus) {
-				shareStatus.textContent = '';
+				shareStatus.textContent = "";
 			}
 
 			sharePanel.hidden = false;
@@ -2425,7 +3956,7 @@ import * as bootstrap from 'bootstrap';
 			sharePanel.hidden = true;
 
 			if (shareStatus) {
-				shareStatus.textContent = '';
+				shareStatus.textContent = "";
 			}
 		};
 
@@ -2440,24 +3971,24 @@ import * as bootstrap from 'bootstrap';
 			const resetButtonState = () => {
 				window.setTimeout(() => {
 					shareCopyBtn.textContent = originalText;
-					shareCopyBtn.classList.remove('is-success', 'is-error');
+					shareCopyBtn.classList.remove("is-success", "is-error");
 				}, 2000);
 			};
 
 			const setButtonState = (text, className) => {
 				shareCopyBtn.textContent = text;
-				shareCopyBtn.classList.remove('is-success', 'is-error');
+				shareCopyBtn.classList.remove("is-success", "is-error");
 				shareCopyBtn.classList.add(className);
 				resetButtonState();
 			};
 
 			const fallbackCopy = () => {
-				const tempInput = document.createElement('textarea');
+				const tempInput = document.createElement("textarea");
 				tempInput.value = url;
-				tempInput.setAttribute('readonly', 'readonly');
-				tempInput.style.position = 'fixed';
-				tempInput.style.top = '-9999px';
-				tempInput.style.left = '-9999px';
+				tempInput.setAttribute("readonly", "readonly");
+				tempInput.style.position = "fixed";
+				tempInput.style.top = "-9999px";
+				tempInput.style.left = "-9999px";
 				document.body.appendChild(tempInput);
 				tempInput.focus();
 				tempInput.select();
@@ -2465,7 +3996,7 @@ import * as bootstrap from 'bootstrap';
 				let copied = false;
 
 				try {
-					copied = document.execCommand('copy');
+					copied = document.execCommand("copy");
 				} catch (error) {
 					copied = false;
 				}
@@ -2473,24 +4004,24 @@ import * as bootstrap from 'bootstrap';
 				document.body.removeChild(tempInput);
 
 				if (copied) {
-					setButtonState('Link copied', 'is-success');
+					setButtonState("Link copied", "is-success");
 				} else {
-					setButtonState('Copy failed', 'is-error');
+					setButtonState("Copy failed", "is-error");
 					shareInput?.focus();
 					shareInput?.select();
 				}
 			};
 
 			if (
-				typeof navigator !== 'undefined' &&
+				typeof navigator !== "undefined" &&
 				navigator.clipboard &&
-				typeof navigator.clipboard.writeText === 'function' &&
+				typeof navigator.clipboard.writeText === "function" &&
 				window.isSecureContext
 			) {
 				navigator.clipboard
 					.writeText(url)
 					.then(() => {
-						setButtonState('Link copied', 'is-success');
+						setButtonState("Link copied", "is-success");
 					})
 					.catch(() => {
 						fallbackCopy();
@@ -2502,7 +4033,7 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		const initComparisonMap = () => {
-			if (!comparisonMapEl || typeof L === 'undefined') return null;
+			if (!comparisonMapEl || typeof L === "undefined") return null;
 			if (compareMap) return compareMap;
 
 			compareMap = L.map(comparisonMapEl, {
@@ -2511,10 +4042,10 @@ import * as bootstrap from 'bootstrap';
 			});
 
 			L.tileLayer(
-				'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9',
+				"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 				{
-					attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-					subdomains: 'abcd',
+					attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+					subdomains: "abcd",
 					maxZoom: 20,
 				},
 			).addTo(compareMap);
@@ -2531,7 +4062,7 @@ import * as bootstrap from 'bootstrap';
 
 			comparisonMapEl.hidden = true;
 			comparisonMapEl.parentElement.hidden = true;
-			if (!mappable.length || typeof L === 'undefined') return;
+			if (!mappable.length || typeof L === "undefined") return;
 
 			const map = initComparisonMap();
 			if (!map) return;
@@ -2551,7 +4082,7 @@ import * as bootstrap from 'bootstrap';
 					.addTo(map)
 					.bindPopup(
 						`<strong>${item.branch}</strong><br>${item.chain}${
-							item.overallLabel ? `<br>${item.overallLabel}` : ''
+							item.overallLabel ? `<br>${item.overallLabel}` : ""
 						}`,
 					);
 
@@ -2573,14 +4104,14 @@ import * as bootstrap from 'bootstrap';
 
 			if (selectedGyms.length < 2) {
 				comparison.hidden = true;
-				comparisonTable.innerHTML = '';
+				comparisonTable.innerHTML = "";
 				if (comparisonMapEl) comparisonMapEl.hidden = true;
 				return;
 			}
 
 			const items = selectedGyms
 				.map((id) =>
-					allCards.find((card) => card.getAttribute('data-gym-id') === id),
+					allCards.find((card) => card.getAttribute("data-gym-id") === id),
 				)
 				.filter(Boolean)
 				.map(getCardData)
@@ -2588,63 +4119,63 @@ import * as bootstrap from 'bootstrap';
 
 			if (items.length < 2) {
 				comparison.hidden = true;
-				comparisonTable.innerHTML = '';
+				comparisonTable.innerHTML = "";
 				if (comparisonMapEl) comparisonMapEl.hidden = true;
 				return;
 			}
 
 			const rows = [
 				{
-					label: 'Overall',
+					label: "Overall",
 					format: (item) => item.overallLabel,
 					winners: getWinnerIdsForMetric(items, (item) => item.overall),
 				},
 				{
-					label: 'Gym',
+					label: "Gym",
 					format: (item) => scoreLabel(item.scores.gym),
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.gym),
 				},
 				{
-					label: 'Swimming & Wetside Facilities',
+					label: "Swimming & Wetside Facilities",
 					format: (item) => scoreLabel(item.scores.swim),
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.swim),
 				},
 				{
-					label: 'Spa Retreat',
+					label: "Spa Retreat / Sauna Facilities",
 					format: (item) =>
 						`${
-							item.chain.toLowerCase() === 'gymbox' ? 'Sauna Facilities: ' : ''
+							item.chain.toLowerCase() === "gymbox" ? "Sauna Facilities: " : ""
 						}${scoreLabel(item.scores.spa)}`,
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.spa),
 				},
 				{
-					label: 'Café & Work Area',
+					label: "Café & Work Area",
 					format: (item) =>
 						`${
-							item.chain.toLowerCase().startsWith('david lloyd')
-								? 'Clubroom: '
-								: ''
+							item.chain.toLowerCase().startsWith("david lloyd")
+								? "Clubroom: "
+								: ""
 						}${scoreLabel(item.scores.cafe)}`,
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.cafe),
 				},
 				{
-					label: 'Cleanliness & Maintenance',
+					label: "Cleanliness & Maintenance",
 					format: (item) => scoreLabel(item.scores.clean),
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.clean),
 				},
 				{
-					label: 'Parking',
+					label: "Parking",
 					format: (item) => scoreLabel(item.scores.parking),
 					winners: getWinnerIdsForMetric(items, (item) => item.scores.parking),
 				},
 				{
-					label: 'Membership',
-					format: (item) => item.membership || '—',
+					label: "Membership",
+					format: (item) => item.membership || "—",
 					winners: [],
 				},
 				{
-					label: 'Visited',
-					format: (item) => item.visited || '—',
+					label: "Visited",
+					format: (item) => item.visited || "—",
 					winners: [],
 				},
 			];
@@ -2652,7 +4183,7 @@ import * as bootstrap from 'bootstrap';
 			comparisonTable.innerHTML = `
 				<div class="dx-gym-comparison__table" role="table" aria-label="Gym comparison">
 					<div role="row" class="dx-gym-comparison__row dx-gym-comparison__row--head ${
-						items.length === 2 ? 'is-two-up' : ''
+						items.length === 2 ? "is-two-up" : ""
 					}">
 						<div role="columnheader" class="dx-gym-comparison__metric">Metric</div>
 						${items
@@ -2664,30 +4195,30 @@ import * as bootstrap from 'bootstrap';
 							</div>
 						`,
 							)
-							.join('')}
+							.join("")}
 					</div>
 					${rows
 						.map(
 							(row) => `
 						<div role="row" class="dx-gym-comparison__row ${
-							items.length === 2 ? 'is-two-up' : ''
+							items.length === 2 ? "is-two-up" : ""
 						}">
 							<div role="rowheader" class="dx-gym-comparison__metric">${row.label}</div>
 							${items
 								.map(
 									(item) => `
 								<div role="cell" class="dx-gym-comparison__cell ${
-									row.winners.includes(item.id) ? 'is-winner' : ''
+									row.winners.includes(item.id) ? "is-winner" : ""
 								}">
 									${row.format(item)}
 								</div>
 							`,
 								)
-								.join('')}
+								.join("")}
 						</div>
 					`,
 						)
-						.join('')}
+						.join("")}
 				</div>
 			`;
 
@@ -2708,7 +4239,7 @@ import * as bootstrap from 'bootstrap';
 			const hasEnoughToCompare = selectedGyms.length >= 2;
 
 			compareBar.hidden = selectedGyms.length === 0;
-			compareBar.classList.toggle('is-visible', selectedGyms.length > 0);
+			compareBar.classList.toggle("is-visible", selectedGyms.length > 0);
 			compareCount.textContent = String(selectedGyms.length);
 			compareTrigger.disabled = !hasEnoughToCompare;
 			compareClear.disabled = selectedGyms.length === 0;
@@ -2720,33 +4251,33 @@ import * as bootstrap from 'bootstrap';
 			compareSelected.innerHTML = selectedGyms
 				.map((id) => {
 					const card = allCards.find(
-						(item) => item.getAttribute('data-gym-id') === id,
+						(item) => item.getAttribute("data-gym-id") === id,
 					);
-					const label = card?.getAttribute('data-branch-label') || 'Gym';
-					const chip = document.createElement('button');
-					chip.type = 'button';
-					chip.className = 'dx-gym-compare-chip';
+					const label = card?.getAttribute("data-branch-label") || "Gym";
+					const chip = document.createElement("button");
+					chip.type = "button";
+					chip.className = "dx-gym-compare-chip";
 					chip.dataset.removeGym = id;
-					chip.textContent = label + ' ×';
+					chip.textContent = label + " ×";
 					chip.setAttribute(
-						'aria-label',
-						'Remove ' + label + ' from comparison',
+						"aria-label",
+						"Remove " + label + " from comparison",
 					);
 					return chip.outerHTML;
 				})
-				.join('');
+				.join("");
 
 			allCards.forEach((card) => {
-				const id = card.getAttribute('data-gym-id');
-				const toggle = card.querySelector('[data-gym-compare-toggle]');
-				if (!toggle) return;
+				const id = card.getAttribute("data-gym-id");
+				const toggle = card.querySelector("[data-gym-compare-toggle]");
+				if (!toggle || toggle.dataset.bound) return;
 
 				const isSelected = selectedGyms.includes(id);
 				const shouldDisable = atLimit && !isSelected;
 
-				toggle.classList.toggle('is-active', isSelected);
-				toggle.classList.toggle('is-disabled', shouldDisable);
-				toggle.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+				toggle.classList.toggle("is-active", isSelected);
+				toggle.classList.toggle("is-disabled", shouldDisable);
+				toggle.setAttribute("aria-pressed", isSelected ? "true" : "false");
 				toggle.disabled = shouldDisable;
 			});
 
@@ -2761,7 +4292,7 @@ import * as bootstrap from 'bootstrap';
 		const moreObserver = new IntersectionObserver(
 			(entries) => {
 				if (
-					archive.closest('.dx-fitness')?.dataset.sectionNavigating === 'true'
+					archive.closest(".dx-fitness")?.dataset.sectionNavigating === "true"
 				)
 					return;
 				if (
@@ -2775,33 +4306,33 @@ import * as bootstrap from 'bootstrap';
 				visibleCount += 10;
 				update();
 			},
-			{ rootMargin: '0px 0px 180px 0px', threshold: 0 },
+			{ rootMargin: "0px 0px 180px 0px", threshold: 0 },
 		);
 
 		const update = () => {
 			const activeFilters =
-				assessedAmenities.size + (activeChain === 'all' ? 0 : 1);
+				assessedAmenities.size + (activeChain === "all" ? 0 : 1);
 			filterSummary.textContent = activeFilters
 				? `Filters (${activeFilters})`
-				: 'Filters';
-			const q = (search?.value || '').trim().toLowerCase();
+				: "Filters";
+			const q = (search?.value || "").trim().toLowerCase();
 
 			const eligible = allCards.filter((card) => {
-				const chain = card.getAttribute('data-chain') || 'unknown';
+				const chain = card.getAttribute("data-chain") || "unknown";
 				const chainOk =
-					activeChain === 'all' ||
+					activeChain === "all" ||
 					chain === activeChain ||
-					(activeChain === 'other' &&
+					(activeChain === "other" &&
 						!Object.prototype.hasOwnProperty.call(LABELS, chain));
 
-				const haystack = (card.getAttribute('data-search') || '').toLowerCase();
+				const haystack = (card.getAttribute("data-search") || "").toLowerCase();
 				const searchOk = !q || haystack.includes(q);
 
 				const amenitiesOk = [...assessedAmenities].every((key) => {
 					const value = card.dataset[key];
 					return (
 						value !== undefined &&
-						value.trim() !== '' &&
+						value.trim() !== "" &&
 						Number.isFinite(Number(value)) &&
 						Number(value) >= 0
 					);
@@ -2837,62 +4368,62 @@ import * as bootstrap from 'bootstrap';
 		};
 
 		buttons.forEach((btn) => {
-			btn.addEventListener('click', () => {
+			btn.addEventListener("click", () => {
 				buttons.forEach((b) => {
-					b.classList.remove('is-active');
-					b.setAttribute('aria-pressed', 'false');
+					b.classList.remove("is-active");
+					b.setAttribute("aria-pressed", "false");
 				});
-				btn.setAttribute('aria-pressed', 'true');
-				btn.classList.add('is-active');
+				btn.setAttribute("aria-pressed", "true");
+				btn.classList.add("is-active");
 
-				activeChain = btn.dataset.chain || 'all';
+				activeChain = btn.dataset.chain || "all";
 				visibleCount = 10;
 				update();
 			});
 		});
 
-		archive.addEventListener('league-view-change', update);
-		search?.addEventListener('input', () => {
+		archive.addEventListener("league-view-change", update);
+		search?.addEventListener("input", () => {
 			visibleCount = 10;
 			update();
 		});
 
-		sortSel?.addEventListener('change', () => {
+		sortSel?.addEventListener("change", () => {
 			visibleCount = 10;
 			update();
 		});
 
 		viewBtns.forEach((btn) => {
-			btn.addEventListener('click', () => {
-				viewBtns.forEach((b) => b.classList.remove('is-active'));
-				btn.classList.add('is-active');
+			btn.addEventListener("click", () => {
+				viewBtns.forEach((b) => b.classList.remove("is-active"));
+				btn.classList.add("is-active");
 
-				const view = btn.getAttribute('data-gym-view') || 'cards';
-				archive.setAttribute('data-view', view);
+				const view = btn.getAttribute("data-gym-view") || "cards";
+				archive.setAttribute("data-view", view);
 			});
 		});
 
-		grid?.addEventListener('click', (e) => {
-			const toggle = e.target.closest('[data-notes-toggle]');
-			if (!toggle) return;
+		grid?.addEventListener("click", (e) => {
+			const toggle = e.target.closest("[data-notes-toggle]");
+			if (!toggle || toggle.dataset.bound) return;
 
-			const card = toggle.closest('[data-gym-card]');
-			const panel = card?.querySelector('[data-notes-panel]');
+			const card = toggle.closest("[data-gym-card]");
+			const panel = card?.querySelector("[data-notes-panel]");
 			if (!card || !panel) return;
 
-			const isOpen = card.classList.contains('is-notes-open');
-			card.classList.toggle('is-notes-open', !isOpen);
-			toggle.setAttribute('aria-expanded', String(!isOpen));
+			const isOpen = card.classList.contains("is-notes-open");
+			card.classList.toggle("is-notes-open", !isOpen);
+			toggle.setAttribute("aria-expanded", String(!isOpen));
 		});
 
-		grid?.addEventListener('click', (e) => {
-			const compareBtn = e.target.closest('[data-gym-compare-toggle]');
+		grid?.addEventListener("click", (e) => {
+			const compareBtn = e.target.closest("[data-gym-compare-toggle]");
 			if (!compareBtn || compareBtn.disabled) return;
 
-			const card = compareBtn.closest('[data-gym-card]');
+			const card = compareBtn.closest("[data-gym-card]");
 			if (!card) return;
 
-			const id = card.getAttribute('data-gym-id');
+			const id = card.getAttribute("data-gym-id");
 			if (!id) return;
 
 			if (selectedGyms.includes(id)) {
@@ -2906,14 +4437,14 @@ import * as bootstrap from 'bootstrap';
 			renderComparison();
 		});
 
-		compareTrigger?.addEventListener('click', () => {
+		compareTrigger?.addEventListener("click", () => {
 			renderComparison();
-			comparison?.removeAttribute('hidden');
-			comparison?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			comparison?.removeAttribute("hidden");
+			comparison?.scrollIntoView({ behavior: "smooth", block: "start" });
 		});
 
-		compareSelected?.addEventListener('click', (event) => {
-			const button = event.target.closest('[data-remove-gym]');
+		compareSelected?.addEventListener("click", (event) => {
+			const button = event.target.closest("[data-remove-gym]");
 			if (!button) return;
 			selectedGyms = selectedGyms.filter(
 				(id) => id !== button.dataset.removeGym,
@@ -2922,56 +4453,56 @@ import * as bootstrap from 'bootstrap';
 			renderComparison();
 		});
 
-		compareClear?.addEventListener('click', () => {
+		compareClear?.addEventListener("click", () => {
 			selectedGyms = [];
 			updateCompareBar();
 			renderComparison();
 		});
 
 		compareShareButtons.forEach((btn) => {
-			btn.addEventListener('click', openSharePanel);
+			btn.addEventListener("click", openSharePanel);
 		});
 
-		shareCopyBtn?.addEventListener('click', copyShareLink);
-		shareCloseBtn?.addEventListener('click', closeSharePanel);
+		shareCopyBtn?.addEventListener("click", copyShareLink);
+		shareCloseBtn?.addEventListener("click", closeSharePanel);
 
-		comparisonClose?.addEventListener('click', () => {
+		comparisonClose?.addEventListener("click", () => {
 			if (comparison) {
 				comparison.hidden = true;
 			}
 		});
 
 		const compareParam = new URLSearchParams(window.location.search).get(
-			'compare',
+			"compare",
 		);
 		if (compareParam) {
 			selectedGyms = compareParam
-				.split(',')
+				.split(",")
 				.map((id) => id.trim())
 				.filter((id) =>
-					allCards.some((card) => card.getAttribute('data-gym-id') === id),
+					allCards.some((card) => card.getAttribute("data-gym-id") === id),
 				)
 				.slice(0, 3);
 
 			if (selectedGyms.length >= 2) {
 				renderComparison();
-				comparison?.removeAttribute('hidden');
+				comparison?.removeAttribute("hidden");
 
 				window.setTimeout(() => {
 					comparison?.scrollIntoView({
-						behavior: 'smooth',
-						block: 'start',
+						behavior: "smooth",
+						block: "start",
 					});
 				}, 100);
 			}
 		}
 
 		const initialViewBtn = viewBtns.find((btn) =>
-			btn.classList.contains('is-active'),
+			btn.classList.contains("is-active"),
 		);
 		archive.setAttribute(
-			'data-view',
-			initialViewBtn?.getAttribute('data-gym-view') || 'cards',
+			"data-view",
+			initialViewBtn?.getAttribute("data-gym-view") || "cards",
 		);
 
 		const animatedCards = new WeakSet();
@@ -2979,15 +4510,15 @@ import * as bootstrap from 'bootstrap';
 		const animateCardBars = (card) => {
 			if (!card || animatedCards.has(card)) return;
 
-			const bars = [...card.querySelectorAll('.dx-score-bar span')];
+			const bars = [...card.querySelectorAll(".dx-score-bar span")];
 			if (!bars.length) return;
 
 			animatedCards.add(card);
 
 			bars.forEach((bar, index) => {
 				const pct =
-					getComputedStyle(bar).getPropertyValue('--pct').trim() || '0';
-				bar.style.transform = 'scaleX(0)';
+					getComputedStyle(bar).getPropertyValue("--pct").trim() || "0";
+				bar.style.transform = "scaleX(0)";
 
 				window.setTimeout(() => {
 					bar.style.transform = `scaleX(${pct})`;
@@ -3006,7 +4537,7 @@ import * as bootstrap from 'bootstrap';
 			},
 			{
 				threshold: 0.2,
-				rootMargin: '0px 0px -10% 0px',
+				rootMargin: "0px 0px -10% 0px",
 			},
 		);
 
@@ -3017,9 +4548,9 @@ import * as bootstrap from 'bootstrap';
 		updateCompareBar();
 		renderComparison();
 		update();
-		archive.classList.remove('is-loading');
-		archive.removeAttribute('aria-busy');
-		archive.querySelector('.league-loading')?.remove();
+		archive.classList.remove("is-loading");
+		archive.removeAttribute("aria-busy");
+		archive.querySelector(".league-loading")?.remove();
 	})();
 
 	/* ==========================
@@ -3028,26 +4559,26 @@ import * as bootstrap from 'bootstrap';
 
 	// The league can be taller than the viewport; do not gate it on scroll ratios.
 	document
-		.querySelector('[data-gyms-archive]')
-		?.closest('section')
-		?.classList.add('viewport-active');
+		.querySelector("[data-gyms-archive]")
+		?.closest("section")
+		?.classList.add("viewport-active");
 
 	/* ==========================
 	BUS DIARY
 	========================== */
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const busEntry = document.querySelector('.bus-diary-entry');
+	dxOnPageReady(() => {
+		const busEntry = document.querySelector(".bus-diary-entry");
 		if (!busEntry) return;
 
-		const mapEl = busEntry.querySelector('[data-bus-map]');
-		const dock = busEntry.querySelector('[data-bus-dock]');
-		const paneStage = busEntry.querySelector('[data-bus-pane-stage]');
+		const mapEl = busEntry.querySelector("[data-bus-map]");
+		const dock = busEntry.querySelector("[data-bus-dock]");
+		const paneStage = busEntry.querySelector("[data-bus-pane-stage]");
 		const toggleButtons = dock
-			? [...dock.querySelectorAll('[data-view-toggle]')]
+			? [...dock.querySelectorAll("[data-view-toggle]")]
 			: [];
 		const paneViews = paneStage
-			? [...paneStage.querySelectorAll('.bus-pane-view[data-pane-view]')]
+			? [...paneStage.querySelectorAll(".bus-pane-view[data-pane-view]")]
 			: [];
 
 		/* ==========================
@@ -3055,17 +4586,17 @@ import * as bootstrap from 'bootstrap';
 		========================== */
 
 		if (mapEl) {
-			const route = mapEl.dataset.route || '';
-			const startName = mapEl.dataset.startName || 'Start';
-			const endName = mapEl.dataset.endName || 'End';
+			const route = mapEl.dataset.route || "";
+			const startName = mapEl.dataset.startName || "Start";
+			const endName = mapEl.dataset.endName || "End";
 
-			console.log('Bus map ready:', {
+			console.log("Bus map ready:", {
 				route,
 				start: startName,
 				end: endName,
 			});
 
-			if (typeof L !== 'undefined') {
+			if (typeof L !== "undefined") {
 				const startLat = parseFloat(mapEl.dataset.startLat);
 				const startLng = parseFloat(mapEl.dataset.startLng);
 				const endLat = parseFloat(mapEl.dataset.endLat);
@@ -3084,10 +4615,10 @@ import * as bootstrap from 'bootstrap';
 					});
 
 					L.tileLayer(
-						'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9',
+						"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 						{
-							attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-							subdomains: 'abcd',
+							attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+							subdomains: "abcd",
 							maxZoom: 20,
 						},
 					).addTo(map);
@@ -3095,15 +4626,15 @@ import * as bootstrap from 'bootstrap';
 					const points = [];
 
 					const startIcon = L.divIcon({
-						className: 'bus-map-marker bus-map-marker--start',
-						html: '<span></span>',
+						className: "bus-map-marker bus-map-marker--start",
+						html: "<span></span>",
 						iconSize: [18, 18],
 						iconAnchor: [9, 9],
 					});
 
 					const endIcon = L.divIcon({
-						className: 'bus-map-marker bus-map-marker--end',
-						html: '<span></span>',
+						className: "bus-map-marker bus-map-marker--end",
+						html: "<span></span>",
 						iconSize: [18, 18],
 						iconAnchor: [9, 9],
 					});
@@ -3116,7 +4647,7 @@ import * as bootstrap from 'bootstrap';
 							.addTo(map)
 							.bindPopup(
 								`<strong>${startName}</strong>${
-									route ? `<br>Route ${route}` : ''
+									route ? `<br>Route ${route}` : ""
 								}`,
 							);
 					}
@@ -3129,7 +4660,7 @@ import * as bootstrap from 'bootstrap';
 							.addTo(map)
 							.bindPopup(
 								`<strong>${endName}</strong>${
-									route ? `<br>Route ${route}` : ''
+									route ? `<br>Route ${route}` : ""
 								}`,
 							);
 					}
@@ -3141,7 +4672,7 @@ import * as bootstrap from 'bootstrap';
 								[endLat, endLng],
 							],
 							{
-								color: '#ffffff',
+								color: "#ffffff",
 								weight: 4,
 								opacity: 0.85,
 							},
@@ -3156,7 +4687,7 @@ import * as bootstrap from 'bootstrap';
 						});
 					}
 
-					window.addEventListener('resize', () => {
+					window.addEventListener("resize", () => {
 						map.invalidateSize();
 					});
 				}
@@ -3172,32 +4703,32 @@ import * as bootstrap from 'bootstrap';
 			const setActivePane = (viewName) => {
 				paneViews.forEach((view) => {
 					view.classList.toggle(
-						'is-active',
+						"is-active",
 						view.dataset.paneView === viewName,
 					);
 				});
 
 				toggleButtons.forEach((button) => {
 					const isActive = button.dataset.viewToggle === viewName;
-					button.classList.toggle('is-active', isActive);
-					button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+					button.classList.toggle("is-active", isActive);
+					button.setAttribute("aria-pressed", isActive ? "true" : "false");
 				});
 
-				if (viewName === 'map') {
-					window.dispatchEvent(new Event('resize'));
+				if (viewName === "map") {
+					window.dispatchEvent(new Event("resize"));
 				}
 			};
 
 			toggleButtons.forEach((button) => {
-				button.addEventListener('click', () => {
+				button.addEventListener("click", () => {
 					const viewName = button.dataset.viewToggle;
 					if (!viewName) return;
 					setActivePane(viewName);
 				});
 			});
 
-			const activeButton = dock.querySelector('[data-view-toggle].is-active');
-			setActivePane(activeButton?.dataset.viewToggle || 'map');
+			const activeButton = dock.querySelector("[data-view-toggle].is-active");
+			setActivePane(activeButton?.dataset.viewToggle || "map");
 		}
 
 		/* ==========================
@@ -3205,25 +4736,25 @@ import * as bootstrap from 'bootstrap';
 		========================== */
 
 		const panelToggleButtons = [
-			...busEntry.querySelectorAll('[data-bus-panel-toggle]'),
+			...busEntry.querySelectorAll("[data-bus-panel-toggle]"),
 		];
-		const panels = [...busEntry.querySelectorAll('[data-bus-panel]')];
+		const panels = [...busEntry.querySelectorAll("[data-bus-panel]")];
 
 		if (panelToggleButtons.length && panels.length) {
 			panelToggleButtons.forEach((btn) => {
-				btn.addEventListener('click', () => {
+				btn.addEventListener("click", () => {
 					const key = btn.dataset.busPanelToggle;
 					if (!key) return;
 
 					const panel = busEntry.querySelector(`[data-bus-panel="${key}"]`);
 					if (!panel) return;
 
-					const isHidden = panel.hasAttribute('hidden');
+					const isHidden = panel.hasAttribute("hidden");
 
-					panels.forEach((p) => p.setAttribute('hidden', 'hidden'));
+					panels.forEach((p) => p.setAttribute("hidden", "hidden"));
 
 					if (isHidden) {
-						panel.removeAttribute('hidden');
+						panel.removeAttribute("hidden");
 					}
 				});
 			});
@@ -3233,34 +4764,34 @@ import * as bootstrap from 'bootstrap';
 		TFL DEPARTURES NEAR YOU
 		========================== */
 
-		const departuresRoot = busEntry.querySelector('[data-bus-departures]');
+		const departuresRoot = busEntry.querySelector("[data-bus-departures]");
 		if (!departuresRoot) return;
 
-		const locateBtn = departuresRoot.querySelector('[data-bus-locate]');
-		const statusEl = departuresRoot.querySelector('[data-bus-status]');
-		const stopsEl = departuresRoot.querySelector('[data-bus-stops]');
-		const resultsEl = departuresRoot.querySelector('[data-bus-results]');
+		const locateBtn = departuresRoot.querySelector("[data-bus-locate]");
+		const statusEl = departuresRoot.querySelector("[data-bus-status]");
+		const stopsEl = departuresRoot.querySelector("[data-bus-stops]");
+		const resultsEl = departuresRoot.querySelector("[data-bus-results]");
 
 		if (!locateBtn || !statusEl || !stopsEl || !resultsEl) return;
-		if (locateBtn.dataset.busLocateBound === 'true') return;
-		locateBtn.dataset.busLocateBound = 'true';
+		if (locateBtn.dataset.busLocateBound === "true") return;
+		locateBtn.dataset.busLocateBound = "true";
 
 		const hasBusConfig =
-			typeof DX_BUS_DIARY !== 'undefined' &&
+			typeof DX_BUS_DIARY !== "undefined" &&
 			DX_BUS_DIARY &&
 			DX_BUS_DIARY.rest_url;
 		const restBase = hasBusConfig
-			? DX_BUS_DIARY.rest_url.replace(/\/$/, '')
-			: '';
+			? DX_BUS_DIARY.rest_url.replace(/\/$/, "")
+			: "";
 
 		const setStatus = (message) => {
 			statusEl.textContent = message;
 		};
 
 		const minsLabel = (seconds) => {
-			if (seconds === null || seconds === undefined) return '—';
+			if (seconds === null || seconds === undefined) return "—";
 			const mins = Math.round(seconds / 60);
-			if (mins <= 0) return 'Due';
+			if (mins <= 0) return "Due";
 			return `${mins} min`;
 		};
 
@@ -3279,29 +4810,29 @@ import * as bootstrap from 'bootstrap';
 					(item) => `
 				<div class="bus-arrival-card">
 					<div class="bus-arrival-main">
-						<div class="bus-arrival-line">${item.lineName || 'Bus'}</div>
+						<div class="bus-arrival-line">${item.lineName || "Bus"}</div>
 						<div class="bus-arrival-destination">${
-							item.destinationName || 'Unknown destination'
+							item.destinationName || "Unknown destination"
 						}</div>
-						<div class="bus-arrival-meta">${item.towards || ''}</div>
+						<div class="bus-arrival-meta">${item.towards || ""}</div>
 					</div>
 					<div class="bus-arrival-time">${minsLabel(item.timeToStation)}</div>
 				</div>
 			`,
 				)
-				.join('');
+				.join("");
 		};
 
 		const loadArrivals = async (stopId, stopName) => {
 			setStatus(`Loading departures for ${stopName}…`);
-			resultsEl.innerHTML = '';
+			resultsEl.innerHTML = "";
 
 			try {
 				const res = await fetch(
 					`${restBase}/tfl-stop-arrivals?stop_id=${encodeURIComponent(stopId)}`,
 					{
 						headers: {
-							'X-WP-Nonce': DX_BUS_DIARY.nonce,
+							"X-WP-Nonce": DX_BUS_DIARY.nonce,
 						},
 					},
 				);
@@ -3309,13 +4840,13 @@ import * as bootstrap from 'bootstrap';
 				const data = await res.json();
 
 				if (!data.success) {
-					throw new Error(data.message || 'Could not load arrivals.');
+					throw new Error(data.message || "Could not load arrivals.");
 				}
 
 				setStatus(`Showing live departures for ${stopName}`);
 				renderArrivals(data.arrivals || []);
 			} catch (err) {
-				setStatus('Unable to load live departures right now.');
+				setStatus("Unable to load live departures right now.");
 				resultsEl.innerHTML = `
 					<div class="bus-arrival-card">
 						<div class="bus-arrival-main">${err.message}</div>
@@ -3331,7 +4862,7 @@ import * as bootstrap from 'bootstrap';
 						<p>No nearby bus stops found.</p>
 					</div>
 				`;
-				resultsEl.innerHTML = '';
+				resultsEl.innerHTML = "";
 				return;
 			}
 
@@ -3340,25 +4871,25 @@ import * as bootstrap from 'bootstrap';
 					(stop, index) => `
 				<button
 					type="button"
-					class="bus-stop-card ${index === 0 ? 'is-active' : ''}"
+					class="bus-stop-card ${index === 0 ? "is-active" : ""}"
 					data-stop-id="${stop.id}"
 					data-stop-name="${stop.name}"
 				>
 					<h4>${stop.name}</h4>
-					<p>${stop.distance ?? '—'}m away ${
-						stop.indicator ? `• Stop ${stop.indicator}` : ''
+					<p>${stop.distance ?? "—"}m away ${
+						stop.indicator ? `• Stop ${stop.indicator}` : ""
 					}</p>
 				</button>
 			`,
 				)
-				.join('');
+				.join("");
 
-			const stopButtons = [...stopsEl.querySelectorAll('[data-stop-id]')];
+			const stopButtons = [...stopsEl.querySelectorAll("[data-stop-id]")];
 
 			stopButtons.forEach((btn) => {
-				btn.addEventListener('click', () => {
-					stopButtons.forEach((b) => b.classList.remove('is-active'));
-					btn.classList.add('is-active');
+				btn.addEventListener("click", () => {
+					stopButtons.forEach((b) => b.classList.remove("is-active"));
+					btn.classList.add("is-active");
 					loadArrivals(btn.dataset.stopId, btn.dataset.stopName);
 				});
 			});
@@ -3366,22 +4897,22 @@ import * as bootstrap from 'bootstrap';
 			loadArrivals(stops[0].id, stops[0].name);
 		};
 
-		locateBtn.addEventListener('click', () => {
+		locateBtn.addEventListener("click", () => {
 			if (!hasBusConfig) {
-				setStatus('Live departures are not configured yet.');
-				resultsEl.innerHTML = '';
+				setStatus("Live departures are not configured yet.");
+				resultsEl.innerHTML = "";
 				stopsEl.innerHTML = `
 					<div class="bus-stop-card">
 						<p>DX_BUS_DIARY is missing or not localised into the page.</p>
 					</div>
 				`;
-				console.warn('DX_BUS_DIARY is missing from the page.');
+				console.warn("DX_BUS_DIARY is missing from the page.");
 				return;
 			}
 
-			setStatus('Getting your location…');
-			stopsEl.innerHTML = '';
-			resultsEl.innerHTML = '';
+			setStatus("Getting your location…");
+			stopsEl.innerHTML = "";
+			resultsEl.innerHTML = "";
 
 			navigator.geolocation.getCurrentPosition(
 				async (position) => {
@@ -3394,7 +4925,7 @@ import * as bootstrap from 'bootstrap';
 							)}&lng=${encodeURIComponent(longitude)}&radius=600`,
 							{
 								headers: {
-									'X-WP-Nonce': DX_BUS_DIARY.nonce,
+									"X-WP-Nonce": DX_BUS_DIARY.nonce,
 								},
 							},
 						);
@@ -3402,13 +4933,13 @@ import * as bootstrap from 'bootstrap';
 						const data = await res.json();
 
 						if (!data.success) {
-							throw new Error(data.message || 'Could not load nearby stops.');
+							throw new Error(data.message || "Could not load nearby stops.");
 						}
 
-						setStatus('Nearby stops found.');
+						setStatus("Nearby stops found.");
 						renderStops(data.stops || []);
 					} catch (err) {
-						setStatus('Unable to find nearby stops right now.');
+						setStatus("Unable to find nearby stops right now.");
 						stopsEl.innerHTML = `
 							<div class="bus-stop-card">
 								<p>${err.message}</p>
@@ -3419,16 +4950,16 @@ import * as bootstrap from 'bootstrap';
 				(error) => {
 					switch (error.code) {
 						case error.PERMISSION_DENIED:
-							setStatus('Location access was denied.');
+							setStatus("Location access was denied.");
 							break;
 						case error.POSITION_UNAVAILABLE:
-							setStatus('Your location is currently unavailable.');
+							setStatus("Your location is currently unavailable.");
 							break;
 						case error.TIMEOUT:
-							setStatus('Location request timed out.');
+							setStatus("Location request timed out.");
 							break;
 						default:
-							setStatus('Unable to get your location right now.');
+							setStatus("Unable to get your location right now.");
 					}
 				},
 				{
@@ -3445,16 +4976,16 @@ import * as bootstrap from 'bootstrap';
 	========================== */
 
 	(() => {
-		'use strict';
+		"use strict";
 
-		const BLOCKED_COUNTRIES = ['IL'];
+		const BLOCKED_COUNTRIES = ["IL"];
 
-		const RESTRICTED_PATH = '/access-restricted/';
-		const BODY_CLASS = 'error405';
-		const DEV_PARAM = 'geo';
+		const RESTRICTED_PATH = "/access-restricted/";
+		const BODY_CLASS = "error405";
+		const DEV_PARAM = "geo";
 
 		const normaliseCountryCode = (value) => {
-			if (!value || typeof value !== 'string') return '';
+			if (!value || typeof value !== "string") return "";
 			return value.trim().toUpperCase();
 		};
 
@@ -3468,7 +4999,7 @@ import * as bootstrap from 'bootstrap';
 			}
 
 			// Optional global value if you expose it elsewhere
-			if (typeof window.CF_IPCountry !== 'undefined') {
+			if (typeof window.CF_IPCountry !== "undefined") {
 				return normaliseCountryCode(window.CF_IPCountry);
 			}
 
@@ -3479,12 +5010,12 @@ import * as bootstrap from 'bootstrap';
 				return bodyCountry;
 			}
 
-			return '';
+			return "";
 		};
 
 		const isRestrictedPage = () => {
-			const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
-			const restrictedPath = RESTRICTED_PATH.replace(/\/+$/, '') || '/';
+			const currentPath = window.location.pathname.replace(/\/+$/, "") || "/";
+			const restrictedPath = RESTRICTED_PATH.replace(/\/+$/, "") || "/";
 			return currentPath === restrictedPath;
 		};
 
@@ -3502,7 +5033,7 @@ import * as bootstrap from 'bootstrap';
 			const url = new URL(RESTRICTED_PATH, window.location.origin);
 
 			// Optional: pass through debug info for testing/inspection
-			url.searchParams.set('geo', countryCode);
+			url.searchParams.set("geo", countryCode);
 
 			window.location.replace(url.toString());
 		};
@@ -3531,8 +5062,8 @@ import * as bootstrap from 'bootstrap';
 			}
 		};
 
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', initGeoRestriction);
+		if (document.readyState === "loading") {
+			dxOnPageReady(initGeoRestriction);
 		} else {
 			initGeoRestriction();
 		}
@@ -3542,30 +5073,30 @@ import * as bootstrap from 'bootstrap';
 	CALENDLY POPUP
 	========================== */
 
-	document.addEventListener('DOMContentLoaded', () => {
-		const calendlyButtons = document.querySelectorAll('.js-calendly-popup');
+	dxOnPageReady(() => {
+		const calendlyButtons = document.querySelectorAll(".js-calendly-popup");
 
 		if (!calendlyButtons.length) return;
 
 		calendlyButtons.forEach((button) => {
-			button.addEventListener('click', (e) => {
+			button.addEventListener("click", (e) => {
 				e.preventDefault();
 
 				if (
-					typeof Calendly === 'undefined' ||
-					typeof Calendly.initPopupWidget !== 'function'
+					typeof Calendly === "undefined" ||
+					typeof Calendly.initPopupWidget !== "function"
 				) {
-					console.warn('Calendly widget script is not loaded yet.');
+					console.warn("Calendly widget script is not loaded yet.");
 					return;
 				}
 
 				Calendly.initPopupWidget({
-					url: 'https://calendly.com/dxndre/30min',
+					url: "https://calendly.com/dxndre/30min",
 				});
 			});
 		});
 
-		console.log('Calendly popup initialized for buttons:', calendlyButtons);
+		console.log("Calendly popup initialized for buttons:", calendlyButtons);
 	});
 
 	/* ==========================
@@ -3573,28 +5104,28 @@ import * as bootstrap from 'bootstrap';
 	========================== */
 
 	(() => {
-		const archive = document.querySelector('[data-bus-nfs]');
+		const archive = document.querySelector("[data-bus-nfs]");
 		if (!archive) return;
 
-		const slides = [...archive.querySelectorAll('[data-bus-slide]')];
-		const prevBtn = archive.querySelector('[data-bus-prev]');
-		const nextBtn = archive.querySelector('[data-bus-next]');
-		const currentEl = archive.querySelector('[data-bus-current]');
+		const slides = [...archive.querySelectorAll("[data-bus-slide]")];
+		const prevBtn = archive.querySelector("[data-bus-prev]");
+		const nextBtn = archive.querySelector("[data-bus-next]");
+		const currentEl = archive.querySelector("[data-bus-current]");
 
 		if (!slides.length) return;
 
 		let currentIndex = 0;
 		let locked = false;
 
-		const pad = (number) => String(number).padStart(2, '0');
+		const pad = (number) => String(number).padStart(2, "0");
 
 		const setActiveSlide = (index) => {
 			currentIndex = Math.max(0, Math.min(index, slides.length - 1));
 
 			slides.forEach((slide, slideIndex) => {
-				slide.classList.toggle('is-active', slideIndex === currentIndex);
-				slide.classList.toggle('is-before', slideIndex < currentIndex);
-				slide.classList.toggle('is-after', slideIndex > currentIndex);
+				slide.classList.toggle("is-active", slideIndex === currentIndex);
+				slide.classList.toggle("is-before", slideIndex < currentIndex);
+				slide.classList.toggle("is-after", slideIndex > currentIndex);
 			});
 
 			if (currentEl) {
@@ -3612,16 +5143,16 @@ import * as bootstrap from 'bootstrap';
 			setActiveSlide(currentIndex - 1);
 		};
 
-		nextBtn?.addEventListener('click', next);
-		prevBtn?.addEventListener('click', prev);
+		nextBtn?.addEventListener("click", next);
+		prevBtn?.addEventListener("click", prev);
 
-		window.addEventListener('keydown', (e) => {
-			if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
-			if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+		window.addEventListener("keydown", (e) => {
+			if (e.key === "ArrowRight" || e.key === "ArrowDown") next();
+			if (e.key === "ArrowLeft" || e.key === "ArrowUp") prev();
 		});
 
 		archive.addEventListener(
-			'wheel',
+			"wheel",
 			(e) => {
 				e.preventDefault();
 
@@ -3645,7 +5176,7 @@ import * as bootstrap from 'bootstrap';
 	})();
 
 	(() => {
-		'use strict';
+		"use strict";
 
 		// ================================================================
 		// GUARD
@@ -3653,12 +5184,12 @@ import * as bootstrap from 'bootstrap';
 
 		const body = document.body;
 
-		if (!body || !body.classList.contains('single-gym-review')) {
+		if (!body || !body.classList.contains("single-gym-review")) {
 			return;
 		}
 
 		const reduceMotion = window.matchMedia(
-			'(prefers-reduced-motion: reduce)',
+			"(prefers-reduced-motion: reduce)",
 		).matches;
 
 		// ================================================================
@@ -3673,8 +5204,8 @@ import * as bootstrap from 'bootstrap';
 			if (
 				value === null ||
 				value === undefined ||
-				value === '' ||
-				value === 'unavailable'
+				value === "" ||
+				value === "unavailable"
 			) {
 				return null;
 			}
@@ -3684,12 +5215,12 @@ import * as bootstrap from 'bootstrap';
 			return Number.isFinite(parsed) ? parsed : null;
 		};
 
-		const escapeAttribute = (value = '') => {
+		const escapeAttribute = (value = "") => {
 			return String(value)
-				.replace(/&/g, '&amp;')
-				.replace(/"/g, '&quot;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;');
+				.replace(/&/g, "&amp;")
+				.replace(/"/g, "&quot;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;");
 		};
 
 		// ================================================================
@@ -3698,26 +5229,26 @@ import * as bootstrap from 'bootstrap';
 
 		const initialiseRevealAnimations = () => {
 			const selectors = [
-				'.gym-review-overview__grid',
-				'.gym-review-section-heading',
-				'.gym-review-score',
-				'.gym-review-panel',
-				'.gym-review-gallery figure',
-				'.gym-review-content__grid',
-				'.gym-review-final .container',
+				".gym-review-overview__grid",
+				".gym-review-section-heading",
+				".gym-review-score",
+				".gym-review-panel",
+				".gym-review-gallery figure",
+				".gym-review-content__grid",
+				".gym-review-final .container",
 			];
 
-			const elements = document.querySelectorAll(selectors.join(','));
+			const elements = document.querySelectorAll(selectors.join(","));
 
 			elements.forEach((element) => {
-				if (!element.hasAttribute('data-gym-reveal')) {
-					element.setAttribute('data-gym-reveal', '');
+				if (!element.hasAttribute("data-gym-reveal")) {
+					element.setAttribute("data-gym-reveal", "");
 				}
 			});
 
-			if (reduceMotion || !('IntersectionObserver' in window)) {
+			if (reduceMotion || !("IntersectionObserver" in window)) {
 				elements.forEach((element) => {
-					element.classList.add('is-visible');
+					element.classList.add("is-visible");
 				});
 
 				return;
@@ -3730,7 +5261,7 @@ import * as bootstrap from 'bootstrap';
 							return;
 						}
 
-						entry.target.classList.add('is-visible');
+						entry.target.classList.add("is-visible");
 
 						observer.unobserve(entry.target);
 					});
@@ -3738,7 +5269,7 @@ import * as bootstrap from 'bootstrap';
 
 				{
 					threshold: 0.12,
-					rootMargin: '0px 0px -40px 0px',
+					rootMargin: "0px 0px -40px 0px",
 				},
 			);
 
@@ -3756,9 +5287,9 @@ import * as bootstrap from 'bootstrap';
 				return;
 			}
 
-			const hero = document.querySelector('.gym-review-hero');
+			const hero = document.querySelector(".gym-review-hero");
 
-			const image = document.querySelector('.gym-review-hero__image');
+			const image = document.querySelector(".gym-review-hero__image");
 
 			if (!hero || !image) {
 				return;
@@ -3795,7 +5326,7 @@ import * as bootstrap from 'bootstrap';
 				window.requestAnimationFrame(update);
 			};
 
-			window.addEventListener('scroll', requestUpdate, {
+			window.addEventListener("scroll", requestUpdate, {
 				passive: true,
 			});
 
@@ -3807,7 +5338,7 @@ import * as bootstrap from 'bootstrap';
 		// ================================================================
 
 		const initialiseScores = () => {
-			const scoreItems = document.querySelectorAll('.gym-review-score');
+			const scoreItems = document.querySelectorAll(".gym-review-score[data-score]");
 
 			if (!scoreItems.length) {
 				return;
@@ -3816,17 +5347,17 @@ import * as bootstrap from 'bootstrap';
 			scoreItems.forEach((item) => {
 				const scoreValue = parseScore(item.dataset.score);
 
-				const fill = item.querySelector('.gym-review-score__fill');
+				const fill = item.querySelector(".gym-review-score__fill");
 
 				const display =
-					item.querySelector('.gym-review-score__value') ||
-					item.querySelector('.gym-review-score__meta strong');
+					item.querySelector(".gym-review-score__value") ||
+					item.querySelector(".gym-review-score__meta strong");
 
 				if (scoreValue === null) {
-					item.classList.add('is-unavailable');
+					item.classList.add("is-unavailable");
 
 					if (display) {
-						display.textContent = 'Unavailable';
+						display.textContent = "Unavailable";
 					}
 
 					return;
@@ -3837,7 +5368,7 @@ import * as bootstrap from 'bootstrap';
 				if (fill) {
 					fill.dataset.width = `${percentage}%`;
 
-					fill.style.width = '0';
+					fill.style.width = "0";
 				}
 
 				if (display) {
@@ -3846,7 +5377,7 @@ import * as bootstrap from 'bootstrap';
 			});
 
 			const animate = (item) => {
-				const fill = item.querySelector('.gym-review-score__fill');
+				const fill = item.querySelector(".gym-review-score__fill");
 
 				if (!fill) {
 					return;
@@ -3863,7 +5394,7 @@ import * as bootstrap from 'bootstrap';
 				});
 			};
 
-			if (reduceMotion || !('IntersectionObserver' in window)) {
+			if (reduceMotion || !("IntersectionObserver" in window)) {
 				scoreItems.forEach(animate);
 
 				return;
@@ -3888,7 +5419,7 @@ import * as bootstrap from 'bootstrap';
 			);
 
 			scoreItems.forEach((item) => {
-				if (!item.classList.contains('is-unavailable')) {
+				if (!item.classList.contains("is-unavailable")) {
 					observer.observe(item);
 				}
 			});
@@ -3899,7 +5430,7 @@ import * as bootstrap from 'bootstrap';
 		// ================================================================
 
 		const initialiseOverallScore = () => {
-			const scoreElements = document.querySelectorAll('[data-overall-score]');
+			const scoreElements = document.querySelectorAll("[data-overall-score]");
 
 			if (!scoreElements.length) {
 				return;
@@ -3944,7 +5475,7 @@ import * as bootstrap from 'bootstrap';
 				requestAnimationFrame(frame);
 			};
 
-			if (!('IntersectionObserver' in window)) {
+			if (!("IntersectionObserver" in window)) {
 				scoreElements.forEach(animateScore);
 
 				return;
@@ -3987,44 +5518,47 @@ import * as bootstrap from 'bootstrap';
 		// ================================================================
 
 		const initialiseMap = () => {
-			const maps = document.querySelectorAll('.gym-review-map');
+			const maps = document.querySelectorAll(".gym-review-map");
 
 			if (!maps.length) {
 				return;
 			}
 
 			maps.forEach((map) => {
-				const location = map.dataset.location || map.dataset.address || '';
+				const location =
+					map.dataset.title || map.dataset.location || "this gym";
+				const embed = map.dataset.mapEmbed;
 
-				if (!location) {
+				if (!embed) {
+					const unavailable = document.createElement("p");
+					unavailable.className = "gym-review-map__unavailable";
+					unavailable.textContent =
+						"A map is not available for this branch yet.";
+					map.appendChild(unavailable);
 					return;
 				}
 
-				const loading = document.createElement('div');
+				const loading = document.createElement("div");
 
-				loading.className = 'gym-review-map__loading';
+				loading.className = "gym-review-map__loading";
 
-				loading.textContent = 'Loading map';
+				loading.textContent = "Loading map";
 
 				map.appendChild(loading);
 
-				const iframe = document.createElement('iframe');
+				const iframe = document.createElement("iframe");
 
 				iframe.title = `Map showing ${location}`;
 
-				iframe.loading = 'lazy';
+				iframe.loading = "lazy";
 
-				iframe.referrerPolicy = 'no-referrer-when-downgrade';
+				iframe.referrerPolicy = "strict-origin-when-cross-origin";
 
-				iframe.setAttribute('allowfullscreen', '');
+				iframe.setAttribute("allowfullscreen", "");
 
-				iframe.src =
-					'https://www.google.com/maps?' +
-					'q=' +
-					encodeURIComponent(location) +
-					'&output=embed';
+				iframe.src = embed;
 
-				iframe.addEventListener('load', () => {
+				iframe.addEventListener("load", () => {
 					loading.remove();
 				});
 
@@ -4044,7 +5578,7 @@ import * as bootstrap from 'bootstrap';
 		// ================================================================
 
 		const initialiseDirections = () => {
-			const links = document.querySelectorAll('[data-map-url]');
+			const links = document.querySelectorAll("[data-map-url]");
 
 			links.forEach((link) => {
 				const url = link.dataset.mapUrl;
@@ -4055,9 +5589,9 @@ import * as bootstrap from 'bootstrap';
 
 				link.href = url;
 
-				link.target = '_blank';
+				link.target = "_blank";
 
-				link.rel = 'noopener noreferrer';
+				link.rel = "noopener noreferrer";
 			});
 		};
 
@@ -4067,22 +5601,22 @@ import * as bootstrap from 'bootstrap';
 
 		const initialiseGalleryLightbox = () => {
 			const images = Array.from(
-				document.querySelectorAll('.gym-review-gallery figure img'),
+				document.querySelectorAll(".gym-review-gallery figure img"),
 			);
 
 			if (!images.length) {
 				return;
 			}
 
-			const lightbox = document.createElement('div');
+			const lightbox = document.createElement("div");
 
-			lightbox.className = 'gym-review-lightbox';
+			lightbox.className = "gym-review-lightbox";
 
-			lightbox.setAttribute('aria-hidden', 'true');
+			lightbox.setAttribute("aria-hidden", "true");
 
-			lightbox.setAttribute('role', 'dialog');
+			lightbox.setAttribute("role", "dialog");
 
-			lightbox.setAttribute('aria-modal', 'true');
+			lightbox.setAttribute("aria-modal", "true");
 
 			lightbox.innerHTML = `
 			<button
@@ -4119,16 +5653,16 @@ import * as bootstrap from 'bootstrap';
 			document.body.appendChild(lightbox);
 
 			const lightboxImage = lightbox.querySelector(
-				'.gym-review-lightbox__image',
+				".gym-review-lightbox__image",
 			);
 
-			const closeButton = lightbox.querySelector('.gym-review-lightbox__close');
+			const closeButton = lightbox.querySelector(".gym-review-lightbox__close");
 
 			const previousButton = lightbox.querySelector(
-				'.gym-review-lightbox__prev',
+				".gym-review-lightbox__prev",
 			);
 
-			const nextButton = lightbox.querySelector('.gym-review-lightbox__next');
+			const nextButton = lightbox.querySelector(".gym-review-lightbox__next");
 
 			let currentIndex = 0;
 
@@ -4141,7 +5675,7 @@ import * as bootstrap from 'bootstrap';
 
 				lightboxImage.src = getFullSource(image);
 
-				lightboxImage.alt = image.alt || '';
+				lightboxImage.alt = image.alt || "";
 			};
 
 			const open = (index) => {
@@ -4149,21 +5683,21 @@ import * as bootstrap from 'bootstrap';
 
 				render();
 
-				lightbox.classList.add('is-open');
+				lightbox.classList.add("is-open");
 
-				lightbox.setAttribute('aria-hidden', 'false');
+				lightbox.setAttribute("aria-hidden", "false");
 
-				body.classList.add('gym-lightbox-open');
+				body.classList.add("gym-lightbox-open");
 
 				closeButton.focus();
 			};
 
 			const close = () => {
-				lightbox.classList.remove('is-open');
+				lightbox.classList.remove("is-open");
 
-				lightbox.setAttribute('aria-hidden', 'true');
+				lightbox.setAttribute("aria-hidden", "true");
 
-				body.classList.remove('gym-lightbox-open');
+				body.classList.remove("gym-lightbox-open");
 			};
 
 			const previous = () => {
@@ -4179,7 +5713,7 @@ import * as bootstrap from 'bootstrap';
 			};
 
 			images.forEach((image, index) => {
-				const figure = image.closest('figure');
+				const figure = image.closest("figure");
 
 				if (!figure) {
 					return;
@@ -4187,19 +5721,19 @@ import * as bootstrap from 'bootstrap';
 
 				figure.tabIndex = 0;
 
-				figure.setAttribute('role', 'button');
+				figure.setAttribute("role", "button");
 
 				figure.setAttribute(
-					'aria-label',
+					"aria-label",
 					`View image ${index + 1} of ${images.length}`,
 				);
 
-				figure.addEventListener('click', () => {
+				figure.addEventListener("click", () => {
 					open(index);
 				});
 
-				figure.addEventListener('keydown', (event) => {
-					if (event.key === 'Enter' || event.key === ' ') {
+				figure.addEventListener("keydown", (event) => {
+					if (event.key === "Enter" || event.key === " ") {
 						event.preventDefault();
 
 						open(index);
@@ -4207,35 +5741,35 @@ import * as bootstrap from 'bootstrap';
 				});
 			});
 
-			closeButton.addEventListener('click', close);
+			closeButton.addEventListener("click", close);
 
-			previousButton.addEventListener('click', previous);
+			previousButton.addEventListener("click", previous);
 
-			nextButton.addEventListener('click', next);
+			nextButton.addEventListener("click", next);
 
-			lightbox.addEventListener('click', (event) => {
+			lightbox.addEventListener("click", (event) => {
 				if (event.target === lightbox) {
 					close();
 				}
 			});
 
-			document.addEventListener('keydown', (event) => {
-				if (!lightbox.classList.contains('is-open')) {
+			document.addEventListener("keydown", (event) => {
+				if (!lightbox.classList.contains("is-open")) {
 					return;
 				}
 
 				switch (event.key) {
-					case 'Escape':
+					case "Escape":
 						close();
 
 						break;
 
-					case 'ArrowLeft':
+					case "ArrowLeft":
 						previous();
 
 						break;
 
-					case 'ArrowRight':
+					case "ArrowRight":
 						next();
 
 						break;
@@ -4248,50 +5782,50 @@ import * as bootstrap from 'bootstrap';
 		// ================================================================
 
 		const initialiseGalleryProgress = () => {
-			const viewport = document.querySelector('.gym-review-gallery__viewport');
+			const viewport = document.querySelector(".gym-review-gallery__viewport");
 
 			if (!viewport) {
 				return;
 			}
 
-			const slides = Array.from(viewport.querySelectorAll('figure'));
+			const slides = Array.from(viewport.querySelectorAll("figure"));
 
 			if (slides.length < 2) {
 				return;
 			}
 
-			let controls = document.querySelector('.gym-review-gallery__controls');
+			let controls = document.querySelector(".gym-review-gallery__controls");
 
 			if (!controls) {
-				controls = document.createElement('div');
+				controls = document.createElement("div");
 
-				controls.className = 'gym-review-gallery__controls';
+				controls.className = "gym-review-gallery__controls";
 
-				viewport.insertAdjacentElement('afterend', controls);
+				viewport.insertAdjacentElement("afterend", controls);
 			}
 
-			controls.innerHTML = '';
+			controls.innerHTML = "";
 
 			const dots = slides.map((_, index) => {
-				const button = document.createElement('button');
+				const button = document.createElement("button");
 
-				button.type = 'button';
+				button.type = "button";
 
-				button.className = 'gym-review-gallery__dot';
+				button.className = "gym-review-gallery__dot";
 
-				button.setAttribute('aria-label', `Go to image ${index + 1}`);
+				button.setAttribute("aria-label", `Go to image ${index + 1}`);
 
 				if (index === 0) {
-					button.classList.add('is-active');
+					button.classList.add("is-active");
 				}
 
-				button.addEventListener('click', () => {
+				button.addEventListener("click", () => {
 					slides[index].scrollIntoView({
-						behavior: reduceMotion ? 'auto' : 'smooth',
+						behavior: reduceMotion ? "auto" : "smooth",
 
-						inline: 'start',
+						inline: "start",
 
-						block: 'nearest',
+						block: "nearest",
 					});
 				});
 
@@ -4300,7 +5834,7 @@ import * as bootstrap from 'bootstrap';
 				return button;
 			});
 
-			if (!('IntersectionObserver' in window)) {
+			if (!("IntersectionObserver" in window)) {
 				return;
 			}
 
@@ -4317,7 +5851,7 @@ import * as bootstrap from 'bootstrap';
 					const index = slides.indexOf(visible[0].target);
 
 					dots.forEach((dot, dotIndex) => {
-						dot.classList.toggle('is-active', dotIndex === index);
+						dot.classList.toggle("is-active", dotIndex === index);
 					});
 				},
 
@@ -4339,7 +5873,7 @@ import * as bootstrap from 'bootstrap';
 		const getScoreLabel = (score) => gymOverallBand(score).label;
 
 		const initialiseScoreLabels = () => {
-			const containers = document.querySelectorAll('[data-score-label-source]');
+			const containers = document.querySelectorAll("[data-score-label-source]");
 
 			containers.forEach((element) => {
 				const score = parseFloat(element.dataset.scoreLabelSource);
@@ -4377,8 +5911,8 @@ import * as bootstrap from 'bootstrap';
 			initialiseScoreLabels();
 		};
 
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', initialise, {
+		if (document.readyState === "loading") {
+			dxOnPageReady(initialise, {
 				once: true,
 			});
 		} else {
@@ -4389,17 +5923,17 @@ import * as bootstrap from 'bootstrap';
 
 // Homepage only: one entrance, then gentle pointer depth while in view.
 function initHomepageHeroMotion() {
-	if (!document.body.matches('.is-frontend.page-template-page-homepage'))
+	if (!document.body.matches(".is-frontend.page-template-page-homepage"))
 		return;
-	const hero = document.querySelector('#main .hero-background');
-	const background = hero?.querySelector(':scope > img');
-	const portrait = hero?.querySelector('.hero-foreground > img');
+	const hero = document.querySelector("#main .hero-background");
+	const background = hero?.querySelector(":scope > img");
+	const portrait = hero?.querySelector(".hero-foreground > img");
 	if (!hero || !background || !portrait || hero.dataset.motionInit) return;
-	hero.dataset.motionInit = 'true';
+	hero.dataset.motionInit = "true";
 
-	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 	const desktop = matchMedia(
-		'(min-width: 992px) and (hover: hover) and (pointer: fine)',
+		"(min-width: 992px) and (hover: hover) and (pointer: fine)",
 	);
 	let visible = false;
 	let entered = false;
@@ -4419,10 +5953,10 @@ function initHomepageHeroMotion() {
 		!reduced.matches &&
 		desktop.matches;
 	const paint = () => {
-		background.style.setProperty('--hero-depth-x', `${(x * 6).toFixed(3)}px`);
-		background.style.setProperty('--hero-depth-y', `${(y * 6).toFixed(3)}px`);
-		portrait.style.setProperty('--hero-depth-x', `${(x * 2).toFixed(3)}px`);
-		portrait.style.setProperty('--hero-depth-y', `${(y * 2).toFixed(3)}px`);
+		background.style.setProperty("--hero-depth-x", `${(x * 6).toFixed(3)}px`);
+		background.style.setProperty("--hero-depth-y", `${(y * 6).toFixed(3)}px`);
+		portrait.style.setProperty("--hero-depth-x", `${(x * 2).toFixed(3)}px`);
+		portrait.style.setProperty("--hero-depth-y", `${(y * 2).toFixed(3)}px`);
 	};
 	const paintScroll = () => {
 		scrollFrame = 0;
@@ -4435,12 +5969,12 @@ function initHomepageHeroMotion() {
 			visible && !document.hidden && !reduced.matches
 				? -progress * (desktop.matches ? 160 : 36)
 				: 0;
-		portrait.style.setProperty('--hero-scroll-y', `${offset.toFixed(3)}px`);
+		portrait.style.setProperty("--hero-scroll-y", `${offset.toFixed(3)}px`);
 		const glowOffset =
 			visible && !document.hidden && !reduced.matches
 				? progress * (desktop.matches ? 70 : 24)
 				: 0;
-		hero.style.setProperty('--hero-glow-y', `${glowOffset.toFixed(3)}px`);
+		hero.style.setProperty("--hero-glow-y", `${glowOffset.toFixed(3)}px`);
 	};
 	const scheduleScroll = () => {
 		if (!scrollFrame) scrollFrame = requestAnimationFrame(paintScroll);
@@ -4450,7 +5984,7 @@ function initHomepageHeroMotion() {
 		frame = lastTime = 0;
 		x = y = targetX = targetY = 0;
 		paint();
-		hero.classList.remove('hero-depth-active');
+		hero.classList.remove("hero-depth-active");
 	};
 	const tick = (time) => {
 		frame = 0;
@@ -4471,7 +6005,7 @@ function initHomepageHeroMotion() {
 			y = targetY;
 			paint();
 			lastTime = 0;
-			if (!targetX && !targetY) hero.classList.remove('hero-depth-active');
+			if (!targetX && !targetY) hero.classList.remove("hero-depth-active");
 		}
 	};
 	const schedule = () => {
@@ -4481,31 +6015,31 @@ function initHomepageHeroMotion() {
 		animations.forEach((animation) => animation.cancel());
 		animations.clear();
 		entered = true;
-		hero.classList.remove('hero-entering');
+		hero.classList.remove("hero-entering");
 		scheduleScroll();
 	};
 	const entrance = () => {
-		if (entered || hero.classList.contains('hero-entering')) return;
-		if (reduced.matches || typeof portrait.animate !== 'function') {
+		if (entered || hero.classList.contains("hero-entering")) return;
+		if (reduced.matches || typeof portrait.animate !== "function") {
 			entered = true;
 			return;
 		}
-		hero.classList.add('hero-entering');
+		hero.classList.add("hero-entering");
 		const opacity = getComputedStyle(portrait).opacity;
 		const bgAnimation = background.animate(
-			[{ filter: 'brightness(.38)' }, { filter: 'brightness(.55)' }],
-			{ duration: 1800, easing: 'cubic-bezier(.22,1,.36,1)' },
+			[{ filter: "brightness(.38)" }, { filter: "brightness(.55)" }],
+			{ duration: 1800, easing: "cubic-bezier(.22,1,.36,1)" },
 		);
 		const portraitAnimation = portrait.animate(
 			[
-				{ opacity: 0, translate: '0 12px' },
-				{ opacity, translate: '0 0' },
+				{ opacity: 0, translate: "0 12px" },
+				{ opacity, translate: "0 0" },
 			],
 			{
 				duration: 1200,
 				delay: 100,
-				fill: 'backwards',
-				easing: 'cubic-bezier(.22,1,.36,1)',
+				fill: "backwards",
+				easing: "cubic-bezier(.22,1,.36,1)",
 			},
 		);
 		animations.add(bgAnimation);
@@ -4518,14 +6052,14 @@ function initHomepageHeroMotion() {
 	// Wait for actual image pixels, without ever hiding essential hero copy.
 	Promise.allSettled([background, portrait].map((img) => img.decode?.())).then(
 		() => {
-			hero.classList.add('hero-motion-ready');
+			hero.classList.add("hero-motion-ready");
 			if (visible && !document.hidden) entrance();
 		},
 	);
 	hero.addEventListener(
-		'pointermove',
+		"pointermove",
 		(event) => {
-			if (!enabled() || event.pointerType !== 'mouse') return;
+			if (!enabled() || event.pointerType !== "mouse") return;
 			const rect = hero.getBoundingClientRect();
 			targetX = Math.max(
 				-1,
@@ -4535,13 +6069,13 @@ function initHomepageHeroMotion() {
 				-1,
 				Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1),
 			);
-			hero.classList.add('hero-depth-active');
+			hero.classList.add("hero-depth-active");
 			schedule();
 		},
 		{ passive: true },
 	);
 	hero.addEventListener(
-		'pointerleave',
+		"pointerleave",
 		() => {
 			targetX = targetY = 0;
 			schedule();
@@ -4555,29 +6089,29 @@ function initHomepageHeroMotion() {
 		if (
 			visible &&
 			!document.hidden &&
-			hero.classList.contains('hero-motion-ready')
+			hero.classList.contains("hero-motion-ready")
 		)
 			entrance();
 	};
-	reduced.addEventListener('change', refresh);
-	desktop.addEventListener('change', refresh);
-	document.addEventListener('visibilitychange', refresh);
-	window.addEventListener('scroll', scheduleScroll, { passive: true });
+	reduced.addEventListener("change", refresh);
+	desktop.addEventListener("change", refresh);
+	document.addEventListener("visibilitychange", refresh);
+	window.addEventListener("scroll", scheduleScroll, { passive: true });
 	window.addEventListener(
-		'resize',
+		"resize",
 		() => {
 			reset();
 			scheduleScroll();
 		},
 		{ passive: true },
 	);
-	window.addEventListener('pagehide', () => {
+	window.addEventListener("pagehide", () => {
 		reset();
 		stopEntrance();
 		cancelAnimationFrame(scrollFrame);
 		scrollFrame = 0;
-		portrait.style.setProperty('--hero-scroll-y', '0px');
-		hero.style.setProperty('--hero-glow-y', '0px');
+		portrait.style.setProperty("--hero-scroll-y", "0px");
+		hero.style.setProperty("--hero-glow-y", "0px");
 	});
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -4588,80 +6122,100 @@ function initHomepageHeroMotion() {
 	);
 	observer.observe(hero);
 }
-document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
+dxOnPageReady(initHomepageHeroMotion);
 
 // Search
 (() => {
-	const root = document.querySelector('[data-dx-search]');
+	const root = document.querySelector("[data-dx-search]");
 	if (!root) return;
 	const input = root.querySelector('input[name="s"]');
-	const clear = root.querySelector('.dx-search__clear');
+	const clear = root.querySelector(".dx-search__clear");
 	const sync = () => {
 		clear.hidden = input.value.length === 0;
 	};
-	clear.addEventListener('click', () => {
-		input.value = '';
+	clear.addEventListener("click", () => {
+		input.value = "";
 		sync();
 		input.focus();
 	});
-	input.addEventListener('input', sync);
-	window.addEventListener('pageshow', sync);
+	input.addEventListener("input", sync);
+	window.addEventListener("pageshow", sync);
 	sync();
 })();
 
 // CV
 (() => {
-	const cv = document.querySelector('.cv-experience');
-	if (!cv || !('IntersectionObserver' in window)) return;
+	const cv = document.querySelector(".cv-experience");
+	if (!cv) return;
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const portrait = cv.querySelector(".cv-hero__portrait");
+	const image = portrait?.querySelector("img");
+	const revealPortrait = () => {
+		if (!portrait || portrait.dataset.cvPortraitReady) return;
+		portrait.dataset.cvPortraitReady = "true";
+		if (reduced.matches || !portrait.animate) return;
+		const wide = matchMedia("(min-width: 701px)").matches;
+		portrait.animate([
+			{ opacity: 0, transform: wide ? "translate3d(4%,0,0) scale(1.06)" : "translate3d(0,24px,0) scale(1.04)", clipPath: "inset(0 0 0 10%)" },
+			{ opacity: 1, transform: "none", clipPath: "inset(0)" },
+		], { duration: 1400, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
+	};
+	if (image?.complete) revealPortrait();
+	else if (image) {
+		image.addEventListener("load", revealPortrait, { once: true });
+		image.addEventListener("error", revealPortrait, { once: true });
+	}
+	const nav = cv.querySelector(".cv-nav");
 	const links = [...cv.querySelectorAll('.cv-nav a[href^="#"]')];
-	const sections = links
-		.map((link) => document.querySelector(link.getAttribute('href')))
-		.filter(Boolean);
+	const sections = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+	if (!sections.length) return;
+	let frame = 0;
 	const update = () => {
-		const position = window.innerHeight * 0.35;
+		frame = 0;
+		const position = Math.max(window.innerHeight * 0.3,
+			Math.max(0, document.getElementById("header")?.getBoundingClientRect().bottom || 0) + (nav?.offsetHeight || 0) + 32);
 		let active = sections[0];
-		sections.forEach((section) => {
-			if (section.getBoundingClientRect().top <= position) active = section;
-		});
+		sections.forEach((section) => { if (section.getBoundingClientRect().top <= position) active = section; });
 		links.forEach((link) => {
-			if (link.hash === '#' + active.id)
-				link.setAttribute('aria-current', 'location');
-			else link.removeAttribute('aria-current');
+			if (link.hash === "#" + active.id) link.setAttribute("aria-current", "location");
+			else link.removeAttribute("aria-current");
 		});
 	};
-	const observer = new IntersectionObserver(update, {
-		rootMargin: '-15% 0px -55% 0px',
-		threshold: 0,
-	});
-	sections.forEach((section) => observer.observe(section));
-	window.addEventListener('hashchange', update);
+	const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+	if ("IntersectionObserver" in window) {
+		const observer = new IntersectionObserver(schedule, { rootMargin: "-15% 0px -55% 0px", threshold: 0 });
+		sections.forEach((section) => observer.observe(section));
+	}
+	window.addEventListener("scroll", schedule, { passive: true });
+	window.addEventListener("resize", schedule, { passive: true });
+	window.addEventListener("hashchange", schedule);
 	update();
 })();
 
 // Fitness
 (() => {
-	const root = document.querySelector('.dx-fitness');
+	const root = document.querySelector(".dx-fitness");
 	if (!root) return;
-	const nav = root.querySelector('.dxf-nav');
+	const nav = root.querySelector(".dxf-nav");
 	const links = [...nav.querySelectorAll('a[href^="#"]')];
 	const sections = links
 		.map((link) => document.getElementById(link.hash.slice(1)))
 		.filter(Boolean);
-	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 	let frame = 0;
 	let scheduled = false;
 	const offset = () =>
 		Math.max(
 			parseFloat(getComputedStyle(nav).top) || 0,
-			document.querySelector('#header').getBoundingClientRect().bottom,
+			document.querySelector("#header").getBoundingClientRect().bottom,
 		) +
 		nav.offsetHeight +
 		24;
 	const destination = (target) => {
 		// On mobile the story photograph precedes its copy. Land on the story itself.
 		const anchor =
-			target.id === 'fitness-story'
-				? target.querySelector('.dxf-story-copy')
+			target.id === "fitness-story"
+				? target.querySelector(".dxf-story-copy")
 				: target;
 		return Math.max(
 			0,
@@ -4670,15 +6224,19 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	};
 	const update = () => {
 		scheduled = false;
-		nav.classList.toggle('is-stuck', nav.getBoundingClientRect().top <= (parseFloat(getComputedStyle(nav).top) || 0) + 1);
+		nav.classList.toggle(
+			"is-stuck",
+			nav.getBoundingClientRect().top <=
+				(parseFloat(getComputedStyle(nav).top) || 0) + 1,
+		);
 		let active = sections[0];
 		for (const section of sections)
 			if (section.getBoundingClientRect().top <= offset() + 50)
 				active = section;
 		links.forEach((link) => {
-			if (link.hash === '#' + active.id)
-				link.setAttribute('aria-current', 'location');
-			else link.removeAttribute('aria-current');
+			if (link.hash === "#" + active.id)
+				link.setAttribute("aria-current", "location");
+			else link.removeAttribute("aria-current");
 		});
 	};
 	const cancel = () => {
@@ -4688,7 +6246,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	};
 	const navigate = (target) => {
 		cancel();
-		root.dataset.sectionNavigating = 'true';
+		root.dataset.sectionNavigating = "true";
 		const start = window.scrollY;
 		const started = performance.now();
 		const duration = reducedMotion.matches ? 0 : 850;
@@ -4697,7 +6255,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			const eased = 1 - Math.pow(1 - progress, 4);
 			window.scrollTo({
 				top: start + (destination(target) - start) * eased,
-				behavior: 'instant',
+				behavior: "instant",
 			});
 			if (progress < 1) frame = requestAnimationFrame(step);
 			else {
@@ -4708,7 +6266,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		frame = requestAnimationFrame(step);
 	};
 	window.addEventListener(
-		'scroll',
+		"scroll",
 		() => {
 			if (!scheduled) {
 				scheduled = true;
@@ -4717,37 +6275,37 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		},
 		{ passive: true },
 	);
-	window.addEventListener('resize', update);
-	window.addEventListener('wheel', cancel, { passive: true });
-	window.addEventListener('touchstart', cancel, { passive: true });
-	window.addEventListener('keydown', (event) => {
+	window.addEventListener("resize", update);
+	window.addEventListener("wheel", cancel, { passive: true });
+	window.addEventListener("touchstart", cancel, { passive: true });
+	window.addEventListener("keydown", (event) => {
 		if (
 			[
-				'ArrowUp',
-				'ArrowDown',
-				'PageUp',
-				'PageDown',
-				'Home',
-				'End',
-				'Escape',
-				' ',
+				"ArrowUp",
+				"ArrowDown",
+				"PageUp",
+				"PageDown",
+				"Home",
+				"End",
+				"Escape",
+				" ",
 			].includes(event.key)
 		)
 			cancel();
 	});
 	root.querySelectorAll('a[href^="#"]').forEach((link) => {
-		if (!sections.some((section) => '#' + section.id === link.hash)) return;
-		link.addEventListener('click', (event) => {
+		if (!sections.some((section) => "#" + section.id === link.hash)) return;
+		link.addEventListener("click", (event) => {
 			if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
 				return;
 			event.preventDefault();
-			if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+			if (location.hash !== link.hash) history.pushState(null, "", link.hash);
 			navigate(document.getElementById(link.hash.slice(1)));
 		});
 	});
-	window.addEventListener('hashchange', () => {
+	window.addEventListener("hashchange", () => {
 		const target = sections.find(
-			(section) => '#' + section.id === location.hash,
+			(section) => "#" + section.id === location.hash,
 		);
 		if (target) navigate(target);
 	});
@@ -4756,66 +6314,78 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 
 // Site presentation
 (() => {
-	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-	const cards = document.querySelectorAll('.dx-principle');
-	if (cards.length && !reduced.matches && 'IntersectionObserver' in window) {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const cards = document.querySelectorAll(".dx-principle");
+	if (cards.length && !reduced.matches && "IntersectionObserver" in window) {
 		const observer = new IntersectionObserver(
 			(entries) =>
 				entries.forEach((entry) => {
 					if (!entry.isIntersecting) return;
-					entry.target.classList.remove('dx-reveal-pending');
+					entry.target.classList.remove("dx-reveal-pending");
 					observer.unobserve(entry.target);
 				}),
 			{ threshold: 0.12 },
 		);
 		cards.forEach((card, i) => {
 			card.style.transitionDelay = `${(i % 3) * 90}ms`;
-			card.classList.add('dx-reveal-pending');
+			card.classList.add("dx-reveal-pending");
 			observer.observe(card);
 		});
 	}
 	// Separate the physical cards from the digital service listing.
-	if (document.body.classList.contains('page-services')) {
-		const training=document.querySelector('.service-training-card');
-		if(training){
-			const list=training.parentElement, section=document.createElement('section');section.id='service-physical';section.className='physical-services container';
-			const heading=document.createElement('h2');heading.textContent='Physical Services';section.append(heading);
-			const physical=document.createElement('ul');physical.className='physical-services-list';section.append(physical);
-			list.closest('#service-options').after(section);
-			Array.from(list.querySelectorAll('.service-training-card')).forEach(card=>physical.append(card));
+	if (document.body.classList.contains("page-services")) {
+		const training = document.querySelector(".service-training-card");
+		if (training) {
+			const list = training.parentElement,
+				section = document.createElement("section");
+			section.id = "service-physical";
+			section.className = "physical-services container";
+			const heading = document.createElement("h2");
+			heading.textContent = "Physical Services";
+			section.append(heading);
+			const physical = document.createElement("ul");
+			physical.className = "physical-services-list";
+			section.append(physical);
+			list.closest("#service-options").after(section);
+			Array.from(list.querySelectorAll(".service-training-card")).forEach(
+				(card) => physical.append(card),
+			);
 		}
 	}
-	const nav = document.querySelector('.dx-section-nav');
+	const nav = document.querySelector(".dx-section-nav");
 	if (!nav) return;
 	// A measured fixed bar avoids Safari's overflow/sticky ancestor inconsistencies.
-	const slot = document.createElement('div');
-	slot.className = 'dx-section-nav-slot';
+	const slot = document.createElement("div");
+	slot.className = "dx-section-nav-slot";
 	nav.before(slot);
 	slot.append(nav);
-	nav.style.marginBottom = '0';
+	nav.style.marginBottom = "0";
 	const dock = () => {
-		const header = document.querySelector('#header');
-		const top = (header ? Math.max(0, header.getBoundingClientRect().bottom) : 90) + 36;
+		// The shared controller owns geometry once all page modules are ready.
+		if (nav.dataset.secondaryDockReady === "true") return;
+		const header = document.querySelector("#header");
+		const top =
+			(header ? Math.max(0, header.getBoundingClientRect().bottom) : 90) + 36;
 		const rect = slot.getBoundingClientRect();
-		if (!nav.classList.contains('is-docked')) {
+		if (!nav.classList.contains("is-docked")) {
 			const natural = nav.getBoundingClientRect();
 			slot.dataset.inset = String(natural.left - rect.left);
 			slot.dataset.width = String(natural.width);
 		}
-		slot.style.height = nav.offsetHeight + 'px';
+		slot.style.height = nav.offsetHeight + "px";
 		const fixed = rect.top <= top;
-		nav.classList.toggle('is-docked', fixed);
-		nav.style.top = top + 'px';
-		nav.style.left = fixed ? rect.left + Number(slot.dataset.inset) + 'px' : '';
-		nav.style.width = fixed ? slot.dataset.width + 'px' : '';
+		nav.classList.toggle("is-docked", fixed);
+		nav.style.top = top + "px";
+		nav.style.left = fixed ? rect.left + Number(slot.dataset.inset) + "px" : "";
+		nav.style.width = fixed ? slot.dataset.width + "px" : "";
 	};
-	window.addEventListener('resize', () => {
-		nav.classList.remove('is-docked');
-		nav.style.width = '';
-		nav.style.left = '';
+	window.addEventListener("resize", () => {
+		nav.classList.remove("is-docked");
+		nav.style.width = "";
+		nav.style.left = "";
 		dock();
 	});
-	const links = [...nav.querySelectorAll('a')];
+	const links = [...nav.querySelectorAll("a")];
 	const targets = links.map((link) => document.querySelector(link.hash));
 	let ticking = false;
 	const update = () => {
@@ -4829,16 +6399,16 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		});
 		links.forEach((link, i) =>
 			i === index
-				? link.setAttribute('aria-current', 'location')
-				: link.removeAttribute('aria-current'),
+				? link.setAttribute("aria-current", "location")
+				: link.removeAttribute("aria-current"),
 		);
 	};
 	links.forEach((link, i) =>
-		link.addEventListener('click', (event) => {
+		link.addEventListener("click", (event) => {
 			if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
 				return;
 			event.preventDefault();
-			history.pushState(null, '', link.hash);
+			history.pushState(null, "", link.hash);
 			const top =
 				window.scrollY +
 				targets[i].getBoundingClientRect().top -
@@ -4847,12 +6417,12 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				24;
 			window.scrollTo({
 				top: Math.max(0, top),
-				behavior: reduced.matches ? 'instant' : 'smooth',
+				behavior: reduced.matches ? "instant" : "smooth",
 			});
 		}),
 	);
 	window.addEventListener(
-		'scroll',
+		"scroll",
 		() => {
 			if (!ticking) {
 				ticking = true;
@@ -4866,26 +6436,34 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 
 // Project enquiries
 (() => {
-	const form = document.querySelector('.enquiry-form');
+	const form = document.querySelector(".enquiry-form");
 	if (!form) return;
-	const steps = [...form.querySelectorAll('[data-step]')],
-		progress = [...form.querySelectorAll('.enquiry-progress li')],
-		error = form.querySelector('.enquiry-error'),
-		next = form.querySelector('[data-next]'),
-		back = form.querySelector('[data-back]'),
+	const steps = [...form.querySelectorAll("[data-step]")],
+		progress = [...form.querySelectorAll(".enquiry-progress li")],
+		error = form.querySelector(".enquiry-error"),
+		next = form.querySelector("[data-next]"),
+		back = form.querySelector("[data-back]"),
 		submit = form.querySelector('[type="submit"]');
+	const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)"),
+		stage = document.createElement("div"),
+		progressList = form.querySelector(".enquiry-progress");
+	stage.className = "enquiry-step-stage";
+	steps[0].before(stage);
+	steps.forEach((fieldset) => stage.append(fieldset));
 	let step = 0,
-		sending = false;
+		sending = false,
+		transitioning = false,
+		finishTransition = null;
 	const labels = {
-		photography: 'What would you like captured, and where?',
-		'design-build': 'What would you like to create?',
-		wordpress: 'What do you need your WordPress website to do?',
-		'custom-web': 'What would you like your website or application to do?',
-		fixes: 'What’s not working, or what would you like improved?',
-		support: 'What kind of ongoing help do you need?',
-		unsure: 'Tell me about your idea or challenge.',
+		photography: "What would you like captured, and where?",
+		"design-build": "What would you like to create?",
+		wordpress: "What do you need your WordPress website to do?",
+		"custom-web": "What would you like your website or application to do?",
+		fixes: "What’s not working, or what would you like improved?",
+		support: "What kind of ongoing help do you need?",
+		unsure: "Tell me about your idea or challenge.",
 	};
-	const storageKey = 'dxndre-project-enquiry';
+	const storageKey = "dxndre-project-enquiry";
 	const save = () => {
 		try {
 			sessionStorage.setItem(
@@ -4897,21 +6475,29 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	const review = () => {
 		const data = new FormData(form),
 			selected = form.querySelector('[name="service"]:checked');
-		form.querySelector('[data-brief-label]').textContent =
-			labels[data.get('service')] || labels['design-build'];
-		const target = form.querySelector('[data-review]');
+		form.querySelector("[data-brief-label]").textContent =
+			labels[data.get("service")] || labels["design-build"];
+		const target = form.querySelector("[data-review]");
 		target.replaceChildren();
 		for (const [label, value] of [
-			['Service', selected?.parentElement.querySelector('strong').textContent],
-			['Project', data.get('brief')],
-			['Website', data.get('website')],
-			['Budget', data.get('budget')],
-			['Timing', data.get('timing')],
+			["Service", selected?.parentElement.querySelector("strong").textContent],
+			["Project", data.get("brief")],
+			["Website", data.get("website")],
+			["Budget", data.get("budget")],
+			["Timing", data.get("timing")],
+			[
+				"Photo delivery",
+				data.get("service") === "photography"
+					? data.get("photography_delivery") === "express"
+						? "24 hours (+£10)"
+						: "48 hours (included)"
+					: "",
+			],
 		]) {
 			if (!value) continue;
-			const row = document.createElement('p'),
-				title = document.createElement('strong'),
-				text = document.createElement('span');
+			const row = document.createElement("p"),
+				title = document.createElement("strong"),
+				text = document.createElement("span");
 			title.textContent = label;
 			text.textContent = value;
 			row.append(title, text);
@@ -4919,56 +6505,154 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		}
 	};
 	const show = (number, focus = true) => {
+		if (transitioning || number < 0 || number >= steps.length)
+			return Promise.resolve(false);
+		const previous = step,
+			outgoing = steps[previous],
+			incoming = steps[number],
+			animate =
+				focus &&
+				number !== previous &&
+				!reducedMotion.matches &&
+				typeof incoming.animate === "function",
+			startHeight = stage.getBoundingClientRect().height,
+			direction = number > previous ? 1 : -1;
 		step = number;
 		error.hidden = true;
-		steps.forEach((el, index) => {
-			el.hidden = index !== step;
-		});
 		progress.forEach((el, index) => {
-			el.removeAttribute('aria-current');
-			if (index === step) el.setAttribute('aria-current', 'step');
-			el.classList.toggle('is-complete', index < step);
+			el.removeAttribute("aria-current");
+			if (index === step) el.setAttribute("aria-current", "step");
+			el.classList.toggle("is-complete", index < step);
 		});
+		progressList.style.setProperty(
+			"--enquiry-progress",
+			(step + 1) / steps.length,
+		);
 		back.hidden = step === 0;
-		next.hidden = step === 2;
-		submit.hidden = step !== 2;
+		next.hidden = step === steps.length - 1;
+		submit.hidden = step !== steps.length - 1;
 		review();
-		if (focus) {
-			const legend = steps[step].querySelector('legend');
+		const focusHeading = () => {
+			if (!focus) return;
+			const legend = incoming.querySelector("legend");
 			legend.tabIndex = -1;
 			legend.focus();
+		};
+		if (!animate) {
+			steps.forEach((el, index) => {
+				el.hidden = index !== step;
+			});
+			focusHeading();
+			return Promise.resolve(true);
 		}
+		transitioning = true;
+		stage.setAttribute("aria-busy", "true");
+		form.classList.add("is-enquiry-transitioning");
+		stage.style.height = `${startHeight}px`;
+		stage.style.overflow = "hidden";
+		steps.forEach((el, index) => {
+			el.hidden = index !== number && index !== previous;
+			el.inert = true;
+			if (index !== number) el.setAttribute("aria-hidden", "true");
+		});
+		outgoing.style.position = "absolute";
+		outgoing.style.inset = "0";
+		outgoing.style.width = "100%";
+		const endHeight = incoming.getBoundingClientRect().height,
+			easing = "cubic-bezier(.22, .68, 0, 1)",
+			animations = [
+				stage.animate(
+					[{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+					{
+						duration: 440,
+						easing,
+						fill: "both",
+					},
+				),
+				outgoing.animate(
+					[
+						{ opacity: 1, transform: "translateY(0)" },
+						{ opacity: 0, transform: `translateY(${-12 * direction}px)` },
+					],
+					{ duration: 180, easing: "ease-out", fill: "both" },
+				),
+				incoming.animate(
+					[
+						{ opacity: 0, transform: `translateY(${18 * direction}px)` },
+						{ opacity: 1, transform: "translateY(0)" },
+					],
+					{ duration: 320, delay: 100, easing, fill: "both" },
+				),
+			];
+		return new Promise((resolve) => {
+			let finished = false;
+			const finish = () => {
+				if (finished) return;
+				finished = true;
+				animations.forEach((animation) => animation.cancel());
+				steps.forEach((el, index) => {
+					el.hidden = index !== step;
+					el.inert = false;
+					el.removeAttribute("aria-hidden");
+					el.style.removeProperty("position");
+					el.style.removeProperty("inset");
+					el.style.removeProperty("width");
+				});
+				stage.style.removeProperty("height");
+				stage.style.removeProperty("overflow");
+				stage.removeAttribute("aria-busy");
+				form.classList.remove("is-enquiry-transitioning");
+				transitioning = false;
+				finishTransition = null;
+				focusHeading();
+				resolve(true);
+			};
+			finishTransition = finish;
+			Promise.all(animations.map((animation) => animation.finished)).then(
+				finish,
+				finish,
+			);
+		});
 	};
-	const validate = (number) => {
+	window.addEventListener("resize", () => finishTransition?.(), {
+		passive: true,
+	});
+	reducedMotion.addEventListener("change", () => {
+		if (reducedMotion.matches) finishTransition?.();
+	});
+	const validate = (number, focus = true) => {
 		const invalid = [
-			...steps[number].querySelectorAll('input,select,textarea'),
+			...steps[number].querySelectorAll("input,select,textarea"),
 		].find((el) => !el.checkValidity());
 		if (!invalid) return true;
 		error.textContent =
 			number === 0
-				? 'Choose a service to continue.'
-				: 'Please complete the required fields and check their format.';
+				? "Choose a service to continue."
+				: "Please complete the required fields and check their format.";
 		error.hidden = false;
-		invalid.focus();
-		invalid.reportValidity();
+		if (focus) {
+			invalid.focus();
+			invalid.reportValidity();
+		}
 		return false;
 	};
 	try {
-		const saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+		const saved = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
 		for (const [key, value] of Object.entries(saved)) {
 			const field = form.elements.namedItem(key);
-			if (!field || key === 'company_url') continue;
-			if (key === 'service') {
+			if (!field || key === "company_url") continue;
+			if (key === "service") {
 				[...form.querySelectorAll('[name="service"]')].forEach(
 					(el) => (el.checked = el.value === value),
 				);
 			} else field.value = value;
 		}
 	} catch (_) {}
-	if (new URLSearchParams(location.search).get('from_calculator') === '1') {
+	let calculatorBriefReady = false;
+	if (new URLSearchParams(location.search).get("from_calculator") === "1") {
 		try {
 			const quote = JSON.parse(
-				sessionStorage.getItem('dxndre-calculator-handoff') || 'null',
+				sessionStorage.getItem("dxndre-calculator-handoff") || "null",
 			);
 			if (
 				quote &&
@@ -4976,105 +6660,125 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				quote.total >= 0 &&
 				Array.isArray(quote.summary)
 			) {
+				calculatorBriefReady = true;
+				const timingLabels = {
+					no_rush: "No rush — 12+ weeks",
+					flexible: "Standard — 5–12 weeks",
+					priority: "Priority — 1–4 weeks",
+					urgent: "Urgent — under 7 days",
+				};
+				if (timingLabels[quote.timeline] && form.elements.timing) {
+					form.elements.timing.value = timingLabels[quote.timeline];
+				}
 				const mapping = {
-					design: 'design-build',
-					landing_page: 'custom-web',
-					development: 'custom-web',
-					wp_development: 'wordpress',
-					comprehensive: 'design-build',
-					retainer: 'support',
-					one_off: 'fixes',
+					design: "design-build",
+					landing_page: "custom-web",
+					development: "custom-web",
+					wp_development: "wordpress",
+					comprehensive: "design-build",
+					retainer: "support",
+					one_off: "fixes",
 				};
 				[...form.querySelectorAll('[name="service"]')].forEach(
 					(el) =>
-						(el.checked = el.value === (mapping[quote.service] || 'unsure')),
+						(el.checked = el.value === (mapping[quote.service] || "unsure")),
 				);
 				if (!form.elements.brief.value)
 					form.elements.brief.value =
-						'Calculator project outline:\n' +
-						quote.summary.join('\n') +
+						"Calculator project outline:\n" +
+						quote.summary.join("\n") +
 						(quote.reference
-							? '\nEstimate reference: ' + quote.reference
-							: '') +
-						'\n\nIndicative estimate: ' +
-						new Intl.NumberFormat('en-GB', {
-							style: 'currency',
-							currency: 'GBP',
+							? "\nEstimate reference: " + quote.reference
+							: "") +
+						"\n\nIndicative estimate: " +
+						new Intl.NumberFormat("en-GB", {
+							style: "currency",
+							currency: "GBP",
 						}).format(quote.total) +
-						(quote.monthly ? ' per month' : '') +
-						' (subject to confirming the brief).';
+						(quote.monthly ? " per month" : "") +
+						" (subject to confirming the brief).";
 				if (!form.elements.name.value)
-					form.elements.name.value = quote.name || '';
+					form.elements.name.value = quote.name || "";
 				if (!form.elements.company.value)
-					form.elements.company.value = quote.company || '';
+					form.elements.company.value = quote.company || "";
 				if (!form.elements.budget.value)
 					form.elements.budget.value =
 						quote.total < 1000
-							? 'Under £1,000'
+							? "Under £1,000"
 							: quote.total < 3000
-							? '£1,000–£3,000'
+							? "£1,000–£3,000"
 							: quote.total < 5000
-							? '£3,000–£5,000'
+							? "£3,000–£5,000"
 							: quote.total < 10000
-							? '£5,000–£10,000'
-							: '£10,000+';
+							? "£5,000–£10,000"
+							: "£10,000+";
 				save();
 			}
 		} catch (_) {}
 	}
-	const incoming = new URLSearchParams(location.search).get('enquiry_service');
+	if (new URLSearchParams(location.search).get("from_calculator") === "1") {
+		const note = document.createElement("p");
+		note.className = "enquiry-calculator-note";
+		note.setAttribute("role", "status");
+		note.textContent = calculatorBriefReady
+			? "Your calculator brief is ready. Your service is selected — press Continue to review your project details."
+			: "You’ve come from the calculator. Choose your service, then press Continue to add your project details.";
+		form.querySelector(".enquiry-progress").after(note);
+	}
+	const incoming = new URLSearchParams(location.search).get("enquiry_service");
 	if (incoming && Object.hasOwn(labels, incoming))
 		[...form.querySelectorAll('[name="service"]')].forEach(
 			(el) => (el.checked = el.value === incoming),
 		);
-	form.addEventListener('input', save);
-	form.addEventListener('change', () => {
+	form.addEventListener("input", save);
+	form.addEventListener("change", () => {
 		save();
 		review();
 	});
-	next.addEventListener('click', () => {
-		if (validate(step)) show(step + 1);
+	next.addEventListener("click", () => {
+		if (!transitioning && validate(step)) show(step + 1);
 	});
-	back.addEventListener('click', () => show(step - 1));
+	back.addEventListener("click", () => show(step - 1));
 	form
-		.querySelectorAll('[data-edit]')
+		.querySelectorAll("[data-edit]")
 		.forEach((button) =>
-			button.addEventListener('click', () => show(Number(button.dataset.edit))),
+			button.addEventListener("click", () => show(Number(button.dataset.edit))),
 		);
-	form.addEventListener('submit', async (event) => {
+	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		if (sending) return;
+		if (sending || transitioning) return;
 		if (step < 2) {
 			if (validate(step)) show(step + 1);
 			return;
 		}
 		for (let n = 0; n < 3; n++) {
-			if (!validate(n)) {
-				show(n, false);
+			if (!validate(n, false)) {
+				await show(n, false);
 				validate(n);
 				return;
 			}
 		}
 		sending = true;
 		submit.disabled = true;
-		submit.textContent = 'Sending…';
-		form.querySelector('.enquiry-status').textContent = 'Sending your enquiry…';
+		submit.textContent = "Sending…";
+		form.querySelector(".enquiry-status").textContent = "Sending your enquiry…";
 		error.hidden = true;
 		const body = new FormData(form);
-		body.append('action', 'dx_project_enquiry');
-		body.append('nonce', DX_ENQUIRY.nonce);
+		body.append("action", "dx_project_enquiry");
+		body.append("nonce", DX_ENQUIRY.nonce);
 		try {
 			const response = await fetch(DX_ENQUIRY.url, {
-				method: 'POST',
+				method: "POST",
 				body,
-				credentials: 'same-origin',
+				credentials: "same-origin",
 			});
 			const result = await response.json();
 			if (!response.ok || !result.success)
-				throw new Error(result.data?.message || 'Please try again.');
+				throw new Error(result.data?.message || "Please try again.");
 			form.hidden = true;
-			if(form.closest('.enquiry-layout')) form.closest('.enquiry-layout').hidden = true;
-			const success = document.querySelector('.enquiry-success');
+			if (form.closest(".enquiry-layout"))
+				form.closest(".enquiry-layout").hidden = true;
+			const success = document.querySelector(".enquiry-success");
 			success.hidden = false;
 			success.focus();
 			try {
@@ -5082,8 +6786,8 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			} catch (_) {}
 		} catch (err) {
 			error.textContent =
-				err.message === 'Failed to fetch'
-					? 'Connection interrupted. Your answers are preserved; please try again.'
+				err.message === "Failed to fetch"
+					? "Connection interrupted. Your answers are preserved; please try again."
 					: err.message;
 			error.hidden = false;
 			error.tabIndex = -1;
@@ -5091,8 +6795,8 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		} finally {
 			sending = false;
 			submit.disabled = false;
-			submit.textContent = 'Send project enquiry ↗';
-			form.querySelector('.enquiry-status').textContent = '';
+			submit.textContent = "Send project enquiry ↗";
+			form.querySelector(".enquiry-status").textContent = "";
 		}
 	});
 	show(0, false);
@@ -5100,18 +6804,18 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 
 // London by bus
 (() => {
-	'use strict';
-	const root = document.querySelector('.dxb');
-	if (!root || !window.DXB) return;
+	"use strict";
+	const root = document.querySelector(".dxb");
+	if (!root || !window.DXB || !root.querySelector("#dxb-route-input")) return;
 	const $ = (s) => root.querySelector(s);
 	const $$ = (s) => Array.from(root.querySelectorAll(s));
-	const input = $('#dxb-route-input'),
-		status = $('#dxb-status'),
-		result = $('#dxb-result');
+	const input = $("#dxb-route-input"),
+		status = $("#dxb-status"),
+		result = $("#dxb-result");
 	const initialPhoto = {
-		src: $('#dxb-route-photo').src,
-		alt: $('#dxb-route-photo').alt,
-		caption: $('#dxb-route-caption').textContent,
+		src: $("#dxb-route-photo").src,
+		alt: $("#dxb-route-photo").alt,
+		caption: $("#dxb-route-caption").textContent,
 	};
 	let controller,
 		arrivalsController,
@@ -5120,7 +6824,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		retryTicker,
 		sequence = 0,
 		current = null,
-		tab = 'overview',
+		tab = "overview",
 		failures = 0;
 	const text = (tag, value, className) => {
 		const el = document.createElement(tag);
@@ -5128,12 +6832,30 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		if (className) el.className = className;
 		return el;
 	};
+	const pinIcon = () => {
+		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svg.setAttribute("viewBox", "0 0 24 24");
+		svg.setAttribute("class", "dxb-pin-icon");
+		svg.setAttribute("fill", "currentColor");
+		svg.setAttribute("aria-hidden", "true");
+		svg.setAttribute("focusable", "false");
+		const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		path.setAttribute(
+			"d",
+			"M16 9V4h1V2H7v2h1v5c0 1.66-1.34 3-3 3v2h6v8h2v-8h6v-2c-1.66 0-3-1.34-3-3Z",
+		);
+		svg.append(path);
+		return svg;
+	};
+	const setPinLabel = (button, label) => {
+		button.replaceChildren(pinIcon(), document.createTextNode(label));
+	};
 	const readSaved = (key) => {
 		try {
-			const v = JSON.parse(localStorage.getItem(key) || '[]');
+			const v = JSON.parse(localStorage.getItem(key) || "[]");
 			return Array.isArray(v)
 				? v
-						.filter((x) => typeof x === 'string' && /^[A-Z0-9]{1,12}$/.test(x))
+						.filter((x) => typeof x === "string" && /^[A-Z0-9]{1,12}$/.test(x))
 						.slice(0, 12)
 				: [];
 		} catch {
@@ -5145,67 +6867,133 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			localStorage.setItem(key, JSON.stringify(value));
 		} catch {}
 	};
-	let recent = readSaved('dxb-recent-routes'),
-		marked = readSaved('dxb-marked-vehicles'),
+	let recent = readSaved("dxb-recent-routes"),
+		marked = readSaved("dxb-marked-vehicles"),
 		arrivalRows = [];
-	const recentBox = $('.dxb-recent');
+	const recentBox = $(".dxb-recent");
 	function routeSpacing(value) {
-		return /^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(value) ? 'tight' : 'normal';
+		return /^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(value)
+			? "tight"
+			: "normal";
 	}
-	input.addEventListener('input', () => { input.dataset.spacing = routeSpacing(input.value.trim()); });
+	input.addEventListener("input", () => {
+		input.dataset.spacing = routeSpacing(input.value.trim());
+	});
 	function renderRecent() {
 		recentBox.replaceChildren();
 		recentBox.hidden = !recent.length;
 		recent.forEach((route) => {
-			const b = text('button', route);
-			b.type = 'button';
+			const b = text("button", route);
+			b.type = "button";
 			b.dataset.route = route;
 			b.dataset.spacing = routeSpacing(route);
-			b.setAttribute('aria-pressed', String(current?.name === route));
+			b.setAttribute("aria-pressed", String(current?.name === route));
 			recentBox.append(b);
 		});
 	}
-	recentBox.addEventListener('click', (e) => {
-		const b = e.target.closest('[data-route]');
+	recentBox.addEventListener("click", (e) => {
+		const b = e.target.closest("[data-route]");
 		if (b) search(b.dataset.route);
 	});
 	renderRecent();
 	function remember(route) {
 		recent = [route, ...recent.filter((r) => r !== route)].slice(0, 12);
-		saveList('dxb-recent-routes', recent);
+		saveList("dxb-recent-routes", recent);
 		renderRecent();
 	}
 	function renderMarked() {
-		const box = $('#dxb-marked');
-		const expanded = new Set(Array.from(box.querySelectorAll('details[open]')).map(el => el.dataset.reg));
+		const box = $("#dxb-marked");
+		const expanded = new Set(
+			Array.from(box.querySelectorAll("details[open]")).map(
+				(el) => el.dataset.reg,
+			),
+		);
 		box.replaceChildren();
-		$('#dxb-tracking').replaceChildren();
-		if (!marked.length) return;
-		box.append(text('p', 'PINNED BUSES', 'dxb-pins-heading'), text('p', 'Saved on this browser · expand a bus for its latest arrivals.', 'dxb-small'));
+		$("#dxb-tracking").replaceChildren();
+		const pinTab = $("#tab-pinned");
+		if (pinTab) pinTab.hidden = !marked.length;
+		if (!marked.length) {
+			if (tab === "pinned") activateTab("overview");
+			return;
+		}
+		box.append(
+			text("p", "PINNED BUSES", "dxb-pins-heading"),
+			text(
+				"p",
+				"Saved on this browser · expand a bus for its latest arrivals.",
+				"dxb-small",
+			),
+		);
 		marked.forEach((reg) => {
-			const item = text('details', '', 'dxb-pinned-bus');
+			const item = text("details", "", "dxb-pinned-bus");
 			item.dataset.reg = reg;
-			const summary = text('summary', '📌 ' + formatRegistration(reg));
-			summary.append(text('span', 'Arrivals +', 'dxb-pin-toggle'));
-			const content = text('div', '', 'dxb-pin-content');
-			const actions = text('div', '', 'dxb-pin-actions');
-			const refresh = text('button', 'Refresh arrivals');
-			refresh.type = 'button';
-			const results = text('div', '', 'dxb-pin-results');
-			results.setAttribute('aria-live', 'polite');
-			refresh.addEventListener('click', () => trackVehicle(reg, results));
-			const remove = text('button', 'Dismiss pin ×');
-			remove.type = 'button';
-			remove.setAttribute('aria-label', 'Dismiss pin for ' + formatRegistration(reg));
-			remove.addEventListener('click', () => {
+			const summary = text("summary", "");
+			summary.append(
+				pinIcon(),
+				text("strong", formatRegistration(reg), "dxb-pin-registration"),
+			);
+			const fleetLabel = text("span", "", "dxb-pin-fleet");
+			summary.append(fleetLabel);
+			request("vehicle/" + encodeURIComponent(reg))
+				.then((v) => {
+					if (summary.isConnected)
+						fleetLabel.textContent = v.fleet ? "· " + v.fleet : "";
+				})
+				.catch(() => {});
+			summary.append(text("span", "Arrivals +", "dxb-pin-toggle"));
+			const content = text("div", "", "dxb-pin-content");
+			const actions = text("div", "", "dxb-pin-actions");
+			const refresh = text("button", "Refresh arrivals");
+			refresh.type = "button";
+			const results = text("div", "", "dxb-pin-results");
+			results.setAttribute("aria-live", "polite");
+			refresh.addEventListener("click", () => trackVehicle(reg, results));
+			const remove = text("button", "Dismiss pin ×");
+			remove.type = "button";
+			remove.setAttribute(
+				"aria-label",
+				"Dismiss pin for " + formatRegistration(reg),
+			);
+			remove.addEventListener("click", () => {
 				marked = marked.filter((v) => v !== reg);
-				saveList('dxb-marked-vehicles', marked);
+				saveList("dxb-marked-vehicles", marked);
 				renderMarked();
-				if ($('#dxb-arrivals') && !$('#panel-arrivals').hidden) renderArrivals();
+				if ($("#dxb-arrivals") && !$("#panel-arrivals").hidden)
+					renderArrivals();
 			});
-			actions.append(refresh, remove); content.append(results, actions); item.append(summary, content); box.append(item);
-			item.addEventListener('toggle', () => {
-				summary.lastChild.textContent = item.open ? 'Collapse −' : 'Arrivals +';
+			actions.append(refresh, remove);
+			content.append(results, actions);
+			item.append(summary, content);
+			let disclosureAnimation = null;
+			summary.addEventListener("click", (e) => {
+				if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+				e.preventDefault();
+				if (disclosureAnimation) return;
+				const opening = !item.open;
+				if (opening) item.open = true;
+				disclosureAnimation = content.animate(
+					[
+						{
+							height: opening ? "0px" : content.scrollHeight + "px",
+							opacity: opening ? 0 : 1,
+						},
+						{
+							height: opening ? content.scrollHeight + "px" : "0px",
+							opacity: opening ? 1 : 0,
+						},
+					],
+					{ duration: 320, easing: "cubic-bezier(.22,1,.36,1)" },
+				);
+				content.style.overflow = "hidden";
+				disclosureAnimation.onfinish = () => {
+					if (!opening) item.open = false;
+					content.style.overflow = "";
+					disclosureAnimation = null;
+				};
+			});
+			box.append(item);
+			item.addEventListener("toggle", () => {
+				summary.lastChild.textContent = item.open ? "Collapse −" : "Arrivals +";
 				if (item.open) trackVehicle(reg, results);
 			});
 			item.open = expanded.has(reg);
@@ -5215,10 +7003,10 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	async function trackVehicle(reg, box) {
 		const token = ++trackingSequence;
 		box.dataset.request = String(token);
-		box.replaceChildren(text('p', 'Checking ' + reg + '…', 'dxb-small'));
+		box.replaceChildren(text("p", "Checking " + reg + "…", "dxb-small"));
 		try {
 			const data = await request(
-				'vehicle/' + encodeURIComponent(reg) + '/arrivals',
+				"vehicle/" + encodeURIComponent(reg) + "/arrivals",
 			);
 			if (!box.isConnected || box.dataset.request !== String(token)) return;
 			box.replaceChildren();
@@ -5228,52 +7016,94 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (!live.length)
 				box.append(
 					text(
-						'p',
-						'No current TfL predictions for this vehicle. It may be off service or not reporting.',
-						'dxb-small',
+						"p",
+						"No current TfL predictions for this vehicle. It may be off service or not reporting.",
+						"dxb-small",
 					),
 				);
-			live.forEach((a) =>
-				box.append(
-					text(
-						'p',
-						`${a.route} · ${a.stop} · towards ${a.destination} · ${new Date(
-							a.expected,
-						).toLocaleTimeString('en-GB', {
-							hour: '2-digit',
-							minute: '2-digit',
-						})}`,
-						'dxb-small',
-					),
-				),
-			);
+			live.sort((a, b) => Date.parse(a.expected) - Date.parse(b.expected));
+			const badge = (route) => {
+				const el = text("span", route, "dx-route-badge");
+				el.dataset.type = /^N/i.test(route)
+					? "night"
+					: /^SL/i.test(route)
+					? "superloop"
+					: "day";
+				return el;
+			};
+			if (live.length) {
+				const first = live[0],
+					summary = text(
+						"p",
+						formatRegistration(reg) + " is currently running on the ",
+						"dxb-pin-summary",
+					);
+				summary.append(
+					badge(first.route),
+					document.createTextNode(" towards " + first.destination + "."),
+				);
+				box.append(summary);
+				const table = text("table", "", "dxb-pin-table"),
+					head = text("thead"),
+					row = text("tr");
+				["Route", "Bus stop", "Towards", "Expected"].forEach((label) => {
+					const th = text("th", label);
+					th.scope = "col";
+					row.append(th);
+				});
+				head.append(row);
+				table.append(head);
+				const body = text("tbody");
+				live.forEach((a) => {
+					const row = text("tr"),
+						route = text("td");
+					route.append(badge(a.route));
+					row.append(
+						route,
+						text("td", a.stop),
+						text("td", a.destination),
+						text(
+							"td",
+							new Date(a.expected).toLocaleTimeString("en-GB", {
+								timeZone: "Europe/London",
+								hour: "2-digit",
+								minute: "2-digit",
+							}),
+						),
+					);
+					body.append(row);
+				});
+				table.append(body);
+				box.append(table);
+			}
+
 			box.append(
 				text(
-					'small',
-					'Checked ' +
-						new Date().toLocaleTimeString('en-GB') +
-						' · arrival predictions, not a GPS location',
+					"small",
+					"Checked " +
+						new Date().toLocaleTimeString("en-GB") +
+						" · arrival predictions, not a GPS location",
 				),
 			);
 		} catch {
 			if (box.isConnected && box.dataset.request === String(token))
 				box.replaceChildren(
 					text(
-						'p',
-						'Vehicle predictions are temporarily unavailable. Try again shortly.',
-						'dxb-small',
+						"p",
+						"Vehicle predictions are temporarily unavailable. Try again shortly.",
+						"dxb-small",
 					),
 				);
 		}
 	}
 	const formatRegistration = (reg) =>
-		reg.replace(/^([A-Z]{2}\d{2})([A-Z]{3})$/, '$1 $2');
+		reg.replace(/^([A-Z]{2}\d{2})([A-Z]{3})$/, "$1 $2");
 	const vehicleCache = new Map();
 	function deckType(value) {
-		const v = String(value || '').toLowerCase();
+		const v = String(value || "").toLowerCase();
 		if (/single/.test(v) && /double/.test(v)) return null;
-		if (/double[ -]?decker/.test(v)) return 'double';
-		if (/single[ -]?decker/.test(v)) return 'single';
+		if (/double[ -]?decker/.test(v)) return "double";
+		if (/single[ -]?decker/.test(v)) return "single";
 		return null;
 	}
 	function unusualAllocation(vehicle, profile) {
@@ -5289,49 +7119,54 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			ids = [...new Set(data.vehicles || [])];
 		let cursor = 0,
 			finished = 0;
-		const summary = text('div', '', 'dxb-tracking-breakdown');
+		const summary = text("div", "", "dxb-tracking-breakdown");
 		host.append(summary);
 		function render() {
 			summary.replaceChildren();
-			summary.classList.toggle('is-checking', finished < ids.length);
-			summary.setAttribute('aria-busy', String(finished < ids.length));
-			for (const type of ['single', 'double', 'unknown']) {
-                if(type === 'unknown' && counts.unknown === 0) continue;
+			summary.classList.toggle("is-checking", finished < ids.length);
+			summary.setAttribute("aria-busy", String(finished < ids.length));
+			for (const type of ["single", "double", "unknown"]) {
+				if (type === "unknown" && counts.unknown === 0) continue;
 				const unusual =
-					type !== 'unknown' && counts[type] > 0 &&
+					type !== "unknown" &&
+					counts[type] > 0 &&
 					deckType(profile.vehicle) &&
 					deckType(profile.vehicle) !== type;
 				const pill = text(
-					'button',
-					type === 'unknown' ? `${counts.unknown} TYPE UNCONFIRMED` : `${unusual ? '⚠ ' : ''}${counts[type]} ${type.toUpperCase()} ${
-						counts[type] === 1 ? 'DECKER' : 'DECKERS'
-					}`,
-					'dxb-deck-total' + (unusual ? ' is-unusual' : ''),
+					"button",
+					type === "unknown"
+						? `${counts.unknown} TYPE UNCONFIRMED`
+						: `${unusual ? "⚠ " : ""}${counts[type]} ${type.toUpperCase()} ${
+								counts[type] === 1 ? "DECKER" : "DECKERS"
+						  }`,
+					"dxb-deck-total" + (unusual ? " is-unusual" : ""),
 				);
 				if (unusual)
 					pill.title = `Unusual allocation · this route usually uses ${deckType(
 						profile.vehicle,
 					)} deckers`;
-				pill.type = 'button';
+				pill.type = "button";
 				pill.disabled = finished < ids.length;
-				pill.addEventListener('click', () => openFleet(type, fleet[type], current?.name));
+				pill.addEventListener("click", () =>
+					openFleet(type, fleet[type], current?.name),
+				);
 				summary.append(pill);
 			}
 			if (finished < ids.length)
 				summary.append(
 					text(
-						'small',
+						"small",
 						`Checking vehicle types · ${finished} of ${ids.length}`,
-						'dxb-deck-progress',
+						"dxb-deck-progress",
 					),
 				);
 			else if (ids.length !== data.count)
 				summary.append(
-					text('small', 'Vehicle breakdown unavailable', 'dxb-deck-progress'),
+					text("small", "Vehicle breakdown unavailable", "dxb-deck-progress"),
 				);
 			else if (ids.length)
 				summary.append(
-					text('small', 'Vehicle types · bustimes.org', 'dxb-deck-progress'),
+					text("small", "Vehicle types · bustimes.org", "dxb-deck-progress"),
 				);
 		}
 		render();
@@ -5344,7 +7179,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 						if (!vehicleCache.has(reg))
 							vehicleCache.set(
 								reg,
-								request('vehicle/' + encodeURIComponent(reg)).catch((e) => {
+								request("vehicle/" + encodeURIComponent(reg)).catch((e) => {
 									vehicleCache.delete(reg);
 									throw e;
 								}),
@@ -5352,84 +7187,195 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 						const vehicle = await vehicleCache.get(reg);
 						if (vehicle.found && !vehicle.withdrawn)
 							type = deckType(vehicle.type);
-						fleet[type || 'unknown'].push({ ...vehicle, registration: reg });
-					} catch { fleet.unknown.push({registration: reg}); }
-					counts[type || 'unknown']++;
+						fleet[type || "unknown"].push({ ...vehicle, registration: reg });
+					} catch {
+						fleet.unknown.push({ registration: reg });
+					}
+					counts[type || "unknown"]++;
 					finished++;
 					if (token === sequence && host.isConnected) render();
 				}
 			}),
 		);
 	}
-	function sentenceCase(value) { return String(value).replace(/^\w/, c => c.toUpperCase()); }
+	function sentenceCase(value) {
+		return String(value).replace(/^\w/, (c) => c.toUpperCase());
+	}
 	function openFleet(type, vehicles, route) {
-		const dialog = text('dialog', '', 'dxb-fleet-modal');
-		dialog.setAttribute('aria-label', `${type} deckers tracking on route ${route}`);
-		const heading = text('h2', type === 'vehicle' ? `Bus details on route ${route}` : type === 'unknown' ? `Type unconfirmed on Route ${route}` : `${type === 'single' ? 'Single' : 'Double'} deckers on Route ${route}`);
-		const close = text('button', 'Close ×', 'dxb-mark-button');
-		close.type = 'button';
-		close.addEventListener('click', () => dialog.close());
-		const modalHeader = text('header', '', 'dxb-fleet-header');
-		modalHeader.append(heading, close); dialog.append(modalHeader);
-		if (!vehicles.length) dialog.append(text('p', 'No confirmed vehicles of this type are currently tracking.'));
+		const dialog = text("dialog", "", "dxb-fleet-modal");
+		dialog.setAttribute(
+			"aria-label",
+			`${type} deckers tracking on route ${route}`,
+		);
+		const heading = text(
+			"h2",
+			type === "vehicle"
+				? `Bus details on route ${route}`
+				: type === "unknown"
+				? `Type unconfirmed on Route ${route}`
+				: `${
+						type === "single" ? "Single" : "Double"
+				  } deckers on Route ${route}`,
+		);
+		const close = text("button", "Close ×", "dxb-mark-button");
+		close.type = "button";
+		close.addEventListener("click", () => dialog.close());
+		const modalHeader = text("header", "", "dxb-fleet-header");
+		modalHeader.append(heading, close);
+		dialog.append(modalHeader);
+		if (!vehicles.length)
+			dialog.append(
+				text("p", "No confirmed vehicles of this type are currently tracking."),
+			);
 		vehicles.forEach((vehicle) => {
-			const card = text('article', '', 'dxb-fleet-item');
-			const identity = text('header', '', 'dxb-fleet-identity');
-			identity.append(text('h3', vehicle.model || 'Model unconfirmed'));
-			const identifiers = text('div', '', 'dxb-fleet-identifiers'); identifiers.append(vehicleField('Registration', formatRegistration(vehicle.registration)), vehicleField('Fleet number', vehicle.fleet || 'Unconfirmed')); identity.append(identifiers);
+			const card = text("article", "", "dxb-fleet-item");
+			const identity = text("header", "", "dxb-fleet-identity");
+			identity.append(text("h3", vehicle.model || "Model unconfirmed"));
+			const identifiers = text("div", "", "dxb-fleet-identifiers");
+			identifiers.append(
+				vehicleField("Registration", formatRegistration(vehicle.registration)),
+				vehicleField("Fleet number", vehicle.fleet || "Unconfirmed"),
+			);
+			identity.append(identifiers);
 			card.append(identity);
-			if (type === 'vehicle') { const detail = text('div', '', 'dxb-line-detail'); detail.append(vehicleField('Vehicle type', sentenceCase(vehicle.type || 'Unconfirmed')), vehicleField('Fuel', sentenceCase(vehicle.fuel || 'Unconfirmed')), vehicleField('USB charging', vehicle.usb === true ? 'Available' : 'Not confirmed')); card.append(detail); }
-			const position = text('div', 'Checking destination and position…', 'dxb-fleet-position');
+			if (type === "vehicle") {
+				const detail = text("div", "", "dxb-line-detail");
+				detail.append(
+					vehicleField(
+						"Vehicle type",
+						sentenceCase(vehicle.type || "Unconfirmed"),
+					),
+					vehicleField("Fuel", sentenceCase(vehicle.fuel || "Unconfirmed")),
+					vehicleField(
+						"USB charging",
+						vehicle.usb === true ? "Available" : "Not confirmed",
+					),
+					vehicleField("Garage", vehicle.garage || "Not confirmed"),
+				);
+				card.append(detail);
+			}
+			const position = text(
+				"div",
+				"Checking destination and position…",
+				"dxb-fleet-position",
+			);
 			card.append(position);
-			const mark = text('button', '', 'dxb-mark-button');
-			mark.type = 'button';
-			const update = () => { mark.textContent = (marked.includes(vehicle.registration) ? '📌 Pinned ' : '📌 Pin ') + formatRegistration(vehicle.registration); mark.setAttribute('aria-pressed', String(marked.includes(vehicle.registration))); };
+			const mark = text("button", "", "dxb-mark-button");
+			mark.type = "button";
+			const update = () => {
+				setPinLabel(
+					mark,
+					(marked.includes(vehicle.registration) ? "Pinned " : "Pin ") +
+						formatRegistration(vehicle.registration),
+				);
+				mark.setAttribute(
+					"aria-pressed",
+					String(marked.includes(vehicle.registration)),
+				);
+			};
 			update();
-			mark.addEventListener('click', () => {
+			mark.addEventListener("click", () => {
 				const reg = vehicle.registration;
-				if (marked.includes(reg)) marked = marked.filter((item) => item !== reg);
+				if (marked.includes(reg))
+					marked = marked.filter((item) => item !== reg);
 				else if (marked.length < 12) marked.push(reg);
-				else { mark.textContent = '12 buses pinned · remove one first'; return; }
-				saveList('dxb-marked-vehicles', marked); renderMarked(); update();
-				if ($('#dxb-arrivals') && !$('#panel-arrivals').hidden) renderArrivals();
+				else {
+					mark.textContent = "12 buses pinned · remove one first";
+					return;
+				}
+				saveList("dxb-marked-vehicles", marked);
+				renderMarked();
+				update();
+				if ($("#dxb-arrivals") && !$("#panel-arrivals").hidden)
+					renderArrivals();
 			});
-			card.append(mark); dialog.append(card);
-			request('vehicle/' + encodeURIComponent(vehicle.registration) + '/arrivals').then((data) => {
-				if (!dialog.isConnected) return;
-				const next = data.arrivals?.find((item) => item.route.toUpperCase() === String(route).toUpperCase());
-				position.replaceChildren();
-				if (next) {
-					position.append(vehicleField('Final destination', next.destination || vehicle.destination || 'Unconfirmed'), vehicleField(next.location ? 'Current location' : 'Next predicted stop', next.location || next.stop));
-				} else { position.textContent = '⚠ Destination and current position unavailable.'; position.classList.add('is-warning'); }
-			}).catch(() => { position.textContent = '⚠ Vehicle position temporarily unavailable.'; position.classList.add('is-warning'); });
+			card.append(mark);
+			dialog.append(card);
+			request(
+				"vehicle/" + encodeURIComponent(vehicle.registration) + "/arrivals",
+			)
+				.then((data) => {
+					if (!dialog.isConnected) return;
+					const next = data.arrivals?.find(
+						(item) => item.route.toUpperCase() === String(route).toUpperCase(),
+					);
+					position.replaceChildren();
+					if (next) {
+						position.append(
+							vehicleField(
+								"Final destination",
+								next.destination || vehicle.destination || "Unconfirmed",
+							),
+							vehicleField(
+								next.location ? "Current location" : "Next predicted stop",
+								next.location || next.stop,
+							),
+						);
+					} else {
+						position.textContent =
+							"⚠ Destination and current position unavailable.";
+						position.classList.add("is-warning");
+					}
+				})
+				.catch(() => {
+					position.textContent = "⚠ Vehicle position temporarily unavailable.";
+					position.classList.add("is-warning");
+				});
 		});
-		dialog.addEventListener('click', (event) => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
-		dialog.addEventListener('close', () => dialog.remove(), { once: true });
-		root.append(dialog); dialog.showModal();
+		dialog.addEventListener("click", (event) => {
+			if (event.target === dialog) {
+				const r = dialog.getBoundingClientRect();
+				if (
+					event.clientX < r.left ||
+					event.clientX > r.right ||
+					event.clientY < r.top ||
+					event.clientY > r.bottom
+				)
+					dialog.close();
+			}
+		});
+		dialog.addEventListener("close", () => dialog.remove(), { once: true });
+		root.append(dialog);
+		dialog.showModal();
 	}
 
 	// Animate native details while preserving keyboard activation and open state.
-	root.addEventListener('click', (event) => {
-		const summary = event.target.closest('.dxb-details > summary');
+	root.addEventListener("click", (event) => {
+		const summary = event.target.closest(".dxb-details > summary");
 		if (!summary) return;
 		const detail = summary.parentElement;
 		event.preventDefault();
 		if (detail.dataset.animating) return;
 		const opening = !detail.open;
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) { detail.open = opening; return; }
+		if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			detail.open = opening;
+			return;
+		}
 		const start = detail.getBoundingClientRect().height;
 		if (opening) detail.open = true;
-		const end = opening ? detail.getBoundingClientRect().height : summary.getBoundingClientRect().height + parseFloat(getComputedStyle(detail).paddingTop) + parseFloat(getComputedStyle(detail).paddingBottom) + 2;
-		detail.dataset.animating = 'true';
-		detail.style.overflow = 'hidden';
-		const animation = detail.animate([{height: start + 'px'}, {height: end + 'px'}], {duration: 300, easing: 'ease-in-out'});
-		animation.onfinish = () => { detail.open = opening; detail.style.overflow = ''; delete detail.dataset.animating; };
+		const end = opening
+			? detail.getBoundingClientRect().height
+			: summary.getBoundingClientRect().height +
+			  parseFloat(getComputedStyle(detail).paddingTop) +
+			  parseFloat(getComputedStyle(detail).paddingBottom) +
+			  2;
+		detail.dataset.animating = "true";
+		detail.style.overflow = "hidden";
+		const animation = detail.animate(
+			[{ height: start + "px" }, { height: end + "px" }],
+			{ duration: 300, easing: "ease-in-out" },
+		);
+		animation.onfinish = () => {
+			detail.open = opening;
+			detail.style.overflow = "";
+			delete detail.dataset.animating;
+		};
 	});
-	function vehicleField(label, value, kind = '') {
-		const field = text('div', '', 'dxb-vehicle-field ' + kind);
+	function vehicleField(label, value, kind = "") {
+		const field = text("div", "", "dxb-vehicle-field " + kind);
 		field.append(
-			text('span', label, 'dxb-field-label'),
-			text('strong', value, 'dxb-field-value'),
+			text("span", label, "dxb-field-label"),
+			text("strong", value, "dxb-field-value"),
 		);
 		return field;
 	}
@@ -5446,21 +7392,21 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		return {
 			label:
 				months < 6
-					? 'NEW · PLATE ESTIMATE'
-					: '≈ ' + Math.floor(months / 12) + ' YEARS · PLATE ESTIMATE',
-			kind: months < 6 ? 'is-new' : months >= 120 ? 'is-vintage' : 'is-age',
+					? "NEW · PLATE ESTIMATE"
+					: "≈ " + Math.floor(months / 12) + " YEARS · PLATE ESTIMATE",
+			kind: months < 6 ? "is-new" : months >= 120 ? "is-vintage" : "is-age",
 		};
 	}
 	async function fillVehicle(reg, box, card, route, token) {
 		box.replaceChildren(
-			vehicleField('Registration', formatRegistration(reg), 'is-registration'),
-			text('p', 'Loading fleet details…', 'dxb-small'),
+			vehicleField("Registration", formatRegistration(reg), "is-registration"),
+			text("p", "Loading fleet details…", "dxb-small"),
 		);
 		try {
 			if (!vehicleCache.has(reg))
 				vehicleCache.set(
 					reg,
-					request('vehicle/' + encodeURIComponent(reg)).catch((e) => {
+					request("vehicle/" + encodeURIComponent(reg)).catch((e) => {
 						vehicleCache.delete(reg);
 						throw e;
 					}),
@@ -5469,92 +7415,93 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (!box.isConnected || token !== sequence) return;
 			box.replaceChildren(
 				vehicleField(
-					'Registration',
+					"Registration",
 					formatRegistration(reg),
-					'is-registration',
+					"is-registration",
 				),
-				vehicleField('Fleet number', v.fleet || 'Not available'),
+				vehicleField("Fleet number", v.fleet || "Not available"),
 			);
-			const types = text('div', '', 'dxb-vehicle-field');
-			types.append(text('span', 'Vehicle type', 'dxb-field-label'));
-			const pills = text('div', '', 'dxb-vehicle-pills');
+			const types = text("div", "", "dxb-vehicle-field");
+			types.append(text("span", "Vehicle type", "dxb-field-label"));
+			const pills = text("div", "", "dxb-vehicle-pills");
 			[v.type, v.fuel].filter(Boolean).forEach((value) => {
 				const fuel = value === v.fuel,
 					label = String(value).toUpperCase();
 				const emoji = fuel
 					? /hydrogen/i.test(value)
-						? '💧'
+						? "💧"
 						: /hybrid/i.test(value)
-						? '🌿'
+						? "🌿"
 						: /electric/i.test(value)
-						? '⚡️'
+						? "⚡️"
 						: /diesel/i.test(value)
-						? '⛽'
-						: ''
-					: '🚌';
+						? "⛽"
+						: ""
+					: "🚌";
 				const kind = fuel
 					? /hydrogen/i.test(value)
-						? 'hydrogen'
+						? "hydrogen"
 						: /hybrid/i.test(value)
-						? 'hybrid'
+						? "hybrid"
 						: /electric/i.test(value)
-						? 'electric'
+						? "electric"
 						: /diesel/i.test(value)
-						? 'diesel'
-						: ''
+						? "diesel"
+						: ""
 					: deckType(value);
 				const pill = text(
-					'span',
-					'',
-					'dxb-vehicle-pill' + (kind ? ' is-' + kind : ''),
+					"span",
+					"",
+					"dxb-vehicle-pill" + (kind ? " is-" + kind : ""),
 				);
 				if (emoji) {
-					const icon = text('span', emoji, 'dxb-propulsion-icon');
-					icon.setAttribute('aria-hidden', 'true');
+					const icon = text("span", emoji, "dxb-propulsion-icon");
+					icon.setAttribute("aria-hidden", "true");
 					pill.append(icon);
 				}
-				pill.append(text('span', label));
+				pill.append(text("span", label));
 				pills.append(pill);
 			});
-			if (!pills.childNodes.length) pills.append(text('span', 'Not available'));
+			if (!pills.childNodes.length) pills.append(text("span", "Not available"));
 			types.append(pills);
 			box.append(types);
 			const age = plateAge(reg);
 			if (age) {
-				const pill = text('span', age.label, 'dxb-vehicle-pill ' + age.kind);
+				const pill = text("span", age.label, "dxb-vehicle-pill " + age.kind);
 				pill.title =
-					'Estimated from the original UK registration period; transferred plates may differ.';
+					"Estimated from the original UK registration period; transferred plates may differ.";
 				pills.append(pill);
 			}
 			box.append(
 				vehicleField(
-					'USB charging',
+					"USB charging",
 					v.usb === true
-						? 'Available'
+						? "Available"
 						: v.usb === false
-						? 'Not fitted'
-						: 'Not confirmed',
+						? "Not fitted"
+						: "Not confirmed",
 				),
 			);
 
-			const footer = card.querySelector('.dxb-arrival-footer');
+			box.append(vehicleField("Garage", v.garage || "Not confirmed"));
+			const footer = card.querySelector(".dxb-arrival-footer");
 			footer.prepend(
-				vehicleField('Make / model', v.model || 'Not available', 'is-model'),
+				vehicleField("Make / model", v.model || "Not available", "is-model"),
 			);
 			if (v.source) {
-				const link = sourceLink('View vehicle details ↗', v.source);
-				link.classList.add('dxb-vehicle-source');
-				link.title = 'Fleet information from bustimes.org';
+				const link = sourceLink("View vehicle details ↗", v.source);
+				link.classList.add("dxb-vehicle-source");
+				link.title = "Fleet information from bustimes.org";
 				footer.insertBefore(link, footer.lastChild);
 			}
 			const surprise = unusualAllocation(v, current?.profile);
 			if (surprise) {
-				card.classList.add('is-surprise');
-				const note = text('div', '', 'dxb-route-surprise');
+				card.classList.add("is-surprise");
+				const note = text("div", "", "dxb-route-surprise");
 				note.append(
-					text('span', '✦ Route surprise', 'dxb-surprise-badge'),
+					text("span", "✦ Route surprise", "dxb-surprise-badge"),
 					text(
-						'p',
+						"p",
 						`A ${surprise.actual}-decker on the ${route}? Usually a ${surprise.usual}-decker route. 👀`,
 					),
 				);
@@ -5563,92 +7510,103 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (v.withdrawn)
 				card.append(
 					text(
-						'p',
-						'Fleet source lists this vehicle as withdrawn; live identification may need checking.',
-						'dxb-small dxb-fleet-warning',
+						"p",
+						"Fleet source lists this vehicle as withdrawn; live identification may need checking.",
+						"dxb-small dxb-fleet-warning",
 					),
 				);
 		} catch {
 			if (box.isConnected)
 				box.replaceChildren(
 					vehicleField(
-						'Registration',
+						"Registration",
 						formatRegistration(reg),
-						'is-registration',
+						"is-registration",
 					),
 					text(
-						'p',
-						'Fleet number, type and model are temporarily unavailable.',
-						'dxb-small',
+						"p",
+						"Fleet number, type and model are temporarily unavailable.",
+						"dxb-small",
 					),
 				);
 		}
 	}
 	function renderArrivals() {
-		const list = $('#dxb-arrivals');
+		const list = $("#dxb-arrivals");
 		list.replaceChildren();
-		const advanced = $('#dxb-advanced').checked;
+		const advanced = $("#dxb-advanced").checked;
 		arrivalRows.forEach((a) => {
-			const card = text('div', '', 'dxb-arrival-card'),
-				row = text('div', '', 'dxb-arrival-row');
+			const card = text("div", "", "dxb-arrival-card"),
+				row = text("div", "", "dxb-arrival-row");
 			const minutes = Math.max(
 				0,
 				Math.ceil((Date.parse(a.expected) - Date.now()) / 60000),
 			);
 			row.append(
-				text('span', '⌖ ' + a.destination, 'dxb-arrival-destination'),
+				text("span", "⌖ " + a.destination, "dxb-arrival-destination"),
 				text(
-					'strong',
-					minutes < 1 ? 'Due' : minutes + ' min',
-					'dxb-arrival-time',
+					"strong",
+					minutes < 1 ? "Due" : minutes + " min",
+					"dxb-arrival-time",
 				),
 			);
 			card.append(row);
 			if (a.shortWorking) {
 				const warning = text(
-					'span',
-					'⚠ TERMINATES EARLY',
-					'dxb-short-working',
+					"span",
+					"⚠ TERMINATES EARLY",
+					"dxb-short-working",
 				);
 				warning.title =
-					'This bus terminates before the full route destination for this direction.';
+					"This bus terminates before the full route destination for this direction.";
 				row.firstChild.append(warning);
 			}
-			const stopSelect = $('#dxb-stop');
-			const options = Array.from(stopSelect?.options || []).filter((option) => option.value);
-			const selectedIndex = options.findIndex((option) => option.value === stopSelect?.value);
-			const fallbackStops = selectedIndex >= 0 ? options.length - selectedIndex - 1 : null;
+			const stopSelect = $("#dxb-stop");
+			const options = Array.from(stopSelect?.options || []).filter(
+				(option) => option.value,
+			);
+			const selectedIndex = options.findIndex(
+				(option) => option.value === stopSelect?.value,
+			);
+			const fallbackStops =
+				selectedIndex >= 0 ? options.length - selectedIndex - 1 : null;
 			const destinationStops = a.destinationStops ?? fallbackStops;
 			if (destinationStops != null) {
 				const fallback = a.destinationStops == null;
 				const distance = text(
-					'small',
-					destinationStops + (destinationStops === 1 ? ' STOP' : ' STOPS') + (fallback ? ' TO ROUTE END' : ''),
-					'dxb-stop-distance',
+					"small",
+					destinationStops +
+						(destinationStops === 1 ? " STOP" : " STOPS") +
+						(fallback ? " TO ROUTE END" : ""),
+					"dxb-stop-distance",
 				);
-				if (fallback) distance.title = 'Counted from the selected stop to the final stop in this direction. A bus terminating early may serve fewer stops.';
+				if (fallback)
+					distance.title =
+						"Counted from the selected stop to the final stop in this direction. A bus terminating early may serve fewer stops.";
 				row.firstChild.append(distance);
 			} else if (advanced) {
-				row.firstChild.append(text('small', 'STOP COUNT UNAVAILABLE', 'dxb-stop-distance'));
+				row.firstChild.append(
+					text("small", "STOP COUNT UNAVAILABLE", "dxb-stop-distance"),
+				);
 			}
-			const meta = text('div', '', 'dxb-arrival-meta'),
-				position = text('div', '', 'dxb-arrival-position');
+			const meta = text("div", "", "dxb-arrival-meta"),
+				position = text("div", "", "dxb-arrival-position");
 			if (a.location || a.nextStop)
 				position.append(
 					text(
-						'p',
+						"p",
 						a.location
-							? 'Current location · ' + a.location
-							: 'Next predicted stop · ' + a.nextStop,
-						'dxb-bus-position',
+							? "Current location · " + a.location
+							: "Next predicted stop · " + a.nextStop,
+						"dxb-bus-position",
 					),
 				);
 			if (minutes < 1 || a.stopsAway != null) {
 				const arriving = minutes < 1 || a.stopsAway === 0;
 				const distance = text(
-					'span',
-					arriving ? 'ARRIVING' : '≈ ' + a.stopsAway + ' STOPS AWAY',
-					'dxb-stop-distance',
+					"span",
+					arriving ? "ARRIVING" : "≈ " + a.stopsAway + " STOPS AWAY",
+					"dxb-stop-distance",
 				);
 				distance.style.opacity = String(
 					arriving ? 1 : Math.max(0.45, 1 - a.stopsAway * 0.035),
@@ -5657,38 +7615,37 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			}
 			if (position.childNodes.length) meta.append(position);
 			if (advanced && a.trip) {
-				const trip = text('p', '', 'dxb-trip');
+				const trip = text("p", "", "dxb-trip");
 				trip.append(
-					text('span', 'TRIP', 'dxb-trip-label'),
-					text('span', String(a.trip), 'dxb-trip-number'),
+					text("span", "TRIP", "dxb-trip-label"),
+					text("span", String(a.trip), "dxb-trip-number"),
 				);
 				meta.append(trip);
 			}
 			if (meta.childNodes.length) card.append(meta);
-			const reg = (a.vehicle || '').replace(/\s/g, '').toUpperCase();
+			const reg = (a.vehicle || "").replace(/\s/g, "").toUpperCase();
 			if (advanced) {
-				card.classList.add('has-details');
-				const details = text('div', '', 'dxb-vehicle-details'),
-					footer = text('div', '', 'dxb-arrival-footer');
+				card.classList.add("has-details");
+				const details = text("div", "", "dxb-vehicle-details"),
+					footer = text("div", "", "dxb-arrival-footer");
 				card.append(details, footer);
 				if (/^[A-Z0-9]{3,12}$/.test(reg)) {
-					const button = text(
-						'button',
-						marked.includes(reg)
-							? '📌 Pinned ' + formatRegistration(reg)
-							: '📌 Pin ' + formatRegistration(reg),
-						'dxb-mark-button',
+					const button = text("button", "", "dxb-mark-button");
+					setPinLabel(
+						button,
+						(marked.includes(reg) ? "Pinned " : "Pin ") +
+							formatRegistration(reg),
 					);
-					button.type = 'button';
-					button.setAttribute('aria-pressed', String(marked.includes(reg)));
-					button.addEventListener('click', () => {
+					button.type = "button";
+					button.setAttribute("aria-pressed", String(marked.includes(reg)));
+					button.addEventListener("click", () => {
 						if (marked.includes(reg)) marked = marked.filter((v) => v !== reg);
 						else if (marked.length < 12) marked.push(reg);
 						else {
-							button.textContent = '12 buses pinned · remove one first';
+							button.textContent = "12 buses pinned · remove one first";
 							return;
 						}
-						saveList('dxb-marked-vehicles', marked);
+						saveList("dxb-marked-vehicles", marked);
 						renderMarked();
 						renderArrivals();
 					});
@@ -5702,7 +7659,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 					);
 				} else {
 					details.append(
-						text('p', 'Vehicle registration not supplied by TfL.', 'dxb-small'),
+						text("p", "Vehicle registration not supplied by TfL.", "dxb-small"),
 					);
 					footer.remove();
 				}
@@ -5712,81 +7669,84 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		if (!arrivalRows.length)
 			list.append(
 				text(
-					'p',
-					$('#dxb-stop').value
-						? 'No upcoming predictions for this route at this stop.'
-						: 'Choose a stop for live arrival predictions.',
-					'dxb-small',
+					"p",
+					$("#dxb-stop").value
+						? "No upcoming predictions for this route at this stop."
+						: "Choose a stop for live arrival predictions.",
+					"dxb-small",
 				),
 			);
 	}
 	function celebrateEnthusiastMode() {
-		document.querySelector('.dxb-confetti')?.remove();
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-		const rect = $('#dxb-advanced').getBoundingClientRect(),
-			burst = text('div', '', 'dxb-confetti');
-		burst.setAttribute('aria-hidden', 'true');
+		document.querySelector(".dxb-confetti")?.remove();
+		if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+		const rect = $("#dxb-advanced").getBoundingClientRect(),
+			burst = text("div", "", "dxb-confetti");
+		burst.setAttribute("aria-hidden", "true");
 		const colors = [
-			'#d5ad63',
-			'#ffdc91',
-			'#ff6a00',
-			'#ee0979',
-			'#2657eb',
-			'#de6161',
+			"#d5ad63",
+			"#ffdc91",
+			"#ff6a00",
+			"#ee0979",
+			"#2657eb",
+			"#de6161",
 		];
 		for (let i = 0; i < 38; i++) {
-			const particle = document.createElement('i'),
+			const particle = document.createElement("i"),
 				angle = Math.PI + (i / 37) * Math.PI,
 				distance = 70 + Math.random() * 150;
-			if (i % 3 === 0) { particle.textContent = ['🥦', '🥕', '🥬', '🍆', '🥸'][i % 5]; particle.classList.add('is-emoji'); }
-			particle.style.left = rect.left + rect.width / 2 + 'px';
-			particle.style.top = rect.top + rect.height / 2 + 'px';
-			particle.style.setProperty('--confetti-color', colors[i % colors.length]);
+			if (i % 3 === 0) {
+				particle.textContent = ["🥦", "🥕", "🥬", "🍆", "🥸"][i % 5];
+				particle.classList.add("is-emoji");
+			}
+			particle.style.left = rect.left + rect.width / 2 + "px";
+			particle.style.top = rect.top + rect.height / 2 + "px";
+			particle.style.setProperty("--confetti-color", colors[i % colors.length]);
 			particle.style.setProperty(
-				'--confetti-x',
-				Math.cos(angle) * distance + 'px',
+				"--confetti-x",
+				Math.cos(angle) * distance + "px",
 			);
 			particle.style.setProperty(
-				'--confetti-y',
-				Math.sin(angle) * distance + 65 + 'px',
+				"--confetti-y",
+				Math.sin(angle) * distance + 65 + "px",
 			);
 			particle.style.setProperty(
-				'--confetti-turn',
-				Math.random() * 720 - 360 + 'deg',
+				"--confetti-turn",
+				Math.random() * 720 - 360 + "deg",
 			);
-			particle.style.animationDelay = Math.random() * 0.12 + 's';
+			particle.style.animationDelay = Math.random() * 0.12 + "s";
 			burst.append(particle);
 		}
 		document.body.append(burst);
 		setTimeout(() => burst.remove(), 1400);
 	}
-	$('#dxb-advanced').setAttribute('role', 'switch');
-	$('#dxb-advanced').addEventListener('change', () => {
-		root.classList.toggle('is-enthusiast', $('#dxb-advanced').checked);
-		if (!$('.dxb-arrival-retry') && !$('.dxb-schedule-state')) renderArrivals();
-		if ($('#dxb-advanced').checked) celebrateEnthusiastMode();
-		else document.querySelector('.dxb-confetti')?.remove();
+	$("#dxb-advanced").setAttribute("role", "switch");
+	$("#dxb-advanced").addEventListener("change", () => {
+		root.classList.toggle("is-enthusiast", $("#dxb-advanced").checked);
+		if (!$(".dxb-arrival-retry") && !$(".dxb-schedule-state")) renderArrivals();
+		if ($("#dxb-advanced").checked) celebrateEnthusiastMode();
+		else document.querySelector(".dxb-confetti")?.remove();
 	});
 	renderMarked();
-	const aside = $('.dxb-explorer-aside'),
-		main = $('.dxb-explorer-main');
+	const aside = $(".dxb-explorer-aside"),
+		main = $(".dxb-explorer-main");
 	if (window.ResizeObserver) {
 		new ResizeObserver(() => {
-			aside.style.height = matchMedia('(max-width:700px)').matches
-				? '310px'
-				: Math.ceil(main.getBoundingClientRect().height) + 'px';
+			aside.style.height = matchMedia("(max-width:700px)").matches
+				? "310px"
+				: Math.ceil(main.getBoundingClientRect().height) + "px";
 		}).observe(main);
 	}
 	async function request(path, signal) {
 		const response = await fetch(DXB.api + path, {
 			signal,
-			credentials: 'same-origin',
+			credentials: "same-origin",
 		});
 		const data = await response.json();
 		if (!response.ok) {
 			const error = new Error(
 				data.message ||
-					'Information is temporarily unavailable. Please try again.',
+					"Information is temporarily unavailable. Please try again.",
 			);
 			error.code = data.code;
 			throw error;
@@ -5795,7 +7755,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	}
 	function announce(message, error = false) {
 		status.textContent = message;
-		status.classList.toggle('is-error', error);
+		status.classList.toggle("is-error", error);
 	}
 	function stopArrivals() {
 		lineRequest++;
@@ -5803,33 +7763,62 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		clearInterval(retryTicker);
 		arrivalsController?.abort();
 	}
+	function setRouteTabAvailability(profile = current?.profile) {
+		const former =
+			profile?.badgeType === "former" || current?.serviceType === "former";
+		document.body.classList.toggle("dx-route-withdrawn", former);
+		root.dataset.routeStatus = former ? "former" : "current";
+		const overviewIntro = $("#panel-overview > p");
+		if (overviewIntro)
+			overviewIntro.textContent = former
+				? "Discover photographs, stories and operating history from this former route’s archive."
+				: "Explore stops and arrival predictions, or discover photographs and journeys from the archive.";
+		["arrivals", "line"].forEach((name) => {
+			const button = $(`[data-tab="${name}"]`);
+			button.disabled = former;
+			button.setAttribute("aria-disabled", String(former));
+			if (former) {
+				button.tabIndex = -1;
+				button.title =
+					"Unavailable for a withdrawn route. Explore its overview and archive instead.";
+			} else {
+				button.removeAttribute("title");
+			}
+		});
+		if (former && ["arrivals", "line"].includes(tab)) activateTab("overview");
+	}
 	function activateTab(name) {
+		if ($(`[data-tab="${name}"]`)?.disabled) name = "overview";
 		tab = name;
 		root.dataset.routeTab = name;
-		$$('[data-tab]').forEach((button) => {
+		$$("[data-tab]").forEach((button) => {
 			const active = button.dataset.tab === name;
-			button.setAttribute('aria-selected', String(active));
+			button.setAttribute("aria-selected", String(active));
 			button.tabIndex = active ? 0 : -1;
 		});
-		$$('[role=tabpanel]').forEach(
+		$$("[role=tabpanel]").forEach(
 			(panel) => (panel.hidden = panel.id !== `panel-${name}`),
 		);
 		stopArrivals();
-		if (name === 'line' && current) loadLine();
-		if (name === 'news' && current) loadNews();
-		if (name === 'discussion' && current) loadDiscussion();
-		if (name === 'arrivals' && $('#dxb-stop').value && current)
+		if (name === "line" && current) loadLine();
+		if (name === "news" && current) loadNews();
+		if (name === "discussion" && current) loadDiscussion();
+		if (name === "arrivals" && $("#dxb-stop").value && current)
 			refreshArrivals();
 	}
-	$$('[data-tab]').forEach((button, i, buttons) => {
-		button.addEventListener('click', () => activateTab(button.dataset.tab));
-		button.addEventListener('keydown', (event) => {
+	$$("[data-tab]").forEach((button) => {
+		button.addEventListener("click", () => activateTab(button.dataset.tab));
+		button.addEventListener("keydown", (event) => {
+			const buttons = $$("[data-tab]").filter(
+				(item) => !item.hidden && !item.disabled,
+			);
+			const i = buttons.indexOf(button);
 			let next;
-			if (event.key === 'ArrowRight') next = (i + 1) % buttons.length;
-			if (event.key === 'ArrowLeft')
+			if (event.key === "ArrowRight") next = (i + 1) % buttons.length;
+			if (event.key === "ArrowLeft")
 				next = (i + buttons.length - 1) % buttons.length;
-			if (event.key === 'Home') next = 0;
-			if (event.key === 'End') next = buttons.length - 1;
+			if (event.key === "Home") next = 0;
+			if (event.key === "End") next = buttons.length - 1;
 			if (next !== undefined) {
 				event.preventDefault();
 				buttons[next].focus();
@@ -5839,94 +7828,217 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	});
 	let lineRequest = 0;
 	async function loadLine() {
-		const token = ++lineRequest, route = current?.id;
-		const host = $('#dxb-line-stops'), select = $('#dxb-line-direction');
+		const token = ++lineRequest,
+			route = current?.id;
+		const host = $("#dxb-line-stops"),
+			select = $("#dxb-line-direction");
 		if (!route) return;
-		const chosen = select.dataset.route === route ? select.value : current.direction;
+		const chosen =
+			select.dataset.route === route ? select.value : current.direction;
 		select.dataset.route = route;
-		host.replaceChildren(text('p', 'Loading route line…', 'dxb-small'));
+		host.replaceChildren(text("p", "Loading route line…", "dxb-small"));
 		try {
 			const [labels, data, positions] = await Promise.all([
-				request('directions/' + encodeURIComponent(route)),
-				request(`route/${encodeURIComponent(route)}?direction=${chosen || 'inbound'}`),
-				request('line-positions/' + encodeURIComponent(route)).catch(() => null)
+				request("directions/" + encodeURIComponent(route)),
+				request(
+					`route/${encodeURIComponent(route)}?direction=${chosen || "inbound"}`,
+				),
+				request("line-positions/" + encodeURIComponent(route)).catch(
+					() => null,
+				),
 			]);
 			if (token !== lineRequest || current?.id !== route) return;
-			select.replaceChildren(...Object.entries(labels).map(([value, label]) => new Option(label, value)));
+			select.replaceChildren(
+				...Object.entries(labels).map(
+					([value, label]) => new Option(label, value),
+				),
+			);
 			select.value = data.direction;
 			host.replaceChildren();
-			const note = text('p', positions ? 'Approximate positions from the next predicted stop, not live GPS. Refreshes every 30 seconds.' : '⚠ Vehicle positions temporarily unavailable. Route stops are shown below.', 'dxb-small');
+			const note = text(
+				"p",
+				positions
+					? "Approximate positions from the next predicted stop, not live GPS. Refreshes every 30 seconds."
+					: "⚠ Vehicle positions temporarily unavailable. Route stops are shown below.",
+				"dxb-small",
+			);
 			host.append(note);
-			const list = text('ol', '', 'dxb-line-timeline');
-			const stops = data.stops || [], ids = new Set(stops.map(stop => stop.id));
-			const buses = (positions?.vehicles || []).filter(bus => ids.has(bus.stopId) && (!bus.direction || bus.direction === data.direction));
-			stops.forEach(stop => {
-				const item = text('li', '', 'dxb-line-stop');
-				item.append(text('span', stop.name, 'dxb-line-stop-name'));
-				buses.filter(bus => bus.stopId === stop.id).forEach(bus => {
-					const button = text('button', '🚌 ' + formatRegistration(bus.registration), 'dxb-line-bus');
-					button.type = 'button'; button.setAttribute('aria-label', `${formatRegistration(bus.registration)}, approximately at ${stop.name}, towards ${bus.destination}. View bus details`);
-					request('vehicle/' + encodeURIComponent(bus.registration)).then(vehicle => { if (!button.isConnected || token !== lineRequest) return; if (vehicle.fleet) { button.textContent = '🚌 ' + formatRegistration(bus.registration) + ' · ' + vehicle.fleet; button.setAttribute('aria-label', `${formatRegistration(bus.registration)}, fleet ${vehicle.fleet}, approximately at ${stop.name}, towards ${bus.destination}. View bus details`); } }).catch(() => {});
-					button.addEventListener('click', async () => {
-						button.disabled = true;
-						try { const vehicle = await request('vehicle/' + encodeURIComponent(bus.registration)).catch(() => ({})); if (current?.id === route && button.isConnected) openFleet('vehicle', [{...vehicle, ...bus}], current.name); }
-						finally { button.disabled = false; }
-					}); item.append(button);
-				}); list.append(item);
+			const directions = Object.keys(labels);
+			const otherData = await Promise.all(
+				directions.map((direction) =>
+					direction === data.direction
+						? Promise.resolve(data)
+						: request(
+								`route/${encodeURIComponent(route)}?direction=${direction}`,
+						  ).catch(() => ({ direction, stops: [] })),
+				),
+			);
+			if (token !== lineRequest || current?.id !== route) return;
+			const columns = text("div", "", "dxb-line-columns");
+			host.append(columns);
+			otherData.forEach((data) => {
+				const column = text("section", "", "dxb-line-column");
+				column.dataset.direction = data.direction;
+				column.classList.toggle("is-selected", data.direction === select.value);
+				column.append(
+					text(
+						"h3",
+						`${route.toUpperCase()} ${
+							labels[data.direction] || data.direction
+						}`,
+					),
+				);
+				columns.append(column);
+				const list = text("ol", "", "dxb-line-timeline");
+				const stops = data.stops || [],
+					ids = new Set(stops.map((stop) => stop.id));
+				const buses = (positions?.vehicles || []).filter(
+					(bus) =>
+						ids.has(bus.stopId) &&
+						(!bus.direction || bus.direction === data.direction),
+				);
+				stops.forEach((stop) => {
+					const item = text("li", "", "dxb-line-stop");
+					item.append(text("span", stop.name, "dxb-line-stop-name"));
+					buses
+						.filter((bus) => bus.stopId === stop.id)
+						.forEach((bus) => {
+							item.classList.add("has-bus");
+							const button = text(
+								"button",
+								"🚌 " + formatRegistration(bus.registration),
+								"dxb-line-bus",
+							);
+							button.type = "button";
+							button.setAttribute(
+								"aria-label",
+								`${formatRegistration(bus.registration)}, approximately at ${
+									stop.name
+								}, towards ${bus.destination}. View bus details`,
+							);
+							request("vehicle/" + encodeURIComponent(bus.registration))
+								.then((vehicle) => {
+									if (!button.isConnected || token !== lineRequest) return;
+									if (vehicle.fleet) {
+										button.textContent =
+											"🚌 " +
+											formatRegistration(bus.registration) +
+											" · " +
+											vehicle.fleet;
+										button.setAttribute(
+											"aria-label",
+											`${formatRegistration(bus.registration)}, fleet ${
+												vehicle.fleet
+											}, approximately at ${stop.name}, towards ${
+												bus.destination
+											}. View bus details`,
+										);
+									}
+								})
+								.catch(() => {});
+							button.addEventListener("click", async () => {
+								button.disabled = true;
+								try {
+									const vehicle = await request(
+										"vehicle/" + encodeURIComponent(bus.registration),
+									).catch(() => ({}));
+									if (current?.id === route && button.isConnected)
+										openFleet(
+											"vehicle",
+											[{ ...vehicle, ...bus }],
+											current.name,
+										);
+								} finally {
+									button.disabled = false;
+								}
+							});
+							item.append(button);
+						});
+					list.append(item);
+				});
+				column.append(list);
+				if (!buses.length && positions)
+					column.prepend(
+						text(
+							"p",
+							"No buses with a matching predicted stop in this direction.",
+							"dxb-small",
+						),
+					);
+				if (!stops.length)
+					column.append(
+						text("p", "Stop information is unavailable for this direction."),
+					);
 			});
-			host.append(list);
-			if (!buses.length && positions) host.prepend(text('p', 'No buses with a matching predicted stop in this direction.', 'dxb-small'));
-			if (!stops.length) host.append(text('p', 'Stop information is unavailable for this direction.'));
-		} catch { if (token === lineRequest) host.replaceChildren(text('p', '⚠ Route line temporarily unavailable. Retrying shortly.', 'dxb-small')); }
-		if (token === lineRequest && tab === 'line' && current?.id === route) timer = setTimeout(loadLine, 30000);
+		} catch {
+			if (token === lineRequest)
+				host.replaceChildren(
+					text(
+						"p",
+						"⚠ Route line temporarily unavailable. Retrying shortly.",
+						"dxb-small",
+					),
+				);
+		}
+		if (token === lineRequest && tab === "line" && current?.id === route)
+			timer = setTimeout(loadLine, 30000);
 	}
-	$('#dxb-line-direction').addEventListener('change', () => { clearTimeout(timer); loadLine(); });
+	$("#dxb-line-direction").addEventListener("change", () => {
+		document
+			.querySelectorAll(".dxb-line-column")
+			.forEach((column) =>
+				column.classList.toggle(
+					"is-selected",
+					column.dataset.direction === $("#dxb-line-direction").value,
+				),
+			);
+	});
 	async function loadDiscussion() {
 		const token = sequence,
-			box = $('#dxb-comments');
-		box.replaceChildren(text('p', 'Loading discussion…', 'dxb-small'));
-		$('#dxb-comment-form').reset();
-		$('#dxb-comment-status').textContent = '';
+			box = $("#dxb-comments");
+		box.replaceChildren(text("p", "Loading discussion…", "dxb-small"));
+		$("#dxb-comment-form").reset();
+		$("#dxb-comment-status").textContent = "";
 		try {
 			const data = await request(
-				'discussion/' + encodeURIComponent(current.name),
+				"discussion/" + encodeURIComponent(current.name),
 			);
 			if (token !== sequence) return;
 			box.replaceChildren();
 			if (!data.items.length)
 				box.append(
-					text('p', 'Start the conversation for this route.', 'dxb-small'),
+					text("p", "Start the conversation for this route.", "dxb-small"),
 				);
 			data.items.forEach((c) => {
-				const item = text('article', '', 'dxb-comment');
+				const item = text("article", "", "dxb-comment");
 				item.append(
-					text('strong', c.name),
-					text('small', c.date),
-					text('p', c.body),
+					text("strong", c.name),
+					text("small", c.date),
+					text("p", c.body),
 				);
 				box.append(item);
 			});
 		} catch {
 			if (token === sequence)
 				box.replaceChildren(
-					text('p', 'Discussion is temporarily unavailable.', 'dxb-small'),
+					text("p", "Discussion is temporarily unavailable.", "dxb-small"),
 				);
 		}
 	}
-	$('#dxb-comment-form').addEventListener('submit', async (e) => {
+	$("#dxb-comment-form").addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (!current) return;
 		const form = e.currentTarget,
-			button = form.querySelector('button'),
+			button = form.querySelector("button"),
 			token = sequence;
 		button.disabled = true;
 		try {
 			const response = await fetch(
-				DXB.api + 'discussion/' + encodeURIComponent(current.name),
+				DXB.api + "discussion/" + encodeURIComponent(current.name),
 				{
-					method: 'POST',
-					credentials: 'same-origin',
-					headers: { 'Content-Type': 'application/json' },
+					method: "POST",
+					credentials: "same-origin",
+					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify(Object.fromEntries(new FormData(form))),
 				},
 			);
@@ -5934,12 +8046,12 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (!response.ok) throw new Error(data.message);
 			if (token === sequence) {
 				form.reset();
-				$('#dxb-comment-status').textContent = data.message;
+				$("#dxb-comment-status").textContent = data.message;
 			}
 		} catch (error) {
 			if (token === sequence)
-				$('#dxb-comment-status').textContent =
-					error.message || 'Your comment could not be sent.';
+				$("#dxb-comment-status").textContent =
+					error.message || "Your comment could not be sent.";
 		} finally {
 			button.disabled = false;
 		}
@@ -5949,157 +8061,164 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		consultationController,
 		consultationData;
 	function sourceLink(label, url) {
-		const a = text('a', label);
+		const a = text("a", label);
 		a.href = url;
-		a.target = '_blank';
-		a.rel = 'noopener noreferrer';
+		a.target = "_blank";
+		a.rel = "noopener noreferrer";
 		return a;
 	}
 	function dateLabel(raw) {
-		if (!raw) return 'Date to be confirmed';
+		if (!raw) return "Date to be confirmed";
 		const formatted = raw.replace(
 			/\b(\d{1,2})[ .-]+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[ .-]+(\d{4}|\d{2})\b/gi,
 			(_, d, m, y) => {
 				const month = [
-					'jan',
-					'feb',
-					'mar',
-					'apr',
-					'may',
-					'jun',
-					'jul',
-					'aug',
-					'sep',
-					'oct',
-					'nov',
-					'dec',
+					"jan",
+					"feb",
+					"mar",
+					"apr",
+					"may",
+					"jun",
+					"jul",
+					"aug",
+					"sep",
+					"oct",
+					"nov",
+					"dec",
 				].indexOf(m.slice(0, 3).toLowerCase());
 				const year = y.length === 2 ? 2000 + Number(y) : Number(y),
 					dt = new Date(Date.UTC(year, month, Number(d), 12));
-				return new Intl.DateTimeFormat('en-GB', {
-					weekday: 'long',
-					day: 'numeric',
-					month: 'long',
-					year: 'numeric',
-					timeZone: 'Europe/London',
+				return new Intl.DateTimeFormat("en-GB", {
+					weekday: "long",
+					day: "numeric",
+					month: "long",
+					year: "numeric",
+					timeZone: "Europe/London",
 				}).format(dt);
 			},
 		);
 		return formatted === raw && /\d/.test(raw) && !/\b\d{4}\b/.test(raw)
-			? raw + ' · year not supplied'
+			? raw + " · year not supplied"
 			: formatted;
 	}
 	function consultationCards() {
-		const box = text('div', '', 'dxb-consultations');
-		box.append(text('h3', 'Consultations'));
+		const box = text("section", "", "dxb-consultations dxb-route-news-pane"),
+			body = text("div", "", "dxb-route-news-body");
+		box.setAttribute("aria-label", "News and consultations");
+		box.append(text("h3", "News & consultations"), body);
 		if (!consultationData) {
-			box.append(text('p', 'Checking the TfL consultation hub…', 'dxb-small'));
-			return box;
-		}
-		if (consultationData.error)
-			box.append(
+			body.append(text("p", "Checking the TfL consultation hub…", "dxb-small"));
+		} else if (consultationData.error) {
+			body.append(
 				text(
-					'p',
-					'The consultation hub is temporarily unavailable.',
-					'dxb-small',
+					"p",
+					"The consultation hub is temporarily unavailable.",
+					"dxb-small",
 				),
 			);
-		else if (!consultationData.items.length)
-			box.append(
+		} else if (!consultationData.items.length) {
+			body.append(
 				text(
-					'p',
-					'No matching route mentions were found in the current hub listings.',
-					'dxb-small',
+					"p",
+					"No matching route mentions were found in the current hub listings.",
+					"dxb-small",
 				),
 			);
-		else
+		} else {
 			consultationData.items.forEach((item) => {
-				const card = text('article', '', 'dxb-news-item');
+				const card = text("article", "", "dxb-news-item");
 				card.append(
-					text('span', item.status, 'dxb-news-badge'),
-					text('p', item.title),
+					text("span", item.status, "dxb-news-badge"),
+					text("p", item.title),
 					...(item.published && Number.isFinite(Date.parse(item.published))
 						? [
 								text(
-									'small',
-									'Published ' +
-										new Intl.DateTimeFormat('en-GB', {
-											weekday: 'long',
-											day: 'numeric',
-											month: 'long',
-											year: 'numeric',
-											hour: '2-digit',
-											minute: '2-digit',
-											timeZone: 'Europe/London',
-											timeZoneName: 'short',
+									"small",
+									"Published " +
+										new Intl.DateTimeFormat("en-GB", {
+											weekday: "long",
+											day: "numeric",
+											month: "long",
+											year: "numeric",
+											hour: "2-digit",
+											minute: "2-digit",
+											timeZone: "Europe/London",
+											timeZoneName: "short",
 										}).format(new Date(item.published)),
 								),
 						  ]
 						: []),
-					sourceLink('Read the proposal and check its status ↗', item.url),
+					sourceLink("Read the proposal and check its status ↗", item.url),
 				);
-				box.append(card);
+				body.append(card);
 			});
-		if (consultationData.stale)
-			box.append(
-				text('p', 'Showing a saved consultation update.', 'dxb-small'),
+		}
+		if (consultationData?.stale) {
+			body.append(
+				text("p", "Showing a saved consultation update.", "dxb-small"),
 			);
-		box.append(
+		}
+		const sources = text("footer", "", "dxb-pane-sources"),
+			line = text("p", "", "dxb-source");
+		line.append(
 			sourceLink(
-				'TfL Have Your Say ↗',
-				'https://haveyoursay.tfl.gov.uk/hub-page/londons-buses-taxis-and-phvs',
+				"TfL Have Your Say ↗",
+				consultationData?.source ||
+					"https://haveyoursay.tfl.gov.uk/hub-page/londons-buses-taxis-and-phvs",
 			),
 		);
+		sources.append(line);
+		box.append(sources);
 		return box;
 	}
 	async function loadConsultations(route, token) {
 		consultationController?.abort();
 		consultationController = new AbortController();
 		consultationData = null;
-		const notice = $('#dxb-consultation-notice');
+		const notice = $("#dxb-consultation-notice");
 		notice.replaceChildren();
 		try {
 			const data = await request(
-				'consultations/' + encodeURIComponent(route),
+				"consultations/" + encodeURIComponent(route),
 				consultationController.signal,
 			);
 			if (token !== sequence) return;
 			consultationData = data;
 			if (data.items.length) {
 				const button = text(
-					'button',
+					"button",
 					`${data.items.length} related TfL consultation${
-						data.items.length === 1 ? '' : 's'
+						data.items.length === 1 ? "" : "s"
 					} · View in News ↗`,
 				);
-				button.type = 'button';
-				button.addEventListener('click', () => activateTab('news'));
+				button.type = "button";
+				button.addEventListener("click", () => activateTab("news"));
 				notice.append(button);
 			}
 		} catch (e) {
-			if (token !== sequence || e.name === 'AbortError') return;
+			if (token !== sequence || e.name === "AbortError") return;
 			consultationData = { error: true };
 		}
-		const old = $('#panel-news .dxb-consultations');
+		const old = $("#panel-news .dxb-consultations");
 		if (old) old.replaceWith(consultationCards());
 	}
 	function displayWorkings(workings) {
-		const key = (w) => w.destinations.trim().replace(/\s+/g, ' ').toLowerCase();
+		const key = (w) => w.destinations.trim().replace(/\s+/g, " ").toLowerCase();
 		const main = new Set(
-			workings.filter((w) => w.label === 'Main service').map(key),
+			workings.filter((w) => w.label === "Main service").map(key),
 		);
 		const night = new Set(
-			workings.filter((w) => w.label === 'Night service').map(key),
+			workings.filter((w) => w.label === "Night service").map(key),
 		);
 		const combined = new Set([...main].filter((k) => night.has(k)));
 		const seen = new Set();
 		return workings.flatMap((w) => {
 			const item =
 				combined.has(key(w)) &&
-				['Main service', 'Night service'].includes(w.label)
-					? { ...w, label: 'Complete service · 24 hours' }
+				["Main service", "Night service"].includes(w.label)
+					? { ...w, label: "Complete service · 24 hours" }
 					: w;
-			const identity = key(item) + '|' + item.label;
+			const identity = key(item) + "|" + item.label;
 			if (seen.has(identity)) return [];
 			seen.add(identity);
 			return [item];
@@ -6108,250 +8227,334 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	function applyProfile(profile, token) {
 		if (token !== sequence || !current) return;
 		current.profile = profile;
+		setRouteTabAvailability(profile);
 		if (arrivalRows.length) renderArrivals();
-		const box = $('#dxb-route-facts');
+		const box = $("#dxb-route-facts");
 		box.replaceChildren();
 		const unavailable = profile.error;
 		box.append(
 			text(
-				'p',
-				`Operator · ${profile.operators?.join(' / ') || 'Not confirmed'}${
-					profile.garages?.length ? ' – ' + profile.garages.join(' / ') : ''
+				"p",
+				`Operator · ${profile.operators?.join(" / ") || "Not confirmed"}${
+					profile.garages?.length ? " – " + profile.garages.join(" / ") : ""
 				}`,
-				'dxb-overview-only dxb-operator-fact',
+				"dxb-overview-only dxb-operator-fact",
 			),
 			text(
-				'p',
+				"p",
 				`Vehicles · ${
 					(deckType(profile.vehicle)
-						? profile.vehicle + ' (usually)'
-						: profile.vehicle) || 'Not confirmed'
+						? profile.vehicle + " (usually)"
+						: profile.vehicle) || "Not confirmed"
 				}`,
-				'dxb-vehicle-fact',
+				"dxb-vehicle-fact",
 			),
 		);
 		if (profile.frequency) {
-			const frequency = text('div', '', 'dxb-fact-pills dxb-overview-only');
+			const frequency = text("div", "", "dxb-fact-pills dxb-overview-only");
 			profile.frequency
-				.split(' · ')
+				.split(" · ")
 				.forEach((value) =>
-					frequency.append(text('span', value, 'dxb-fact-pill')),
+					frequency.append(text("span", value, "dxb-fact-pill")),
 				);
-			frequency.setAttribute('aria-label', 'Typical frequency');
+			frequency.setAttribute("aria-label", "Typical frequency");
 			box.append(frequency);
 		}
 		if (profile.garages?.length || profile.frequency) {
-			const sources = text('small', '', 'dxb-fact-sources dxb-overview-only');
+			const sources = text("small", "", "dxb-fact-sources dxb-overview-only");
 			if (profile.garages?.length)
 				sources.append(
 					sourceLink(
-						'Garage allocations ↗',
-						'http://www.londonbusroutes.net/garages.htm',
+						"Garage allocations ↗",
+						"http://www.londonbusroutes.net/garages.htm",
 					),
 				);
 			if (profile.frequency)
 				sources.append(
 					sourceLink(
-						'Typical frequencies ↗',
-						'http://www.londonbusroutes.net/details.htm',
+						"Typical frequencies ↗",
+						"http://www.londonbusroutes.net/details.htm",
 					),
 				);
 			box.append(sources);
 		}
 		if (profile.crossBoundary) {
 			const badge = sourceLink(
-				'Cross-Boundary Route ↗',
+				"Cross-Boundary Route ↗",
 				profile.crossBoundarySource,
 			);
-			badge.className = 'dxb-pattern-badge is-boundary';
+			badge.className = "dxb-pattern-badge is-boundary";
 			box.append(badge);
 		}
 		if (profile.record) {
-			const badge = sourceLink('🏆 ' + profile.record, profile.recordSource);
-			badge.className = 'dxb-pattern-badge is-record';
-			badge.title = 'Community route records · February 2026 snapshot';
+			const badge = sourceLink("🏆 " + profile.record, profile.recordSource);
+			badge.className = "dxb-pattern-badge is-record";
+			badge.title = "Community route records · February 2026 snapshot";
 			box.append(badge);
 		}
 		if (!current.archive) {
-			const live = text(
-				'p',
-				'Checking live tracking…',
-				'dxb-live-count dxb-fact-pill',
-			);
-			const trackingRow = text('div', '', 'dxb-tracking-row');
+			const live = text("p", "", "dxb-live-count dxb-fact-pill");
+			const trackingRow = text("div", "", "dxb-tracking-row");
 			trackingRow.append(live);
 			box.append(trackingRow);
-			let liveFailures = 0;
-            const refreshLive = () => {
-            if(token !== sequence || !live.isConnected) return;
-            if(document.hidden){setTimeout(refreshLive,30000);return;}
-            request('running/' + encodeURIComponent(current.name))
-				.then((data) => {
-					if (token === sequence && live.isConnected) {
+			let liveFailures = 0,
+				refreshTimer = 0,
+				countdownTimer = 0,
+				nextRefreshAt = 0,
+				retryLabel = null;
+			const isLiveCurrent = () => token === sequence && live.isConnected;
+			const clearCountdown = () => {
+				clearInterval(countdownTimer);
+				countdownTimer = 0;
+				retryLabel = null;
+			};
+			const cleanupLive = () => {
+				clearTimeout(refreshTimer);
+				clearCountdown();
+				document.removeEventListener("visibilitychange", updateRetryCountdown);
+			};
+			const showLiveStatus = (state, message) => {
+				live.removeAttribute("aria-label");
+				live.dataset.liveState = state;
+				live.setAttribute("aria-busy", state === "fetching" ? "true" : "false");
+				const spinner = text("span", "", "dxb-live-spinner"),
+					status = text("span", message, "dxb-live-state");
+				spinner.setAttribute("aria-hidden", "true");
+				status.setAttribute("role", "status");
+				status.setAttribute("aria-live", "polite");
+				live.replaceChildren(spinner, status);
+			};
+			function updateRetryCountdown() {
+				if (!isLiveCurrent()) {
+					cleanupLive();
+					return;
+				}
+				if (!retryLabel) return;
+				const seconds = Math.max(
+					0,
+					Math.ceil((nextRefreshAt - Date.now()) / 1000),
+				);
+				retryLabel.textContent = document.hidden
+					? "Retry resumes when this tab is active."
+					: seconds > 0
+					? `Retrying automatically in ${seconds}s.`
+					: "Retrying automatically now…";
+			}
+			const scheduleLive = (delay, retrying = false) => {
+				clearTimeout(refreshTimer);
+				clearCountdown();
+				nextRefreshAt = Date.now() + delay;
+				// The display and the real retry share one deadline, including backoff.
+				refreshTimer = setTimeout(refreshLive, delay);
+				if (!retrying) return;
+				if (live.dataset.liveState !== "retry") {
+					showLiveStatus("retry", "Live bus count temporarily unavailable.");
+				}
+				live.querySelector(".dxb-live-retry")?.remove();
+				retryLabel = text("span", "", "dxb-live-retry");
+				// Keep the readable countdown from being announced every second.
+				retryLabel.setAttribute("aria-live", "off");
+				live.append(retryLabel);
+				updateRetryCountdown();
+				countdownTimer = setInterval(updateRetryCountdown, 1000);
+			};
+			function refreshLive() {
+				if (!isLiveCurrent()) {
+					cleanupLive();
+					return;
+				}
+				if (document.hidden) {
+					scheduleLive(30000, liveFailures > 0);
+					return;
+				}
+				clearCountdown();
+				if (liveFailures > 0 || !live.hasAttribute("aria-label")) {
+					showLiveStatus(
+						"fetching",
+						liveFailures > 0
+							? "Retrying live bus count…"
+							: "Checking live tracking…",
+					);
+				} else {
+					live.setAttribute("aria-busy", "true");
+				}
+				request("running/" + encodeURIComponent(current.name))
+					.then((data) => {
+						if (!isLiveCurrent()) {
+							cleanupLive();
+							return;
+						}
+						delete live.dataset.liveState;
+						live.setAttribute("aria-busy", "false");
 						live.setAttribute(
-							'aria-label',
+							"aria-label",
 							data.count === 0
-								? 'No buses are tracking'
+								? "No buses are tracking"
 								: data.count === 1
-								? '1 bus is tracking'
-								: data.count + ' buses are tracking',
+								? "1 bus is tracking"
+								: data.count + " buses are tracking",
 						);
 						const total = text(
-								'strong',
+								"strong",
 								String(data.count),
-								'dxb-tracking-number',
+								"dxb-tracking-number",
 							),
 							label = text(
-								'span',
+								"span",
 								data.count === 0
-									? 'NO BUSES ARE TRACKING'
+									? "NO BUSES ARE TRACKING"
 									: data.count === 1
-									? 'BUS TRACKING'
-									: 'BUSES TRACKING',
-								'dxb-tracking-label',
+									? "BUS TRACKING"
+									: "BUSES TRACKING",
+								"dxb-tracking-label",
 							);
 						live.replaceChildren(total, label);
 						live.append(
 							text(
-								'small',
-								new Date(data.checked).toLocaleTimeString('en-GB', {
-									hour: '2-digit',
-									minute: '2-digit',
-								}) + ' · TFL PREDICTIONS',
-								'dxb-tracking-source',
+								"small",
+								new Date(data.checked).toLocaleTimeString("en-GB", {
+									hour: "2-digit",
+									minute: "2-digit",
+								}) + " · TFL PREDICTIONS",
+								"dxb-tracking-source",
 							),
 						);
-						trackingRow.querySelector('.dxb-tracking-breakdown')?.remove();
-                        trackingBreakdown(data, profile, trackingRow, token);
-                        liveFailures=0;setTimeout(refreshLive,60000);
-					}
-				})
-				.catch(() => {
-					if (token === sequence && live.isConnected) {
-                        live.textContent = 'Live bus count temporarily unavailable · retrying automatically';
-                        setTimeout(refreshLive, Math.min(120000,30000 * ++liveFailures));
-                    }
-                });
-            };refreshLive();
+						trackingRow.querySelector(".dxb-tracking-breakdown")?.remove();
+						trackingBreakdown(data, profile, trackingRow, token);
+						liveFailures = 0;
+						scheduleLive(60000);
+					})
+					.catch(() => {
+						if (!isLiveCurrent()) {
+							cleanupLive();
+							return;
+						}
+						trackingRow.querySelector(".dxb-tracking-breakdown")?.remove();
+						scheduleLive(Math.min(120000, 30000 * ++liveFailures), true);
+					});
+			}
+			showLiveStatus("fetching", "Checking live tracking…");
+			document.addEventListener("visibilitychange", updateRetryCountdown);
+			refreshLive();
 		}
 		if (profile.source)
 			box.append(
 				sourceLink(`Route directory · ${profile.updated}`, profile.source),
 			);
 		if (profile.listingSource && current.archive)
-			box.append(sourceLink('Route status source ↗', profile.listingSource));
+			box.append(sourceLink("Route status source ↗", profile.listingSource));
 		if (unavailable)
-			box.append(text('small', 'Route directory temporarily unavailable.'));
+			box.append(text("small", "Route directory temporarily unavailable."));
 		if (profile.circular || profile.serviceNotes?.length) {
-			const patterns = text('div', '', 'dxb-service-patterns');
+			const patterns = text("div", "", "dxb-service-patterns");
 			if (profile.circular)
 				patterns.append(
-					text('span', '↻ Circular route', 'dxb-pattern-badge is-circular'),
+					text("span", "↻ Circular route", "dxb-pattern-badge is-circular"),
 				);
 			if (profile.serviceNotes?.length) {
 				patterns.append(
-					text('span', 'Limited service', 'dxb-pattern-badge is-limited'),
+					text("span", "Limited service", "dxb-pattern-badge is-limited"),
 				);
 				profile.serviceNotes.forEach((note) =>
-					patterns.append(text('p', note, 'dxb-pattern-note')),
+					patterns.append(text("p", note, "dxb-pattern-note")),
 				);
 			}
-			if (profile.name === 'SL6' && profile.serviceNotes?.length)
+			if (profile.name === "SL6" && profile.serviceNotes?.length)
 				patterns.append(
 					text(
-						'p',
-						'Northbound AM · Southbound PM · Weekdays only',
-						'dxb-pattern-note',
+						"p",
+						"Northbound AM · Southbound PM · Weekdays only",
+						"dxb-pattern-note",
 					),
 				);
 			box.append(patterns);
 		}
-		if (profile.badgeType === 'former' && profile.history) {
+		if (profile.badgeType === "former" && profile.history) {
 			const h = profile.history,
-				history = text('div', '', 'dxb-route-history');
+				history = text("div", "", "dxb-route-history");
 			history.append(
 				text(
-					'strong',
-					h.tenure ? 'In service · ' + h.tenure : 'Operating history',
+					"strong",
+					h.tenure ? "In service · " + h.tenure : "Operating history",
 				),
 			);
-			if (h.start) history.append(text('p', 'Introduced · ' + h.start));
-			if (h.end) history.append(text('p', 'Withdrawn · ' + h.end));
+			if (h.start) history.append(text("p", "Introduced · " + h.start));
+			if (h.end) history.append(text("p", "Withdrawn · " + h.end));
 			if (!h.tenure)
 				history.append(
 					text(
-						'p',
-						'Full tenure not confirmed: the introduction date is not available in the linked source.',
-						'dxb-muted',
+						"p",
+						"Full tenure not confirmed: the introduction date is not available in the linked source.",
+						"dxb-muted",
 					),
 				);
-			if (h.source) history.append(sourceLink('Route history ↗', h.source));
+			if (h.source) history.append(sourceLink("Route history ↗", h.source));
 			box.append(history);
 		}
 		const type =
-			profile.badgeType === 'regular' && current.serviceType === '24hour'
-				? '24hour'
-				: profile.badgeType || current.serviceType || 'regular';
-		$('#dxb-route-number').dataset.serviceType = type;
+			profile.badgeType === "regular" && current.serviceType === "24hour"
+				? "24hour"
+				: profile.badgeType || current.serviceType || "regular";
+		$("#dxb-route-number").dataset.serviceType = type;
 		if (
-			(profile.allDay || current.serviceType === '24hour') &&
-			!$('#dxb-route-type').textContent.includes('24-hour')
+			(profile.allDay || current.serviceType === "24hour") &&
+			!$("#dxb-route-type").textContent.includes("24-hour")
 		)
-			$('#dxb-route-type').append(' · 24-hour service');
+			$("#dxb-route-type").append(" · 24-hour service");
 		const labels = {
-			mobility: 'Mobility route',
-			former: 'Former route',
-			future: 'Future route',
-			temporary: 'Temporary route',
-			carnival: 'Notting Hill Carnival special',
-			shuttle: 'Silvertown Tunnel cycle shuttle',
+			mobility: "Mobility route",
+			former: "Former route",
+			future: "Future route",
+			temporary: "Temporary route",
+			carnival: "Notting Hill Carnival special",
+			shuttle: "Silvertown Tunnel cycle shuttle",
 		};
-		if (labels[type]) $('#dxb-route-type').textContent = labels[type];
+		if (labels[type]) $("#dxb-route-type").textContent = labels[type];
 		if (profile.listingNotes && current.archive)
-			$('#dxb-route-description').textContent = profile.listingNotes;
+			$("#dxb-route-description").textContent = profile.listingNotes;
 		if (profile.workings?.length && !current.archive) {
-			const endpoints = $('#dxb-endpoints');
+			const endpoints = $("#dxb-endpoints");
 			endpoints.replaceChildren();
 			const seen = new Set();
 			displayWorkings(profile.workings).forEach((w) => {
-				const key = w.destinations + '|' + w.label;
+				const key = w.destinations + "|" + w.label;
 				if (seen.has(key)) return;
 				seen.add(key);
 				const row = text(
-					'div',
+					"div",
 					w.circular
-						? w.destinations.split(' ↔ ')[0] + ' circular'
+						? w.destinations.split(" ↔ ")[0] + " circular"
 						: w.oneWay
-						? w.destinations.replace(' ↔ ', ' → ')
+						? w.destinations.replace(" ↔ ", " → ")
 						: w.destinations,
-					'dxb-endpoint',
+					"dxb-endpoint",
 				);
 				row.append(
 					text(
-						'span',
+						"span",
 						w.label,
-						'dxb-working-badge' +
-							(w.label === 'School variant' ? ' is-school' : ''),
+						"dxb-working-badge" +
+							(w.label === "School variant" ? " is-school" : ""),
 					),
 				);
 				endpoints.append(row);
 			});
 			(profile.workingNotes || []).forEach((note) => {
-				const row = text('p', note, 'dxb-small dxb-muted');
+				const row = text("p", note, "dxb-small dxb-muted");
 				if (/school/i.test(note))
 					row.append(
-						text('span', 'School variant', 'dxb-working-badge is-school'),
+						text("span", "School variant", "dxb-working-badge is-school"),
 					);
 				else if (/short working/i.test(note))
-					row.append(text('span', 'Short working', 'dxb-working-badge'));
+					row.append(text("span", "Short working", "dxb-working-badge"));
 				endpoints.append(row);
 			});
 			const pairs = [...new Set(current.branches || [])];
 			if (pairs.length > 1) {
-				const detail = document.createElement('details');
-				detail.className = 'dxb-details';
-				detail.append(text('summary', 'TfL destination pairs'));
-				pairs.forEach((pair) => detail.append(text('p', pair, 'dxb-small')));
+				const detail = document.createElement("details");
+				detail.className = "dxb-details";
+				detail.append(text("summary", "TfL destination pairs"));
+				pairs.forEach((pair) => detail.append(text("p", pair, "dxb-small")));
 				endpoints.append(detail);
 			}
 		}
@@ -6359,112 +8562,130 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 	async function loadProfile(route, token) {
 		profileController?.abort();
 		profileController = new AbortController();
-		$('#dxb-route-facts').replaceChildren(
-			text('p', 'Checking operator and vehicle details…'),
+		$("#dxb-route-facts").replaceChildren(
+			text("p", "Checking operator and vehicle details…"),
 		);
 		try {
 			applyProfile(
 				current.profile ||
 					(await request(
-						'profile/' + encodeURIComponent(route),
+						"profile/" + encodeURIComponent(route),
 						profileController.signal,
 					)),
 				token,
 			);
 		} catch (e) {
-			if (e.name !== 'AbortError') applyProfile({ error: true }, token);
+			if (e.name !== "AbortError") applyProfile({ error: true }, token);
 		}
 	}
 	async function loadNews() {
 		newsController?.abort();
 		newsController = new AbortController();
 		const token = sequence,
-			panel = $('#panel-news');
-		panel.replaceChildren(text('p', 'Checking route news…'));
+			panel = $("#panel-news"),
+			grid = text("div", "", "dxb-route-news-grid"),
+			changes = text("section", "", "dxb-route-news-pane");
+		changes.setAttribute("aria-label", "Service changes");
+		changes.append(
+			text("h3", "Service changes"),
+			text("p", "Checking route service changes…"),
+		);
+		// This pane remains independently replaceable as the consultation request completes.
+		grid.append(changes, consultationCards());
+		panel.replaceChildren(grid);
 		try {
 			const data = await request(
-				'news/' + encodeURIComponent(current.name),
+				"news/" + encodeURIComponent(current.name),
 				newsController.signal,
 			);
 			if (token !== sequence) return;
-			panel.replaceChildren(text('h3', 'Service changes'));
-			panel.append(
+			changes.replaceChildren(text("h3", "Service changes"));
+			changes.append(
 				text(
-					'p',
-					`${data.stale ? 'Saved update · ' : ''}Source updated ${
+					"p",
+					`${data.stale ? "Saved update · " : ""}Source updated ${
 						data.updated
 					}. Planned changes are provisional.`,
-					'dxb-small dxb-muted',
+					"dxb-small dxb-muted",
 				),
 			);
-			if (!data.items.length)
-				panel.append(
+			if (!data.items.length) {
+				changes.append(
 					text(
-						'p',
-						'No entries for this route are listed in the current source. This is not a live disruption report.',
+						"p",
+						"No entries for this route are listed in the current source. This is not a live disruption report.",
 					),
 				);
+			}
 			data.items.forEach((item) => {
-				const card = text('article', '', 'dxb-news-item');
-				const meta = text('div', '', 'dxb-news-meta');
+				const card = text("article", "", "dxb-news-item"),
+					meta = text("div", "", "dxb-news-meta");
 				meta.append(
-					text('span', item.category, 'dxb-news-badge'),
-					text('small', dateLabel(item.date)),
+					text("span", item.category, "dxb-news-badge"),
+					text("small", dateLabel(item.date)),
 				);
-				card.append(meta, text('p', item.summary));
-				const link = text('a', 'Read the full update ↗');
-				link.href = item.url;
-				link.target = '_blank';
-				link.rel = 'noopener noreferrer';
-				card.append(link);
-				panel.append(card);
+				card.append(
+					meta,
+					text("p", item.summary),
+					sourceLink("Read the full update ↗", item.url),
+				);
+				changes.append(card);
 			});
-			const source = text('a', 'Source: London Bus Routes ↗');
-			source.href = data.source;
-			source.target = '_blank';
-			source.rel = 'noopener noreferrer';
-			panel.append(
-				source,
+			const sources = text("footer", "", "dxb-pane-sources"),
+				line = text("p", "", "dxb-source");
+			line.append(sourceLink("London Bus Routes ↗", data.source));
+			sources.append(
 				text(
-					'p',
-					'Dates are shown as supplied by the source; times are not published for date-only entries.',
-					'dxb-small dxb-muted',
+					"p",
+					"Dates are shown as supplied by the source; times are not published for date-only entries.",
+					"dxb-small dxb-muted",
 				),
-				consultationCards(),
+				line,
 			);
+			changes.append(sources);
 		} catch (error) {
-			if (error.name !== 'AbortError' && token === sequence) {
-				panel.replaceChildren(
+			if (error.name !== "AbortError" && token === sequence) {
+				changes.replaceChildren(
+					text("h3", "Service changes"),
 					text(
-						'p',
-						'Route news is temporarily unavailable. Please try the News tab again shortly.',
+						"p",
+						"Service changes are temporarily unavailable. Please try the News tab again shortly.",
 					),
 				);
-				const link = text('a', 'View London Bus Routes ↗');
-				link.href = 'http://www.londonbusroutes.net/changes.htm';
-				panel.append(link, consultationCards());
+				const sources = text("footer", "", "dxb-pane-sources"),
+					line = text("p", "", "dxb-source");
+				line.append(
+					sourceLink(
+						"London Bus Routes ↗",
+						"http://www.londonbusroutes.net/changes.htm",
+					),
+				);
+				sources.append(line);
+				changes.append(sources);
 			}
 		}
 	}
 
-	const hero = $('.dxb-hero-media'),
-		baseHero = hero.querySelector('img');
-	const photoShade = text('div', '', 'dxb-route-photo-shade'); photoShade.setAttribute('aria-hidden', 'true'); hero.append(photoShade);
+	const hero = $(".dxb-hero-media"),
+		baseHero = hero.querySelector("img");
+	const photoShade = text("div", "", "dxb-route-photo-shade");
+	photoShade.setAttribute("aria-hidden", "true");
+	hero.append(photoShade);
 	const routeLayers = [new Image(), new Image()];
 	let activeLayer = 0,
 		heroToken = 0,
-		heroUrl = '';
+		heroUrl = "";
 	routeLayers.forEach((image) => {
-		image.alt = '';
-		image.className = 'dxb-route-hero-image';
+		image.alt = "";
+		image.className = "dxb-route-hero-image";
 		hero.append(image);
 	});
 	function setHero(photo) {
 		const token = ++heroToken;
 		if (!photo) {
-			heroUrl = '';
-			root.classList.remove('has-route-photo');
-			routeLayers.forEach((image) => image.classList.remove('is-visible'));
+			heroUrl = "";
+			root.classList.remove("has-route-photo");
+			routeLayers.forEach((image) => image.classList.remove("is-visible"));
 			return;
 		}
 		if (heroUrl === (photo.full || photo.image)) {
@@ -6479,7 +8700,7 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (token !== heroToken) return;
 			const next = 1 - activeLayer,
 				layer = routeLayers[next];
-			layer.classList.remove('is-visible');
+			layer.classList.remove("is-visible");
 			layer.src = preload.src;
 			try {
 				await layer.decode();
@@ -6488,148 +8709,151 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			void layer.offsetWidth;
 			requestAnimationFrame(() => {
 				if (token !== heroToken) return;
-				layer.classList.add('is-visible');
-				routeLayers[activeLayer].classList.remove('is-visible');
+				layer.classList.add("is-visible");
+				routeLayers[activeLayer].classList.remove("is-visible");
 				activeLayer = next;
-				heroUrl = (photo.full || photo.image);
-				root.classList.add('has-route-photo');
+				heroUrl = photo.full || photo.image;
+				root.classList.add("has-route-photo");
 				updateScene();
 			});
 		};
 		preload.onerror = () => {
 			if (token === heroToken) setHero(null);
 		};
-		preload.src = (photo.full || photo.image);
+		preload.src = photo.full || photo.image;
 	}
 	function sizeHero() {
-		root.style.setProperty('--hero-fade-height', $('#routes').offsetTop + 'px');
+		root.style.setProperty("--hero-fade-height", $("#routes").offsetTop + "px");
 	}
-	new ResizeObserver(sizeHero).observe($('.dxb-hero'));
-	window.addEventListener('resize', sizeHero);
+	new ResizeObserver(sizeHero).observe($(".dxb-hero"));
+	window.addEventListener("resize", sizeHero);
 	sizeHero();
 	function updateScene() {
-		const nav = $('.dxb-nav'),
-			diary = $('#bus-diary');
+		const nav = $(".dxb-nav"),
+			diary = $("#bus-diary");
 		if (nav)
 			nav.classList.toggle(
-				'is-stuck',
+				"is-stuck",
 				nav.getBoundingClientRect().top <=
 					parseFloat(getComputedStyle(nav).top) + 1,
 			);
 		const pastDiary =
 			diary && diary.getBoundingClientRect().top <= window.innerHeight * 0.5;
-		root.classList.toggle('has-route-photo', Boolean(heroUrl) && !pastDiary);
-		if (!root.classList.contains('has-route-photo')) return;
-		const number = $('#dxb-route-number');
+		root.classList.toggle("has-route-photo", Boolean(heroUrl) && !pastDiary);
+		if (!root.classList.contains("has-route-photo")) return;
+		const number = $("#dxb-route-number");
 		root.style.setProperty(
-			'--route-glow',
+			"--route-glow",
 			getComputedStyle(number).backgroundColor,
 		);
-		if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
+		if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
 			hero.style.setProperty(
-				'--parallax',
+				"--parallax",
 				Math.min(180, Math.max(0, -root.getBoundingClientRect().top) * 0.12) +
-					'px',
+					"px",
 			);
 	}
-	new MutationObserver(updateScene).observe($('#dxb-route-number'), {
+	new MutationObserver(updateScene).observe($("#dxb-route-number"), {
 		attributes: true,
-		attributeFilter: ['data-service-type'],
+		attributeFilter: ["data-service-type"],
 	});
-	window.addEventListener('scroll', () => requestAnimationFrame(updateScene), {
+	window.addEventListener("scroll", () => requestAnimationFrame(updateScene), {
 		passive: true,
 	});
-	window.addEventListener('resize', updateScene);
+	window.addEventListener("resize", updateScene);
 	updateScene();
 	function related(route) {
 		const photos = DXB.photos
 			.map((p, i) => ({ ...p, index: i }))
 			.filter((p) => p.route.toUpperCase() === route);
 		const stories = DXB.journeys.filter((j) => j.route.toUpperCase() === route);
-		const panel = $('#panel-photos');
+		const panel = $("#panel-photos");
 		panel.replaceChildren();
 		if (photos.length) {
-			const grid = document.createElement('div');
-			grid.className = 'dxb-route-photos';
+			const grid = document.createElement("div");
+			grid.className = "dxb-route-photos";
 			photos.forEach((p) => {
-				const button = document.createElement('button');
-				button.type = 'button';
-				button.setAttribute('aria-label', `Open ${p.title}`);
+				const button = document.createElement("button");
+				button.type = "button";
+				button.setAttribute("aria-label", `Open ${p.title}`);
 				const img = new Image();
-				img.src = p.image;
+				img.src = p.full || p.image;
+				img.loading = "lazy";
+				img.decoding = "async";
 				img.alt = p.alt;
 				button.append(img);
-				button.addEventListener('click', () => openPhoto(p.index));
+				button.addEventListener("click", () => openPhoto(p.index));
 				grid.append(button);
 			});
 			panel.append(grid);
 		} else
 			panel.append(
 				text(
-					'p',
+					"p",
 					`No photographs of ${route} in the archive yet.`,
-					'dxb-small dxb-muted',
+					"dxb-small dxb-muted",
 				),
 			);
-		const storyPanel = $('#panel-stories');
+		const storyPanel = $("#panel-stories");
 		storyPanel.replaceChildren();
 		if (stories.length)
 			stories.forEach((j) => {
-				const a = document.createElement('a');
+				const a = document.createElement("a");
 				a.href = j.url;
-				a.className = 'dxb-route-story';
+				a.className = "dxb-route-story";
 				a.append(
-					text('span', `${j.route} · Journey notes ↗`),
-					text('small', `${j.start} → ${j.end}`),
+					text("span", `${j.route} · Journey notes ↗`),
+					text("small", `${j.start} → ${j.end}`),
 				);
 				storyPanel.append(a);
 			});
 		else
 			storyPanel.append(
 				text(
-					'p',
+					"p",
 					`This route's story is still to come. Explore the diary below.`,
-					'dxb-small dxb-muted',
+					"dxb-small dxb-muted",
 				),
 			);
 		const photo = photos[0];
 		setHero(photo);
-		$('#dxb-route-photo').src = photo ? photo.image : initialPhoto.src;
-		$('#dxb-route-photo').alt = photo ? photo.alt : initialPhoto.alt;
-		$('#dxb-route-caption').textContent = photo
-			? `${photo.title}${photo.date ? ' · ' + photo.date : ''}`
+		$("#dxb-route-photo").src = photo ? photo.image : initialPhoto.src;
+		$("#dxb-route-photo").alt = photo ? photo.alt : initialPhoto.alt;
+		$("#dxb-route-caption").textContent = photo
+			? `${photo.title}${photo.date ? " · " + photo.date : ""}`
 			: `From the wider archive · ${initialPhoto.caption}`;
 	}
-	async function search(value, direction = 'inbound', preserveTab = false) {
+	async function search(value, direction = "inbound", preserveTab = false) {
 		clearTimeout(debounce);
 		controller?.abort();
 		stopArrivals();
 		const token = ++sequence,
-			route = value.trim().toUpperCase().replace(/\s+/g, '');
+			route = value.trim().toUpperCase().replace(/\s+/g, "");
 		++heroToken;
-		$('#dxb-route-state').hidden = true;
+		$("#dxb-route-state").hidden = true;
 		result.hidden = true;
 		current = null;
-		$('#dxb-arrivals').replaceChildren(
-			text('p', 'Choose a stop for live arrival predictions.', 'dxb-small'),
+		setRouteTabAvailability();
+		$("#dxb-arrivals").replaceChildren(
+			text("p", "Choose a stop for live arrival predictions.", "dxb-small"),
 		);
-		$('#dxb-updated').textContent = '';
-		$$('[data-route]').forEach((b) =>
-			b.setAttribute('aria-pressed', String(b.dataset.route === route)),
+		$("#dxb-updated").textContent = "";
+		$$("[data-route]").forEach((b) =>
+			b.setAttribute("aria-pressed", String(b.dataset.route === route)),
 		);
 		if (!route) {
 			setHero(null);
-			announce('Choose a route to explore the London bus network.');
+			announce("Choose a route to explore the London bus network.");
 			return;
 		}
 		if (!/^[A-Z0-9]{1,6}$/.test(route)) {
 			setHero(null);
-			announce('Enter a route number such as 8, N8 or H32.', true);
+			announce("Enter a route number such as 8, N8 or H32.", true);
 			return;
 		}
 		controller = new AbortController();
 		announce(`Finding route ${route}…`);
-		$('#routes').setAttribute('aria-busy', 'true');
+		$("#routes").setAttribute("aria-busy", "true");
 		try {
 			const data = await request(
 				`route/${encodeURIComponent(route)}?direction=${direction}`,
@@ -6637,21 +8861,22 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			);
 			if (token !== sequence) return;
 			current = data;
+			setRouteTabAvailability(data.profile);
 			input.value = route;
 			remember(route);
 			arrivalRows = [];
-			const directionSelect = $('#dxb-direction');
+			const directionSelect = $("#dxb-direction");
 			directionSelect.replaceChildren(
-				new Option('Loading destination…', data.direction),
+				new Option("Loading destination…", data.direction),
 			);
 			if (!data.archive)
-				request('directions/' + encodeURIComponent(route), controller.signal)
+				request("directions/" + encodeURIComponent(route), controller.signal)
 					.then((labels) => {
 						if (token !== sequence) return;
 						directionSelect.replaceChildren();
 						Object.entries(labels).forEach(([key, label]) =>
 							directionSelect.add(
-								new Option(label.replace(/^Towards\s+/i, 'to '), key),
+								new Option(label.replace(/^Towards\s+/i, "to "), key),
 							),
 						);
 						directionSelect.value = data.direction;
@@ -6661,90 +8886,90 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 						if (token === sequence) {
 							directionSelect.replaceChildren(
 								new Option(
-									'to ' + (data.stops?.at(-1)?.name || 'destination'),
+									"to " + (data.stops?.at(-1)?.name || "destination"),
 									data.direction,
 								),
 							);
 							directionSelect.disabled = true;
 						}
 					});
-			$('#dxb-route-number').textContent = data.name;
+			$("#dxb-route-number").textContent = data.name;
 			input.dataset.spacing = routeSpacing(data.name);
-			$('#dxb-route-number').dataset.spacing =
+			$("#dxb-route-number").dataset.spacing =
 				/^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(data.name)
-					? 'tight'
-					: 'normal';
+					? "tight"
+					: "normal";
 			const serviceType =
 				data.serviceType ||
 				(/^N\d+$/.test(route)
-					? 'night'
-					: /^6\d{2}$/.test(route) && route !== '607'
-					? 'school'
-					: 'regular');
+					? "night"
+					: /^6\d{2}$/.test(route) && route !== "607"
+					? "school"
+					: "regular");
 			const descriptions = {
 				eastlondon: [
-					'East London Transit',
-					'Connecting communities across east London.',
+					"East London Transit",
+					"Connecting communities across east London.",
 				],
-				superloop: ['Superloop', 'Express connections across London.'],
-				bakerloop: ['Bakerloop', 'A connection across south London.'],
-				night: ['Night bus', 'Explore the route after dark.'],
-				'24hour': ['24-hour bus', 'Discover the route, day and night.'],
-				school: ['School bus', 'A route for the school-day journey.'],
-				regular: ['London bus route', 'Another way to see the city.'],
+				superloop: ["Superloop", "Express connections across London."],
+				bakerloop: ["Bakerloop", "A connection across south London."],
+				night: ["Night bus", "Explore the route after dark."],
+				"24hour": ["24-hour bus", "Discover the route, day and night."],
+				school: ["School bus", "A route for the school-day journey."],
+				regular: ["London bus route", "Another way to see the city."],
 			};
 			// EL1 keeps the East London Transit identity alongside its all-day service.
 			const description =
-				route === 'EL1'
+				route === "EL1"
 					? [
-							'East London Transit · 24-hour service',
-							'Connecting east London, day and night.',
+							"East London Transit · 24-hour service",
+							"Connecting east London, day and night.",
 					  ]
 					: descriptions[serviceType] || [
-							'London bus route',
-							'Route directory information.',
+							"London bus route",
+							"Route directory information.",
 					  ];
-			$('#dxb-route-type').textContent = description[0];
-			$('#dxb-route-description').textContent = description[1];
-			const number = $('#dxb-route-number');
-			number.dataset.serviceType = 'regular';
+			$("#dxb-route-type").textContent = description[0];
+			$("#dxb-route-description").textContent = description[1];
+			const number = $("#dxb-route-number");
+			number.dataset.serviceType = "regular";
 			input.dataset.serviceType = serviceType;
 			const stops = data.stops || [];
-			const endpoints = $('#dxb-endpoints');
+			const endpoints = $("#dxb-endpoints");
 			endpoints.replaceChildren();
 			const branches = [...new Set(data.branches?.filter(Boolean) || [])];
 			if (!branches.length)
 				branches.push(
 					stops.length
 						? `${stops[0].name} → ${stops[stops.length - 1].name}`
-						: 'Stop information is not available for this direction.',
+						: "Stop information is not available for this direction.",
 				);
 			branches.forEach((branch) =>
-				endpoints.append(text('div', branch, 'dxb-endpoint')),
+				endpoints.append(text("div", branch, "dxb-endpoint")),
 			);
-			$('#dxb-route-detail').textContent = data.archive
-				? 'Current TfL stop information is not available for this route identifier. See the directory source for its status.'
+			$("#dxb-route-detail").textContent = data.archive
+				? "Current TfL stop information is not available for this route identifier. See the directory source for its status."
 				: `${stops.length} stops returned for the ${data.direction} direction. Select Stops & arrivals to choose a stop.`;
-			$('#dxb-direction').value = data.direction;
-			$('.dxb-selects').hidden = Boolean(data.archive);
+			$("#dxb-direction").value = data.direction;
+			$(".dxb-selects").hidden = Boolean(data.archive);
 			if (data.archive)
-				$('#dxb-arrivals').replaceChildren(
+				$("#dxb-arrivals").replaceChildren(
 					text(
-						'p',
-						'Live arrivals are unavailable for this route identifier. See Overview for its listed status.',
-						'dxb-small',
+						"p",
+						"Live arrivals are unavailable for this route identifier. See Overview for its listed status.",
+						"dxb-small",
 					),
 				);
-			const select = $('#dxb-stop');
-			select.replaceChildren(new Option('Choose a stop', ''));
+			const select = $("#dxb-stop");
+			select.replaceChildren(new Option("Choose a stop", ""));
 			stops.forEach((s) => select.add(new Option(s.name, s.id)));
 			consultationData = null;
-			$('#dxb-consultation-notice').replaceChildren();
+			$("#dxb-consultation-notice").replaceChildren();
 			loadProfile(route, token);
 			loadConsultations(route, token);
 			related(route);
 			result.hidden = false;
-			activateTab(preserveTab ? tab : 'overview');
+			activateTab(preserveTab ? tab : "overview");
 			// Commit the neutral colour before beginning the gradual transition.
 			void number.offsetWidth;
 			requestAnimationFrame(() => {
@@ -6754,74 +8979,74 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				`Route ${route} · ${
 					data.archive
 						? data.profile
-							? 'route directory information'
-							: 'from the personal archive'
-						: 'information from TfL'
+							? "route directory information"
+							: "from the personal archive"
+						: "information from TfL"
 				}`,
 			);
 			const url = new URL(location.href);
-			url.searchParams.set('route', route);
-			history.replaceState(null, '', url);
+			url.searchParams.set("route", route);
+			history.replaceState(null, "", url);
 		} catch (error) {
-			if (error.name !== 'AbortError' && token === sequence) {
+			if (error.name !== "AbortError" && token === sequence) {
 				setHero(null);
 				announce(error.message, true);
-				const state = $('#dxb-route-state');
+				const state = $("#dxb-route-state");
 				state.replaceChildren(
 					text(
-						'h3',
-						error.code === 'route_not_found'
-							? 'Route Not Found'
-							: 'Route Temporarily Unavailable',
+						"h3",
+						error.code === "route_not_found"
+							? "Route Not Found"
+							: "Route Temporarily Unavailable",
 					),
-					text('p', error.message),
+					text("p", error.message),
 				);
 				state.hidden = false;
 			}
 		} finally {
-			if (token === sequence) $('#routes').removeAttribute('aria-busy');
+			if (token === sequence) $("#routes").removeAttribute("aria-busy");
 		}
 	}
-	$('#dxb-search').addEventListener('submit', (event) => {
+	$("#dxb-search").addEventListener("submit", (event) => {
 		event.preventDefault();
 		search(input.value);
 	});
-	input.addEventListener('input', () => {
-		input.dataset.serviceType = 'regular';
+	input.addEventListener("input", () => {
+		input.dataset.serviceType = "regular";
 		clearTimeout(debounce);
 		controller?.abort();
 		stopArrivals();
 		++sequence;
 		current = null;
 		result.hidden = true;
-		$('#routes').removeAttribute('aria-busy');
+		$("#routes").removeAttribute("aria-busy");
 		announce(
 			input.value.trim()
-				? 'Searching…'
-				: 'Choose a route to explore the London bus network.',
+				? "Searching…"
+				: "Choose a route to explore the London bus network.",
 		);
 		debounce = setTimeout(() => search(input.value), 350);
 	});
 
-	$('#dxb-direction').addEventListener('change', (event) => {
+	$("#dxb-direction").addEventListener("change", (event) => {
 		if (current) search(current.name, event.target.value, true);
 	});
-	$('#dxb-stop').addEventListener('change', () => {
+	$("#dxb-stop").addEventListener("change", () => {
 		failures = 0;
 		arrivalRows = [];
 		stopArrivals();
-		$('#dxb-arrivals').replaceChildren(
-			text('p', 'Choose a stop for live arrival predictions.', 'dxb-small'),
+		$("#dxb-arrivals").replaceChildren(
+			text("p", "Choose a stop for live arrival predictions.", "dxb-small"),
 		);
-		$('#dxb-updated').textContent = '';
-		if ($('#dxb-stop').value) refreshArrivals();
+		$("#dxb-updated").textContent = "";
+		if ($("#dxb-stop").value) refreshArrivals();
 	});
 	async function showScheduledArrival(route, stop, signal) {
-		const host = $('#dxb-arrivals'),
-			box = text('div', '', 'dxb-schedule-state');
+		const host = $("#dxb-arrivals"),
+			box = text("div", "", "dxb-schedule-state");
 		box.append(
-			text('strong', 'No live arrivals currently showing'),
-			text('p', 'Checking the published timetable…'),
+			text("strong", "No live arrivals currently showing"),
+			text("p", "Checking the published timetable…"),
 		);
 		host.replaceChildren(box);
 		try {
@@ -6832,92 +9057,101 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			if (
 				!box.isConnected ||
 				current?.id !== route ||
-				$('#dxb-stop').value !== stop
+				$("#dxb-stop").value !== stop
 			)
 				return;
-			box.replaceChildren(text('span', 'TIMETABLE', 'dxb-schedule-label'));
+			box.replaceChildren(text("span", "TIMETABLE", "dxb-schedule-label"));
 			if (data.available) {
 				box.append(
 					text(
-						'strong',
+						"strong",
 						data.ended
-							? 'Last scheduled departure has passed'
-							: 'Next scheduled bus',
+							? "Last scheduled departure has passed"
+							: "Next scheduled bus",
 					),
 				);
 				if (data.ended)
 					box.append(
 						text(
-							'p',
+							"p",
 							`The last bus was timetabled here at ${data.last} today.`,
 						),
 					);
 				box.append(
 					text(
-						'p',
-                        (() => {
-                            const departure = new Date(data.next);
-                            const day = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'});
-                            const sameDay = day.format(departure) === day.format(new Date());
-                            return new Intl.DateTimeFormat('en-GB', {
-                                timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit',
-                                ...(sameDay ? {} : {weekday: 'long', day: 'numeric', month: 'long'}),
-                            }).format(departure);
-                        })(),
-						'dxb-schedule-time',
+						"p",
+						(() => {
+							const departure = new Date(data.next);
+							const day = new Intl.DateTimeFormat("en-CA", {
+								timeZone: "Europe/London",
+								year: "numeric",
+								month: "2-digit",
+								day: "2-digit",
+							});
+							const sameDay = day.format(departure) === day.format(new Date());
+							return new Intl.DateTimeFormat("en-GB", {
+								timeZone: "Europe/London",
+								hour: "2-digit",
+								minute: "2-digit",
+								...(sameDay
+									? {}
+									: { weekday: "long", day: "numeric", month: "long" }),
+							}).format(departure);
+						})(),
+						"dxb-schedule-time",
 					),
 				);
 				box.append(
 					text(
-						'small',
-						'Timetabled, not a live prediction. Actual running and special services may differ.',
+						"small",
+						"Timetabled, not a live prediction. Actual running and special services may differ.",
 					),
 				);
 			} else {
 				box.append(
-					text('strong', 'No live predictions available'),
+					text("strong", "No live predictions available"),
 					text(
-						'p',
-						'The next scheduled bus could not be confirmed. This does not necessarily mean service has finished.',
+						"p",
+						"The next scheduled bus could not be confirmed. This does not necessarily mean service has finished.",
 					),
 				);
 			}
-			if (data.source) box.append(sourceLink('View timetable ↗', data.source));
+			if (data.source) box.append(sourceLink("View timetable ↗", data.source));
 		} catch (e) {
-			if (e.name !== 'AbortError' && box.isConnected)
+			if (e.name !== "AbortError" && box.isConnected)
 				box.replaceChildren(
-					text('strong', 'No live predictions available'),
+					text("strong", "No live predictions available"),
 					text(
-						'p',
-						'The timetable is temporarily unavailable. Please check again shortly.',
+						"p",
+						"The timetable is temporarily unavailable. Please check again shortly.",
 					),
 				);
 		}
 	}
 	function arrivalRetryState(delay) {
 		const deadline = Date.now() + delay,
-			box = text('div', '', 'dxb-arrival-retry');
-		const icon = text('span', '↻', 'dxb-retry-icon');
-		icon.setAttribute('aria-hidden', 'true');
-		const body = text('div', '', 'dxb-retry-body');
+			box = text("div", "", "dxb-arrival-retry");
+		const icon = text("span", "↻", "dxb-retry-icon");
+		icon.setAttribute("aria-hidden", "true");
+		const body = text("div", "", "dxb-retry-body");
 		body.append(
 			text(
-				'strong',
-				'Arrival predictions temporarily unavailable',
-				'dxb-retry-title',
+				"strong",
+				"Arrival predictions temporarily unavailable",
+				"dxb-retry-title",
 			),
-			text('p', 'We’ll try again automatically.', 'dxb-retry-description'),
+			text("p", "We’ll try again automatically.", "dxb-retry-description"),
 		);
-		const countdown = text('span', '', 'dxb-retry-countdown');
-		countdown.setAttribute('role', 'timer');
-		countdown.setAttribute('aria-live', 'off');
-		const track = text('div', '', 'dxb-retry-track'),
-			fill = text('span', '', 'dxb-retry-fill');
-		track.setAttribute('aria-hidden', 'true');
+		const countdown = text("span", "", "dxb-retry-countdown");
+		countdown.setAttribute("role", "timer");
+		countdown.setAttribute("aria-live", "off");
+		const track = text("div", "", "dxb-retry-track"),
+			fill = text("span", "", "dxb-retry-fill");
+		track.setAttribute("aria-hidden", "true");
 		track.append(fill);
 		body.append(countdown, track);
 		box.append(icon, body);
-		$('#dxb-arrivals').replaceChildren(box);
+		$("#dxb-arrivals").replaceChildren(box);
 		function tick() {
 			if (!box.isConnected) {
 				clearInterval(retryTicker);
@@ -6925,9 +9159,9 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			}
 			const remaining = Math.max(0, deadline - Date.now());
 			countdown.textContent = remaining
-				? 'Retrying in ' + Math.ceil(remaining / 1000) + 's'
-				: 'Retrying now…';
-			fill.style.width = 100 * (1 - remaining / delay) + '%';
+				? "Retrying in " + Math.ceil(remaining / 1000) + "s"
+				: "Retrying now…";
+			fill.style.width = 100 * (1 - remaining / delay) + "%";
 		}
 		tick();
 		retryTicker = setInterval(tick, 250);
@@ -6936,30 +9170,30 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		stopArrivals();
 		if (
 			!current ||
-			tab !== 'arrivals' ||
+			tab !== "arrivals" ||
 			document.hidden ||
-			!$('#dxb-stop').value
+			!$("#dxb-stop").value
 		)
 			return;
 		const route = current.id,
-			stop = $('#dxb-stop').value;
+			stop = $("#dxb-stop").value;
 		arrivalsController = new AbortController();
-		$('#dxb-updated').textContent = 'Updating arrival predictions…';
-		const retry = $('.dxb-arrival-retry');
+		$("#dxb-updated").textContent = "Updating arrival predictions…";
+		const retry = $(".dxb-arrival-retry");
 		if (retry) {
-			retry.classList.add('is-fetching');
-			retry.querySelector('.dxb-retry-title').textContent =
-				'Fetching arrival predictions';
-			retry.querySelector('.dxb-retry-description').textContent =
-				'Connecting to TfL…';
-			retry.querySelector('.dxb-retry-countdown').textContent = 'Retrying now…';
+			retry.classList.add("is-fetching");
+			retry.querySelector(".dxb-retry-title").textContent =
+				"Fetching arrival predictions";
+			retry.querySelector(".dxb-retry-description").textContent =
+				"Connecting to TfL…";
+			retry.querySelector(".dxb-retry-countdown").textContent = "Retrying now…";
 		}
 		try {
 			const data = await request(
 				`arrivals/${encodeURIComponent(route)}/${encodeURIComponent(stop)}`,
 				arrivalsController.signal,
 			);
-			if (current?.id !== route || $('#dxb-stop').value !== stop) return;
+			if (current?.id !== route || $("#dxb-stop").value !== stop) return;
 			arrivalRows = data.arrivals.filter(
 				(a) =>
 					Number.isFinite(Date.parse(a.expected)) &&
@@ -6968,111 +9202,170 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 			renderArrivals();
 			if (!arrivalRows.length)
 				showScheduledArrival(route, stop, arrivalsController.signal);
-			$('#dxb-updated').textContent = `Updated ${new Date().toLocaleTimeString(
-				'en-GB',
-				{ hour: '2-digit', minute: '2-digit', second: '2-digit' },
+			$("#dxb-updated").textContent = `Updated ${new Date().toLocaleTimeString(
+				"en-GB",
+				{ hour: "2-digit", minute: "2-digit", second: "2-digit" },
 			)} · TfL predictions · refreshes every 30 seconds`;
 			failures = 0;
 		} catch (error) {
-			if (error.name === 'AbortError') return;
+			if (error.name === "AbortError") return;
 			if (
 				current?.id !== route ||
-				tab !== 'arrivals' ||
-				$('#dxb-stop').value !== stop
+				tab !== "arrivals" ||
+				$("#dxb-stop").value !== stop
 			)
 				return;
-			$('#dxb-updated').textContent = '';
+			$("#dxb-updated").textContent = "";
 			failures++;
 		}
 		if (
 			current?.id === route &&
-			tab === 'arrivals' &&
-			$('#dxb-stop').value === stop
+			tab === "arrivals" &&
+			$("#dxb-stop").value === stop
 		) {
 			const delay = Math.min(120000, 30000 * (failures + 1));
 			if (failures) arrivalRetryState(delay);
 			timer = setTimeout(refreshArrivals, delay);
 		}
 	}
-	document.addEventListener('visibilitychange', () => {
+	document.addEventListener("visibilitychange", () => {
 		if (document.hidden) stopArrivals();
-		else if (tab === 'arrivals') refreshArrivals();
+		else if (tab === "arrivals") refreshArrivals();
 	});
-	$('#dxb-share').addEventListener('click', async () => {
-		const button = $('#dxb-share');
+	$("#dxb-share").addEventListener("click", async () => {
+		const button = $("#dxb-share");
 		try {
 			await navigator.clipboard.writeText(location.href);
-			button.textContent = 'Route link copied ✓';
+			button.textContent = "Route link copied ✓";
 		} catch {
-			button.textContent = 'Copy the route URL from your address bar';
+			button.textContent = "Copy the route URL from your address bar";
 		}
-		setTimeout(() => (button.textContent = 'Copy route link ↗'), 4000);
+		setTimeout(() => (button.textContent = "Copy route link ↗"), 4000);
 	});
-	const indexReady = request('routes')
+	const indexReady = request("routes")
 		.then((routes) => {
-			const list = $('#dxb-route-options');
+			const list = $("#dxb-route-options");
 			routes.forEach((route) =>
 				list.append(new Option(route.name, route.name)),
 			);
 		})
 		.catch(() => {});
-	const initialRoute = new URL(location.href).searchParams.get('route') || '';
+	const initialRoute = new URL(location.href).searchParams.get("route") || "";
 	indexReady.finally(() => {
 		if (sequence === 0 && initialRoute.trim()) search(initialRoute);
 	});
 
-	let photoFilter = 'all',
+	let photoFilter = "all",
 		photoIndex = 0,
 		lastFocus = null;
-	const lightbox = $('#dxb-lightbox');
+	const lightbox = $("#dxb-lightbox");
+	function matchesPhoto(card, filter) {
+		const route = card.dataset.photoRoute.toUpperCase(),
+			scenery = card.dataset.photoScenery || "";
+		if (filter === "all") return true;
+		if (filter === "buses") return Boolean(route);
+		if (filter === "scenery") return !route;
+		if (filter.startsWith("scenery-"))
+			return !route && scenery === filter.slice(8);
+		if (filter === "night") return /^N\d/.test(route);
+		if (filter === "lettered")
+			return /[A-Z]/.test(route) && !/^N\d/.test(route);
+		if (filter.startsWith("range-")) {
+			const min = Number(filter.slice(6));
+			return (
+				/^\d+$/.test(route) &&
+				Number(route) >= min &&
+				(min === 401 || Number(route) < min + 100)
+			);
+		}
+		return route === filter;
+	}
+
 	function filterPhotos() {
-		const query = $('#dxb-photo-search').value.trim().toLowerCase();
+		const query = $("#dxb-photo-search").value.trim().toLowerCase();
 		let count = 0;
-		$$('#dxb-gallery [data-photo]').forEach((card) => {
+		$$("#dxb-gallery [data-photo]").forEach((card) => {
 			const show =
-				(photoFilter === 'all' || card.dataset.photoRoute === photoFilter) &&
+				matchesPhoto(card, photoFilter) &&
 				card.dataset.photoSearch.includes(query);
 			card.hidden = !show;
 			if (show) count++;
 		});
-		$('#dxb-gallery-empty').hidden = count > 0;
+		$("#dxb-gallery-empty").hidden = count > 0;
 	}
-	$$('[data-photo-filter]').forEach((button) =>
-		button.addEventListener('click', () => {
+	$$("[data-photo-filter]").forEach((button) =>
+		button.addEventListener("click", () => {
 			photoFilter = button.dataset.photoFilter;
-			$$('[data-photo-filter]').forEach((b) =>
-				b.setAttribute('aria-pressed', String(b === button)),
+			const group =
+				photoFilter === "all"
+					? ""
+					: photoFilter.startsWith("scenery")
+					? "scenery"
+					: "buses";
+			document
+				.querySelectorAll("[data-photo-group]")
+				.forEach((el) => (el.hidden = el.dataset.photoGroup !== group));
+			$$("[data-photo-filter]").forEach((b) =>
+				b.setAttribute("aria-pressed", String(b === button)),
 			);
 			filterPhotos();
 		}),
 	);
-	$('#dxb-photo-search').addEventListener('input', filterPhotos);
+	$("#dxb-photo-search").addEventListener("input", filterPhotos);
 	function renderPhoto() {
 		const p = DXB.photos[photoIndex];
 		if (!p) return;
-		window.dxSetPhoto?.($('#dxb-lightbox-image'), p);
-		$('#dxb-lightbox-route').textContent = p.route
+		window.dxSetPhoto?.($("#dxb-lightbox-image"), p);
+		$("#dxb-lightbox-route").textContent = p.route
 			? `Route ${p.route}`
-			: 'Bus photography';
-		$('#dxb-lightbox-title').textContent = p.title;
-		$('#dxb-lightbox-caption').textContent = p.caption;
-		$('#dxb-lightbox-meta').textContent = [
+			: "Bus photography";
+		$("#dxb-lightbox-title").textContent = p.title;
+		$("#dxb-lightbox-caption").textContent = p.caption;
+		$("#dxb-lightbox-meta").textContent = [
 			p.vehicle,
 			p.operator,
 			p.location,
 			p.date,
 		]
 			.filter(Boolean)
-			.join(' · ');
-		const technical=$('#dxb-photo-technical'), map=$('#dxb-photo-map');
-        technical.replaceChildren();map.replaceChildren();
-        $('#dxb-bad-photo').hidden=!p.bad;
-        Object.entries(p.technical || {}).forEach(([label,value])=>{if(label!=='gps'){technical.append(text('dt',label),text('dd',String(value)));}});
-        const gps=p.technical?.gps;
-        if(gps){
-            window.dxRenderPhotoMap?.(map,gps,p);
-        } else if(p.location){ const label=text('p','📍 '+p.location);label.className='dx-photo-location';map.append(label); }
-        $('#dxb-lightbox-count').textContent = `${photoIndex + 1} / ${
+			.join(" · ");
+		const technical = $("#dxb-photo-technical"),
+			map = $("#dxb-photo-map");
+		technical.replaceChildren();
+		map.replaceChildren();
+		$("#dxb-bad-photo").hidden = !p.bad;
+		lightbox.classList.remove("is-zoomed");
+		lightbox.querySelector("#dxb-lightbox-image").style.transform = "";
+		photoImage.setAttribute("aria-pressed", "false");
+		photoImage.setAttribute("aria-label", "Zoom photograph");
+		const rawDate = p.captured || p.date;
+		const captured = new Date(rawDate),
+			cutoff = new Date();
+		cutoff.setFullYear(cutoff.getFullYear() - 5);
+		cutoff.setHours(0, 0, 0, 0);
+		let old = $("#dxb-old-photo");
+		if (!old) {
+			old = text("span", "◷ Old Photo");
+			old.id = "dxb-old-photo";
+			$("#dxb-bad-photo").after(old);
+		}
+		old.hidden = !(Number.isFinite(captured.getTime()) && captured < cutoff);
+		old.title = "Photographed more than five calendar years ago.";
+
+		Object.entries(p.technical || {}).forEach(([label, value]) => {
+			if (label !== "gps") {
+				technical.append(text("dt", label), text("dd", String(value)));
+			}
+		});
+		const gps = p.technical?.gps;
+		if (gps) {
+			window.dxRenderPhotoMap?.(map, gps, p);
+		} else if (p.location) {
+			const label = text("p", "📍 " + p.location);
+			label.className = "dx-photo-location";
+			map.append(label);
+		}
+		$("#dxb-lightbox-count").textContent = `${photoIndex + 1} / ${
 			DXB.photos.length
 		}`;
 	}
@@ -7082,27 +9375,96 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 		if (!lightbox.open) {
 			lastFocus = document.activeElement;
 			lightbox.showModal();
-			document.body.classList.add('dxb-lightbox-open');
+			document.body.classList.add("dxb-lightbox-open");
 		}
 	}
-	$$('#dxb-gallery [data-photo]').forEach((card) =>
-		card.addEventListener('click', (event) => {
+	$$("#dxb-gallery [data-photo]").forEach((card) =>
+		card.addEventListener("click", (event) => {
 			event.preventDefault();
 			openPhoto(Number(card.dataset.photo));
 		}),
 	);
+	const photoImage = $("#dxb-lightbox-image");
+	const photoViewport = document.createElement("div");
+	photoViewport.className = "dxb-photo-viewport";
+	photoImage.before(photoViewport);
+	photoViewport.append(photoImage);
+
+	photoImage.tabIndex = 0;
+	photoImage.setAttribute("role", "button");
+	photoImage.setAttribute("aria-label", "Zoom photograph");
+	let panX = 0,
+		panY = 0,
+		drag = null,
+		moved = false;
+	const paintPan = () => {
+		photoImage.style.transform = lightbox.classList.contains("is-zoomed")
+			? `translate(${panX}px, ${panY}px) scale(2)`
+			: "";
+	};
+	const toggleZoom = (event) => {
+		if (moved) {
+			moved = false;
+			return;
+		}
+		const zoomed = lightbox.classList.toggle("is-zoomed");
+		const r = photoViewport.getBoundingClientRect();
+		panX = event?.clientX ? r.left + r.width / 2 - event.clientX : 0;
+		panY = event?.clientY ? r.top + r.height / 2 - event.clientY : 0;
+		paintPan();
+		photoImage.setAttribute(
+			"aria-label",
+			zoomed ? "Fit photograph. Drag to explore." : "Zoom photograph",
+		);
+		photoImage.setAttribute("aria-pressed", String(zoomed));
+	};
+	photoViewport.addEventListener("click", toggleZoom);
+	photoViewport.addEventListener("pointerdown", (e) => {
+		if (!lightbox.classList.contains("is-zoomed")) return;
+		drag = { x: e.clientX, y: e.clientY, px: panX, py: panY };
+		moved = false;
+		photoImage.style.transition = "none";
+		photoViewport.setPointerCapture(e.pointerId);
+	});
+	photoViewport.addEventListener("pointermove", (e) => {
+		if (!drag) return;
+		const dx = e.clientX - drag.x,
+			dy = e.clientY - drag.y;
+		if (Math.abs(dx) + Math.abs(dy) > 5) moved = true;
+		panX = Math.max(
+			-photoViewport.clientWidth / 2,
+			Math.min(photoViewport.clientWidth / 2, drag.px + dx),
+		);
+		panY = Math.max(
+			-photoViewport.clientHeight / 2,
+			Math.min(photoViewport.clientHeight / 2, drag.py + dy),
+		);
+		paintPan();
+	});
+	["pointerup", "pointercancel"].forEach((type) =>
+		photoViewport.addEventListener(type, () => {
+			drag = null;
+			photoImage.style.transition = "";
+		}),
+	);
+	photoImage.addEventListener("keydown", (e) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			toggleZoom();
+		}
+	});
 	function movePhoto(delta) {
 		photoIndex = (photoIndex + delta + DXB.photos.length) % DXB.photos.length;
 		renderPhoto();
 	}
-	$('[data-lightbox-prev]').addEventListener('click', () => movePhoto(-1));
-	$('[data-lightbox-next]').addEventListener('click', () => movePhoto(1));
-	$('.dxb-close').addEventListener('click', () => lightbox.close());
-	lightbox.addEventListener('close', () => {
-		document.body.classList.remove('dxb-lightbox-open');
+	$("[data-lightbox-prev]").addEventListener("click", () => movePhoto(-1));
+	$("[data-lightbox-next]").addEventListener("click", () => movePhoto(1));
+	$(".dxb-close").addEventListener("click", () => lightbox.close());
+	lightbox.addEventListener("close", () => {
+		document.body.classList.remove("dxb-lightbox-open");
 		lastFocus?.focus();
 	});
-	lightbox.addEventListener('click', (event) => {
+	lightbox.addEventListener("click", (event) => {
 		if (event.target === lightbox) {
 			const r = lightbox.getBoundingClientRect();
 			if (
@@ -7114,26 +9476,28 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 				lightbox.close();
 		}
 	});
-	lightbox.addEventListener('keydown', (event) => {
-		if (event.key === 'ArrowLeft') movePhoto(-1);
-		if (event.key === 'ArrowRight') movePhoto(1);
+	lightbox.addEventListener("keydown", (event) => {
+		if (event.key === "ArrowLeft") movePhoto(-1);
+		if (event.key === "ArrowRight") movePhoto(1);
 	});
-	const navLinks = $$('.dxb-nav a');
+	const navLinks = $$(".dxb-nav a");
 	let scrollScheduled = false;
 	function updateNavigation() {
-		let active = 'buses-overview';
-		['routes', 'bus-diary', 'news', 'bus-models', 'photography'].forEach((id) => {
-			if (document.getElementById(id).getBoundingClientRect().top <= 145)
-				active = id;
-		});
+		let active = "buses-overview";
+		["routes", "bus-diary", "news", "bus-models", "photography"].forEach(
+			(id) => {
+				if (document.getElementById(id).getBoundingClientRect().top <= 145)
+					active = id;
+			},
+		);
 		navLinks.forEach((a) => {
-			if (a.hash === `#${active}`) a.setAttribute('aria-current', 'location');
-			else a.removeAttribute('aria-current');
+			if (a.hash === `#${active}`) a.setAttribute("aria-current", "location");
+			else a.removeAttribute("aria-current");
 		});
 		scrollScheduled = false;
 	}
 	window.addEventListener(
-		'scroll',
+		"scroll",
 		() => {
 			if (!scrollScheduled) {
 				scrollScheduled = true;
@@ -7146,51 +9510,2569 @@ document.addEventListener('DOMContentLoaded', initHomepageHeroMotion);
 })();
 
 // Stagger the waitlist's content without delaying form availability.
-document.addEventListener('DOMContentLoaded', () => {
- if (!document.body.classList.contains('page-n118-fitness') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
- const items = document.querySelectorAll('#main .headline, #main h2, #main .wp-block-paragraph, #main .mailpoet_form_columns, #main .mailpoet_paragraph.last');
- items.forEach((item, index) => item.animate([{opacity: 0, transform: 'translateY(18px)'}, {opacity: 1, transform: 'translateY(0)'}], {duration: 650, delay: Math.min(index * 100, 700), easing: 'ease-out', fill: 'backwards'}));
+dxOnPageReady(() => {
+	if (
+		!document.body.classList.contains("page-n118-fitness") ||
+		matchMedia("(prefers-reduced-motion: reduce)").matches
+	)
+		return;
+	const items = document.querySelectorAll(
+		"#main .headline, #main h2, #main .wp-block-paragraph, #main .mailpoet_form_columns, #main .mailpoet_paragraph.last",
+	);
+	items.forEach((item, index) =>
+		item.animate(
+			[
+				{ opacity: 0, transform: "translateY(18px)" },
+				{ opacity: 1, transform: "translateY(0)" },
+			],
+			{
+				duration: 650,
+				delay: Math.min(index * 100, 700),
+				easing: "ease-out",
+				fill: "backwards",
+			},
+		),
+	);
 });
 
 // Editorial motion leaves native document layout and nested scrolling intact.
 (() => {
- const init = () => {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-   if(entry.isIntersecting){entry.target.classList.remove('is-pending');entry.target.classList.add('is-visible');}
-  }), {threshold:.12});
-  document.querySelectorAll('.dx-reveal,.dx-service-scene').forEach(el=>{if(!reduced.matches && el.classList.contains('dx-reveal'))el.classList.add('is-pending');observer.observe(el);});
-  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
-  let target=scrollY, frame=0, last=0;
-  const stop=()=>{cancelAnimationFrame(frame);frame=0;target=scrollY;last=0;};
-  const tick=time=>{const dt=last?Math.min(50,time-last):16;last=time;const next=scrollY+(target-scrollY)*(1-Math.exp(-dt/95));window.scrollTo({top:Math.abs(target-next)<.8?target:next,behavior:'instant'});if(Math.abs(target-scrollY)>.8)frame=requestAnimationFrame(tick);else{frame=0;last=0;}};
-  window.addEventListener('wheel',event=>{
-   if(reduced.matches||event.defaultPrevented||event.ctrlKey||event.metaKey||Math.abs(event.deltaX)>Math.abs(event.deltaY)||document.documentElement.style.overflow==='hidden'||getComputedStyle(document.body).overflow==='hidden')return;
-   for(let el=event.target instanceof Element?event.target:null;el && el!==document.body;el=el.parentElement){if(el.matches('input,textarea,select,[contenteditable],dialog,[role="dialog"]'))return;const style=getComputedStyle(el);if(/auto|scroll/.test(style.overflowY)&&el.scrollHeight>el.clientHeight+2)return;}
-   event.preventDefault();if(!frame)target=scrollY;const delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);target=Math.max(0,Math.min(document.documentElement.scrollHeight-innerHeight,target+delta));if(!frame)frame=requestAnimationFrame(tick);
-  },{passive:false});
-  ['pointerdown','touchstart','keydown','hashchange'].forEach(type=>window.addEventListener(type,stop,{passive:true}));
-  reduced.addEventListener('change',stop);
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+	const init = () => {
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		const observer = new IntersectionObserver(
+			(entries) =>
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.remove("is-pending");
+						entry.target.classList.add("is-visible");
+					}
+				}),
+			{ threshold: 0.12 },
+		);
+		document.querySelectorAll(".dx-reveal,.dx-service-scene").forEach((el) => {
+			if (!reduced.matches && el.classList.contains("dx-reveal"))
+				el.classList.add("is-pending");
+			observer.observe(el);
+		});
+	};
+	if (document.readyState === "loading") dxOnPageReady(init);
+	else init();
 })();
-(() => { const styleActions=()=>document.querySelectorAll('a.btn,.wp-block-button__link,.service-card-link,.dx-menu__cta').forEach(a=>{if(!/[↗↘→↓]/.test(a.textContent)&&!a.querySelector('svg,i,[class*=arrow]')){const arrow=document.createElement('span');arrow.className='dx-cta-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='↗';a.append(arrow);}});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',styleActions);else styleActions();})();
-
-// Document scrolling with a soft inertial settle, preserving native nested scrolling.
 (() => {
- if(!document.body.classList.contains('is-frontend')) return;
- const reduced=matchMedia('(prefers-reduced-motion: reduce)');
- let target=window.scrollY, frame=0,last=0;
- const stop=()=>{cancelAnimationFrame(frame);frame=0;target=window.scrollY;};
- const step=(time)=>{const dt=Math.min(40,time-last||16);last=time;const y=window.scrollY;const next=y+(target-y)*(1-Math.exp(-dt/115));window.scrollTo({top:next,behavior:'instant'});if(Math.abs(target-next)>0.5)frame=requestAnimationFrame(step);else{window.scrollTo({top:target,behavior:'instant'});frame=0;}};
- window.addEventListener('wheel',e=>{
-  if(reduced.matches||e.ctrlKey||e.defaultPrevented||Math.abs(e.deltaX)>Math.abs(e.deltaY)||document.querySelector('dialog[open]')||getComputedStyle(document.body).overflow==='hidden')return;
-  for(let el=e.target;el&&el!==document.body;el=el.parentElement){const c=getComputedStyle(el);if(/auto|scroll/.test(c.overflowY)&&el.scrollHeight>el.clientHeight+1)return;}
-  e.preventDefault();if(!frame)target=window.scrollY;target=Math.max(0,Math.min(document.documentElement.scrollHeight-innerHeight,target+e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1)));if(!frame){last=performance.now();frame=requestAnimationFrame(step);}
- },{passive:false});
- ['touchstart','pointerdown','keydown'].forEach(name=>window.addEventListener(name,stop,{passive:true}));
- reduced.addEventListener('change',stop);
- document.querySelector('[data-read-study]')?.addEventListener('click',e=>{e.preventDefault();stop();document.querySelector('.story-section')?.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});});
- const intro=document.querySelector('.dx-services-intro'),visual=document.querySelector('.dx-service-visual img');
- if(intro&&visual){const img=visual.cloneNode();img.className='dx-services-hero-art';img.alt='';img.setAttribute('aria-hidden','true');intro.prepend(img);}
+	const styleActions = () =>
+		document
+			.querySelectorAll(
+				"a.btn,.wp-block-button__link,.service-card-link,.dx-menu__cta",
+			)
+			.forEach((a) => {
+				if (
+					!/[↗↘→↓]/.test(a.textContent) &&
+					!a.querySelector("svg,i,[class*=arrow]")
+				) {
+					const arrow = document.createElement("span");
+					arrow.className = "dx-cta-arrow";
+					arrow.setAttribute("aria-hidden", "true");
+					arrow.textContent = "↗";
+					a.append(arrow);
+				}
+			});
+	if (document.readyState === "loading") dxOnPageReady(styleActions);
+	else styleActions();
 })();
+
+// Native document scrolling; explicit navigation may use a bounded smooth scroll.
+(() => {
+	if (!document.body.classList.contains("is-frontend")) return;
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	document
+		.querySelector("[data-read-study]")
+		?.addEventListener("click", (e) => {
+			e.preventDefault();
+			document.querySelector(".story-section")?.scrollIntoView({
+				behavior: reduced.matches ? "instant" : "smooth",
+				block: "start",
+			});
+		});
+	const intro = document.querySelector(".dx-services-intro"),
+		visual = document.querySelector(".dx-service-visual img");
+	if (intro && visual) {
+		const img = visual.cloneNode();
+		img.className = "dx-services-hero-art";
+		img.alt = "";
+		img.setAttribute("aria-hidden", "true");
+		intro.prepend(img);
+	}
+})();
+
+// Shared editorial interactions (formerly immersive.js).
+(() => {
+	const init = () => {
+		const body = document.body;
+		if (!body.classList.contains("is-frontend")) return;
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		document.addEventListener("dragstart", (e) => {
+			if (e.target.closest("img,picture")) e.preventDefault();
+		});
+		const header = document.querySelector("#header");
+		const headerSize = () =>
+			document.documentElement.style.setProperty(
+				"--dx-header-bottom",
+				Math.max(70, header?.getBoundingClientRect().bottom || 100) + "px",
+			);
+		headerSize();
+		if (header) new ResizeObserver(headerSize).observe(header);
+		const list = document.querySelector(".dx-menu__list");
+		if (list) {
+			const links = [...list.querySelectorAll(":scope>li>a")];
+			const home = links.find((a) => new URL(a.href).pathname === "/");
+			if (home) {
+				home.setAttribute("aria-label", "Home");
+				home.innerHTML =
+					'<svg class="dx-home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 11 12 3l9 8M5 9v12h5v-7h4v7h5V9"/></svg>';
+			}
+			const login = links.find((a) => /client login/i.test(a.textContent));
+			if (login) {
+				const cta = document.querySelector(".dx-menu__cta");
+				if (cta) {
+					cta.href = login.href;
+					cta.querySelector("span").textContent = "Client login";
+				}
+				login.parentElement.remove();
+			}
+			const photo = links.find(
+					(a) => new URL(a.href).pathname === "/photography/",
+				),
+				contact = links.find((a) => new URL(a.href).pathname === "/contact/");
+			if (photo && contact) photo.parentElement.after(contact.parentElement);
+		}
+		// Lock the actual page position while retaining independent menu scrolling.
+		let savedY = 0,
+			locked = false;
+		const lock = () => {
+			const open = body.classList.contains("nav-open");
+			if (open && !locked) {
+				savedY = scrollY;
+				locked = true;
+				body.style.position = "fixed";
+				body.style.top = -savedY + "px";
+				body.style.width = "100%";
+			} else if (!open && locked) {
+				locked = false;
+				body.style.position = "";
+				body.style.top = "";
+				body.style.width = "";
+				window.scrollTo({ top: savedY, behavior: "instant" });
+			}
+		};
+		new MutationObserver(lock).observe(body, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+		// Reveal individual photographs only as they approach the viewport.
+		const photos = [
+			...document.querySelectorAll("#dxb-gallery .dxb-photo-card"),
+		];
+		if ("IntersectionObserver" in window && !reduced.matches) {
+			const io = new IntersectionObserver(
+				(entries) =>
+					entries.forEach((e) => {
+						if (e.isIntersecting) {
+							e.target.classList.remove("dx-photo-pending");
+							io.unobserve(e.target);
+						}
+					}),
+				{ rootMargin: "0px 0px 60px 0px", threshold: 0.02 },
+			);
+			photos.forEach((p) => {
+				p.classList.add("dx-photo-pending");
+				io.observe(p);
+			});
+		}
+		const photoHero = document.querySelector(".dx-photo-hero");
+		if (photoHero && photos.length) {
+			const sources = photos
+				.slice(0, 8)
+				.map((p) => p.querySelector("img"))
+				.filter(Boolean);
+			let index = 0,
+				active = 0,
+				paused = reduced.matches;
+			const layers = [0, 1].map((_, i) => {
+				const img = sources[0].cloneNode();
+				img.className = "dx-page-hero-art" + (i ? " dx-slide-hidden" : "");
+				img.alt = "";
+				img.loading = "eager";
+				photoHero.prepend(img);
+				return img;
+			});
+			const toggle = document.createElement("button");
+			toggle.type = "button";
+			toggle.className = "dx-photo-pause";
+			const label = () => {
+				toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			};
+			label();
+			toggle.addEventListener("click", () => {
+				paused = !paused;
+				label();
+			});
+			photoHero.append(toggle);
+			setInterval(() => {
+				if (
+					paused ||
+					document.hidden ||
+					photoHero.getBoundingClientRect().bottom < 0
+				)
+					return;
+				index = (index + 1) % sources.length;
+				const next = layers[1 - active],
+					source = sources[index];
+				next.src = source.currentSrc || source.src;
+				next.removeAttribute("srcset");
+				next
+					.decode()
+					.then(() => {
+						next.classList.remove("dx-slide-hidden");
+						layers[active].classList.add("dx-slide-hidden");
+						active = 1 - active;
+					})
+					.catch(() => {});
+			}, 5500);
+			reduced.addEventListener("change", () => {
+				paused = reduced.matches;
+				label();
+			});
+		}
+		const reel = document.querySelector(".dx-project-reel"),
+			track = reel?.querySelector(".dx-project-track");
+		if (reel && track) {
+			let distance = 0;
+			const size = () => {
+				distance = Math.max(
+					0,
+					track.scrollWidth - innerWidth + innerWidth * 0.12,
+				);
+				reel.style.height = reduced.matches
+					? "auto"
+					: innerHeight + distance + "px";
+				update();
+			};
+			const update = () => {
+				if (reduced.matches) return;
+				const progress = Math.min(
+					distance,
+					Math.max(0, -reel.getBoundingClientRect().top),
+				);
+				track.style.transform = `translate3d(${-progress}px,0,0)`;
+			};
+			window.addEventListener("scroll", update, { passive: true });
+			window.addEventListener("resize", size);
+			reduced.addEventListener("change", size);
+			new ResizeObserver(size).observe(track);
+			size();
+			track.addEventListener("focusin", (e) => {
+				const card = e.target.closest(".dx-project-poster");
+				if (!card || reduced.matches) return;
+				window.scrollTo({
+					top:
+						scrollY +
+						reel.getBoundingClientRect().top +
+						Math.min(distance, card.offsetLeft - track.offsetLeft),
+					behavior: "smooth",
+				});
+			});
+		}
+		// Keep earlier project chapters readable in normal document flow.
+		if (body.classList.contains("single-project")) {
+			document.querySelectorAll(".story-section").forEach((s) => {
+				s.classList.add("dx-editorial-chapter");
+			});
+			document.querySelectorAll(".story-section img").forEach((img) => {
+				img.loading = "lazy";
+				img.decoding = "async";
+			});
+		}
+		// Bounded, frame-scheduled background movement; reduced-motion users see a still image.
+		const parallax = [];
+		const closing = document.querySelector("body.home .start-something");
+		if (closing) {
+			const img = closing.querySelector("img.wp-block-cover__image-background");
+			if (img) {
+				closing.classList.add("dx-parallax-section");
+				img.classList.add("dx-parallax-art");
+				parallax.push([closing, img]);
+			}
+		}
+		document.querySelectorAll(".dx-photo-promo").forEach((section) => {
+			const img = section.querySelector(".dx-parallax-art");
+			if (img) {
+				section.classList.add("dx-parallax-section");
+				parallax.push([section, img]);
+			}
+		});
+		let motionFrame = 0;
+		const moveBackgrounds = () => {
+			motionFrame = 0;
+			parallax.forEach(([section, img]) => {
+				const rect = section.getBoundingClientRect();
+				if (rect.bottom < 0 || rect.top > innerHeight) return;
+				img.style.setProperty(
+					"--dx-parallax-y",
+					reduced.matches
+						? "0px"
+						: Math.max(
+								-45,
+								Math.min(
+									45,
+									(innerHeight / 2 - rect.top - rect.height / 2) * 0.09,
+								),
+						  ) + "px",
+				);
+			});
+		};
+		const scheduleMotion = () => {
+			if (!motionFrame) motionFrame = requestAnimationFrame(moveBackgrounds);
+		};
+		if (parallax.length) {
+			addEventListener("scroll", scheduleMotion, { passive: true });
+			addEventListener("resize", scheduleMotion);
+			reduced.addEventListener("change", scheduleMotion);
+			scheduleMotion();
+		}
+		const enquiry = document.querySelector(".enquiry-form");
+		if (enquiry) {
+			const delivery = enquiry.querySelector("[name=photography_delivery]");
+			if (
+				delivery &&
+				new URLSearchParams(location.search).get("photo_delivery") === "express"
+			)
+				delivery.value = "express";
+			const syncPhotoBudget = () => {
+				const photo =
+						enquiry.querySelector("[name=service]:checked")?.value ===
+						"photography",
+					budget = enquiry.querySelector("[name=budget]");
+				if (delivery) delivery.closest(".photo-delivery-field").hidden = !photo;
+				if (budget) {
+					if (photo)
+						budget.value =
+							enquiry.querySelector("[name=photography_delivery]")?.value ===
+							"express"
+								? "£50 photography — 24 hours"
+								: "£40 photography";
+					else if (
+						["£40 photography", "£50 photography — 24 hours"].includes(
+							budget.value,
+						)
+					)
+						budget.value = "";
+				}
+			};
+			enquiry.addEventListener("change", (e) => {
+				if (["service", "photography_delivery"].includes(e.target.name))
+					syncPhotoBudget();
+			});
+			syncPhotoBudget();
+		}
+
+		const fitnessTitle = document.querySelector(".dxf-hero h1");
+		if (fitnessTitle && !fitnessTitle.querySelector(".dx-gold"))
+			fitnessTitle.innerHTML = fitnessTitle.innerHTML.replace(
+				/Raise the bar\./i,
+				'<span class="dx-gold">Raise the bar.</span>',
+			);
+		const cover = body.classList.contains("home")
+			? document.querySelector(".hero-background")
+			: null;
+		if (cover) {
+			const glow = document.createElement("div");
+			glow.className = "dx-home-glow";
+			glow.setAttribute("aria-hidden", "true");
+			cover.prepend(glow);
+		}
+		// Carry the user's own saved estimate into registration without URL personal data.
+		if (body.classList.contains("page-template-page-signup")) {
+			try {
+				const h = JSON.parse(
+					sessionStorage.getItem("dxndre-calculator-handoff") || "null",
+				);
+				if (h && new URLSearchParams(location.search).has("from_calculator")) {
+					const form = document.querySelector(".auth-signup form");
+					for (const [name, value] of Object.entries({
+						company: h.company,
+						projectref: h.reference,
+					})) {
+						const input = form?.elements.namedItem(name);
+						if (input && value) input.value = value;
+					}
+					if (form) {
+						const note = document.createElement("p");
+						note.className = "dx-account-handoff";
+						note.textContent =
+							"Your project details are ready" +
+							(h.reference ? " · " + h.reference : "") +
+							". Choose your account details below.";
+						form.prepend(note);
+					}
+				}
+			} catch {}
+		}
+		document
+			.querySelectorAll(".auth form input[placeholder]")
+			.forEach((input) => {
+				if (!input.hasAttribute("aria-label"))
+					input.setAttribute("aria-label", input.placeholder);
+			});
+	};
+	if (document.readyState === "loading") dxOnPageReady(init);
+	else init();
+})();
+
+dxOnPageReady(() => {
+	// Keep permanent accessible names when the visible prompt moves into the field.
+	document
+		.querySelectorAll("body.page-id-22 .fluentform .ff-el-group")
+		.forEach((group) => {
+			const field = group.querySelector(
+				"input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea",
+			);
+			const label = group.querySelector(".ff-el-input--label");
+			if (!field || !label) return;
+			const text =
+				label.textContent.trim().replace(/\s+/g, " ") +
+				(label.classList.contains("ff-el-is-required") ? " *" : "");
+			if (field.tagName === "SELECT") {
+				const option = field.querySelector('option[value=""]');
+				if (option) option.textContent = text;
+			} else
+				field.placeholder =
+					field.tagName === "TEXTAREA"
+						? text + " — Tell me about your project, timeline and goals."
+						: text;
+			label.classList.add("dx-placeholder-label");
+		});
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const word = document.querySelector(".dxf-hero .dx-gold");
+	if (word) {
+		const watch = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) {
+					word.classList.add("dx-raise");
+					watch.disconnect();
+				}
+			},
+			{ threshold: 0.4 },
+		);
+		watch.observe(word);
+	}
+	const slides = [...document.querySelectorAll(".dx-service-slides img")],
+		toggle = document.querySelector(".dx-slides-toggle");
+	if (slides.length && toggle) {
+		let index = -1,
+			paused = reduced.matches;
+		toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+		toggle.setAttribute("aria-pressed", String(paused));
+		toggle.addEventListener("click", () => {
+			paused = !paused;
+			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			toggle.setAttribute("aria-pressed", String(paused));
+		});
+		setInterval(() => {
+			if (paused || document.hidden) return;
+			const next = (index + 1) % (slides.length + 1);
+			if (next < slides.length && !slides[next].complete) return;
+			slides.forEach((img, i) =>
+				img.classList.toggle("is-visible", i === next),
+			);
+			index = next;
+		}, 5500);
+		reduced.addEventListener("change", (e) => {
+			paused = e.matches;
+			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			toggle.setAttribute("aria-pressed", String(paused));
+		});
+	}
+	const lazy = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((entry) => {
+				if (!entry.isIntersecting) return;
+				const video = entry.target;
+				if (!video.getAttribute("src")) {
+					video.src = video.dataset.videoSrc;
+					video.load();
+				}
+				lazy.unobserve(video);
+			}),
+		{ rootMargin: "250px" },
+	);
+	document.querySelectorAll("video[data-video-src]").forEach((video, index) => {
+		const frame = video.closest(".dxf-media-frame");
+		if (!frame) {
+			lazy.observe(video);
+			return;
+		}
+		// The custom Play button owns the paused state; native controls assist active playback.
+		let nativeFallback = false;
+		video.controls = false;
+		video.id ||= `fitness-training-video-${index + 1}`;
+		const control = document.createElement("button");
+		control.type = "button";
+		control.className = "dxf-video-toggle";
+		control.setAttribute("aria-controls", video.id);
+		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svg.setAttribute("viewBox", "0 0 24 24");
+		svg.setAttribute("aria-hidden", "true");
+		const path = document.createElementNS(svg.namespaceURI, "path");
+		svg.append(path);
+		control.append(svg);
+		frame.append(control);
+		const syncControl = () => {
+			const playing = !video.paused && !video.ended;
+			video.controls = playing || nativeFallback;
+			frame.classList.toggle("is-playing", playing);
+			control.setAttribute(
+				"aria-label",
+				playing
+					? "Pause training video"
+					: video.ended
+					? "Replay training video"
+					: "Play training video",
+			);
+			control.setAttribute("aria-pressed", String(playing));
+			path.setAttribute(
+				"d",
+				playing ? "M6 4h4v16H6zM14 4h4v16h-4z" : "M7 4v16l13-8z",
+			);
+		};
+		control.addEventListener("click", async () => {
+			if (!video.paused && !video.ended) {
+				video.pause();
+				return;
+			}
+			if (!video.getAttribute("src")) {
+				video.src = video.dataset.videoSrc;
+				video.load();
+				lazy.unobserve(video);
+			}
+			if (video.ended) video.currentTime = 0;
+			try {
+				await video.play();
+			} catch {
+				// Failed playback leaves the native controls and central Play button usable.
+				nativeFallback = true;
+				syncControl();
+			}
+		});
+		["play", "playing", "pause", "ended", "emptied"].forEach((event) =>
+			video.addEventListener(event, syncControl),
+		);
+		video.addEventListener("loadeddata", () => frame.classList.add("is-ready"));
+		video.addEventListener("error", () => {
+			nativeFallback = true;
+			video.controls = true;
+			frame.classList.remove("is-playing", "is-ready");
+			control.hidden = true;
+			const text = frame.querySelector(".dxf-media-loading");
+			if (text) text.textContent = "Video unavailable. Please try again later.";
+		});
+		syncControl();
+		lazy.observe(video);
+	});
+	const dialog = document.querySelector(".dxf-media-dialog");
+	if (dialog) {
+		document.querySelectorAll("[data-fitness-image]").forEach((button) =>
+			button.addEventListener("click", () => {
+				const img = dialog.querySelector("img");
+				img.src = button.dataset.fitnessImage;
+				img.alt = button.querySelector("img").alt;
+				dialog.showModal();
+			}),
+		);
+		dialog
+			.querySelector("button")
+			.addEventListener("click", () => dialog.close());
+		dialog.addEventListener("click", (e) => {
+			if (e.target === dialog) dialog.close();
+		});
+	}
+});
+
+dxOnPageReady(() => {
+	const motion = matchMedia("(prefers-reduced-motion: reduce)");
+	const promo = document.querySelector(".dx-photo-promo"),
+		config = document.getElementById("dx-promo-images");
+	if (promo && config) {
+		const urls = JSON.parse(config.textContent).filter(Boolean),
+			original = promo.querySelector(".dx-parallax-art");
+		if (urls.length > 1 && original) {
+			const layers = [0, 1].map(() => {
+				const img = document.createElement("img");
+				img.className = "dx-promo-slide";
+				img.alt = "";
+				img.setAttribute("aria-hidden", "true");
+				promo.prepend(img);
+				return img;
+			});
+			let queue = [],
+				last = original.src,
+				active = 0,
+				paused = motion.matches,
+				busy = false;
+			const next = () => {
+				if (!queue.length) {
+					queue = urls.slice();
+					for (let i = queue.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1));
+						[queue[i], queue[j]] = [queue[j], queue[i]];
+					}
+					if (queue[queue.length - 1] === last) queue.unshift(queue.pop());
+				}
+				return queue.pop();
+			};
+			const change = async () => {
+				if (paused || document.hidden || busy) return;
+				busy = true;
+				const url = next(),
+					img = layers[active];
+				img.src = url;
+				try {
+					await img.decode();
+					if (paused) return;
+					img.classList.add("is-active");
+					layers[1 - active].classList.remove("is-active");
+					original.style.opacity = "0";
+					last = url;
+					active = 1 - active;
+				} catch (e) {
+				} finally {
+					busy = false;
+				}
+			};
+			const button = document.createElement("button");
+			button.type = "button";
+			button.className = "dx-promo-pause";
+			const label = () => {
+				button.textContent = paused ? "Play slideshow" : "Pause slideshow";
+				button.setAttribute("aria-pressed", String(paused));
+			};
+			label();
+			button.addEventListener("click", () => {
+				paused = !paused;
+				label();
+				if (!paused) change();
+			});
+			promo.append(button);
+			motion.addEventListener("change", (e) => {
+				paused = e.matches;
+				label();
+			});
+			setInterval(change, 5500);
+			change();
+		}
+	}
+	const selector =
+		".dxb-gallery img,.dxb-gallery video,.dxf-media-grid img,.dxf-media-grid video,.wp-block-gallery img,.wp-block-gallery video,.dxf-media-dialog img,#dxb-lightbox img,#dxb-lightbox video";
+	const seen = new WeakSet(),
+		visible = new WeakSet();
+	const reveal = (media) => {
+		const ready =
+			media.tagName === "VIDEO"
+				? media.readyState >= 2
+				: media.complete && media.naturalWidth > 0;
+		if (
+			!visible.has(media) ||
+			!ready ||
+			!media.classList.contains("dx-colour-pending")
+		)
+			return;
+		media.classList.remove("dx-colour-pending");
+		media.classList.add("dx-colour-ready");
+		if (!motion.matches) {
+			media.classList.add("dx-colour-reveal");
+			media.addEventListener(
+				"animationend",
+				() => media.classList.remove("dx-colour-reveal"),
+				{ once: true },
+			);
+		}
+	};
+	const observer = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((e) => {
+				if (e.isIntersecting) {
+					visible.add(e.target);
+					reveal(e.target);
+				} else visible.delete(e.target);
+			}),
+		{ threshold: 0.08 },
+	);
+	const attach = (media) => {
+		if (seen.has(media)) return;
+		seen.add(media);
+		media.classList.add("dx-colour-pending");
+		observer.observe(media);
+		media.addEventListener(
+			media.tagName === "VIDEO" ? "loadeddata" : "load",
+			() => reveal(media),
+		);
+	};
+	document.querySelectorAll(selector).forEach(attach);
+	new MutationObserver((records) =>
+		records.forEach((record) => {
+			if (record.type === "attributes" && record.target.matches(selector)) {
+				const m = record.target;
+				m.classList.remove("dx-colour-reveal", "dx-colour-ready");
+				m.classList.add("dx-colour-pending");
+				reveal(m);
+			}
+			record.addedNodes.forEach((node) => {
+				if (node.nodeType !== 1) return;
+				if (node.matches(selector)) attach(node);
+				node.querySelectorAll(selector).forEach(attach);
+			});
+		}),
+	).observe(document.querySelector("main") || document.body, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: ["src", "srcset"],
+	});
+});
+
+// One-time entrance for page sections, including dynamically inserted route sections.
+dxOnPageReady(() => {
+	const motion = matchMedia("(prefers-reduced-motion: reduce)");
+	if (motion.matches || !("IntersectionObserver" in window)) return;
+	const seen = new WeakSet();
+	const show = (section) => {
+		section.classList.remove("dx-section-pending");
+		section.classList.add("dx-section-enter");
+		section.addEventListener(
+			"transitionend",
+			() => section.classList.remove("dx-section-enter"),
+			{ once: true },
+		);
+	};
+	const observer = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					show(entry.target);
+					observer.unobserve(entry.target);
+				}
+			}),
+		{ threshold: 0, rootMargin: "0px 0px -35px 0px" },
+	);
+	const register = (section) => {
+		if (seen.has(section)) return;
+		seen.add(section);
+		if (section.getBoundingClientRect().top < innerHeight) return;
+		section.classList.add("dx-section-pending");
+		observer.observe(section);
+	};
+	document.querySelectorAll("main section").forEach(register);
+	new MutationObserver((records) =>
+		records.forEach((record) =>
+			record.addedNodes.forEach((node) => {
+				if (node.nodeType !== 1) return;
+				if (node.matches("section")) register(node);
+				node.querySelectorAll("section").forEach(register);
+			}),
+		),
+	).observe(document.querySelector("main") || document.body, {
+		childList: true,
+		subtree: true,
+	});
+	document.addEventListener("focusin", (event) => {
+		const section = event.target.closest(".dx-section-pending");
+		if (section) {
+			observer.unobserve(section);
+			show(section);
+		}
+	});
+	motion.addEventListener("change", (event) => {
+		if (event.matches) {
+			observer.disconnect();
+			document
+				.querySelectorAll(".dx-section-pending,.dx-section-enter")
+				.forEach((s) =>
+					s.classList.remove("dx-section-pending", "dx-section-enter"),
+				);
+		}
+	});
+});
+
+// Shared CARTO dark location map for both photo galleries.
+window.dxRenderPhotoMap = (() => {
+	let previous = null;
+	return (container, gps, photo = {}) => {
+		if (previous) {
+			previous.remove();
+			previous = null;
+		}
+		const lat = Number(gps.lat),
+			lon = Number(gps.lon);
+		if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+		if (window.L) {
+			const canvas = document.createElement("div");
+			canvas.className = "dx-photo-carto";
+			canvas.setAttribute("aria-label", "Photograph location map");
+			container.append(canvas);
+			const map = window.L.map(canvas, { scrollWheelZoom: false }).setView(
+				[lat, lon],
+				15,
+			);
+			previous = map;
+			window.L.tileLayer(
+				"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
+				{
+					maxZoom: 20,
+					attribution:
+						'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				},
+			).addTo(map);
+			window.L.circleMarker([lat, lon], {
+				radius: 7,
+				color: "#f5d78e",
+				weight: 2,
+				fillColor: "#d7ad57",
+				fillOpacity: 1,
+			}).addTo(map);
+			requestAnimationFrame(() => map.invalidateSize());
+		}
+		const link = document.createElement("a");
+		link.href =
+			"https://www.openstreetmap.org/?mlat=" +
+			lat +
+			"&mlon=" +
+			lon +
+			"#map=16/" +
+			lat +
+			"/" +
+			lon;
+		link.target = "_blank";
+		link.rel = "noopener";
+		link.textContent = "View photo location ↗";
+		container.append(link);
+		if (photo.location) {
+			const label = document.createElement("p");
+			label.className = "dx-photo-location";
+			label.textContent = "📍 " + photo.location;
+			container.append(label);
+		}
+	};
+})();
+
+dxOnPageReady(() => {
+	document.querySelectorAll(".dx-model-carousel").forEach((carousel) => {
+		const slides = [...carousel.querySelectorAll("[data-model-slide]")];
+		let index = 0,
+			moving = false;
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		const show = async (direction) => {
+			if (moving || slides.length < 2) return;
+			const previous = slides[index];
+			index = (index + direction + slides.length) % slides.length;
+			const next = slides[index];
+			next.hidden = false;
+			if (!reduced.matches) {
+				moving = true;
+				previous.inert = true;
+				const imageOptions = {
+					duration: 1050,
+					easing: "cubic-bezier(.22,1,.36,1)",
+				};
+				const oldImage = previous.querySelector(".dx-model-image"),
+					newImage = next.querySelector(".dx-model-image");
+				const animations = [];
+				if (oldImage)
+					animations.push(
+						oldImage.animate(
+							[
+								{ transform: "translateX(0) scale(1.04)", opacity: 1 },
+								{
+									transform: `translateX(${-direction * 18}%) scale(1.04)`,
+									opacity: 0,
+								},
+							],
+							imageOptions,
+						),
+					);
+				if (newImage)
+					animations.push(
+						newImage.animate(
+							[
+								{
+									transform: `translateX(${direction * 30}%) scale(1.08)`,
+									opacity: 0,
+								},
+								{ transform: "translateX(0) scale(1)", opacity: 1 },
+							],
+							imageOptions,
+						),
+					);
+				for (const selector of [
+					".dx-model-copy",
+					".dx-model-specs > .dxb-eyebrow",
+					".dx-model-specs > dl",
+					".dx-model-specs > a",
+				]) {
+					const oldPart = previous.querySelector(selector),
+						newPart = next.querySelector(selector);
+					if (oldPart)
+						animations.push(
+							oldPart.animate([{ opacity: 1 }, { opacity: 0 }], {
+								duration: 220,
+								fill: "forwards",
+							}),
+						);
+					if (newPart)
+						animations.push(
+							newPart.animate([{ opacity: 0 }, { opacity: 1 }], {
+								duration: 500,
+								delay: 180,
+								fill: "both",
+								easing: "ease-out",
+							}),
+						);
+				}
+				await Promise.allSettled(animations.map((a) => a.finished));
+				animations.forEach((a) => a.cancel());
+				previous.inert = false;
+				moving = false;
+			}
+			previous.hidden = true;
+			carousel.querySelector("[data-model-count]").textContent = `${
+				index + 1
+			} / ${slides.length}`;
+		};
+		carousel
+			.querySelector("[data-model-prev]")
+			?.addEventListener("click", () => show(-1));
+		carousel
+			.querySelector("[data-model-next]")
+			?.addEventListener("click", () => show(1));
+		let paused = reduced.matches;
+		const pause = document.createElement("button");
+		pause.type = "button";
+		pause.className = "dx-model-pause";
+		const label = () => {
+			pause.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			pause.setAttribute("aria-pressed", String(paused));
+		};
+		label();
+		pause.addEventListener("click", () => {
+			paused = !paused;
+			label();
+		});
+		carousel.append(pause);
+		reduced.addEventListener("change", () => {
+			paused = reduced.matches;
+			label();
+		});
+		setInterval(() => {
+			const r = carousel.getBoundingClientRect();
+			if (
+				!paused &&
+				!document.hidden &&
+				!carousel.matches(":hover") &&
+				!carousel.contains(document.activeElement) &&
+				r.bottom > 0 &&
+				r.top < innerHeight
+			)
+				show(1);
+		}, 5500);
+	});
+});
+
+dxOnPageReady(() => {
+	document.querySelectorAll(".is-premium-league").forEach((archive) => {
+		const label = archive.querySelector("[data-gyms-state-title]");
+		if (!label) return;
+		const picker = document.createElement("details");
+		picker.className = "league-chain-picker";
+		const summary = document.createElement("summary");
+		summary.setAttribute("aria-label", "Choose gym chain");
+		label.before(picker);
+		summary.append(label);
+		picker.append(summary);
+		const options = document.createElement("div");
+		options.className = "league-chain-options";
+		picker.append(options);
+		archive
+			.querySelectorAll(".gym-filter-buttons [data-chain]")
+			.forEach((original) => {
+				const button = document.createElement("button");
+				button.type = "button";
+				button.textContent = original.textContent;
+				button.addEventListener("click", () => {
+					original.click();
+					picker.open = false;
+					summary.focus();
+				});
+				options.append(button);
+			});
+		document.addEventListener("click", (e) => {
+			if (!picker.contains(e.target)) picker.open = false;
+		});
+		picker.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") {
+				picker.open = false;
+				summary.focus();
+			}
+		});
+	});
+});
+
+// Decode before swapping, then soften the transition without showing a blank frame.
+window.dxSetPhoto = async (image, photo) => {
+	const token = String((Number(image.dataset.swapToken) || 0) + 1);
+	image.dataset.swapToken = token;
+	const next = new Image();
+	next.src = photo.full;
+	try {
+		await next.decode();
+	} catch {}
+	if (image.dataset.swapToken !== token) return;
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+	if (!reduced && image.src) {
+		try {
+			await image.animate([{ opacity: 1 }, { opacity: 0 }], {
+				duration: 160,
+				fill: "forwards",
+			}).finished;
+		} catch {}
+	}
+	if (image.dataset.swapToken !== token) return;
+	image.getAnimations().forEach((a) => a.cancel());
+	image.src = photo.full;
+	image.alt = photo.alt || photo.title;
+	if (!reduced)
+		image.animate(
+			[
+				{ opacity: 0, transform: "translateX(12px)" },
+				{ opacity: 1, transform: "translateX(0)" },
+			],
+			{ duration: 350, easing: "ease-out" },
+		);
+};
+
+dxOnPageReady(() => {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const images = [
+		...document.querySelectorAll(
+			".story-hero>.dx-project-hero-background,.gym-review-hero__image",
+		),
+	];
+	if (!images.length) return;
+	let frame = 0;
+	const paint = () => {
+		frame = 0;
+		images.forEach((image) => {
+			const hero = image.closest(".story-hero,.gym-review-hero");
+			if (!hero) return;
+			const box = hero.getBoundingClientRect();
+			if (box.bottom < 0 || box.top > innerHeight) return;
+			image.style.setProperty(
+				"--dx-hero-shift",
+				reduced.matches
+					? "0px"
+					: Math.max(-65, Math.min(65, -box.top * 0.12)) + "px",
+			);
+		});
+	};
+	const schedule = () => {
+		if (!frame) frame = requestAnimationFrame(paint);
+	};
+	addEventListener("scroll", schedule, { passive: true });
+	addEventListener("resize", schedule);
+	reduced.addEventListener("change", schedule);
+	paint();
+});
+// Post-launch motion is event driven and stops after each entrance.
+dxOnPageReady(() => {
+	if (!document.body.classList.contains("is-frontend")) return;
+	const motion = matchMedia("(prefers-reduced-motion: reduce)");
+	const header = document.getElementById("header"),
+		brand = header?.querySelector(".navbar-brand");
+	if (brand) {
+		const full = document.createElement("span");
+		full.className = "dx-brand-full";
+		while (brand.firstChild) full.append(brand.firstChild);
+		brand.append(full);
+		const short = document.createElement("span");
+		short.className = "dx-brand-short";
+		short.textContent = "dx.";
+		short.setAttribute("aria-hidden", "true");
+		brand.append(short);
+		const update = () => {
+			if (!document.body.classList.contains("nav-open"))
+				header.classList.toggle("dx-header-compact", scrollY > 10);
+		};
+		addEventListener("scroll", update, { passive: true });
+		update();
+	}
+	const base =
+		document
+			.querySelector('script[src*="/themes/dxndre/"]')
+			?.src.split("/themes/dxndre/")[0] + "/themes/dxndre/";
+	const visual = document.querySelector(".dx-menu__visual"),
+		bus = visual?.querySelector(".dx-menu__bus");
+	if (bus && base) {
+		bus.src = location.origin + "/wp-content/uploads/2025/12/92.png";
+		const portraits = {
+			about: base + "assets/img/portrait-editorial.png",
+			fitness: base + "assets/img/fitness-repaired.webp",
+		};
+		const layers = {};
+		Object.entries(portraits).forEach(([key, src]) => {
+			const img = new Image();
+			img.src = src;
+			img.alt = "";
+			img.className = "dx-menu__alternate";
+			visual.append(img);
+			layers[key] = img;
+		});
+		let requested = "";
+		const swap = async (key) => {
+			requested = key;
+			const layer = layers[key];
+			if (layer) {
+				try {
+					await layer.decode();
+				} catch {
+					return;
+				}
+				if (requested !== key) return;
+			}
+			Object.entries(layers).forEach(([k, img]) =>
+				img.classList.toggle("is-active", k === key),
+			);
+			bus.style.opacity = layer ? "0" : "1";
+			visual.classList.toggle("is-colour", key === "buses");
+		};
+		document.querySelectorAll(".dx-menu__list a").forEach((a) => {
+			const key = new URL(a.href).pathname.split("/").filter(Boolean)[0] || "";
+			a.addEventListener("pointerenter", () => swap(key));
+			a.addEventListener("focus", () => swap(key));
+		});
+		document
+			.querySelector(".dx-menu__list")
+			?.addEventListener("pointerleave", () => swap(""));
+	}
+	const artObserver = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((e) => {
+				if (e.isIntersecting) {
+					e.target
+						.querySelectorAll(".dx-art-pending")
+						.forEach((img) => img.classList.remove("dx-art-pending"));
+					artObserver.unobserve(e.target);
+				}
+			}),
+		{ threshold: 0.12 },
+	);
+	document
+		.querySelectorAll("body.home section.text-image")
+		.forEach((section) => {
+			const img = section.querySelector("figure.enlarge img");
+			if (!img) return;
+			const fitness = section.classList.contains("dx-fitness-promo");
+			if (!fitness && !section.textContent.includes("BUSES")) return;
+			if (fitness && base) {
+				img.src = base + "assets/img/fitness-repaired.webp";
+				img.removeAttribute("srcset");
+			}
+			img.classList.add("dx-art-reveal");
+			if (!fitness) img.classList.add("dx-art-right");
+			if (!motion.matches) {
+				img.classList.add("dx-art-pending");
+				artObserver.observe(section);
+			}
+		});
+	// Animate only the text node, preserving units and accessible final values.
+	const counted = new WeakSet();
+	const counter = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((e) => {
+				if (!e.isIntersecting) return;
+				counter.unobserve(e.target);
+				const el = e.target,
+					node = [...el.childNodes].find(
+						(n) => n.nodeType === 3 && /\d/.test(n.textContent),
+					);
+				if (!node) return;
+				const final = node.textContent;
+				el.setAttribute("aria-label", el.textContent);
+				if (motion.matches) return;
+				const start = performance.now();
+				const paint = (now) => {
+					if (!el.isConnected) return;
+					const t = Math.min(1, (now - start) / 1100),
+						ease = 1 - Math.pow(1 - t, 3);
+					node.textContent = final.replace(/\d+(?:\.\d+)?/g, (v) =>
+						(Number(v) * ease).toFixed(
+							v.includes(".") ? v.split(".")[1].length : 0,
+						),
+					);
+					if (t < 1) requestAnimationFrame(paint);
+					else node.textContent = final;
+				};
+				requestAnimationFrame(paint);
+			}),
+		{ threshold: 0.3 },
+	);
+	const attachCounters = (root) => {
+		root
+			.querySelectorAll(
+				".league-mosaic-score,.dxf-record-value,.dxf-story-stat .dxf-heading,[data-dx-count]",
+			)
+			.forEach((el) => {
+				if (!counted.has(el)) {
+					counted.add(el);
+					counter.observe(el);
+				}
+			});
+	};
+	attachCounters(document);
+	const mosaic = document.querySelector(".league-mosaic");
+	if (mosaic)
+		new MutationObserver(() => attachCounters(mosaic)).observe(mosaic, {
+			childList: true,
+		});
+	// Text presentation selectors stop Unicode arrows being rendered as emoji.
+	const arrows = (root) => {
+		const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+			acceptNode: (n) =>
+				n.parentElement?.closest("script,style,textarea,input,svg")
+					? NodeFilter.FILTER_REJECT
+					: NodeFilter.FILTER_ACCEPT,
+		});
+		const nodes = [];
+		while (walker.nextNode()) nodes.push(walker.currentNode);
+		nodes.forEach((n) => {
+			const text = n.data.replace(
+				/([↗↘↙↖⬇⬆↧↓↑→←])[\uFE0E\uFE0F]?/g,
+				"$1\uFE0E",
+			);
+			if (text !== n.data) n.data = text;
+		});
+	};
+	arrows(document.body);
+	new MutationObserver((records) => {
+		for (const record of records)
+			for (const node of record.addedNodes) {
+				if (node.nodeType === 1) arrows(node);
+			}
+	}).observe(document.body, { childList: true, subtree: true });
+	document.querySelectorAll(".dxb-bad-photo").forEach((el) => {
+		const first = el.firstChild;
+		if (first?.nodeType === 3)
+			first.textContent = first.textContent.replace(/💩\s*/, "💩 ");
+	});
+});
+
+// CV download intent: expose a GTM custom event and retain GA4 reporting.
+// This records a click, not proof that a browser finished saving the PDF.
+document.addEventListener("click", (event) => {
+	const link = event.target.closest("a[data-cv-download]");
+	if (!link) return;
+	if (
+		typeof window.cmplz_has_consent === "function" &&
+		!window.cmplz_has_consent("statistics")
+	)
+		return;
+	const file = new URL(link.href, location.href);
+	const download = {
+		file_name: file.pathname.split("/").pop(),
+		file_extension: "pdf",
+		link_url: file.origin + file.pathname,
+	};
+	window.dataLayer = window.dataLayer || [];
+	window.dataLayer.push({ event: "cv_pdf_download", ...download });
+	if (typeof window.gtag === "function") {
+		window.gtag("event", "cv_download", {
+			...download,
+			transport_type: "beacon",
+		});
+	}
+});
+
+// One document-wheel controller. Native touch, keyboard and nested scrollers remain native.
+// The animation stops at rest; it never feeds its own scroll events back into a target.
+(() => {
+	const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+	let frame = 0,
+		target = 0,
+		lastWritten = 0,
+		previousTime = 0;
+	const stop = () => {
+		cancelAnimationFrame(frame);
+		frame = 0;
+		previousTime = 0;
+	};
+	const maximum = () =>
+		Math.max(0, document.documentElement.scrollHeight - innerHeight);
+	const blocked = () =>
+		document.body.classList.contains("nav-open") ||
+		document.body.classList.contains("modal-open") ||
+		getComputedStyle(document.body).overflowY === "hidden";
+	const step = (time) => {
+		if (reduce.matches || blocked() || Math.abs(scrollY - lastWritten) > 3) {
+			stop();
+			return;
+		}
+		target = Math.max(0, Math.min(maximum(), target));
+		const dt = previousTime ? Math.min(time - previousTime, 40) : 16;
+		previousTime = time;
+		const distance = target - scrollY;
+		if (Math.abs(distance) < 1) {
+			window.scrollTo({ top: target, behavior: "instant" });
+			stop();
+			return;
+		}
+		window.scrollTo({
+			top:
+				scrollY +
+				Math.sign(distance) *
+					Math.min(
+						Math.abs(distance),
+						Math.max(1, Math.abs(distance) * (1 - Math.exp(-dt / 110))),
+					),
+			behavior: "instant",
+		});
+		lastWritten = scrollY;
+		frame = requestAnimationFrame(step);
+	};
+	window.addEventListener(
+		"wheel",
+		(event) => {
+			if (
+				event.defaultPrevented ||
+				event.ctrlKey ||
+				event.metaKey ||
+				reduce.matches ||
+				blocked() ||
+				Math.abs(event.deltaX) > Math.abs(event.deltaY)
+			) {
+				stop();
+				return;
+			}
+			// Let controls, overlays and components that scroll internally own their wheel input.
+			for (
+				let el = event.target instanceof Element ? event.target : null;
+				el && el !== document.body;
+				el = el.parentElement
+			) {
+				if (
+					el.matches(
+						'input,textarea,select,[role="dialog"],[data-native-scroll]',
+					) ||
+					(/(auto|scroll)/.test(getComputedStyle(el).overflowY) &&
+						el.scrollHeight > el.clientHeight + 1)
+				) {
+					stop();
+					return;
+				}
+			}
+			if (!event.deltaY || !maximum()) return;
+			if (!frame) target = scrollY;
+			const delta =
+				event.deltaY *
+				(event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
+			target = Math.max(0, Math.min(maximum(), target + delta));
+			event.preventDefault();
+			if (!frame) {
+				lastWritten = scrollY;
+				frame = requestAnimationFrame(step);
+			}
+		},
+		{ passive: false },
+	);
+	["pointerdown", "touchstart", "keydown", "click"].forEach((type) =>
+		window.addEventListener(type, stop, { passive: true, capture: true }),
+	);
+	document.addEventListener("visibilitychange", stop);
+	reduce.addEventListener("change", stop);
+})();
+
+// Localised visual motion: a finite entrance plus scroll-driven portrait translation.
+dxOnPageReady(() => {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const portrait = document.querySelector(".dx-portfolio-hero > img");
+	if (portrait) {
+		const hero = portrait.closest(".dx-portfolio-hero");
+		let frame = 0;
+		const update = () => {
+			frame = 0;
+			const offset = reduced.matches
+				? 0
+				: Math.max(
+						-100,
+						Math.min(150, -hero.getBoundingClientRect().top * 0.16),
+				  );
+			portrait.style.setProperty("--portrait-parallax", offset + "px");
+		};
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(update);
+		};
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule);
+		reduced.addEventListener("change", schedule);
+		update();
+	}
+	document.querySelectorAll(".league-chain-picker").forEach((picker) => {
+		const label = picker.querySelector("[data-gyms-state-title]");
+		if (!label) return;
+		const animate = () => {
+			label.classList.remove("is-underlining");
+			requestAnimationFrame(() =>
+				requestAnimationFrame(() => label.classList.add("is-underlining")),
+			);
+		};
+		new MutationObserver(animate).observe(label, {
+			childList: true,
+			characterData: true,
+			subtree: true,
+		});
+		animate();
+	});
+	const delivery = document.querySelector("[data-photo-express]");
+	if (delivery) {
+		const step = delivery.closest('[data-step="photography"]');
+		const update = () => {
+			step.querySelector(".dx-photo-price").textContent = delivery.checked
+				? "£50"
+				: "£40";
+			const link = step.querySelector("[data-photo-book]");
+			link.href =
+				"/start-a-project/?enquiry_service=photography&photo_delivery=" +
+				(delivery.checked ? "express" : "standard");
+		};
+		delivery.addEventListener("change", update);
+		update();
+	}
+});
+
+dxOnPageReady(() => {
+	const accounts = [...document.querySelectorAll(".auth.dx-account-photo")];
+	if (!accounts.length) return;
+	const dateFormat = new Intl.DateTimeFormat("en-CA", {
+		timeZone: "Europe/London",
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	});
+	const timeFormat = new Intl.DateTimeFormat("en-GB", {
+		timeZone: "Europe/London",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		hourCycle: "h23",
+		timeZoneName: "shortOffset",
+	});
+	const sun = window.DX_LONDON_SUN || {};
+	const days = new Map(Object.entries(sun.days || {}));
+	const pending = new Set();
+	// NOAA's daily solar equations provide an offline fallback for an unusually old cached page.
+	const fallback = (key) => {
+		const midnight = Date.parse(key + "T00:00:00Z"),
+			date = new Date(midnight);
+		const year = date.getUTCFullYear(),
+			start = Date.UTC(year, 0, 1);
+		const yearLength = (Date.UTC(year + 1, 0, 1) - start) / 86400000;
+		const gamma =
+			((2 * Math.PI) / yearLength) * ((midnight - start) / 86400000);
+		const equation =
+			229.18 *
+			(0.000075 +
+				0.001868 * Math.cos(gamma) -
+				0.032077 * Math.sin(gamma) -
+				0.014615 * Math.cos(2 * gamma) -
+				0.040849 * Math.sin(2 * gamma));
+		const dec =
+			0.006918 -
+			0.399912 * Math.cos(gamma) +
+			0.070257 * Math.sin(gamma) -
+			0.006758 * Math.cos(2 * gamma) +
+			0.000907 * Math.sin(2 * gamma) -
+			0.002697 * Math.cos(3 * gamma) +
+			0.00148 * Math.sin(3 * gamma);
+		const lat = (51.5074 * Math.PI) / 180;
+		const event = (zenith, rising) => {
+			const angle =
+				(Math.acos(
+					(Math.cos((zenith * Math.PI) / 180) - Math.sin(lat) * Math.sin(dec)) /
+						(Math.cos(lat) * Math.cos(dec)),
+				) *
+					180) /
+				Math.PI;
+			return (
+				midnight +
+				(720 - 4 * (-0.1278 + (rising ? angle : -angle)) - equation) * 60000
+			);
+		};
+		return {
+			dawn: event(96, true),
+			sunrise: event(90.833, true),
+			sunset: event(90.833, false),
+			dusk: event(96, false),
+		};
+	};
+	const refresh = (key) => {
+		if (pending.has(key) || !sun.endpoint) return;
+		pending.add(key);
+		fetch(sun.endpoint + "?date=" + encodeURIComponent(key), {
+			credentials: "same-origin",
+		})
+			.then((r) => {
+				if (!r.ok) throw new Error("Solar data unavailable");
+				return r.json();
+			})
+			.then((data) => {
+				if (data.date === key && data.events?.sunrise)
+					days.set(key, data.events);
+			})
+			.catch(() => {})
+			.finally(() => {
+				setTimeout(() => pending.delete(key), 60000);
+			});
+	};
+	accounts.forEach((auth) => {
+		const graphic = auth.querySelector(".graphic-content");
+		if (!graphic) return;
+		const clock = document.createElement("div");
+		clock.className = "dx-london-clock";
+		clock.innerHTML =
+			'<small>London · Current time</small><time><span class="dx-clock-time"></span><span class="dx-clock-zone"></span></time>';
+		graphic.append(clock);
+		const actions = auth.parentElement.querySelector(".auth-actions");
+		if (actions) graphic.append(actions);
+		graphic.querySelector("img")?.remove();
+		const update = () => {
+			const now = new Date(),
+				parts = dateFormat.formatToParts(now);
+			const part = (t) => parts.find((p) => p.type === t)?.value;
+			const key = part("year") + "-" + part("month") + "-" + part("day");
+			let events = days.get(key);
+			if (!events) {
+				events = fallback(key);
+				refresh(key);
+			}
+			const stamp = now.getTime();
+			auth.dataset.londonPeriod =
+				stamp < events.dawn || stamp >= events.dusk
+					? "night"
+					: stamp < events.sunrise
+					? "dawn"
+					: stamp < events.sunset
+					? "day"
+					: "dusk";
+			auth.dataset.solarDate = key;
+			auth.dataset.solarSunrise = new Date(events.sunrise).toISOString();
+			auth.dataset.solarSunset = new Date(events.sunset).toISOString();
+			const formatted = timeFormat.formatToParts(now);
+			clock.querySelector(".dx-clock-time").textContent = formatted
+				.filter((p) => p.type !== "timeZoneName")
+				.map((p) => p.value)
+				.join("")
+				.trim();
+			clock.querySelector(".dx-clock-zone").textContent = (
+				formatted.find((p) => p.type === "timeZoneName")?.value || "GMT"
+			).replace(/^GMT$/, "GMT+0");
+			clock.querySelector("time").dateTime = now.toISOString();
+		};
+		update();
+		setInterval(update, 1000);
+		document.addEventListener("visibilitychange", () => {
+			if (!document.hidden) update();
+		});
+	});
+});
+
+dxOnPageReady(() => {
+	const toggle = document.querySelector("[data-proposal-theme]");
+	if (!toggle || toggle.dataset.bound) return;
+	const apply = (light) => {
+		document.body.classList.toggle("is-light", light);
+		toggle.textContent = light ? "Dark mode" : "Light mode";
+		toggle.setAttribute("aria-pressed", String(light));
+	};
+	try {
+		apply(localStorage.getItem("dx-proposal-theme") === "light");
+	} catch {}
+	toggle.addEventListener("click", () => {
+		const light = !document.body.classList.contains("is-light");
+		apply(light);
+		try {
+			localStorage.setItem("dx-proposal-theme", light ? "light" : "dark");
+		} catch {}
+	});
+});
+
+dxOnPageReady(() => {
+	const chapters = document.querySelectorAll(
+		".dx-story-experience .story-chapter",
+	);
+	if (!chapters.length) return;
+	const observer = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((e) => {
+				if (e.isIntersecting) {
+					e.target.classList.add("is-visible");
+					observer.unobserve(e.target);
+				}
+			}),
+		{ threshold: 0.15 },
+	);
+	chapters.forEach((e) => observer.observe(e));
+});
+
+// A compact contents list makes longer diary entries easier to explore.
+dxOnPageReady(() => {
+	const story = document.querySelector(".dx-story-sample");
+	if (!story) return;
+	const chapters = [...story.querySelectorAll(".story-chapter")];
+	if (!chapters.length) return;
+	const nav = document.createElement("nav");
+	nav.className = "dx-story-contents";
+	nav.setAttribute("aria-label", "Journey chapters");
+	chapters.forEach((chapter, i) => {
+		chapter.id = "journey-chapter-" + (i + 1);
+		const a = document.createElement("a");
+		a.href = "#" + chapter.id;
+		a.textContent =
+			String(i + 1).padStart(2, "0") +
+			" / " +
+			(chapter.querySelector("h2")?.textContent || "Chapter");
+		nav.append(a);
+	});
+	chapters[0].before(nav);
+});
+
+dxOnPageReady(() => {
+	const n118 = document.querySelector(".dx-n118");
+	if (n118) {
+		const portrait = n118.querySelector(".dx-about-portrait img");
+		if (portrait) {
+			portrait.src =
+				"/wp-content/themes/dxndre/assets/img/fitness-repaired.webp";
+			portrait.removeAttribute("srcset");
+		}
+		n118.querySelectorAll(".dx-about-story-copy").forEach((copy) => {
+			const children = Array.from(copy.children);
+			let card;
+			children.forEach((child) => {
+				if (child.matches("a")) return;
+				if (child.matches("h3") || !card || !copy.querySelector("h3")) {
+					card = document.createElement("article");
+					card.className = "dx-training-card";
+					copy.insertBefore(card, child);
+				}
+				card.append(child);
+			});
+		});
+		const slides = document.createElement("div");
+		slides.className = "dx-n118-slides";
+		slides.setAttribute("aria-hidden", "true");
+		slides.dataset.galleryExpanded = "true";
+		const galleryPhotos = [
+			["/wp-content/uploads/2026/10/dxndre-route-n118-2-768x576.jpg", 0.24],
+			["/wp-content/uploads/2026/01/on-the-gym-floor.jpeg", 0.24],
+			["/wp-content/themes/dxndre/assets/img/n118-gym-mirrors.webp", 0.65],
+			["/wp-content/themes/dxndre/assets/img/n118-night-bus.webp", 0.55],
+			["/wp-content/themes/dxndre/assets/img/n118-sunset.webp", 0.7],
+		];
+		slides.style.setProperty(
+			"--dx-n118-gallery-duration",
+			`${galleryPhotos.length * 6}s`,
+		);
+		galleryPhotos.forEach(([src, opacity], index) => {
+			const img = document.createElement("img");
+			img.src = src;
+			img.alt = "";
+			img.decoding = "async";
+			img.style.setProperty("--dx-n118-photo-opacity", opacity);
+			img.style.animationDelay = `${index * 6 - 1.2}s`;
+			slides.append(img);
+		});
+		n118.querySelector(".dx-about-hero").prepend(slides);
+	}
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const observer = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add("is-visible");
+					observer.unobserve(entry.target);
+				}
+			}),
+		{ threshold: 0.1 },
+	);
+	document
+		.querySelectorAll(".dx-estimate-next-grid>div,.dx-training-card")
+		.forEach((el, i) => {
+			if (!reduced.matches) {
+				el.classList.add("dx-reveal-ready");
+				el.style.transitionDelay = (i % 4) * 90 + "ms";
+				observer.observe(el);
+			}
+		});
+	const teaser = document.querySelector("body.home .dx-n118-teaser");
+	const photo = document.querySelector("body.home img.wp-image-1877");
+	const section = photo?.closest("section");
+	if (
+		teaser &&
+		photo &&
+		section &&
+		section.parentElement === teaser.parentElement
+	) {
+		const pair = document.createElement("div");
+		pair.className = "dx-fitness-pair";
+		section.before(pair);
+		pair.append(section, teaser);
+		const figure = document.createElement("figure");
+		figure.className = "dx-shared-portrait";
+		const sharedImage = photo.cloneNode(true);
+		sharedImage.className = "";
+		sharedImage.removeAttribute("style");
+		figure.append(sharedImage);
+		pair.append(figure);
+		photo.style.visibility = "hidden";
+		let frame = 0;
+		function update() {
+			frame = 0;
+			const box = pair.getBoundingClientRect(),
+				first = section.getBoundingClientRect(),
+				height = figure.getBoundingClientRect().height;
+			const start = Math.max(0, first.height - height - 70),
+				end = Math.max(start, pair.offsetHeight - height);
+			const position = Math.min(
+				end,
+				Math.max(start, innerHeight - box.top - height),
+			);
+			figure.style.top = position + "px";
+			pair.classList.toggle(
+				"is-fitness-colour",
+				teaser.getBoundingClientRect().top < innerHeight * 0.65,
+			);
+		}
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(update);
+		};
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule);
+		figure.querySelector("img").addEventListener("load", schedule);
+		update();
+	}
+});
+
+dxOnPageReady(() => {
+	const teaser = document.querySelector(".dx-n118-teaser");
+	if (teaser && !teaser.querySelector(".dx-waitlist-link")) {
+		const link = document.createElement("a");
+		link.className = "dx-cta dx-cta--outline dx-waitlist-link";
+		link.href = "/fitness/n118-fitness/";
+		link.textContent = "Join the waitlist ↗";
+		teaser.append(link);
+	}
+	if (teaser && !teaser.querySelector(".dx-n118-actions")) {
+		const actions = document.createElement("div");
+		actions.className = "dx-n118-actions";
+		const buttons = Array.from(teaser.children).filter((el) =>
+			el.matches("a.dx-cta"),
+		);
+		if (buttons.length) {
+			buttons[0].before(actions);
+			buttons.forEach((button) => actions.append(button));
+		}
+	}
+	const portrait = document.querySelector("body.home img.wp-image-1868");
+	if (portrait && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		portrait.classList.add("dx-personal-enter");
+		const reveal = new IntersectionObserver(
+			(entries) =>
+				entries.forEach((e) => {
+					if (e.isIntersecting) {
+						portrait.classList.add("is-visible");
+						reveal.disconnect();
+					}
+				}),
+			{ threshold: 0.1 },
+		);
+		reveal.observe(portrait);
+	}
+});
+
+dxOnPageReady(() => {
+	const access = document.getElementById("recruiterAccessModal");
+	if (access) document.body.append(access);
+	const info = document.querySelector("#dxb-lightbox .dxb-lightbox-info");
+	if (info && !info.querySelector(".dxb-lightbox-details")) {
+		const details = document.createElement("div");
+		details.className = "dxb-lightbox-details";
+		Array.from(info.children)
+			.filter((el) => !el.classList.contains("dxb-lightbox-nav"))
+			.forEach((el) => details.append(el));
+		info.prepend(details);
+	}
+});
+
+dxOnPageReady(() => {
+	const subject = new URLSearchParams(location.search).get("subject");
+	if (
+		location.pathname.replace(/\/$/, "") !== "/contact" ||
+		!subject?.startsWith("N118 Fitness")
+	)
+		return;
+	const topic = document.querySelector("#ff_3_dropdown");
+	const message = document.querySelector("#ff_3_description");
+	if (topic) {
+		const fitness = Array.from(topic.options).find(
+			(option) => option.textContent.trim() === "Fitness",
+		);
+		if (fitness) {
+			topic.value = fitness.value;
+			topic.dispatchEvent(new Event("change", { bubbles: true }));
+		}
+	}
+	if (message && !message.value)
+		message.value = subject.includes("waitlist")
+			? "Please add me to the N118 Fitness waitlist and let me know when coaching becomes available."
+			: "I would like to find out more about N118 Fitness coaching.";
+});
+
+// Scroll depth for the calculator frame; relative positioning keeps fixed dialogs in the viewport.
+dxOnPageReady(() => {
+	const calculator = document.querySelector(".pricing-calculator");
+	if (!calculator) return;
+	const frame = calculator.querySelector(".calculator-step-container");
+	if (!frame) return;
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	calculator.classList.add("dx-calculator-parallax");
+	let scheduled = false;
+	let visible = true;
+	const paint = () => {
+		scheduled = false;
+		if (reduced.matches) {
+			calculator.style.setProperty("--dx-calculator-drift", "0px");
+			return;
+		}
+		if (!visible) return;
+		const rect = calculator.getBoundingClientRect();
+		const narrow = innerWidth < 768;
+		const distance = -Math.max(0, scrollY) * (narrow ? 0.08 : 0.14);
+		const drift = Math.max(narrow ? -100 : -180, Math.min(0, distance));
+		calculator.style.setProperty(
+			"--dx-calculator-drift",
+			drift.toFixed(1) + "px",
+		);
+	};
+	const schedule = () => {
+		if (!scheduled) {
+			scheduled = true;
+			requestAnimationFrame(paint);
+		}
+	};
+	const observer = new IntersectionObserver(
+		(entries) => {
+			visible = entries[0].isIntersecting;
+			if (visible) schedule();
+		},
+		{ rootMargin: "150px" },
+	);
+	observer.observe(calculator);
+	addEventListener("scroll", schedule, { passive: true });
+	addEventListener("resize", schedule, { passive: true });
+	reduced.addEventListener("change", schedule);
+	paint();
+});
+
+dxOnPageReady(() => {
+	initFaqMotion();
+	initFooterScrollMotion();
+	initN118PortraitMotion();
+	initPhotoOrbit();
+	initInstagramProfiles();
+	initContactCanvas();
+	initServicesHover();
+	initServiceIndexMotion();
+	initFitnessStory();
+	initCalculatorExperience();
+	initAccountSky();
+	initPhotoWatermarks();
+});
+
+// October 26: local editorial and browsing refinements, kept in the theme entry.
+dxOnPageReady(() => {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const scoreTone = (value) => {
+		if (
+			value == null ||
+			String(value).trim() === "" ||
+			!Number.isFinite(Number(value))
+		)
+			return "#bbb";
+		const n = Number(value) * 10;
+		return (
+			[
+				[85, "#b9eaff"],
+				[71, "#6ed9c5"],
+				[57, "#82c995"],
+				[43, "#e5a653"],
+				[29, "#ef8585"],
+				[15, "#d85b70"],
+				[0, "#8c354b"],
+			].find(([threshold]) => n >= threshold)?.[1] || "#bbb"
+		);
+	};
+	const el = (tag, cls = "", text = "") => {
+		const n = document.createElement(tag);
+		n.className = cls;
+		n.textContent = text;
+		return n;
+	};
+	const reveal = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add("is-visible");
+					reveal.unobserve(entry.target);
+				}
+			}),
+		{ threshold: 0.12 },
+	);
+	const watchReveal = (n) => {
+		if (reduced.matches) n.classList.add("is-visible");
+		else reveal.observe(n);
+	};
+
+	// Facilities remain readable with shape-based icons as well as status text.
+	const icons = {
+		gym: "M4 9v6m3-8v10m10-10v10m3-8v6M7 12h10",
+		swim: "M3 18q3-3 6 0t6 0t6 0M3 22q3-3 6 0t6 0t6 0M6 13l5-5 4 3 4-1M15 5a2 2 0 1 0 0-.1",
+		spa: "M7 13c-4 4 0 8 5 8s9-4 5-8M8 3c-3 4 3 4 0 8m5-8c-3 4 3 4 0 8m5-8c-3 4 3 4 0 8",
+		cafe: "M4 8h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Zm13 1h2a3 3 0 0 1 0 6h-2M7 2v3m5-3v3",
+		parking: "M5 3h14v18H5Zm5 14V7h3a3 3 0 0 1 0 6h-3",
+	};
+	document.querySelectorAll(".gym-review-facility").forEach((card) => {
+		const name = card.textContent.toLowerCase();
+		const key = /swim|wet/.test(name)
+			? "swim"
+			: /spa|sauna/.test(name)
+			? "spa"
+			: /caf|club|work/.test(name)
+			? "cafe"
+			: /park/.test(name)
+			? "parking"
+			: "gym";
+		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svg.setAttribute("viewBox", "0 0 24 24");
+		svg.setAttribute("class", "dx-facility-icon");
+		svg.setAttribute("aria-hidden", "true");
+		const path = document.createElementNS(svg.namespaceURI, "path");
+		path.setAttribute("d", icons[key]);
+		svg.append(path);
+		card.prepend(svg);
+	});
+
+	// Table view shares the existing league's matching, sorting and full review links.
+	const archive = document.querySelector(".is-premium-league");
+	if (archive) {
+		const switcher = archive.querySelector(".league-view-switch"),
+			mosaic = archive.querySelector(".league-mosaic"),
+			cards = [...archive.querySelectorAll("[data-gym-card]")];
+		cards.forEach((card) => {
+			const a = el("a", "league-row-read", "Read ↗");
+			a.href = card.dataset.link;
+			a.setAttribute("aria-label", `Read ${card.dataset.branchLabel} review`);
+			card.append(a);
+		});
+		if (switcher && mosaic) {
+			const tableButton = el("button", "", "Table");
+			tableButton.type = "button";
+			tableButton.setAttribute("aria-pressed", "false");
+			switcher.append(tableButton);
+			const host = el("div", "dx-league-table-scroll");
+			host.tabIndex = 0;
+			host.hidden = true;
+			host.setAttribute("role", "region");
+			host.setAttribute("aria-label", "Gym review table");
+			mosaic.after(host);
+			const tableCategories = [
+				{ key: "gym", label: "Gym" },
+				{ key: "swim", label: "Swimming & wetside" },
+				{ key: "spa", label: "Spa / sauna" },
+				{ key: "cafe", label: "Café / clubroom" },
+				{ key: "clean", label: "Cleanliness & maintenance" },
+				{ key: "parking", label: "Parking" },
+			];
+			const tableScore = (raw) => {
+				if (raw === "unavailable") return { label: "Unavailable", value: null };
+				if (raw === null || raw === undefined || (typeof raw === "string" && raw.trim() === "") || !["number", "string"].includes(typeof raw))
+					return { label: "Not assessed", value: null };
+				const value = Number(raw);
+				return Number.isFinite(value) && value >= 0 && value <= 10
+					? { label: `${value}/10`, value }
+					: { label: "Not assessed", value: null };
+			};
+			const categoryName = (key, chain) => {
+				if (key === "spa") return chain === "gymbox" ? "Sauna facilities" : "Spa retreat";
+				if (key === "cafe") return chain === "davidlloyds" ? "Clubroom" : "Café & work area";
+				return tableCategories.find((category) => category.key === key).label;
+			};
+			const renderTable = () => {
+				if (!archive.classList.contains("is-table-view")) return;
+				const table = el("table", "dx-league-table"),
+					caption = el("caption", "", "Gym league — all category scores / current filters and sort order. Scroll across to explore.");
+				table.append(caption);
+				const head = el("thead"), tr = el("tr");
+				["Rank", "Branch", "Chain / location", "Overall", ...tableCategories.map((category) => category.label), "Visited", "Review"].forEach((label) => {
+					const th = el("th", "", label);
+					th.scope = "col";
+					tr.append(th);
+				});
+				head.append(tr);
+				table.append(head);
+				const body = el("tbody");
+				[...mosaic.querySelectorAll("a.league-mosaic-tile")].forEach((tile) => {
+					const card = cards.find((c) => c.dataset.link === tile.getAttribute("href") || c.dataset.link === tile.href);
+					if (!card) return;
+					const row = el("tr");
+					row.append(el("td", "dx-table-rank", card.querySelector(".league-rank")?.textContent || "—"));
+					const branch = el("th", "dx-table-branch", card.dataset.branchLabel);
+					branch.scope = "row";
+					row.append(branch);
+					row.append(el("td", "dx-table-location", `${card.dataset.chainLabel} · ${card.querySelector(".dx-gym-card__subtitle")?.textContent.replace("📍", "").trim() || ""}`));
+					const overall = el("td", "dx-table-score dx-table-overall", card.dataset.overallLabel);
+					overall.style.setProperty("--score-tone", scoreTone(card.dataset.overall));
+					row.append(overall);
+					let scores = {};
+					try { scores = JSON.parse(card.dataset.scoreStates || "{}"); } catch {}
+					tableCategories.forEach(({ key }) => {
+						const raw = Object.prototype.hasOwnProperty.call(scores, key) ? scores[key] : card.dataset[`${key}Score`];
+						const score = tableScore(raw), name = categoryName(key, card.dataset.chain);
+						const cell = el("td", score.value === null ? "dx-table-unassessed" : "dx-table-category", score.label);
+						cell.setAttribute("aria-label", `${name}: ${score.label}`);
+						cell.title = `${name}: ${score.label}`;
+						if (score.value !== null) cell.style.setProperty("--score-tone", scoreTone(score.value));
+						row.append(cell);
+					});
+					row.append(el("td", "dx-table-visited", card.dataset.visitedLabel || "—"));
+					const td = el("td"), a = el("a", "", "Read ↗");
+					a.href = card.dataset.link;
+					a.setAttribute("aria-label", `Read ${card.dataset.branchLabel} review`);
+					td.append(a);
+					row.append(td);
+					body.append(row);
+				});
+				table.append(body);
+				host.replaceChildren(table);
+			};
+			tableButton.addEventListener("click", () => {
+				[...switcher.querySelectorAll("button")]
+					.find((b) => b.textContent === "Grid")
+					?.click();
+				archive.classList.add("is-table-view");
+				host.hidden = false;
+				switcher
+					.querySelectorAll("button")
+					.forEach((b) =>
+						b.setAttribute("aria-pressed", String(b === tableButton)),
+					);
+				renderTable();
+			});
+			switcher.addEventListener("click", (event) => {
+				const b = event.target.closest("button");
+				if (b && b !== tableButton) {
+					archive.classList.remove("is-table-view");
+					host.hidden = true;
+					tableButton.setAttribute("aria-pressed", "false");
+				}
+			});
+			const observeTiles = () => {
+				mosaic
+					.querySelectorAll(".league-mosaic-tile:not(.dx-grid-reveal)")
+					.forEach((n) => {
+						n.classList.add("dx-grid-reveal");
+						watchReveal(n);
+					});
+				renderTable();
+			};
+			new MutationObserver(observeTiles).observe(mosaic, { childList: true });
+			observeTiles();
+		}
+	}
+
+	// A compact swipe deck replaces mobile service disclosures; desktop tabs are preserved.
+	const accordion = document.querySelector("body.home #servicesAccordion");
+	if (accordion) {
+		const wide = matchMedia("(min-width:992px)");
+		const mobile = () => {
+			accordion.classList.toggle("dx-mobile-services", !wide.matches);
+			accordion.querySelectorAll(".accordion-button").forEach((button) => {
+				if (!wide.matches) {
+					button.setAttribute("aria-expanded", "true");
+					button.tabIndex = -1;
+				} else button.removeAttribute("tabindex");
+			});
+		};
+		wide.addEventListener("change", mobile);
+		mobile();
+		accordion.addEventListener(
+			"click",
+			(event) => {
+				if (!wide.matches && event.target.closest(".accordion-button")) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+				}
+			},
+			true,
+		);
+	}
+	const personal = [...document.querySelectorAll("body.home h3")].find((n) =>
+		/Work Hard/.test(n.textContent),
+	);
+	if (personal) {
+		personal.closest("section")?.classList.add("dx-personal-life");
+		personal.closest(".wp-block-column")?.classList.add("dx-personal-copy");
+	}
+	document.querySelectorAll("h2,h3,.dx-private-gate__intro").forEach((h) => {
+		const phrase = "The potential beyond it.";
+		if (
+			h.textContent.includes(phrase) &&
+			!h.querySelector(".dx-gold-underline")
+		) {
+			const before = h.textContent.split(phrase)[0];
+			h.replaceChildren(document.createTextNode(before));
+			const span = el("span", "dx-gold-underline", phrase);
+			h.append(span);
+			watchReveal(span);
+		}
+	});
+	const photoHeading = document.querySelector(".dx-photo-hero h1");
+	if (photoHeading) {
+		photoHeading.replaceChildren(
+			document.createTextNode("Life through the "),
+			el("span", "dx-lens-word", "lens."),
+		);
+	}
+	document
+		.querySelectorAll(
+			".service-detail-form input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.service-detail-form textarea",
+		)
+		.forEach((input) => {
+			const label = input.id
+				? document.querySelector(`label[for="${CSS.escape(input.id)}"]`)
+				: null;
+			if (label) {
+				const name = label.textContent.trim().replace(/\s+/g, " ");
+				input.placeholder = name;
+				input.setAttribute("aria-label", name);
+				label.classList.add("dx-placeholder-label");
+			}
+		});
+
+	// Project photographs sit behind the existing, untouched portrait graphic.
+	const portfolio = document.querySelector(".dx-portfolio-hero"),
+		slides = window.DX_PROJECT_SLIDES;
+	if (portfolio && Array.isArray(slides) && slides.length) {
+		const layer = el("div", "dx-project-slides");
+		layer.setAttribute("aria-hidden", "true");
+		slides.forEach((photo, i) => {
+			const image = el("img");
+			image.src = photo.src;
+			image.alt = "";
+			image.decoding = "async";
+			image.loading = i ? "lazy" : "eager";
+			image.classList.toggle("is-active", i === 0);
+			layer.append(image);
+		});
+		portfolio.prepend(layer);
+		let index = 0,
+			paused = reduced.matches;
+		const toggle = el(
+			"button",
+			"dx-project-slides-toggle",
+			paused ? "Play slideshow" : "Pause slideshow",
+		);
+		toggle.type = "button";
+		toggle.setAttribute("aria-pressed", String(paused));
+		toggle.addEventListener("click", () => {
+			paused = !paused;
+			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			toggle.setAttribute("aria-pressed", String(paused));
+		});
+		portfolio.append(toggle);
+		setInterval(() => {
+			if (paused || document.hidden) return;
+			layer.children[index].classList.remove("is-active");
+			index = (index + 1) % layer.children.length;
+			layer.children[index].classList.add("is-active");
+		}, 6500);
+		reduced.addEventListener("change", () => {
+			paused = reduced.matches;
+			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			toggle.setAttribute("aria-pressed", String(paused));
+		});
+	}
+
+	const calculator = document.querySelector(".pricing-calculator");
+	if (calculator) {
+		const monthly = () =>
+			calculator.querySelector('input[name="service"][value="retainer"]')
+				?.checked === true;
+		const syncMonthly = () => {
+			const active = monthly();
+			calculator.dataset.monthlyRetainer = String(active);
+			calculator
+				.querySelectorAll("[data-open-payment]")
+				.forEach((b) => (b.hidden = active));
+			const dialog = calculator.querySelector(".dx-payment-dialog");
+			if (active && dialog?.open) dialog.close();
+			if (active) {
+				const full = calculator.querySelector(
+					'input[name="payment_plan"][value="full"]',
+				);
+				if (full && !full.checked) {
+					full.checked = true;
+					full.dispatchEvent(new Event("change", { bubbles: true }));
+				}
+			}
+		};
+		calculator.addEventListener("change", syncMonthly);
+		calculator.addEventListener(
+			"click",
+			(event) => {
+				if (monthly() && event.target.closest("[data-open-payment]")) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+				}
+			},
+			true,
+		);
+		new MutationObserver(syncMonthly).observe(calculator, {
+			attributes: true,
+			attributeFilter: ["data-step"],
+		});
+		syncMonthly();
+		const modal = calculator.querySelector(".email-quote-modal");
+		if (modal) {
+			const name = modal.querySelector("[name=name]"),
+				email = modal.querySelector("[name=email]"),
+				send = modal.querySelector(".send-email-confirm");
+			const valid = () => {
+				const okay =
+					!!name?.value.trim() && !!email?.value.trim() && email.validity.valid;
+				send?.classList.toggle("dx-invalid-details", !okay);
+				return okay;
+			};
+			modal.addEventListener("input", valid);
+			send?.addEventListener(
+				"click",
+				(event) => {
+					if (!valid()) {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						const field = !name.value.trim() ? name : email;
+						field.reportValidity();
+						field.focus();
+					}
+				},
+				true,
+			);
+			valid();
+		}
+		let queued = false;
+		const paint = () => {
+			queued = false;
+			const y = reduced.matches ? 0 : Math.max(0, scrollY);
+			document
+				.querySelector(".calculator-heading")
+				?.style.setProperty(
+					"--dx-pricing-drift",
+					`${Math.min(180, y * 0.2)}px`,
+				);
+			const media =
+				calculator.querySelector(".calculator-hero-media") ||
+				document.querySelector(".calculator-hero-media");
+			if (media) media.style.translate = `0 ${Math.min(400, y * 0.48)}px`;
+		};
+		const schedule = () => {
+			if (!queued) {
+				queued = true;
+				requestAnimationFrame(paint);
+			}
+		};
+		addEventListener("scroll", schedule, { passive: true });
+		addEventListener("resize", schedule);
+		reduced.addEventListener("change", schedule);
+		paint();
+	}
+});
+
+dxOnPageReady(() => {
+	const deck = document.querySelector("#servicesAccordion");
+	if (deck) {
+		deck.setAttribute("role", "region");
+		deck.setAttribute("aria-label", "Browse services");
+		deck.querySelectorAll(".accordion-header").forEach((h) => {
+			const b = h.querySelector("button");
+			if (b && !h.querySelector(".dx-service-card-title")) {
+				const title = document.createElement("span");
+				title.className = "dx-service-card-title";
+				title.textContent = b.textContent.trim();
+				h.append(title);
+				b.setAttribute("aria-hidden", "true");
+			}
+		});
+		const hint = document.createElement("p");
+		hint.className = "dx-services-swipe-hint";
+		hint.textContent = "Swipe to explore services →";
+		deck.before(hint);
+	}
+	const calc = document.querySelector(".pricing-calculator");
+	if (calc) {
+		const styleActions = () =>
+			calc.querySelectorAll("button").forEach((b) => {
+				if (
+					/^(Compare packages|Add personalisation|Edit personalisation)$/i.test(
+						b.textContent.trim(),
+					)
+				)
+					b.classList.add("dx-padded-action");
+			});
+		new MutationObserver(styleActions).observe(calc, {
+			childList: true,
+			subtree: true,
+		});
+		styleActions();
+	}
+});
+
+dxOnPageReady(() => {
+	const personal = document.querySelector("body.home .dx-personal-life");
+	const ticker = personal?.querySelector(":scope>.footline-ticker");
+	if (ticker) personal.after(ticker);
+	const bus = [...document.querySelectorAll("body.home h3")].find((h) =>
+		h.textContent.includes("// BUSES"),
+	);
+	bus?.closest("section")?.classList.add("dx-bus-feature");
+});
+
+dxOnPageReady(() => {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	const menu = document.querySelector(".dx-menu__content");
+	if (menu) {
+		const title = menu.querySelector(".dx-menu__title");
+		if (title) title.textContent = "Explore.";
+		const home = [...menu.querySelectorAll(".dx-menu__list > li > a")].find(
+			(a) => new URL(a.href, location.href).pathname === "/",
+		);
+		if (home) home.textContent = "Home";
+	}
+	const cover = document.querySelector("body.home .cover-content");
+	if (cover) {
+		if (!cover.querySelector(".dx-cover-fitness")) {
+			const line = document.createElement("p");
+			line.className = "dx-cover-fitness";
+			const link = document.createElement("a");
+			link.href = "/n118-fitness/";
+			link.textContent = "N118 Fitness / A new chapter in personal growth ↗";
+			line.append(link);
+			(cover.querySelector(".wp-block-group__inner-container") || cover).append(
+				line,
+			);
+		}
+		if (!reduced.matches) {
+			const nodes = [
+				...new Set(
+					cover.querySelectorAll(
+						".headline,h2,p,.button-container,.buttons-container,.wp-block-buttons",
+					),
+				),
+			];
+			nodes.forEach((node, i) =>
+				node.animate(
+					[
+						{ opacity: 0, transform: "translate3d(0,24px,0)" },
+						{ opacity: 1, transform: "translate3d(0,0,0)" },
+					],
+					{
+						duration: 900,
+						delay: 120 + i * 105,
+						easing: "cubic-bezier(.22,1,.36,1)",
+						fill: "both",
+					},
+				),
+			);
+		}
+	}
+	document
+		.querySelectorAll('.service-detail-form button[type="submit"]')
+		.forEach((button) => {
+			if (button.querySelector(".dx-send-icon")) return;
+			const ns = "http://www.w3.org/2000/svg",
+				svg = document.createElementNS(ns, "svg"),
+				path = document.createElementNS(ns, "path");
+			svg.classList.add("dx-send-icon");
+			svg.setAttribute("viewBox", "0 0 24 24");
+			svg.setAttribute("aria-hidden", "true");
+			svg.setAttribute("fill", "none");
+			svg.setAttribute("stroke", "currentColor");
+			svg.setAttribute("stroke-width", "1.5");
+			path.setAttribute("d", "m3 10 18-7-7 18-4-7-7-4Zm7 4L21 3");
+			svg.append(path);
+			button.append(svg);
+		});
+});
+
+// Review chapters change the full viewport canvas, matching the portfolio story treatment.
+dxOnPageReady(() => {
+	const review = document.querySelector("body.single-gym-review .gym-review-editorial");
+	if (!review || review.dataset.canvasInitialised) return;
+	review.dataset.canvasInitialised = "true";
+	const chapters = [...review.querySelectorAll(":scope > [data-gym-scene]")];
+	const layers = [...review.querySelectorAll("[data-gym-canvas]")];
+	if (!chapters.length || !layers.length) return;
+	let frame = 0, activeScene = "";
+	const paint = () => {
+		frame = 0;
+		const readingLine = innerHeight * .42;
+		let active = chapters[0];
+		for (const chapter of chapters) {
+			if (chapter.getBoundingClientRect().top <= readingLine) active = chapter;
+			else break;
+		}
+		const scene = active.dataset.gymScene;
+		if (scene === activeScene) return;
+		activeScene = scene;
+		layers.forEach((layer) => layer.classList.toggle("is-active", layer.dataset.gymCanvas === scene));
+		review.dataset.activeScene = scene;
+	};
+	const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
+	addEventListener("scroll", schedule, { passive: true });
+	addEventListener("resize", schedule, { passive: true });
+	addEventListener("pageshow", schedule);
+	paint();
+});
+
+
+
+// The waterfront is fixed to the viewport and revealed only beside the next steps.
+dxOnPageReady(() => {
+	const section = document.querySelector("body.proposal .dx-estimate-next");
+	if (!section || document.querySelector(".dx-proposal-waterfront")) return;
+	const scene = document.createElement("div");
+	scene.className = "dx-proposal-waterfront";
+	scene.setAttribute("aria-hidden", "true");
+	document.body.prepend(scene);
+	document.body.classList.add("has-proposal-waterfront");
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+	let frame = 0;
+	const paint = () => {
+		frame = 0;
+		const rect = section.getBoundingClientRect();
+		const visible = rect.top < innerHeight * 0.9 && rect.bottom > innerHeight * 0.12;
+		scene.classList.toggle("is-visible", visible);
+		const drift = reduced.matches ? 0 : Math.max(-28, Math.min(28, (innerHeight / 2 - (rect.top + rect.height / 2)) * 0.045));
+		scene.style.setProperty("--waterfront-drift", `${drift.toFixed(2)}px`);
+	};
+	const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
+	addEventListener("scroll", schedule, { passive: true });
+	addEventListener("resize", schedule, { passive: true });
+	addEventListener("pageshow", schedule);
+	reduced.addEventListener("change", schedule);
+	paint();
+});
+
+
+// Authenticated client workspace: progressive navigation and honest form states.
+document.addEventListener('DOMContentLoaded', () => {
+  const shell = document.querySelector('[data-dxcp-shell]');
+  if (!shell) return;
+  const toggle = shell.querySelector('[data-dxcp-menu]');
+  const sidebar = shell.querySelector('.dxcp-sidebar');
+  const portalMobile = matchMedia('(max-width: 760px)');
+  const setMenu = (open) => {
+    shell.classList.toggle('is-menu-open', open);
+    sidebar.inert = portalMobile.matches && !open;
+    if (portalMobile.matches) sidebar.setAttribute('aria-hidden',String(!open)); else sidebar.removeAttribute('aria-hidden');
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Close workspace menu' : 'Open workspace menu');
+    if (open) sidebar.querySelector('[aria-current]')?.focus();
+  };
+  setMenu(false);
+  portalMobile.addEventListener('change', () => setMenu(false));
+  toggle?.addEventListener('click', () => setMenu(!shell.classList.contains('is-menu-open')));
+  shell.querySelector('[data-dxcp-close]')?.addEventListener('click', () => setMenu(false));
+  document.addEventListener('keydown', (event) => {
+    if (!shell.classList.contains('is-menu-open')) return;
+    if (event.key === 'Escape') { setMenu(false); toggle?.focus(); }
+    if (event.key === 'Tab') {
+      const controls = [...sidebar.querySelectorAll('a[href],button:not([disabled])')];
+      const first = controls[0], last = controls.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    }
+  });
+  const selectView = (section, focus = true) => {
+    shell.querySelectorAll('.dxcp-notice:not(.dxcp-notice--demo)').forEach((notice) => { notice.hidden=true; });
+    const view = [...shell.querySelectorAll('[data-dxcp-view]')].find((item) => item.dataset.dxcpView === section);
+    if (!view) return;
+    shell.querySelectorAll('[data-dxcp-view]').forEach((item) => { item.hidden = item !== view; });
+    shell.querySelectorAll('[data-dxcp-nav]').forEach((item) => {
+      if (item.dataset.dxcpNav === section) item.setAttribute('aria-current', 'page');
+      else item.removeAttribute('aria-current');
+    });
+    const link = shell.querySelector(`[data-dxcp-nav="${section}"]`);
+    shell.querySelector('[data-dxcp-breadcrumb]').textContent = link?.querySelector('span')?.textContent || section;
+    const context = shell.querySelector('.dxcp-project-switch input[name="section"]');
+    if (context) context.value = section;
+    setMenu(false);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) view.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:250,easing:'ease-out'});
+    if (focus) view.focus({preventScroll:true});
+  };
+  shell.querySelectorAll('[data-dxcp-nav]').forEach((link) => link.addEventListener('click', (event) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button) return;
+    event.preventDefault();
+    history.pushState({},'',link.href);
+    selectView(link.dataset.dxcpNav);
+    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }));
+  window.addEventListener('popstate', () => selectView(new URL(location.href).searchParams.get('section') || 'overview'));
+  const projectSelect = shell.querySelector('[data-dxcp-project]');
+  if (projectSelect) { shell.querySelector('.dxcp-project-go').hidden = true; projectSelect.addEventListener('change', () => projectSelect.form.requestSubmit()); }
+  shell.querySelectorAll('form[method="post"]').forEach((form) => form.addEventListener('submit', () => {
+    const button = form.querySelector('button[type="submit"]');
+    if (!button) return;
+    button.disabled = true;
+    button.dataset.originalText = button.textContent;
+    button.textContent = 'Saving…';
+    form.setAttribute('aria-busy','true');
+  }));
+});
+
+window.addEventListener('pageshow', () => {
+  document.querySelectorAll('[data-dxcp-shell] button[data-original-text]').forEach((button) => { button.disabled=false; button.textContent=button.dataset.originalText; button.form?.removeAttribute('aria-busy'); });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const shell=document.querySelector('[data-dxcp-shell]');if(!shell)return;
+  const search=shell.querySelector('[data-dxcp-ticket-search]');let filter='all';
+  const apply=()=>{
+    const query=(search?.value||'').toLowerCase().trim();let visible=0;
+    shell.querySelectorAll('[data-dxcp-ticket-status]').forEach(row=>{
+      const closed=['resolved','cancelled'].includes(row.dataset.dxcpTicketStatus);
+      row.hidden=!(filter==='all'||(filter==='closed'?closed:!closed)) || !row.dataset.dxcpTicketTitle.toLowerCase().includes(query);
+      if(!row.hidden)visible++;
+    });
+    const empty=shell.querySelector('[data-dxcp-ticket-empty]');if(empty)empty.hidden=visible>0;
+  };
+  search?.addEventListener('input',apply);
+  shell.querySelectorAll('[data-dxcp-ticket-filter]').forEach(button=>button.addEventListener('click',()=>{
+    filter=button.dataset.dxcpTicketFilter;
+    shell.querySelectorAll('[data-dxcp-ticket-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    apply();
+  }));
+});

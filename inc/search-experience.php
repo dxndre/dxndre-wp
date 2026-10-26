@@ -1,6 +1,11 @@
 <?php
 /** Search-only presentation and main-query behaviour. */
-// Presentation is bundled in assets/main.scss and assets/main.js.
+// The main search layout is bundled; keep the submit icon styling search-only.
+add_action('wp_enqueue_scripts', function () {
+    if (!is_search()) return;
+    $path = get_theme_file_path('assets/search-experience.css');
+    wp_enqueue_style('dx-search-experience', get_theme_file_uri('assets/search-experience.css'), ['style'], (string) filemtime($path));
+}, 20);
 
 add_action('pre_get_posts', function ($query) {
     if (is_admin() || !$query->is_main_query() || !$query->is_search()) return;

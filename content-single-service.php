@@ -3,6 +3,13 @@
 $slug = get_post_field('post_name', get_the_ID());
 $is_fixes = $slug === 'one-time-fixes';
 $is_photography = $slug === 'photography';
+// Match the hero engraving to the same EXIF values displayed in the photo lightbox.
+$photo_orbit_attributes = static function ($attachment_id) {
+    return [
+        'alt' => '',
+        'data-photo-technical' => wp_json_encode(function_exists('dxb_photo_technical') ? dxb_photo_technical($attachment_id) : []),
+    ];
+};
 $enquiry_service = ['photography' => 'photography', 'one-time-fixes' => 'fixes', 'retainer' => 'support', 'design' => 'design-build', 'comprehensive' => 'design-build', 'wordpress-development' => 'wordpress', 'development' => 'custom-web'][$slug] ?? 'unsure';
 $enquiry_url = add_query_arg('enquiry_service', $enquiry_service, home_url('/start-a-project/'));
 $facts = [
@@ -19,9 +26,9 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
 <article id="post-<?php the_ID(); ?>" <?php post_class(['service-detail', 'service-detail--' . sanitize_html_class($slug)]); ?>>
   <header class="service-detail-hero">
     <?php if (has_post_thumbnail()) : ?>
-      <div class="service-detail-art" aria-hidden="true"><?php echo get_the_post_thumbnail(get_the_ID(), 'full', ['alt' => '', 'fetchpriority' => 'high', 'loading' => 'eager']); ?></div>
+      <div class="service-detail-art" aria-hidden="true"><?php echo get_the_post_thumbnail(get_the_ID(), 'full', array_merge($is_photography ? $photo_orbit_attributes(get_post_thumbnail_id()) : ['alt' => ''], ['fetchpriority' => 'high', 'loading' => 'eager'])); ?></div>
     <?php endif; ?>
-    <?php if ($is_photography) : ?><div class="dx-service-slides" aria-hidden="true"><?php foreach ([1698,1696,1690] as $photo_id) echo wp_get_attachment_image($photo_id, 'full', false, ['alt'=>'','loading'=>'lazy']); ?></div><button class="dx-slides-toggle" type="button" aria-pressed="false">Pause slideshow</button><?php endif; ?>
+    <?php if ($is_photography) : ?><div class="dx-service-slides" aria-hidden="true"><?php foreach ([1698,1696,1690] as $photo_id) echo wp_get_attachment_image($photo_id, 'full', false, array_merge($photo_orbit_attributes($photo_id), ['loading' => 'lazy'])); ?></div><button class="dx-slides-toggle" type="button" aria-pressed="false">Pause slideshow</button><?php endif; ?>
     <div class="service-detail-container service-detail-hero-content">
       <a class="service-back" href="<?php echo esc_url(home_url('/services/')); ?>"><span aria-hidden="true">←</span> All services</a>
       <p class="service-eyebrow"><?php echo esc_html($details[0]); ?></p>

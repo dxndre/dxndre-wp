@@ -70,9 +70,9 @@
 				</div>
 
 				<div class="modal-image">
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close dialog"></button>
 					<img
-						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot.jpg' ); ?>"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot-illustrated.webp' ); ?>"
 						alt="Hire Me"
 					/>
 				</div>
@@ -130,9 +130,9 @@
 				</div>
 
 				<div class="modal-image">
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close dialog"></button>
 					<img
-						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot2.jpg' ); ?>"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot2-illustrated.webp' ); ?>"
 						alt="Client services"
 					/>
 				</div>
@@ -174,10 +174,13 @@
 							My background spans senior WordPress development, UX, and front-end engineering.
 						</p>
 
-						<div class="button-container">
+						<div class="button-container recruiter-actions">
 
 							<a href="<?php echo esc_url(home_url('/cv/')); ?>" class="btn btn-primary">Explore my CV <span aria-hidden="true">↗</span></a>
+                            <a href="<?php echo esc_url(home_url('/recruiter-room/')); ?>" class="btn btn-secondary">Private portfolio <span aria-hidden="true">↗</span></a>
 
+							<?php if ($linkedin || $github) : ?>
+								<div class="recruiter-socials" aria-label="Professional profiles">
 							<?php if ($linkedin) : ?>
 								<a
 									href="<?= esc_url($linkedin); ?>"
@@ -201,10 +204,12 @@
 									<i class="fa-brands fa-github"></i>
 								</a>
 							<?php endif; ?>
+								</div>
+							<?php endif; ?>
 
 						</div>
 
-						<p class="cv-modal-download">Prefer a document? <a href="<?php echo esc_url(dxndre_cv_pdf_url()); ?>" download>Download CV (PDF) <span aria-hidden="true">↧</span></a></p>
+						<p class="cv-modal-download">Prefer a document? <a href="<?php echo esc_url(dxndre_cv_pdf_url()); ?>" download data-cv-download>Download CV (PDF) <span aria-hidden="true">↧</span></a></p>
 
 						<button
 							class="modal-back"
@@ -217,9 +222,9 @@
 				</div>
 
 				<div class="modal-image">
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close dialog"></button>
 					<img
-						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot3.jpg' ); ?>"
+						src="<?= esc_url( get_template_directory_uri() . '/assets/img/sideshot3-illustrated.webp' ); ?>"
 						alt="Recruiter"
 					/>
 				</div>
