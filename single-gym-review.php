@@ -233,11 +233,15 @@ while ( have_posts() ) :
 ?>
 
 
-<article <?php post_class( 'gym-review-single gym-review-editorial' ); ?>>
+<article <?php post_class( 'gym-review-single gym-review-editorial' ); ?> style="--gym-overall-colour: <?php echo esc_attr( $overall_score !== null ? $score_color : '#d9b36b' ); ?>">
 	<div class="gym-review-canvas" aria-hidden="true">
 		<div class="gym-review-canvas__layer is-active" data-gym-canvas="ink"></div>
 		<div class="gym-review-canvas__layer" data-gym-canvas="brass"></div>
 		<div class="gym-review-canvas__layer" data-gym-canvas="sage"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="black"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="violet"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="indigo"></div>
+		<div class="gym-review-canvas__layer" data-gym-canvas="overall"></div>
 	</div>
 
 
@@ -245,7 +249,7 @@ while ( have_posts() ) :
 	HERO
 	========================================================= -->
 
-	<section class="gym-review-hero" data-gym-scene="ink">
+	<section class="gym-review-hero" data-gym-scene="ink" data-gym-chapter="The review">
 
 		<?php if ( has_post_thumbnail() ) : ?>
 
@@ -381,7 +385,7 @@ while ( have_posts() ) :
 	QUICK FACTS
 	========================================================= -->
 
-	<section class="gym-review-facts" data-gym-scene="ink">
+	<section class="gym-review-facts" data-gym-scene="black" data-gym-chapter="At a glance">
 
 		<div class="container">
 
@@ -482,7 +486,7 @@ while ( have_posts() ) :
 	VERDICT + LOCATION
 	========================================================= -->
 
-	<section class="gym-review-overview" data-gym-scene="ink">
+	<section class="gym-review-overview" data-gym-scene="black" data-gym-chapter="First impressions">
 
 		<div class="container">
 
@@ -596,7 +600,7 @@ while ( have_posts() ) :
 	SCORES
 	========================================================= -->
 
-	<section class="gym-review-scores" data-gym-scene="brass">
+	<section class="gym-review-scores" data-gym-scene="violet" data-gym-chapter="The scorecard">
 
 		<div class="container">
 
@@ -670,7 +674,7 @@ while ( have_posts() ) :
 	LIKES / DISLIKES / FACILITIES
 	========================================================= -->
 
-	<section class="gym-review-breakdown" data-gym-scene="brass">
+	<section class="gym-review-breakdown" data-gym-scene="brass" data-gym-chapter="The experience">
 
 		<div class="container">
 			<div class="gym-review-section-heading">
@@ -804,7 +808,7 @@ while ( have_posts() ) :
 
 	?>
 
-		<section class="gym-review-gallery" data-gym-scene="sage">
+		<section class="gym-review-gallery" data-gym-scene="sage" data-gym-chapter="In the frame">
 
 			<div class="container">
 
@@ -878,7 +882,7 @@ while ( have_posts() ) :
 
 	<?php if ( trim( get_the_content() ) ) : ?>
 
-		<section class="gym-review-content" data-gym-scene="ink">
+		<section class="gym-review-content" data-gym-scene="indigo" data-gym-chapter="The full review">
 
 			<div class="container">
 
@@ -963,7 +967,7 @@ while ( have_posts() ) :
 
 	<?php if ( $overall_score !== null ) : ?>
 
-		<section class="gym-review-final" data-gym-scene="sage">
+		<section class="gym-review-final" data-gym-scene="overall" data-gym-chapter="The overall picture">
 
 			<div class="container">
 
@@ -1007,7 +1011,7 @@ while ( have_posts() ) :
 	PREV / NEXT
 	========================================================= -->
 
-	<section class="gym-review-navigation" data-gym-scene="ink">
+	<section class="gym-review-navigation" data-gym-scene="ink" data-gym-chapter="More reviews">
 
 		<div class="container">
 

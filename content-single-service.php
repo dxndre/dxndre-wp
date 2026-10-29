@@ -50,7 +50,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
       <div><dt><?php echo esc_html($label); ?></dt><dd><?php echo esc_html($details[$index + 1]); ?></dd></div>
     <?php endforeach; ?>
   </dl></div>
-  <div id="service-content" class="service-detail-body">
+  <div id="service-content" class="service-detail-body<?php echo $is_photography ? ' service-detail-container' : ''; ?>">
     <?php the_content(); wp_link_pages(['before' => '<nav class="service-detail-container">', 'after' => '</nav>']); ?>
   </div>
   <section id="service-enquiry" class="service-detail-enquiry service-detail-container" aria-labelledby="service-enquiry-title">

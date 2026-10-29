@@ -1,11 +1,10 @@
 <?php
 /* Template Name: Login */
-get_header();
-
 if (is_user_logged_in()) {
-    wp_redirect(home_url('/dashboard'));
-    exit;
+	wp_safe_redirect(home_url('/dashboard/'));
+	exit;
 }
+get_header();
 ?>
 
 <div class="container">
@@ -19,8 +18,8 @@ if (is_user_logged_in()) {
 			<?php endif; ?>
 
 			<form method="post">
-				<input type="text" name="username" aria-label="Email or Username" placeholder="Email or Username" required>
-				<input type="password" name="password" aria-label="Password" placeholder="Password" required>
+				<input type="text" name="username" autocomplete="username" aria-label="Email or Username" placeholder="Email or Username" required>
+				<input type="password" name="password" autocomplete="current-password" aria-label="Password" placeholder="Password" required>
 
 				<?php wp_nonce_field('dx_login', 'dx_login_nonce'); ?>
 

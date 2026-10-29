@@ -106,8 +106,8 @@
 							</span>
 						<?php endif; ?>
 						<p>
-							I work with clients on branding, UX, and WordPress-driven builds —
-							from focused landing pages to full platforms.
+							I build websites and digital experiences, photograph people, places and brands,
+							and I’m developing N118 Fitness coaching. Choose a service or tell me what you have in mind.
 						</p>
 
 						<div class="button-container">

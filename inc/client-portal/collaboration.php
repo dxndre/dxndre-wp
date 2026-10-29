@@ -9,6 +9,22 @@ function dxcp_task_statuses() {
     return ['todo' => 'To do', 'in_progress' => 'In progress', 'waiting' => 'Waiting', 'done' => 'Complete'];
 }
 
+/** One shared whitelist for client forms, saved records and the support CMS. */
+function dxcp_ticket_priorities() {
+    return ['normal' => 'Normal — a question or request', 'urgent' => 'Urgent — something is blocking my work', 'no_rush' => 'No rush — whenever there’s room'];
+}
+
+function dxcp_ticket_priority($priority) {
+    return is_string($priority) && array_key_exists($priority, dxcp_ticket_priorities()) ? $priority : 'normal';
+}
+
+/** Existing unassigned requests keep the digital ticket treatment. */
+function dxcp_ticket_service($record_id) {
+    $project_id = absint(get_post_meta($record_id, '_dxcp_project_id', true));
+    if (!$project_id || get_post_type($project_id) !== 'dxcp_project') return 'digital';
+    return sanitize_key(get_post_meta($project_id, '_dxcp_service', true)) ?: 'digital';
+}
+
 function dxcp_ticket_statuses() {
     return ['new' => 'New', 'open' => 'Open', 'acknowledged' => 'Acknowledged', 'in_progress' => 'In progress', 'waiting' => 'Waiting for you', 'resolved' => 'Resolved', 'cancelled' => 'Cancelled'];
 }
@@ -120,7 +136,7 @@ function dxcp_collaboration_error($code, $message, $status = 400) {
 
 function dxcp_collaboration_require($record_id) {
     $post = dxcp_collaboration_record($record_id);
-    if (!$post || !is_user_logged_in() || !dxcp_can_access($post)) return dxcp_collaboration_error('forbidden', 'You do not have access to this conversation.', 403);
+    if (!$post || !is_user_logged_in() || !dxcp_can_access($post)) return dxcp_collaboration_error('forbidden', 'You do not have access to this request.', 403);
     return $post;
 }
 
@@ -222,7 +238,7 @@ function dxcp_create_ticket($project_id, $title, $message, $priority = 'normal',
     update_post_meta($ticket_id, 'ticket_client', $client_id);
     update_post_meta($ticket_id, '_dxcp_project_id', $project_id);
     update_post_meta($ticket_id, 'ticket_status', 'new');
-    update_post_meta($ticket_id, '_dxcp_priority', $priority === 'urgent' ? 'urgent' : 'normal');
+    update_post_meta($ticket_id, '_dxcp_priority', dxcp_ticket_priority($priority));
     update_post_meta($ticket_id, 'ticket_last_updated', current_time('mysql'));
     $file_id = dxcp_collaboration_file($file_field, $ticket_id);
     if (is_wp_error($file_id)) {
@@ -249,7 +265,7 @@ function dxcp_handle_comment() {
     $id = absint($_POST['record_id'] ?? 0);
     dxcp_collaboration_nonce('dxcp_comment_' . $id);
     $requested_project = absint($_POST['project_id'] ?? 0);
-    if ($requested_project && $requested_project !== absint(get_post_meta($id, '_dxcp_project_id', true))) wp_die('The conversation does not belong to this project.', '', ['response' => 403]);
+    if ($requested_project && $requested_project !== absint(get_post_meta($id, '_dxcp_project_id', true))) wp_die('This support request does not belong to this project.', '', ['response' => 403]);
     dxcp_collaboration_response(dxcp_add_comment($id, wp_unslash($_POST['message'] ?? '')), $id);
 }
 
@@ -320,7 +336,7 @@ add_action('after_setup_theme', function () {
 /* There is no public commenting route for client conversations. */
 add_filter('preprocess_comment', function ($data) {
     $post = get_post(absint($data['comment_post_ID'] ?? 0));
-    if ($post && in_array($post->post_type, ['ticket', 'dxcp_task', 'dxcp_document', 'dxcp_project'], true)) wp_die('Please use the conversation in your client space.', '', ['response' => 403]);
+    if ($post && in_array($post->post_type, ['ticket', 'dxcp_task', 'dxcp_document', 'dxcp_project'], true)) wp_die('Please use the discussion in your client space.', '', ['response' => 403]);
     return $data;
 }, 1);
 
@@ -332,7 +348,7 @@ add_filter('rest_pre_dispatch', function ($result, $server, $request) {
     $post_ids = array_map('absint', (array) $request->get_param('post'));
     if ($comment) $post_ids[] = (int) $comment->comment_post_ID;
     foreach ($post_ids as $post_id) {
-        if (in_array(get_post_type($post_id), ['ticket', 'dxcp_task', 'dxcp_document', 'dxcp_project'], true)) return new WP_Error('rest_forbidden', 'Client conversations are available in the client space.', ['status' => 403]);
+        if (in_array(get_post_type($post_id), ['ticket', 'dxcp_task', 'dxcp_document', 'dxcp_project'], true)) return new WP_Error('rest_forbidden', 'Client discussions are available in the client space.', ['status' => 403]);
     }
     return $result;
 }, 10, 3);
@@ -386,11 +402,15 @@ function dxcp_ticket_metabox($post) {
     echo '</p><p><label for="dxcp_ticket_status">Status</label><br><select id="dxcp_ticket_status" name="dxcp_ticket_status">';
     $status = get_post_meta($post->ID, 'ticket_status', true) ?: 'new';
     foreach (dxcp_ticket_statuses() as $key => $label) printf('<option value="%s" %s>%s</option>', esc_attr($key), selected($status, $key, false), esc_html($label));
+    echo '</select></p><p><label for="dxcp_ticket_priority">Priority</label><br><select id="dxcp_ticket_priority" name="dxcp_ticket_priority">';
+    $priority = dxcp_ticket_priority(get_post_meta($post->ID, '_dxcp_priority', true));
+    foreach (dxcp_ticket_priorities() as $key => $label) printf('<option value="%s" %s>%s</option>', esc_attr($key), selected($priority, $key, false), esc_html($label));
     echo '</select></p><p><label>Assigned to</label><br>';
     wp_dropdown_users(['name' => 'dxcp_ticket_assignee', 'selected' => absint(get_post_meta($post->ID, 'ticket_assignee', true)), 'role__in' => ['administrator'], 'show_option_none' => 'Unassigned', 'option_none_value' => 0]);
     printf('</p><p><label for="dxcp_ticket_due_date">Estimated completion</label><br><input id="dxcp_ticket_due_date" name="dxcp_ticket_due_date" type="date" value="%s"></p>', esc_attr(get_post_meta($post->ID, 'ticket_due_date', true)));
-    echo '<p>Use the conversation in the client space to reply with private files. Status, assignment and estimated completion remain compatible with existing ticket fields.</p>';
-    printf('<p><a href="%s">Open conversation</a></p>', esc_url(dxcp_record_url($post->ID)));
+    $words = dxcp_support_words(dxcp_ticket_service($post->ID));
+    printf('<p>Use the %s in the client space to reply with private files. Status, assignment and estimated completion remain compatible with existing ticket fields.</p>', esc_html($words['singular']));
+    printf('<p><a href="%s">Open %s</a></p>', esc_url(dxcp_record_url($post->ID)), esc_html($words['singular']));
 }
 
 add_action('save_post', function ($post_id, $post) {
@@ -414,6 +434,7 @@ add_action('save_post', function ($post_id, $post) {
         if ($client_id && get_userdata($client_id)) update_post_meta($post_id, 'ticket_client', $client_id);
         $status = sanitize_key($_POST['dxcp_ticket_status'] ?? 'new');
         if (array_key_exists($status, dxcp_ticket_statuses())) update_post_meta($post_id, 'ticket_status', $status);
+        if (isset($_POST['dxcp_ticket_priority'])) update_post_meta($post_id, '_dxcp_priority', dxcp_ticket_priority(sanitize_key(wp_unslash($_POST['dxcp_ticket_priority']))));
         $assignee_id = absint($_POST['dxcp_ticket_assignee'] ?? 0);
         update_post_meta($post_id, 'ticket_assignee', $assignee_id && user_can($assignee_id, 'manage_options') ? $assignee_id : 0);
         $date = sanitize_text_field(wp_unslash($_POST['dxcp_ticket_due_date'] ?? ''));

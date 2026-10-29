@@ -1,67 +1,96 @@
 {
-  "summary": "Senior WordPress Engineer / Web Developer with ~10 years’ experience delivering design-led, performance-focused WordPress platforms across agencies, in-house teams, and freelance. Strong in ACF Pro + Gutenberg block development, custom themes, scalable content models (CPTs/taxonomies), and integrations (REST APIs/webhooks). Comfortable owning delivery end-to-end: translating Figma into maintainable front-end, optimising Core Web Vitals, and troubleshooting production issues across staging/live environments.",
+  "summary": "Website and WordPress specialist with over a decade of experience managing, developing and improving websites for businesses and organisations. Experienced in multi-region WordPress platforms, digital publishing, CMS customisation, website optimisation and cross-functional stakeholder collaboration. Combines strong technical capabilities with a practical understanding of accessibility, SEO, user experience and content management. Skilled at translating business requirements into maintainable digital solutions and supporting non-technical users through intuitive CMS experiences.",
   "skills": [
     {
-      "title": "WordPress Engineering",
-      "text": "ACF Pro, Gutenberg block development, Custom themes/templates, Plugin development, Multisite, WP-CLI, WooCommerce, Template hierarchy, Yoast SEO"
+      "title": "Languages",
+      "text": "HTML5, CSS/SCSS, JavaScript (ES6+), PHP, SQL, JSON, TypeScript. Learning Laravel and Python."
     },
     {
-      "title": "Content Modelling & Discovery",
-      "text": "CPTs & taxonomies (CPT UI), Advanced querying, Search & Filter custom logic, Related content strategy"
+      "title": "Frameworks & Libraries",
+      "text": "Bootstrap 5, React, Vue / Nuxt. Learning Tailwind CSS."
     },
     {
-      "title": "Languages & Data",
-      "text": "PHP, JavaScript (ES6+), HTML5, CSS/SCSS, SQL"
+      "title": "CMS & E-Commerce",
+      "text": "WordPress, Shopify, HubSpot, Strapi"
     },
     {
-      "title": "Front-End Engineering",
-      "text": "Responsive UI, Accessibility, Performance (Core Web Vitals/Lighthouse), Bootstrap 5, Tailwind CSS, Interactive UI patterns, BEM (CSS Architecture & Naming conventions)"
+      "title": "Major WordPress Plugins",
+      "text": "ACF (including Pro), Ninja Forms, Yoast SEO, WooCommerce, WP-CLI, Complianz"
     },
     {
-      "title": "APIs & Integrations",
-      "text": "REST APIs, Webhooks, Ninja Forms, Data/system integrations (e.g., Odoo)"
+      "title": "Hosting & DevOps",
+      "text": "WPEngine, Flywheel, Netlify, AWS S3, Google Cloud Platform, GitHub Actions"
     },
     {
-      "title": "Tooling & Delivery",
-      "text": "Git (GitHub/Bitbucket), Node.js & NPM, Gulp, Webpack, Postman, Chrome/Firefox DevTools, CI/CD (GitHub Actions)"
+      "title": "Development Tools",
+      "text": "VS Code, PHPStorm, Git, GitHub, Bitbucket, LocalWP, Postman. Learning Docker."
     },
     {
-      "title": "Hosting & Operations",
-      "text": "WP Engine, Netlify, Google Cloud Platform (incl. Analytics), AWS S3, cPanel, FileZilla, Migration/URL rewrite workflows"
+      "title": "Version Control & CLI",
+      "text": "Git, GitHub, Bitbucket, Node.js, NPM, Gulp, Grunt, Webpack"
     },
     {
-      "title": "Design",
-      "text": "Figma (including Dev Mode), Adobe XD, Adobe Photoshop, Adobe Illustrator, Sketch"
+      "title": "Design & Prototyping",
+      "text": "Figma (including Dev Mode), Adobe XD, Adobe Photoshop, Sketch, Canva"
+    },
+    {
+      "title": "Office & Collaboration",
+      "text": "Microsoft 365, Google Workspace, CMS training, documentation"
     },
     {
       "title": "Project Management",
-      "text": "Jira, Trello, Asana, Zoho Desk, Avaza, Timetastic"
+      "text": "Trello, Jira, Asana, Zoho Desk, DoneDone, Avaza, Timetastic"
+    },
+    {
+      "title": "Analytics & SEO",
+      "text": "Google Analytics, Lighthouse, Core Web Vitals, Search Console, technical SEO"
+    },
+    {
+      "title": "Operating Systems",
+      "text": "macOS, Windows, Linux, iOS"
     }
   ],
   "experience": [
+    {
+      "role": "Freelance Web Designer, Developer & Consultant",
+      "company": "Independent practice",
+      "period": "September 2016 – Present",
+      "bullets": [
+        "Owned and led end-to-end delivery of bespoke websites and digital products for SMEs, agencies and independent clients, translating business objectives into scalable solutions from discovery and technical planning through UI/UX design, development, testing, deployment and ongoing optimisation.",
+        "Designed and developed custom WordPress websites, Shopify storefronts, headless applications and API-driven solutions, selecting technologies for project complexity, performance and long-term maintainability.",
+        "Designed responsive, user-centred interfaces in Figma and translated approved designs into production-ready experiences using PHP, JavaScript, HTML, SCSS, ACF, Gutenberg and modern front-end practices.",
+        "Engineered bespoke WordPress themes, templates, reusable components, plugins and third-party integrations to extend CMS functionality and streamline content management.",
+        "Managed hosting configuration, domains, website migrations, quality assurance, troubleshooting, production releases and post-launch maintenance.",
+        "Conducted technical audits and implemented improvements across Core Web Vitals, SEO, accessibility, security and responsive usability.",
+        "Owned client relationships and commercial project operations, including consultations, scoping, quotations, invoicing, stakeholder communications and expectation management; coordinated with freelancers and external specialists where required.",
+        "Provided ongoing technical consultancy, CMS guidance and post-launch support, advising on digital strategy, platform improvements and future development opportunities."
+      ]
+    },
     {
       "role": "WordPress Developer",
       "company": "Ohme EV",
       "period": "August 2024 – November 2025",
       "bullets": [
-        "Led multi-region, multi-lingual WordPress engineering on WPEngine across 11 (growing to 13) locales, improving performance and scalability for international markets.",
-        "Maintained Lighthouse 80+ and optimised Core Web Vitals through caching strategies, image optimisation and code optimisation.",
-        "Built and evolved a custom Help Centre platform enabling partner teams to self-manage content and improve documentation consistency.",
-        "Developed and scaled custom Gutenberg blocks and page templates using ACF Pro to meet stakeholder needs.",
-        "Integrated Ninja Forms with Odoo and partnered with data teams to streamline workflows and improve lead capture accuracy.",
-        "Standardised request handling via a Jira-based workflow, improving clarity and turnaround times.",
-        "Used modern tooling and code review practices to improve delivery speed and reduce regressions."
+        "Owned multi-region, multi-lingual WordPress development and optimisation on WPEngine, improving uptime, scalability and performance for international markets while making content creation and maintenance easier through custom CMS solutions.",
+        "Developed, maintained and futureproofed a custom Help Centre enabling partner teams to self-manage content, reducing internal support tickets and improving documentation consistency.",
+        "Developed, maintained and scaled custom Gutenberg blocks and page templates using ACF Pro in response to stakeholder requests.",
+        "Collaborated with stakeholders in regular team meetings to share website development updates and gather feedback.",
+        "Integrated Ninja Forms with Odoo and collaborated with data teams to streamline workflows and improve lead capture accuracy.",
+        "Standardised request handling through a Jira-based cross-department workflow, improving clarity and turnaround for ad-hoc requests.",
+        "Used AI tools including ChatGPT, Cursor and Copilot to support development and code optimisation, reducing churn and improving quality and performance."
       ]
     },
     {
       "role": "WordPress Developer",
-      "company": "ONQOR (B-Corp Creative Agency)",
+      "company": "ONQOR",
       "period": "May 2023 – August 2024",
       "bullets": [
-        "Delivered pixel-perfect WordPress builds from Figma using ACF Pro, maintaining brand consistency and strong Lighthouse scores.",
-        "Maintained and supported headless WordPress components alongside Strapi-based systems.",
-        "Debugged, optimised and refactored legacy builds to reduce client-reported issues and improve maintainability.",
-        "Self-taught and built Vue.js and Nuxt.js apps to expand modern front-end capability during quieter periods."
+        "Built and delivered pixel-perfect WordPress builds from Figma with ACF Pro for a B-Corp creative agency, maintaining brand consistency and optimised Lighthouse performance.",
+        "Maintained and supported ONQOR’s headless WordPress website with Strapi.",
+        "Worked closely with the dedicated design team and attended training sessions to deepen web design knowledge.",
+        "Self-taught and built custom Vue.js and Nuxt.js applications during quieter business periods.",
+        "Debugged, optimised and refactored legacy builds to reduce client-reported issues.",
+        "Completed self-directed projects using Strapi and Nuxt.js to develop modern framework and full-stack skills."
       ]
     },
     {
@@ -69,9 +98,11 @@
       "company": "Ignite Hospitality",
       "period": "June 2022 – April 2023",
       "bullets": [
-        "Owned support queue for 10+ hospitality clients (UI fixes, template redesigns, landing pages).",
-        "Improved SEO metrics, performance and accessibility across client websites.",
-        "Used Gulp and Node.js to automate asset optimization and improve workflow efficiency."
+        "Delivered fast-turnaround WordPress support for 10+ hospitality clients through Zoho Desk, from minor UI fixes to full template redesigns, resolving work in priority order.",
+        "Built promotional landing pages at clients’ request.",
+        "Used Gulp and Node.js for automated asset optimisation and workflow improvements.",
+        "Provided technical improvements for SEO, performance and accessibility.",
+        "Worked closely with project managers to streamline ticket handling and reduce resolution times."
       ]
     },
     {
@@ -79,8 +110,8 @@
       "company": "Civica Election Services",
       "period": "July 2021 – June 2022",
       "bullets": [
-        "Developed and maintained secure, accessible front-end interfaces for public-sector clients.",
-        "Collaborated with project managers and proofing teams to deliver client sites on schedule."
+        "Developed and maintained secure, accessible front-end interfaces to public-sector clients’ specifications.",
+        "Collaborated with project managers and dedicated proofing teams to deliver client sites on schedule."
       ]
     },
     {
@@ -88,8 +119,9 @@
       "company": "Progeny Wealth",
       "period": "October 2020 – May 2021",
       "bullets": [
-        "Managed updates for the organization’s corporate WordPress platform and supported a branding refresh.",
-        "Designed and built HubSpot marketing newsletters and landing pages."
+        "Developed and managed the corporate WordPress platform and supported a full branding refresh across digital assets.",
+        "Designed and built HubSpot marketing newsletters and landing pages.",
+        "Supported marketing with on-brand updates, Adobe XD design mock-ups and voiceovers for explainer videos used on social media."
       ]
     },
     {
@@ -97,21 +129,12 @@
       "company": "Black Spark Media",
       "period": "March 2018 – October 2020",
       "bullets": [
-        "Owned a portfolio of high-traffic gaming websites, improving speed, stability, SEO and UX.",
-        "Contributed to the launch of the Lazerlight Bingo brand from planning through development and post-launch optimisation.",
-        "Automated tedious, repeatable tasks via CLI tooling",
-        "Modernised the front-end stack (Bootstrap 3→4) and introduced scalable component structures."
-      ]
-    },
-    {
-      "role": "Freelance Web Designer, Developer & Consultant",
-      "company": "Independent practice",
-      "period": "September 2016 – Present",
-      "bullets": [
-        "Delivered bespoke WordPress sites for SMEs and agencies, specialising in performance, SEO and scalable custom functionality.",
-        "Migrated websites, improved Core Web Vitals, and conducted audits to resolve security, performance and UX issues.",
-        "Engineered custom, bespoke WordPress plugins",
-        "Advised clients on digital strategy, branding and technical architecture for long-term maintainability."
+        "Owned a portfolio of 3–4 high-traffic gaming websites, improving speed, stability, SEO and UX; designed HubSpot newsletters and landing pages.",
+        "Contributed to the Lazerlight Bingo launch, from planning and design alignment through front-end development and post-launch optimisation.",
+        "Modernised the front-end stack by migrating Bootstrap 3 to 4 and introducing scalable, maintainable component structures.",
+        "Delivered promotional landing pages with the lead designer to support player acquisition and conversions.",
+        "Improved team efficiency through reusable front-end patterns, documentation and workflow improvements.",
+        "Completed advanced JavaScript training and applied modern techniques to interactivity and performance."
       ]
     }
   ],
@@ -132,49 +155,30 @@
       "period": "August 2014 – September 2014"
     }
   ],
-  "education": [
-    {
-      "title": "City & Guilds Level 3 in Software Development",
-      "institution": "QA Apprenticeships",
-      "period": "2016–2018",
-      "grade": ""
-    },
-    {
-      "title": "ICT BTEC Level 3 Extended Diploma",
-      "institution": "City of Westminster College",
-      "period": "2013–2015",
-      "grade": "D*D*D"
-    }
-  ],
-  "interests": [
-    "UX/UI Design",
-    "Tech innovation",
-    "Fitness",
-    "Buses / transport design",
-    "Cars & trains"
-  ],
   "additional": [
     {
-      "role": "Customer Engagement Team Supervisor",
-      "company": "The FA",
-      "period": "August 2015 – Present",
+      "role": "Event Steward",
+      "company": "Tottenham Hotspur",
+      "period": "May 2026 – Present",
       "bullets": [
-        "Delivered exceptional guest experiences at Wembley Stadium, providing guidance, accessibility assistance, and support for premium members in Club Wembley.",
-        "Promoted to Supervisor in May 2021, coordinating shifts, managing workflows, and ensuring smooth operations during high-profile events while maintaining a professional and approachable presence."
+        "Supported major football, concert and NFL events at Tottenham Hotspur Stadium, mainly with the Disability Access Team, providing personalised support to people with cognitive and mobility impairments."
       ]
     },
     {
-      "role": "Steward",
-      "company": "Tottenham Hotspur Stadium",
-      "period": "May 2026 – Present",
-      "bullets": []
+      "role": "Customer Engagement Team Supervisor at Wembley Stadium",
+      "company": "The FA",
+      "period": "August 2015 – Present",
+      "bullets": [
+        "Delivered guest guidance, accessibility assistance and support for premium members in Club Wembley.",
+        "Promoted to Supervisor in May 2021, coordinating shifts, managing workflows and supporting smooth operations during high-profile events with a professional, approachable presence."
+      ]
     },
     {
       "role": "Event Steward",
       "company": "Security Man Limited",
       "period": "March 2017 – July 2018",
       "bullets": [
-        "Supported major public events across London, managing crowd safety, traffic, and event operations. Engaged directly with attendees, communicated instructions clearly, and ensured compliance with security protocols in fast-paced, high-pressure environments."
+        "Supported major public events across London, managing crowd safety, traffic and event operations; engaged directly with attendees and communicated instructions clearly in fast-paced environments."
       ]
     },
     {
@@ -182,8 +186,30 @@
       "company": "StreetPR UK Limited",
       "period": "August 2015 – September 2018",
       "bullets": [
-        "Represented multiple brands at corporate and hospitality events, delivering front-of-house support and guest engagement. Adapted to diverse client needs and event environments, consistently upholding a professional and approachable standard."
+        "Represented multiple brands at corporate and hospitality events, delivering front-of-house support and guest engagement while adapting to different client needs and event environments."
       ]
     }
+  ],
+  "education": [
+    {
+      "title": "City & Guilds Level 3 in Software Development",
+      "institution": "QA Apprenticeships",
+      "period": "2016–2018",
+      "grade": "Pass"
+    },
+    {
+      "title": "ICT BTEC Level 3 Extended Diploma for IT Practitioners",
+      "institution": "City of Westminster College",
+      "period": "2013–2015",
+      "grade": "D*D*D"
+    }
+  ],
+  "interests": [
+    "Gym & Fitness",
+    "UX/UI Design & Development",
+    "Forex",
+    "Tech Innovations",
+    "Buses",
+    "Cars & Trains"
   ]
 }

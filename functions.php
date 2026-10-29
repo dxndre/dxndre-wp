@@ -2607,14 +2607,27 @@ require_once get_template_directory() . '/inc/instagram.php';
 require_once get_template_directory() . '/inc/photography-outro.php';
 
 require_once get_template_directory() . '/inc/london-sun.php';
+require_once __DIR__ . '/inc/oct27-weather.php';
 
 // Private client workspace: records, billing, collaboration and presentation.
 require_once __DIR__.'/inc/client-portal/core.php';
 require_once __DIR__.'/inc/client-portal/billing.php';
 require_once __DIR__.'/inc/client-portal/collaboration.php';
+require_once __DIR__.'/inc/client-portal/help.php';
 require_once __DIR__.'/inc/client-portal/render.php';
+require_once __DIR__.'/inc/client-portal/admin.php';
+require_once __DIR__.'/inc/client-portal/business.php';
+require_once __DIR__.'/inc/client-portal/business-finance.php';
 
 add_filter('show_admin_bar', function($show) { return is_page(['dashboard','client-dashboard']) ? false : $show; });
 add_filter('pre_get_document_title', function($title) { return is_page(['dashboard','client-dashboard']) ? 'Your client space – DXNDRE' : $title; }, 100);
 
 add_filter('private_title_format', function($format) { return is_page(['dashboard','client-dashboard']) ? '%s' : $format; });
+
+// Every completed WordPress logout lands on the designed signed-out page.
+function dx_signout_page_redirect( $redirect, $requested, $user ) {
+	return home_url( '/logout/' );
+}
+add_filter( 'logout_redirect', 'dx_signout_page_redirect', 20, 3 );
+
+require_once __DIR__ . '/inc/oct29-public.php';

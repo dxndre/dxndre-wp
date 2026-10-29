@@ -1,11 +1,10 @@
 <?php
 /* Template Name: Forgot Password */
-get_header();
-
 if (is_user_logged_in()) {
-	wp_redirect(home_url('/dashboard'));
+	wp_safe_redirect(home_url('/dashboard/'));
 	exit;
 }
+get_header();
 ?>
 
 <div class="container">

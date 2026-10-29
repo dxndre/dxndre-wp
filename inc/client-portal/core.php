@@ -7,6 +7,21 @@ function dxcp_is_admin($uid = 0) {
     return $uid > 0 && user_can($uid, 'manage_options');
 }
 
+/** The comprehensive business/admin workspace belongs to this site owner only. */
+function dxcp_is_site_owner($uid = 0) {
+    $uid = $uid ?: get_current_user_id();
+    $user = $uid ? get_userdata($uid) : null;
+    return $user && $user->user_login === 'dxndre' && user_can($uid, 'manage_options');
+}
+
+function dxcp_time_greeting($timestamp = null) {
+    $hour = (int) wp_date('G', $timestamp, new DateTimeZone('Europe/London'));
+    return $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+}
+
+function dxcp_upload_limit() { return 5 * MB_IN_BYTES; }
+function dxcp_upload_hint() { return 'Files can be up to 5 MB. For a larger file, add a shareable cloud-storage link in your message or ask your project partner for a file-sharing link.'; }
+
 function dxcp_is_client_user($uid = 0) {
     $uid = $uid ?: get_current_user_id();
     if (!$uid || !($user = get_userdata($uid))) return false;
@@ -84,10 +99,11 @@ function dxcp_upload_mimes() {
 }
 
 function dxcp_validate_upload($file) {
+    if (is_array($file) && in_array((int)($file['error'] ?? -1), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) return new WP_Error('upload_size', dxcp_upload_hint());
     if (!is_array($file) || !isset($file['error']) || (int) $file['error'] !== UPLOAD_ERR_OK) return new WP_Error('upload_failed','The file could not be uploaded. Please choose it again.');
     if (empty($file['tmp_name']) || !is_file($file['tmp_name']) || empty($file['name'])) return new WP_Error('upload_missing','Please select a file.');
     $size = filesize($file['tmp_name']);
-    if (!$size || $size > 20 * MB_IN_BYTES) return new WP_Error('upload_size','Files must be between 1 byte and 20 MB.');
+    if (!$size || $size > dxcp_upload_limit()) return new WP_Error('upload_size', dxcp_upload_hint());
     $name = sanitize_file_name(wp_basename($file['name']));
     $checked = wp_check_filetype_and_ext($file['tmp_name'], $name, dxcp_upload_mimes());
     if (empty($checked['ext']) || empty($checked['type'])) return new WP_Error('upload_type','Use an image, PDF, Office document, text, audio or video file.');
@@ -273,7 +289,7 @@ function dxcp_document_metabox($post) {
     dxcp_admin_select('dxcp_project_id','Client project',dxcp_admin_project_options(),get_post_meta($post->ID,'_dxcp_project_id',true));
     dxcp_admin_select('dxcp_document_type','Document type',['general'=>'General document','onboarding'=>'Client onboarding','agreement'=>'Agreement'],get_post_meta($post->ID,'_dxcp_document_type',true));
     dxcp_admin_input('dxcp_link_url','Secure external document link (optional)',get_post_meta($post->ID,'_dxcp_link_url',true),'url');
-    echo '<p><label for="dxcp_private_file"><strong>Private file (up to 20 MB)</strong></label><br><input type="file" id="dxcp_private_file" name="dxcp_private_file" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.txt,.docx,.xlsx,.pptx,.mp4,.mov,.mp3,.m4a,.ogg,.wav,.webm"></p><p class="description">Files are kept outside the public website and downloaded only after account and ownership checks. Uploading a replacement removes the old private file.</p>';
+    echo '<p><label for="dxcp_private_file"><strong>Private file (up to 5 MB)</strong></label><br><input type="file" id="dxcp_private_file" name="dxcp_private_file" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.txt,.docx,.xlsx,.pptx,.mp4,.mov,.mp3,.m4a,.ogg,.wav,.webm"></p><p class="description">Files are kept outside the public website and downloaded only after account and ownership checks. Larger files can be shared through an external cloud-storage link. Uploading a replacement removes the old private file.</p>';
     $file = get_post_meta($post->ID,'_dxcp_private_file',true);
     if (is_array($file) && !empty($file['name'])) echo '<p>Current file: <a href="'.esc_url(dxcp_download_url($post->ID)).'">'.esc_html($file['name']).'</a></p>';
 }
@@ -284,7 +300,7 @@ function dxcp_session_metabox($post) {
     dxcp_admin_input('dxcp_end','Ends (Europe/London)',get_post_meta($post->ID,'_dxcp_end',true),'datetime-local');
     dxcp_admin_input('dxcp_location','Location',get_post_meta($post->ID,'_dxcp_location',true));
     dxcp_admin_input('dxcp_join_url','Online session link',get_post_meta($post->ID,'_dxcp_join_url',true),'url');
-    dxcp_admin_select('dxcp_status','Session status',['scheduled'=>'Scheduled','completed'=>'Completed','cancelled'=>'Cancelled'],get_post_meta($post->ID,'_dxcp_status',true));
+    dxcp_admin_select('dxcp_status','Session status',['pending'=>'Awaiting coach review','scheduled'=>'Scheduled','completed'=>'Completed','cancelled'=>'Cancelled'],get_post_meta($post->ID,'_dxcp_status',true));
     echo '<p class="description">Dates use London time, including British Summer Time. Sessions appear only to the assigned client. This records agreed sessions; it does not send invitations or book a third-party calendar.</p>';
 }
 
@@ -322,7 +338,7 @@ add_action('save_post', function($id,$post) {
     update_post_meta($id,'_dxcp_start',$start); update_post_meta($id,'_dxcp_end',$end);
     update_post_meta($id,'_dxcp_location',mb_substr(sanitize_text_field(wp_unslash($_POST['dxcp_location']??'')),0,250));
     update_post_meta($id,'_dxcp_join_url',dxcp_safe_url(wp_unslash($_POST['dxcp_join_url']??'')));
-    $status=sanitize_key($_POST['dxcp_status']??'scheduled'); update_post_meta($id,'_dxcp_status',in_array($status,['scheduled','completed','cancelled'],true)?$status:'scheduled');
+    $status=sanitize_key($_POST['dxcp_status']??'scheduled'); update_post_meta($id,'_dxcp_status',in_array($status,['pending','scheduled','completed','cancelled'],true)?$status:'scheduled');
 },10,2);
 
 add_action('before_delete_post', function($id) {
@@ -359,3 +375,6 @@ add_action('template_redirect',function(){
     if(!dxcp_can_access($doc))wp_die('This client file is private.','Access denied',['response'=>403]);
     wp_safe_redirect(dxcp_download_url($doc));exit;
 },0);
+
+// Private coaching calendar transport and progressive month navigation.
+require_once __DIR__.'/calendar.php';

@@ -16,6 +16,9 @@
 <body <?php body_class(); ?>>
 
 <?php wp_body_open(); ?>
+<?php if ( function_exists( 'dx_london_weather_markup' ) && ( is_page( array( 'login', 'logout', 'signup', 'sign-up', 'create-account', 'register', 'reset-password', 'forgot-password' ) ) || is_page_template( array( 'page-login.php', 'page-logout.php', 'page-signup.php', 'page-sign-up.php', 'page-forgot-password.php', 'page-reset-password.php' ) ) ) ) : ?>
+<template id="dx-london-weather-template"><?php dx_london_weather_markup(); ?></template>
+<?php endif; ?>
 
 <a href="#main" class="visually-hidden-focusable"><?php esc_html_e( 'Skip to main content', 'dxndre' ); ?></a>
 
@@ -59,7 +62,7 @@
 					);
 
 					// Shared account entry for clients and hiring teams.
-					$sign_in_url = home_url( '/login/' );
+					$sign_in_url = home_url( is_user_logged_in() ? '/dashboard/' : '/login/' );
 				?>
 
 				<div id="navbar" class="navbar-collapse collapse dx-menu" aria-label="<?php esc_attr_e( 'Main navigation', 'dxndre' ); ?>">
@@ -145,7 +148,7 @@
 										class="dx-menu__cta"
 									>
 										<span>
-											<?php esc_html_e( 'Sign in', 'dxndre' ); ?>
+											<?php echo esc_html( is_user_logged_in() ? 'Your workspace' : __( 'Sign in', 'dxndre' ) ); ?>
 										</span>
 
 										<svg

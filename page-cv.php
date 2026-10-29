@@ -16,9 +16,9 @@ $cv_pdf = dxndre_cv_pdf_url();
         <p class="cv-kicker">Curriculum vitae <span>·</span> London, UK</p>
         <h1 id="cv-name">D’André<br><span>Phillips.</span></h1>
         <?php $status = function_exists('get_field') ? get_field('employer_availability', (int)get_option('page_on_front')) : ''; $labels = ['available'=>'Available to hire', 'casual'=>'Open to opportunities', 'unavailable'=>'Not currently looking']; if(isset($labels[$status])): ?><p class="availability-badge is-<?php echo esc_attr($status); ?>"><?php echo esc_html($labels[$status]); ?></p><?php endif; ?>
-<p class="cv-hero__role">Senior Web &amp; WordPress Developer</p>
+<p class="cv-hero__role">Senior Web Developer · WordPress &amp; Modern Front-End Specialist</p>
         <p class="cv-hero__intro">Design-led thinking.<br>Engineering that delivers.</p>
-        <p class="cv-hero__summary">Around a decade building thoughtful, high-performance digital experiences — across agencies, in-house teams and independent projects.</p>
+        <p class="cv-hero__summary">Over a decade building thoughtful, high-performance digital experiences — across agencies, in-house teams and independent projects.</p>
         <div class="cv-actions"><a class="cv-button cv-button--solid" href="#cv-experience">Explore my experience <span aria-hidden="true">↓</span></a><a class="cv-button" href="<?php echo esc_url($cv_pdf); ?>" download data-cv-download>Download CV <span aria-hidden="true">↧</span></a></div>
         <div class="cv-hero__links"><a href="mailto:dandrephillips@outlook.com"><i class="fa-regular fa-envelope" aria-hidden="true"></i><span class="visually-hidden">Email me</span></a><a href="https://linkedin.com/in/dxndre" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a><a href="<?php echo esc_url(home_url('/portfolio/')); ?>">Selected work ↗</a></div>
       </div>
@@ -31,7 +31,7 @@ $cv_pdf = dxndre_cv_pdf_url();
     <section id="cv-profile" class="cv-section cv-profile" aria-labelledby="cv-profile-title">
       <div class="cv-section__label"><p class="cv-kicker">01 / Profile</p><h2 id="cv-profile-title">A developer’s precision.<br>A designer’s eye.</h2></div>
       <div><p class="cv-lead"><?php echo esc_html($cv['summary']); ?></p>
-        <dl class="cv-facts"><div><dt>~10</dt><dd>Years of experience</dd></div><div><dt>11 → 13</dt><dd>Locales at Ohme EV</dd></div><div><dt>80+</dt><dd>Lighthouse maintained at Ohme</dd></div></dl>
+        <dl class="cv-facts"><div><dt>10+</dt><dd>Years of experience</dd></div><div><dt>WordPress</dt><dd>Multi-region platforms &amp; intuitive CMS experiences</dd></div><div><dt>End to end</dt><dd>Discovery, delivery &amp; ongoing optimisation</dd></div></dl>
       </div>
     </section>
     <section id="cv-experience" class="cv-section" aria-labelledby="cv-experience-title">
