@@ -13,6 +13,9 @@ the_post();
 	<?php
 		the_content();
 
+		// Apply an explicitly selected/saved journey before animation measurements.
+		dxndre_print_theme_bootstrap( 'adaptive-home' );
+
 		wp_link_pages(
 			array(
 				'before'   => '<nav class="page-links" aria-label="' . esc_attr__( 'Page', 'dxndre' ) . '">',

@@ -69,6 +69,7 @@ function dx_seo_text($text, $limit = 170) {
 }
 
 function dx_seo_description() {
+    if (function_exists('dxgym_is_dashboard') && dxgym_is_dashboard()) return 'Explore DXNDRE’s personally visited gyms. Compare the existing weighted scores, find reviewed locations and read each original review.';
     if (dx_seo_private_request()) return '';
     if (is_front_page()) return 'D’André Phillips is a London-based WordPress developer and designer creating thoughtful websites, interfaces and digital experiences.';
     $descriptions = [
@@ -101,6 +102,7 @@ function dx_seo_description() {
 }
 
 function dx_seo_canonical() {
+    if (function_exists('dxgym_is_dashboard') && dxgym_is_dashboard()) return dxgym_url();
     if (dx_seo_private_request() || is_feed() || is_embed()) return '';
     if (is_singular()) return wp_get_canonical_url();
     if (is_front_page()) return home_url('/');

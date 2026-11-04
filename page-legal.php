@@ -5,14 +5,24 @@
  *
  */
 
+// Read the saved presentation preference before the page is painted.
+add_action( 'wp_head', function () { dxndre_print_theme_bootstrap( 'legal-views' ); }, 2 );
 get_header();
 
 the_post();
+$legal_tone = is_page( 'cookie-policy-uk' ) ? 'cookies' : ( is_page( 'terms-of-service' ) ? 'terms' : 'privacy' );
 ?>
-<div id="post-<?php the_ID(); ?>" <?php post_class( 'content' ); ?>>
+<div id="post-<?php the_ID(); ?>" <?php post_class( 'content dx-legal-page' ); ?> data-legal-tone="<?php echo esc_attr( $legal_tone ); ?>">
 	<div class="container">
 		<div class="legal-banner dx-services-intro"><p class="dx-eyebrow">The details / Clear &amp; considered</p>
-			<h1 class="entry-title"><?php the_title(); ?></h1><p><?php echo is_page('terms-of-service') ? 'Clear terms. Considered collaboration.' : 'Your information, handled with care.'; ?></p>
+			<h1 class="entry-title"><?php the_title(); ?></h1><p><?php echo is_page('terms-of-service') ? 'Clear terms. Considered collaboration.' : ( is_page('cookie-policy-uk') ? 'Your choices. Clearly explained.' : 'Your information, handled with care.' ); ?></p>
+		</div>
+		<div class="dx-legal-views" data-legal-views hidden>
+			<div class="dx-legal-views__choices" role="group" aria-label="Reading view">
+				<button type="button" data-legal-choice="immersive" aria-pressed="true"><span aria-hidden="true">✦</span> Immersive</button>
+				<button type="button" data-legal-choice="plain" aria-pressed="false"><span aria-hidden="true">Aa</span> Plain Text</button>
+			</div>
+			<p data-legal-status role="status" aria-live="polite">Immersive view · Soft background glow</p>
 		</div>
 		<?php
 			echo '<div class="dx-legal-copy">';

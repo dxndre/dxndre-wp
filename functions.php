@@ -612,24 +612,38 @@ function dxndre_add_page_slug_to_body_class( $classes ) {
 }
 add_filter( 'body_class', 'dxndre_add_page_slug_to_body_class' );
 
-// Build process
+// One source owns the compiled entry and the small pre-paint bootstraps.
+function dxndre_print_theme_bootstrap( $name ) {
+	if ( ! in_array( $name, array( 'adaptive-home', 'legal-views', 'gym-theme' ), true ) ) { return; }
+	static $source = null;
+	if ( null === $source ) {
+		$file = get_theme_file_path( 'assets/main.js' );
+		$source = is_readable( $file ) ? file_get_contents( $file ) : '';
+	}
+	$start = '// DX_EARLY_SCRIPT_BEGIN:' . $name . "\n";
+	$end = '// DX_EARLY_SCRIPT_END:' . $name;
+	$position = strpos( $source, $start );
+	if ( false === $position ) { return; }
+	$position += strlen( $start );
+	$finish = strpos( $source, $end, $position );
+	if ( false === $finish ) { return; }
+	wp_print_inline_script_tag( substr( $source, $position, $finish - $position ), array( 'id' => 'dx-' . $name . '-bootstrap' ) );
+}
 
+// Build process. Admin screens explicitly enqueue this same entry where needed.
 $asset = include get_theme_file_path('build/index.asset.php');
+if ( ! is_admin() ) {
+	wp_enqueue_script( 'dxndre-theme', get_theme_file_uri('build/index.js'), $asset['dependencies'], $asset['version'], true );
+	wp_enqueue_style( 'dxndre-theme', get_theme_file_uri('build/index.css'), [], $asset['version'] );
+}
 
-wp_enqueue_script(
-    'dxndre-theme',
-    get_theme_file_uri('build/index.js'),
-    $asset['dependencies'],
-    $asset['version'],
-    true
-);
-
-wp_enqueue_style(
-    'dxndre-theme',
-    get_theme_file_uri('build/index.css'),
-    [],
-    $asset['version']
-);
+// Map controllers now live in the unified entry: load Leaflet before that entry.
+add_action( 'wp_enqueue_scripts', function () {
+	$scripts = wp_scripts();
+	if ( wp_script_is( 'leaflet-js', 'enqueued' ) && isset( $scripts->registered['dxndre-theme'] ) ) {
+		$scripts->registered['dxndre-theme']->deps = array_values( array_unique( array_merge( $scripts->registered['dxndre-theme']->deps, array( 'leaflet-js' ) ) ) );
+	}
+}, 999 );
 
 // Frontend body class
 
@@ -2143,7 +2157,7 @@ function dx_render_facility_score_block($label, $rawScore) {
 // Enqueue Leaflet for dark maps on the Bus Pages
 
 function dx_enqueue_leaflet_assets() {
-	if (!is_singular('bus-diary-entry') && !is_page(['buses', 'photography'])) {
+	if (!is_singular(['bus-diary-entry', 'gym-review']) && !is_page(['buses', 'photography'])) {
 		return;
 	}
 
@@ -2631,3 +2645,9 @@ function dx_signout_page_redirect( $redirect, $requested, $user ) {
 add_filter( 'logout_redirect', 'dx_signout_page_redirect', 20, 3 );
 
 require_once __DIR__ . '/inc/oct29-public.php';
+
+require_once get_template_directory() . '/inc/bus-polls.php';
+
+require_once get_template_directory() . '/inc/bus-journey-pins.php';
+
+require_once get_template_directory() . '/inc/gym-dashboard.php';

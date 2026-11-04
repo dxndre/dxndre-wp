@@ -15,16 +15,16 @@ $faq_items = dx_faq_items();
 		<div class="dx-faq-hero__intro"><p>Good questions.<br>Clear answers.</p><a class="dx-cta dx-cta--outline" href="#faq-answers">Find your answer <span aria-hidden="true">↘</span></a></div>
 		<p class="dx-faq-hero__caption">Design · Development · Photography · Fitness</p>
 	</section>
-	<section class="dx-faq-answers" id="faq-answers" aria-labelledby="dx-faq-answers-title">
+	<section class="dx-faq-answers" data-faq-journeys id="faq-answers" aria-labelledby="dx-faq-answers-title">
 		<div class="dx-faq-answers__intro"><p class="dx-eyebrow">The details / Made straightforward</p><h2 id="dx-faq-answers-title">Before we<br><em>get started.</em></h2><p>From choosing a service to planning the next step, here are a few useful things to know.</p><a class="dx-faq-text-link" href="<?php echo esc_url(home_url('/contact/')); ?>">Have another question? <span aria-hidden="true">↗</span></a></div>
-		<div class="dx-faq-list">
+		<div><div class="dx-faq-choices" data-faq-choices role="group" aria-label="What brings you here?" hidden><button type="button" data-faq-choice="client" aria-pressed="false">Potential client</button><button type="button" data-faq-choice="hiring" aria-pressed="false">Employer or recruiter</button><button type="button" data-faq-choice="exploring" aria-pressed="false">Just browsing</button></div><p class="dx-faq-flow-status" data-faq-status role="status" aria-live="polite"></p><div class="dx-faq-list">
 			<?php foreach ($faq_items as $index => $item) : ?>
-			<details class="dx-faq-item" id="faq-<?php echo esc_attr($item['id']); ?>"<?php echo $index === 0 ? ' open' : ''; ?>>
+			<details class="dx-faq-item" data-faq-audience="<?php echo esc_attr($item['audience'] ?? 'client hiring exploring'); ?>" id="faq-<?php echo esc_attr($item['id']); ?>"<?php echo $index === 0 ? ' open' : ''; ?>>
 				<summary><span class="dx-faq-number" aria-hidden="true"><?php echo esc_html(str_pad($index + 1, 2, '0', STR_PAD_LEFT)); ?></span><span class="dx-faq-question"><?php echo esc_html($item['question']); ?></span><span class="dx-faq-toggle" aria-hidden="true"></span></summary>
 				<div class="dx-faq-answer"><?php echo wp_kses_post($item['answer']); ?></div>
 			</details>
 			<?php endforeach; ?>
-		</div>
+		</div></div>
 	</section>
 	<section class="dx-faq-contact" aria-labelledby="dx-faq-contact-title"><div><p class="dx-eyebrow">Still curious?</p><h2 id="dx-faq-contact-title">Let’s talk<br><em>it through.</em></h2></div><div><p>Every brief starts with a conversation. Tell me what you have in mind and we’ll work out the next step together.</p><a class="dx-cta" href="<?php echo esc_url(home_url('/contact/')); ?>">Start a conversation <span aria-hidden="true">↗</span></a></div></section>
 </article>

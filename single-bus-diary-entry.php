@@ -129,10 +129,11 @@ while (have_posts()) : the_post();
 						</div>
 					</div>
 
+					<?php if ( function_exists( 'dx_journey_pins_json' ) ) { dx_journey_pins_json( get_the_ID() ); } ?>
 					<div class="bus-map-shell">
 						<div
 							class="bus-map"
-							data-bus-map
+							data-dx-journey-map
 							data-route="<?php echo esc_attr($primary_route); ?>"
 							data-start-name="<?php echo esc_attr($start_name); ?>"
 							data-start-lat="<?php echo esc_attr($start_lat); ?>"
@@ -166,6 +167,8 @@ while (have_posts()) : the_post();
 											</div>
 										</div>
 									</div>
+
+									<div class="bus-pane-view" data-pane-view="timeline"><?php if ( function_exists( 'dx_journey_timeline' ) ) { dx_journey_timeline( get_the_ID() ); } ?></div>
 
 									<div class="bus-pane-view" data-pane-view="departures">
 										<div class="bus-panel bus-panel--departures">
@@ -247,6 +250,7 @@ while (have_posts()) : the_post();
 								<div class="bus-dock__controls">
 									<button class="is-active" data-view-toggle="map" aria-label="Map view">🗺</button>
 									<button data-view-toggle="story" aria-label="Story view">📖</button>
+									<button type="button" data-view-toggle="timeline" aria-label="Timeline view" title="Timeline view">☷</button>
 									<button data-view-toggle="departures" aria-label="Departures view">🚌</button>
 									<?php if ($spotify_embed_url) : ?>
 										<button data-view-toggle="mood" aria-label="Mood view">🎧</button>
@@ -257,6 +261,7 @@ while (have_posts()) : the_post();
 					</div>
 
 					<div class="bus-map-meta">
+						<p class="dx-journey-outline-note">The journey line joins recorded places; it is not a road-by-road route.</p>
 						<?php if ($start_name) : ?>
 							<span><strong>Start:</strong> <?php echo esc_html($start_name); ?></span>
 						<?php endif; ?>

@@ -102,6 +102,7 @@ while ( have_posts() ) :
 	$location        = get_field( 'gym_location', $post_id );
 	$google_maps_url = get_field( 'google_maps_url', $post_id );
 	$map_details = dx_gym_map_embed( $google_maps_url );
+	$map_coordinates = dx_gym_map_coordinates( $google_maps_url );
 
 
 	// ============================================================
@@ -280,11 +281,7 @@ while ( have_posts() ) :
 			<div class="container gym-review-hero__content">
 
 			<?php
-			$reviews_url = get_post_type_archive_link( 'gym-review' );
-
-			if ( ! $reviews_url ) {
-				$reviews_url = home_url( '/fitness/#gym-table' );
-			}
+			$reviews_url = home_url( '/fitness/gyms/?view=league' );
 			?>
 
 			<a
@@ -545,10 +542,10 @@ while ( have_posts() ) :
 							data-title="<?php echo esc_attr( dx_gym_chain_label( $chain_value ) . ' ' . get_the_title() ); ?>"
 							data-map-embed="<?php echo esc_url( $map_details['url'] ); ?>"
 							data-map-precision="<?php echo esc_attr( $map_details['precision'] ); ?>"
+							data-map-lat="<?php echo esc_attr( $map_coordinates['lat'] ); ?>"
+							data-map-lng="<?php echo esc_attr( $map_coordinates['lng'] ); ?>"
 						></div>
-						<?php if ( $map_details['precision'] === 'search' ) : ?>
-							<p class="gym-review-map__note">Map search for <?php echo esc_html( $map_details['label'] ); ?>.</p>
-						<?php endif; ?>
+
 
 
 						<div class="gym-review-location__address">
@@ -579,6 +576,10 @@ while ( have_posts() ) :
 									<span aria-hidden="true">→</span>
 								</a>
 
+							<?php endif; ?>
+
+							<?php if ( $map_details['precision'] === 'search' ) : ?>
+								<p class="gym-review-map__note">Map search for <?php echo esc_html( $map_details['label'] ); ?>.</p>
 							<?php endif; ?>
 
 						</div>
@@ -633,6 +634,7 @@ while ( have_posts() ) :
 			</div>
 
 
+			<div class="gym-review-scorecard-layout">
 			<div class="gym-review-scores__grid">
 
 
@@ -662,6 +664,25 @@ while ( have_posts() ) :
 				<?php endforeach; ?>
 
 
+			</div>
+
+			<?php if ( function_exists( 'dxgym_radar' ) && function_exists( 'dxgym_data' ) ) : ?>
+				<?php
+				$radar_scores = [];
+				foreach ( $score_fields as $key => $score ) {
+					$radar_scores[ $key === 'cleanliness' ? 'clean' : $key ] = $score['value'];
+				}
+				$league_data = dxgym_data();
+				$radar_name = trim( dx_gym_chain_label( $chain_value ) . ' ' . get_the_title() );
+				if ( $visited_date ) $radar_name .= ' · ' . $visited_date;
+				?>
+				<aside class="gym-review-radar" aria-labelledby="gym-review-radar-title">
+					<p class="gym-review-kicker">The same scores. Another perspective.</p>
+					<h3 id="gym-review-radar-title">This visit in context.</h3>
+					<p>Each category is out of 10, compared with the league’s latest assessed visits.</p>
+					<?php echo dxgym_radar( $league_data['gyms'], [ 'name' => $radar_name, 'scores' => $radar_scores ] ); ?>
+				</aside>
+			<?php endif; ?>
 			</div>
 
 		</div>

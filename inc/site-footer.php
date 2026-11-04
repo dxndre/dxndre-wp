@@ -25,10 +25,10 @@ defined( 'ABSPATH' ) || exit;
 				<!-- Footer Columns -->
 				<div class="site-footer-columns">
 
-				<nav class="site-footer-column" aria-label="Web & digital"><h4 class="site-footer-heading">Web & digital</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/portfolio/')); ?>">Selected work</a></li><li><a href="<?php echo esc_url(home_url('/services/#digital-services')); ?>">Digital services</a></li><li><a href="<?php echo esc_url(home_url('/pricing-calculator/')); ?>">Pricing calculator</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/')); ?>">Start a project</a></li></ul></nav>
-				<nav class="site-footer-column" aria-label="N118 Fitness"><h4 class="site-footer-heading">N118 Fitness</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/fitness/')); ?>">Fitness & gym reviews</a></li><li><a href="<?php echo esc_url(home_url('/fitness/#fitness-story')); ?>">My fitness story</a></li><li><a href="<?php echo esc_url(home_url('/fitness/n118-fitness/')); ?>">Coaching waitlist</a></li></ul></nav>
-				<nav class="site-footer-column" aria-label="Photography"><h4 class="site-footer-heading">Photography</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/photography/')); ?>">Photography archive</a></li><li><a href="<?php echo esc_url(home_url('/service/photography/')); ?>">Photography services</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/?enquiry_service=photography')); ?>">Discuss a shoot</a></li></ul></nav>
-				<nav class="site-footer-column" aria-label="More about me"><h4 class="site-footer-heading">More about me</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/about/')); ?>">About me</a></li><li><a href="<?php echo esc_url(home_url('/buses/')); ?>">London buses</a></li><li><a href="<?php echo esc_url(home_url('/cv/')); ?>">My CV</a></li><li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact & enquiries</a></li><li><a href="<?php echo esc_url(home_url('/faq/')); ?>">FAQs</a></li></ul></nav>
+				<nav class="site-footer-column" aria-label="Web & Digital"><h4 class="site-footer-heading">Web & Digital</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/portfolio/')); ?>">Selected Work</a></li><li><a href="<?php echo esc_url(home_url('/services/#digital-services')); ?>">Digital Services</a></li><li><a href="<?php echo esc_url(home_url('/pricing-calculator/')); ?>">Pricing Calculator</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/')); ?>">Start A Project</a></li></ul></nav>
+				<nav class="site-footer-column" aria-label="N118 Fitness"><h4 class="site-footer-heading">N118 Fitness</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/n118-fitness/')); ?>">Discover N118 Fitness</a></li><li><a href="<?php echo esc_url(home_url('/fitness/')); ?>">Fitness & Gym Reviews</a></li><li><a href="<?php echo esc_url(home_url('/fitness/gyms/?view=league')); ?>">The Gym League</a></li><li><a href="<?php echo esc_url(home_url('/fitness/#fitness-story')); ?>">My Fitness Story</a></li><li><a href="<?php echo esc_url(home_url('/fitness/n118-fitness/')); ?>">Coaching Waitlist</a></li></ul></nav>
+				<nav class="site-footer-column" aria-label="Photography"><h4 class="site-footer-heading">Photography</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/photography/')); ?>">Photography Archive</a></li><li><a href="<?php echo esc_url(home_url('/service/photography/')); ?>">Photography Services</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/?enquiry_service=photography')); ?>">Discuss A Shoot</a></li></ul></nav>
+				<nav class="site-footer-column" aria-label="More About Me"><h4 class="site-footer-heading">More About Me</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/about/')); ?>">About Me</a></li><li><a href="<?php echo esc_url(home_url('/buses/')); ?>">London Buses</a></li><li><a href="<?php echo esc_url(home_url('/cv/')); ?>">My CV</a></li><li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact & Enquiries</a></li><li><a href="<?php echo esc_url(home_url('/faq/')); ?>">FAQs</a></li></ul></nav>
 
 				<!-- Client Portal -->
 				<div class="site-footer-column site-footer-column--portal">
@@ -40,7 +40,7 @@ defined( 'ABSPATH' ) || exit;
 					?>
 					<h4 class="site-footer-heading"><?php echo $footer_client ? esc_html(dxcp_time_greeting().', '.$footer_name.'.') : 'Existing Client?'; ?></h4>
 					<p class="site-footer-text"><?php echo $footer_owner ? 'Your clients, projects and business are ready when you are.' : ($footer_client ? 'Your projects, documents and next steps are all in your client space.' : 'Manage your projects and support requests here.'); ?></p>
-					<a href="<?php echo esc_url( site_url('/dashboard/') ); ?>" class="site-footer-button"><?php echo $footer_owner ? 'Return to your business' : ($footer_client ? 'Return to your workspace' : 'Client Portal'); ?></a>
+					<a href="<?php echo esc_url( site_url('/dashboard/') ); ?>" class="site-footer-button"><?php echo $footer_owner ? 'Return To Your Business' : ($footer_client ? 'Return To Your Workspace' : 'Client Portal'); ?></a>
 
 					<div class="site-footer-contact">
 					<h5 class="site-footer-subheading">Email</h5>
@@ -60,7 +60,7 @@ defined( 'ABSPATH' ) || exit;
 					Privacy Policy
 					</a>
 					<a href="<?php echo esc_url( site_url('/terms-of-service/') ); ?>">
-					Terms of Service
+					Terms Of Service
 					</a>
 					<a href="<?php echo esc_url( site_url('/cookie-policy-uk/') ); ?>">
 					Cookie Policy (UK)

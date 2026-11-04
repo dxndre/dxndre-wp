@@ -1,7 +1,1704 @@
-// Theme entry: emitted as build/index.js and build/index.css.
 import "regenerator-runtime/runtime.js";
 import "./main.scss";
 import * as bootstrap from "bootstrap";
+
+// DX_CONSOLIDATED_FRONTEND_BEGIN
+if (document.body && !document.body.classList.contains("wp-admin")) {
+// DX_EARLY_SCRIPT_BEGIN:legal-views
+/** Legal presentation preference; never changes consent or policy content. */
+(() => {
+	if (document.body && !document.querySelector('[data-legal-views]')) return;
+	if (document.documentElement.dataset.dxLegalReady) return;
+	document.documentElement.dataset.dxLegalReady = 'true';
+	const key = 'dx.legal.view';
+	let current = 'immersive';
+	try { if (localStorage.getItem(key) === 'plain') current = 'plain'; } catch (_) {}
+	document.documentElement.dataset.legalView = current;
+	const start = () => {
+		const toolbar = document.querySelector('[data-legal-views]');
+		if (!toolbar) return;
+		const buttons = [...toolbar.querySelectorAll('[data-legal-choice]')];
+		const status = toolbar.querySelector('[data-legal-status]');
+		const render = () => {
+			document.documentElement.dataset.legalView = current;
+			buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.legalChoice === current)));
+			if (status) status.textContent = current === 'plain' ? 'Plain text view · Light background' : 'Immersive view · Soft background glow';
+		};
+		buttons.forEach(button => button.addEventListener('click', () => {
+			current = button.dataset.legalChoice === 'plain' ? 'plain' : 'immersive';
+			try { localStorage.setItem(key, current); } catch (_) {}
+			render();
+		}));
+		render();
+		toolbar.hidden = false;
+	};
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+	else start();
+})();
+// DX_EARLY_SCRIPT_END:legal-views
+// DX_EARLY_SCRIPT_BEGIN:adaptive-home
+/* Runs after homepage content, before existing DOM-ready animation setup. */
+(() => {
+	'use strict';
+	const selector = document.querySelector('[data-home-paths]');
+	const parent = selector?.parentElement;
+	if (!parent || parent.dataset.homeJourneyReady) return;
+	parent.dataset.homeJourneyReady = 'true';
+	const STORAGE_KEY = 'dx.home.journey';
+	const labels = { client: 'I need a website', hiring: 'I\u2019m hiring', exploring: 'Just exploring', fitness: 'Fitness & coaching' };
+	// Configure personalised priorities only. Capture the original DOM below.
+	const priorities = {
+		client: ['services', 'projects', 'pricing', 'about', 'contact', 'personal', 'buses', 'fitness', 'n118'],
+		hiring: ['about', 'projects', 'services', 'contact', 'pricing', 'personal', 'fitness', 'n118', 'buses'],
+		exploring: ['about', 'personal', 'buses', 'fitness', 'n118', 'projects', 'services', 'pricing', 'contact'],
+		fitness: ['fitness', 'n118', 'personal', 'about', 'buses', 'projects', 'services', 'pricing', 'contact'],
+	};
+	const valid = value => Object.prototype.hasOwnProperty.call(labels, value);
+	const readSaved = () => {
+		try { const value = localStorage.getItem(STORAGE_KEY); return valid(value) ? value : null; }
+		catch (_) { return null; }
+	};
+	const store = value => {
+		try { if (value) localStorage.setItem(STORAGE_KEY, value); else localStorage.removeItem(STORAGE_KEY); }
+		catch (_) { /* Blocked storage does not prevent personalisation. */ }
+	};
+	const fromURL = () => {
+		const value = new URL(location.href).searchParams.get('journey');
+		return valid(value) ? value : null;
+	};
+	const identify = node => {
+		if (node.matches('.portfolio')) return 'projects';
+		if (node.matches('.what-i-do')) return 'services';
+		if (node.matches('.pricing')) return 'pricing';
+		if (node.matches('.start-something')) return 'contact';
+		if (node.matches('.dx-fitness-pair')) return 'fitness';
+		if (node.matches('.dx-fitness-promo')) return 'fitness';
+		if (node.matches('.dx-n118-teaser')) return 'n118';
+		if (node.matches('.text-image.right')) return 'personal';
+		if (node.matches('.text-image') && node.querySelector('a[href*="/buses/"]')) return 'buses';
+		if (node.matches('.text-image')) return 'about';
+		return node.dataset.dxSection || 'additional';
+	};
+	// Whitespace/comments are preserved too. The small identity divider travels
+	// with the following personal section, without changing either one's wrapper.
+	const originalNodes = Array.from(parent.childNodes);
+	const selectorIndex = originalNodes.indexOf(selector);
+	const script = document.currentScript;
+	const boundaryIndex = originalNodes.indexOf(script);
+	const end = boundaryIndex > selectorIndex ? boundaryIndex : originalNodes.length;
+	const groups = [];
+	let pending = [];
+	for (let index = selectorIndex + 1; index < end; index += 1) {
+		const node = originalNodes[index];
+		pending.push(node);
+		if (node.nodeType !== 1 || node.matches('script,style,.identity-scale')) continue;
+		const key = identify(node);
+		node.dataset.dxSection = key;
+		groups.push({ key, element: node, nodes: pending, index: groups.length,
+			// Retain the existing ticker reference if a layout controller relocates it.
+			companions: node.matches('.text-image.right') ? [...node.querySelectorAll('.footline-ticker')] : [],
+		});
+		pending = [];
+	}
+	const trailing = pending;
+	if (!groups.length) return;
+	const boundary = script?.parentElement === parent ? script : null;
+	const choices = Array.from(selector.querySelectorAll('[data-home-journey]'));
+	const switcher = selector.querySelector('[data-home-switcher]');
+	const status = selector.querySelector('[data-home-journey-status]');
+	const currentLabel = selector.querySelector('[data-home-current]');
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	// Divider copy belongs to the captured original experience, too. Only an
+	// active journey changes it, and reset restores the actual CMS wording.
+	const dividerLabels = [...parent.querySelectorAll('.identity-scale__label')].map(node => ({ node, original: node.textContent }));
+	let scrollFrame = 0;
+	let current = null;
+	let transition = [];
+	const effectiveGroups = () => {
+		// The existing theme later wraps Fitness + its N118 teaser in one shared
+		// sticky-portrait scene. Resolve that live animation wrapper at the moment
+		// of a change: extracting the captured sections would orphan its portrait.
+		const liveGroups = groups.map(group => {
+			const companions = group.companions.filter(node => node.parentElement === parent);
+			return companions.length ? { ...group, nodes: [...group.nodes, ...companions] } : group;
+		});
+		const fitness = liveGroups.find(group => group.key === 'fitness');
+		const pair = fitness?.element.closest('.dx-fitness-pair');
+		if (!pair || pair.parentElement !== parent) return liveGroups;
+		const members = liveGroups.filter(group => pair.contains(group.element));
+		const primary = members[0];
+		const merged = {
+			key: 'fitness', element: pair, index: primary.index,
+			nodes: members.flatMap(group => group.nodes.map(node =>
+				node === group.element ? (group === primary ? pair : null) : node,
+			)).filter(Boolean),
+		};
+		return liveGroups.flatMap(group => group === primary ? [merged] : members.includes(group) ? [] : [group]);
+	};
+	const anchorBeforeMove = activeGroups => {
+		const atTop = document.elementFromPoint?.(innerWidth / 2, Math.min(160, innerHeight / 3));
+		return activeGroups.find(group => group.element.contains(atTop)) || activeGroups.find(group => {
+			const rect = group.element.getBoundingClientRect();
+			return rect.top < innerHeight && rect.bottom > 160;
+		});
+	};
+	const sync = () => {
+		if (current) parent.dataset.homeJourney = current;
+		else delete parent.dataset.homeJourney;
+		dividerLabels.forEach(({ node, original }, index) => {
+			const text = current && index < 2 ? ['Your Experience', 'Explore More'][index] : original;
+			if (node.textContent !== text) node.textContent = text;
+		});
+		choices.forEach(choice => {
+			if (choice.dataset.homeJourney === current) choice.setAttribute('aria-current', 'true');
+			else choice.removeAttribute('aria-current');
+		});
+		if (currentLabel) currentLabel.textContent = current ? labels[current] : 'Original homepage';
+	};
+	const apply = (value, { initial = false, save = false, updateURL = false, announce = true, navigate = false } = {}) => {
+		const next = valid(value) ? value : null;
+		if (next !== current) {
+			const activeGroups = effectiveGroups();
+			const anchor = !initial && !navigate ? anchorBeforeMove(activeGroups) : null;
+			const anchorTop = anchor?.element.getBoundingClientRect().top;
+			const before = new Map(activeGroups.map(group => [group.element, group.element.getBoundingClientRect().top]));
+			const rank = key => priorities[next]?.includes(key) ? priorities[next].indexOf(key) : Number.MAX_SAFE_INTEGER;
+			const ordered = next ? [...activeGroups].sort((a, b) => rank(a.key) - rank(b.key) || a.index - b.index) : activeGroups;
+			transition.forEach(animation => animation.cancel());
+			transition = [];
+			// The state-preserving move API keeps embedded media alive where supported.
+			const move = node => typeof parent.moveBefore === 'function' ? parent.moveBefore(node, boundary) : parent.insertBefore(node, boundary);
+			ordered.forEach(group => group.nodes.forEach(move));
+			trailing.forEach(move);
+			current = next;
+			if (anchor && typeof anchorTop === 'number') {
+				const distance = anchor.element.getBoundingClientRect().top - anchorTop;
+				if (Math.abs(distance) > 1) window.scrollTo({ top: Math.max(0, scrollY + distance), behavior: 'instant' });
+			}
+			if (!initial && !reducedMotion.matches) {
+				let visibleIndex = 0;
+				ordered.forEach(group => {
+					const rect = group.element.getBoundingClientRect();
+					if (rect.bottom <= 0 || rect.top >= innerHeight || !group.element.animate) return;
+					const delta = Math.max(-28, Math.min(28, (before.get(group.element) ?? rect.top) - rect.top));
+					transition.push(group.element.animate(
+						[{ opacity: .78, translate: `0 ${Math.abs(delta) > 3 ? delta : 16}px` }, { opacity: 1, translate: '0 0' }],
+						{ duration: 600, delay: Math.min(visibleIndex++, 3) * 35, easing: 'cubic-bezier(.22,1,.36,1)' },
+					));
+				});
+			}
+			if (!initial) {
+				// Remeasure existing controllers without recreating listeners/media
+				// or resetting any entrance-state classes.
+				window.dispatchEvent(new Event('resize'));
+				window.dispatchEvent(new CustomEvent('dx:journeychange', { detail: { journey: current } }));
+			}
+		}
+		sync();
+		if (scrollFrame) { cancelAnimationFrame(scrollFrame); scrollFrame = 0; }
+		if (navigate && current && !initial) {
+			const selectedJourney = current;
+			scrollFrame = requestAnimationFrame(() => {
+				scrollFrame = 0;
+				if (current !== selectedJourney) return;
+				// Read the actual reordered DOM, including the runtime fitness pair.
+				const elements = new Set(effectiveGroups().map(group => group.element));
+				const target = [...parent.children].find(node => elements.has(node));
+				if (!target) return;
+				const header = document.querySelector('#header')?.getBoundingClientRect();
+				const offset = header && header.height < innerHeight / 2 ? Math.max(0, header.bottom) : 0;
+				window.scrollTo({ top: Math.max(0, scrollY + target.getBoundingClientRect().top - offset - 24), behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+			});
+		}
+		if (save) store(current);
+		if (updateURL) {
+			const url = new URL(location.href);
+			if (current) url.searchParams.set('journey', current);
+			else url.searchParams.delete('journey');
+			url.searchParams.delete('focus'); // Superseded promotional chooser.
+			const state = { ...(history.state || {}), dxHomeJourney: current };
+			if (url.href !== location.href) history.pushState(state, '', url);
+			else history.replaceState(state, '', url);
+		}
+		if (status && announce && !initial) status.textContent = current ? `${labels[current]}. Homepage sections prioritised; all content is still available.` : 'Original homepage restored. No journey selected.';
+	};
+	// Invalid URLs fall through to saved preference. With neither, not a single
+	// node is moved and no animation or scrolling is introduced on initial load.
+	const initial = fromURL() || readSaved();
+	apply(initial, { initial: true, save: Boolean(initial), announce: false });
+	history.replaceState({ ...(history.state || {}), dxHomeJourney: current }, '', location.href);
+	const handleSelection = event => {
+		const choice = event.target.closest('[data-home-journey]');
+		const reset = event.target.closest('[data-home-original]');
+		if ((!choice && !reset) || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button) return;
+		event.preventDefault();
+		apply(reset ? null : choice.dataset.homeJourney, { save: true, updateURL: true, navigate: Boolean(choice) });
+		if (switcher?.contains(event.target)) {
+			switcher.open = false;
+			switcher.querySelector('summary').focus({ preventScroll: true });
+		}
+	};
+	selector.addEventListener('click', handleSelection);
+	window.addEventListener('popstate', event => {
+		const direct = fromURL();
+		const hasState = event.state && Object.prototype.hasOwnProperty.call(event.state, 'dxHomeJourney');
+		apply(direct || (hasState ? event.state.dxHomeJourney : readSaved()), { save: true });
+	});
+	window.addEventListener('pagehide', () => { transition.forEach(animation => animation.cancel()); if (scrollFrame) cancelAnimationFrame(scrollFrame); });
+	if (switcher) {
+		// Keep the fixed switcher outside section isolation/transform contexts.
+		// This moves the existing control only; homepage content is unchanged.
+		document.body.append(switcher);
+		switcher.addEventListener('click', handleSelection);
+		switcher.hidden = false;
+		const updateVisibility = () => {
+			const bounds = switcher.getBoundingClientRect();
+			const footer = document.querySelector('footer.site-footer, #footer, footer[role="contentinfo"]');
+			const footerBounds = footer?.getBoundingClientRect();
+			const overlapsFooter = Boolean(footerBounds && footerBounds.top <= bounds.bottom + 16 && footerBounds.bottom >= bounds.top - 16);
+			const visible = selector.getBoundingClientRect().bottom < 100 && !overlapsFooter;
+			switcher.dataset.visible = String(visible);
+			switcher.inert = !visible;
+			if (!visible) switcher.open = false;
+		};
+		let scheduled = false;
+		const schedule = () => {
+			if (scheduled) return;
+			scheduled = true;
+			requestAnimationFrame(() => { scheduled = false; updateVisibility(); });
+		};
+		window.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule, { passive: true });
+		window.addEventListener('dx:journeychange', schedule);
+		document.addEventListener('DOMContentLoaded', schedule, { once: true });
+		window.addEventListener('load', schedule, { once: true });
+		switcher.addEventListener('toggle', schedule);
+		switcher.addEventListener('keydown', event => {
+			if (event.key === 'Escape') { switcher.open = false; switcher.querySelector('summary').focus({ preventScroll: true }); }
+		});
+		document.addEventListener('click', event => { if (!switcher.contains(event.target)) switcher.open = false; });
+		updateVisibility();
+	}
+})();
+// DX_EARLY_SCRIPT_END:adaptive-home
+// Consolidated bus-evening: private helpers retain their original scope.
+const { dxBusHistoryPeriods, dxBusAppendHistory, dxBusServiceWarning, dxBusAnimateMapTooltip } = (() => {
+/** Scoped bus dashboard helpers; content continues to come from the route profile. */
+function dxBusHistoryPeriods(history = {}) {
+	const periods = Array.isArray(history.periods) ? history.periods.filter(period => period && (period.start || period.end)) : [];
+	if (periods.length) return periods.map(period => ({ start: String(period.start || ''), end: String(period.end || '') }));
+	return history.start || history.end ? [{ start: String(history.start || ''), end: String(history.end || '') }] : [];
+}
+
+function displayDate(value) {
+	const raw = String(value || '').trim();
+	if (!/^\d{1,2}\s+[A-Za-z]+\s+\d{4}$/.test(raw)) return raw;
+	const date = new Date(raw + ' 12:00:00 GMT');
+	return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: '2-digit', year: 'numeric' }).format(date) : raw;
+}
+
+function dxBusAppendHistory(host, history = {}) {
+	const periods = dxBusHistoryPeriods(history);
+	periods.forEach(period => {
+		const line = document.createElement('span');
+		line.className = 'dxbus-route-tenure__period';
+		line.textContent = period.start && period.end ? `${displayDate(period.start)} – ${displayDate(period.end)}` : period.start ? `Introduced ${displayDate(period.start)}` : `RAN UNTIL ${displayDate(period.end)}`;
+		host.append(line);
+	});
+	if (!periods.length) {
+		const fallback = document.createElement('span');
+		fallback.className = 'dxbus-route-tenure__period';
+		fallback.textContent = history.tenure ? `In Service · ${history.tenure}` : 'Former Route · Operating dates not confirmed';
+		host.append(fallback);
+	}
+	return periods;
+}
+
+function dxBusServiceWarning(hero, profile = {}) {
+	if (!hero) return;
+	const notes = [...new Set((Array.isArray(profile.serviceNotes) ? profile.serviceNotes : []).filter(note => typeof note === 'string').map(note => note.trim()).filter(Boolean))];
+	let warning = hero.querySelector('.dxbus-service-warning');
+	if (!notes.length) { warning?.remove(); hero.classList.remove('has-service-warning'); return; }
+	const badge = hero.querySelector('#dxb-route-number');
+	if (!badge) return;
+	let wrapper = badge.closest('.dxbus-route-badge-wrap');
+	if (!wrapper) {
+		wrapper = document.createElement('div'); wrapper.className = 'dxbus-route-badge-wrap';
+		const plate = badge.closest('.dxbus-route-memorial') || badge;
+		plate.before(wrapper); wrapper.append(plate);
+	}
+	if (!warning) { warning = document.createElement('div'); warning.className = 'dxbus-service-warning'; }
+	if (warning.parentElement !== wrapper) wrapper.append(warning);
+	hero.classList.add('has-service-warning');
+	warning.replaceChildren();
+	const button = document.createElement('button');
+	button.type = 'button'; button.className = 'dxbus-service-warning__badge'; button.setAttribute('aria-label', 'Limited Service'); button.setAttribute('aria-describedby', 'dxbus-service-warning-detail');
+	const icon = document.createElement('span'); icon.textContent = '⚠'; icon.setAttribute('aria-hidden', 'true');
+	button.append(icon);
+	const detail = document.createElement('div'); detail.className = 'dxbus-service-warning__detail'; detail.id = 'dxbus-service-warning-detail'; detail.setAttribute('role', 'tooltip');
+	const heading = document.createElement('strong'); heading.textContent = 'Operating Restrictions'; detail.append(heading);
+	const list = document.createElement('ul'); notes.forEach(note => { const item = document.createElement('li'); item.textContent = note; list.append(item); }); detail.append(list);
+	const source = document.createElement('small'); source.textContent = profile.updated && profile.updated !== 'Source date unavailable' ? `Route directory · ${profile.updated}` : 'Published route directory'; detail.append(source);
+	warning.append(button, detail);
+	button.addEventListener('keydown', event => { if (event.key === 'Escape') { warning.dataset.dismissed = 'true'; warning.classList.remove('is-open'); event.stopPropagation(); } });
+	button.addEventListener('focus', () => { delete warning.dataset.dismissed; });
+	warning.addEventListener('pointerenter', () => { delete warning.dataset.dismissed; });
+	warning.addEventListener('pointerleave', () => { if (!warning.contains(document.activeElement)) delete warning.dataset.dismissed; });
+	button.addEventListener('click', () => { delete warning.dataset.dismissed; warning.classList.toggle('is-open'); });
+	button.addEventListener('blur', () => { warning.classList.remove('is-open'); });
+}
+
+/** Keep the readable tooltip inside its map's visible horizontal bounds. */
+function clampMapTooltip(marker, tip) {
+	const map = tip.closest?.('.leaflet-container') || marker.getElement?.()?.closest?.('.leaflet-container');
+	const body = tip.querySelector?.('.dxbus-map-bus-tooltip__body');
+	if (!map || !body || !tip.isConnected) return;
+	const bounds = map.getBoundingClientRect();
+	const viewport = document.documentElement.clientWidth || window.innerWidth;
+	const left = Math.max(0, bounds.left) + 8;
+	const right = Math.min(viewport, bounds.right) - 8;
+	if (right <= left) return;
+	const maximum = `${Math.min(330, right - left)}px`;
+	if (tip.style.maxWidth !== maximum || body.style.maxWidth !== maximum) {
+		tip.style.maxWidth = maximum;
+		body.style.maxWidth = maximum;
+		// Leaflet's public update recalculates the centered position after width changes.
+		marker.getTooltip()?.update?.();
+	}
+	const rect = tip.getBoundingClientRect();
+	const previous = Number(tip.dataset.dxbusShiftX) || 0;
+	const natural = rect.left - previous;
+	const shift = Math.round(Math.max(left, Math.min(natural, right - rect.width)) - natural);
+	if (shift !== previous) {
+		tip.dataset.dxbusShiftX = String(shift);
+		tip.style.marginLeft = `${shift}px`;
+		tip.style.setProperty('--dxbus-tooltip-shift-x', `${shift}px`);
+	}
+}
+
+/** Public Leaflet methods defer removal just long enough for the close animation. */
+function dxBusAnimateMapTooltip(marker) {
+	if (!marker?.openTooltip || !marker?.closeTooltip || !marker?.getTooltip) return;
+	const open = marker.openTooltip.bind(marker), close = marker.closeTooltip.bind(marker);
+	let closing, revision = 0, observed = null, observer = null, resized = null, pending = false;
+	const element = () => marker.getTooltip()?.getElement?.();
+	const scheduleClamp = () => {
+		if (pending || !observed) return;
+		pending = true;
+		requestAnimationFrame(() => {
+			pending = false;
+			if (observed && observed === element()) clampMapTooltip(marker, observed);
+		});
+	};
+	const unwatch = () => {
+		observer?.disconnect(); resized?.disconnect();
+		window.removeEventListener('resize', scheduleClamp);
+		observed = null;
+	};
+	const watch = (tip) => {
+		if (observed !== tip) {
+			unwatch(); observed = tip;
+			if (typeof MutationObserver !== 'undefined') {
+				observer = new MutationObserver(scheduleClamp);
+				observer.observe(tip, { attributes: true, attributeFilter: ['style'], childList: true, characterData: true, subtree: true });
+				const pane = tip.closest?.('.leaflet-map-pane');
+				if (pane) observer.observe(pane, { attributes: true, attributeFilter: ['style'] });
+			}
+			const map = tip.closest?.('.leaflet-container');
+			if (map && typeof ResizeObserver !== 'undefined') { resized = new ResizeObserver(scheduleClamp); resized.observe(map); }
+			window.addEventListener('resize', scheduleClamp);
+		}
+		clampMapTooltip(marker, tip);
+	};
+	const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+	marker.openTooltip = function(...args) {
+		const opening = ++revision;
+		clearTimeout(closing);
+		const result = open(...args);
+		const tip = element();
+		if (tip) {
+			watch(tip);
+			if (reduced()) tip.classList.add('is-visible');
+			else requestAnimationFrame(() => { if (opening === revision && element() === tip) tip.classList.add('is-visible'); });
+		}
+		return result;
+	};
+	marker.closeTooltip = function(...args) {
+		revision++;
+		clearTimeout(closing);
+		const tip = element();
+		if (!tip || tip.isConnected === false || reduced()) { unwatch(); return close(...args); }
+		tip.classList.remove('is-visible');
+		closing = setTimeout(() => { unwatch(); close(...args); }, 180);
+		return marker;
+	};
+	marker.on('move', scheduleClamp);
+	marker.on('remove', () => { revision++; clearTimeout(closing); unwatch(); close(); });
+}
+	return { dxBusHistoryPeriods, dxBusAppendHistory, dxBusServiceWarning, dxBusAnimateMapTooltip };
+})();
+// Consolidated bus-oct30: private helpers retain their original scope.
+const { dxBusApplyDirections, dxBusRegistration, dxBusSyncMapPins, dxBusInitShareDialogs } = (() => {
+/** TfL's published stop sequences determine direction availability, never route category. */
+function dxBusApplyDirections(root, labels, route) {
+	const available = Object.keys(labels || {}).filter((direction) =>
+		['inbound', 'outbound'].includes(direction) && typeof labels[direction] === 'string' && labels[direction].trim(),
+	);
+	if (!available.length) return;
+	root.dataset.directionCount = String(available.length);
+	const single = available.length === 1;
+	root.querySelectorAll('#dxb-direction, #dxbus-overview-direction, #dxb-line-direction').forEach((select) => {
+		const options = [...select.options];
+		// Explorer options may still belong to the previous route until its request completes.
+		if (options.length !== available.length || !options.every((option) => available.includes(option.value))) return;
+		select.disabled = single;
+		select.classList.toggle('is-single-direction', single);
+	});
+	if (!single) return;
+	const title = root.querySelector('[data-dxbus-route-title]');
+	const stops = route?.stops || [];
+	if (title && /↔|⇆/.test(title.textContent)) title.textContent = title.textContent.replace(/↔|⇆/g, '→');
+	else if (title && stops.length > 1 && !title.textContent.includes('→')) title.textContent = `${stops[0].name} → ${stops[stops.length - 1].name}`;
+}
+
+function dxBusRegistration(value) {
+	return String(value || '').replace(/\s+/g, '').toUpperCase();
+}
+
+/** Keep Leaflet's existing markers and open popovers while a saved pin changes. */
+function dxBusSyncMapPins(maps, saved) {
+	const pins = new Set(saved.map(dxBusRegistration));
+	maps.forEach((state) => (state.pinMarkers || []).forEach(({ marker, registration, badge }) => {
+		const pinned = pins.has(dxBusRegistration(registration));
+		marker.getElement()?.classList.toggle('is-pinned', pinned);
+		if (marker.options?.icon?.options) {
+			marker.options.icon.options.className = 'dxbus-map-bus' + (pinned ? ' is-pinned' : '');
+		}
+		badge.hidden = !pinned;
+	}));
+}
+
+/** Dashboard sharing is a dialog; route switching retains its existing handler. */
+function dxBusInitShareDialogs() {
+	document.querySelectorAll('.dxbus-app').forEach((root) => {
+		const trigger = root.querySelector('#dxb-share');
+		if (!trigger || trigger.dataset.shareDialogReady) return;
+		trigger.dataset.shareDialogReady = 'true';
+		trigger.textContent = 'COPY ROUTE LINK ↗';
+		trigger.setAttribute('aria-haspopup', 'dialog');
+		trigger.setAttribute('aria-controls', 'dxbus-share-dialog');
+		root.querySelectorAll('[data-dxbus-switch]').forEach((button) => {
+			[...button.childNodes].filter((node) => node.nodeType === 3).forEach((node) => { node.textContent = node.textContent.toUpperCase(); });
+		});
+		let dialog, field, copy, status, closer, timer, previousFocus, originalInert;
+		let revision = 0, closing = false, fallback = false, finishing = false;
+		const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+		const make = (tag, className, value) => {
+			const node = document.createElement(tag);
+			if (className) node.className = className;
+			if (value) node.textContent = value;
+			return node;
+		};
+		const currentLink = () => {
+			field.value = window.location.href;
+			return field.value;
+		};
+		const finish = (restore = true) => {
+			if (finishing || (!dialog?.open && !closing && !document.body.classList.contains('dxbus-share-open'))) return;
+			finishing = true;
+			clearTimeout(timer); revision++; closing = false;
+			dialog.classList.remove('is-visible', 'is-closing');
+			if (dialog.open && typeof dialog.close === 'function') dialog.close();
+			else dialog.removeAttribute('open');
+			if (fallback) { root.inert = originalInert; fallback = false; }
+			document.body.classList.remove('dxbus-share-open');
+			copy.disabled = false; copy.removeAttribute('aria-busy');
+			if (restore) (trigger.isConnected ? trigger : previousFocus)?.focus?.({ preventScroll: true });
+			finishing = false;
+		};
+		const close = () => {
+			if (!dialog?.open || closing) return;
+			closing = true;
+			dialog.classList.remove('is-visible'); dialog.classList.add('is-closing');
+			if (reduced()) finish();
+			else timer = setTimeout(finish, 200);
+		};
+		const create = () => {
+			dialog = make('dialog', 'dxbus-share-dialog'); dialog.id = 'dxbus-share-dialog';
+			dialog.setAttribute('aria-labelledby', 'dxbus-share-heading');
+			dialog.setAttribute('aria-describedby', 'dxbus-share-description');
+			const head = make('header', 'dxbus-share-dialog__head');
+			const eyebrow = make('span', 'dxbus-share-dialog__eyebrow', 'SHARE THIS VIEW');
+			closer = make('button', 'dxbus-share-dialog__close', '×'); closer.type = 'button'; closer.setAttribute('aria-label', 'Close route link dialog');
+			head.append(eyebrow, closer);
+			const heading = make('h2', '', 'Share your route.'); heading.id = 'dxbus-share-heading';
+			const description = make('p', '', 'Send someone straight to this route and dashboard view.'); description.id = 'dxbus-share-description';
+			const label = make('label', '', 'CURRENT PAGE LINK'); label.htmlFor = 'dxbus-share-link';
+			field = make('input', 'dxbus-share-dialog__link'); field.id = 'dxbus-share-link'; field.type = 'url'; field.readOnly = true; field.spellcheck = false;
+			const actions = make('div', 'dxbus-share-dialog__actions');
+			status = make('p', 'dxbus-share-dialog__status', 'The link is ready to copy.'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); status.setAttribute('aria-atomic', 'true');
+			copy = make('button', 'dxbus-share-dialog__copy', 'COPY LINK'); copy.type = 'button';
+			actions.append(status, copy); dialog.append(head, heading, description, label, field, actions); document.body.append(dialog);
+			closer.addEventListener('click', close);
+			field.addEventListener('focus', () => field.select()); field.addEventListener('click', () => field.select());
+			dialog.addEventListener('cancel', (event) => { event.preventDefault(); close(); });
+			dialog.addEventListener('close', () => { if (document.body.classList.contains('dxbus-share-open')) finish(); });
+			dialog.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
+				if (event.key !== 'Tab') return;
+				const focusable = [closer, field, copy].filter((node) => !node.disabled);
+				const first = focusable[0], last = focusable[focusable.length - 1];
+				if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+				else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+			});
+			dialog.addEventListener('click', (event) => {
+				if (event.target !== dialog) return;
+				const rect = dialog.getBoundingClientRect();
+				if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close();
+			});
+			document.addEventListener('focusin', (event) => { if (dialog.open && !dialog.contains(event.target)) field.focus(); });
+			copy.addEventListener('click', async () => {
+				if (closing || copy.disabled) return;
+				const token = revision, link = currentLink();
+				copy.disabled = true; copy.setAttribute('aria-busy', 'true'); status.textContent = 'Copying…';
+				try {
+					if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(link);
+					else { field.focus(); field.select(); if (!document.execCommand?.('copy')) throw new Error('Copy unavailable'); }
+					if (token === revision) { status.textContent = 'Link copied. Ready to share.'; copy.textContent = 'COPIED ✓'; }
+				} catch {
+					if (token === revision) { status.textContent = 'Select the link and copy it using your browser or keyboard.'; field.focus(); field.select(); }
+				} finally { if (token === revision) { copy.disabled = false; copy.removeAttribute('aria-busy'); } }
+			});
+			const refreshLink = () => {
+				if (!dialog.open || field.value === window.location.href) return;
+				revision++; currentLink(); status.textContent = 'The current page link has been updated.'; copy.textContent = 'COPY LINK'; copy.disabled = false; copy.removeAttribute('aria-busy');
+			};
+			window.addEventListener('popstate', refreshLink);
+			if (typeof MutationObserver !== 'undefined') new MutationObserver(refreshLink).observe(root, { attributes: true, attributeFilter: ['data-route', 'data-view', 'data-route-view'] });
+			window.addEventListener('pagehide', () => finish(false));
+		};
+		trigger.addEventListener('click', (event) => {
+			// Retire the previous direct-copy listener without replacing the route-switch control.
+			event.preventDefault(); event.stopImmediatePropagation();
+			if (!dialog) create();
+			if (dialog.open && !closing) { field.focus(); return; }
+			clearTimeout(timer); closing = false; revision++;
+			previousFocus = document.activeElement;
+			currentLink(); status.textContent = 'The link is ready to copy.'; copy.textContent = 'COPY LINK'; copy.disabled = false; copy.removeAttribute('aria-busy');
+			dialog.classList.remove('is-closing');
+			if (!dialog.open) {
+				if (typeof dialog.showModal === 'function') dialog.showModal();
+				else { fallback = true; originalInert = root.inert; root.inert = true; dialog.setAttribute('open', ''); dialog.setAttribute('role', 'dialog'); dialog.setAttribute('aria-modal', 'true'); }
+			}
+			document.body.classList.add('dxbus-share-open'); field.focus(); field.select();
+			const token = revision;
+			if (reduced()) dialog.classList.add('is-visible');
+			else requestAnimationFrame(() => { if (token === revision && dialog.open && !closing) dialog.classList.add('is-visible'); });
+		}, true);
+	});
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', dxBusInitShareDialogs, { once: true });
+else dxBusInitShareDialogs();
+	return { dxBusApplyDirections, dxBusRegistration, dxBusSyncMapPins, dxBusInitShareDialogs };
+})();
+// Consolidated editorial-refinements: private helpers retain their original scope.
+const { dxSlideshowControl, initEditorialRefinements } = (() => {
+/** Small enhancements around the existing editorial pages. */
+function initOct30Public(reduced) {
+	const active = new Map();
+	const savedStyles = element => ['height','overflow'].map(name => [name, element.style.getPropertyValue(name), element.style.getPropertyPriority(name)]);
+	const restoreStyles = (element, saved) => saved.forEach(([name,value,priority]) => value ? element.style.setProperty(name,value,priority) : element.style.removeProperty(name));
+	const run = (element, from, to, cleanup, saved) => {
+		element.style.overflow = 'hidden';
+		const animation = element.animate([{ height: `${from}px` },{ height: `${to}px` }], { duration: 380, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' });
+		const record = { saved, finish(commit = true) {
+			if (active.get(element) !== record) return;
+			active.delete(element);
+			animation.cancel();
+			restoreStyles(element,saved);
+			cleanup(commit);
+		} };
+		active.set(element,record);
+		animation.finished.then(() => record.finish(), () => {});
+	};
+	document.querySelectorAll('.dx-n118-faq > details,#cmplz-document details.cmplz-dropdown-cookiepolicy,.gym-review-radar details').forEach(details => {
+		const summary = [...details.children].find(node => node.tagName === 'SUMMARY');
+		if (!summary || details.dataset.dxDisclosureMotion) return;
+		details.dataset.dxDisclosureMotion = 'true';
+		summary.addEventListener('click', event => {
+			// Native controls in a Complianz summary keep their own behavior.
+			if (event.defaultPrevented || event.button || event.target.closest('a,button,input,label,select,textarea,[role="switch"]') || reduced.matches || typeof details.animate !== 'function') return;
+			event.preventDefault();
+			const prior = active.get(details);
+			const opening = prior ? details.dataset.dxDisclosureState === 'closing' : !details.open;
+			const from = details.getBoundingClientRect().height;
+			const saved = prior?.saved || savedStyles(details);
+			prior?.finish(false);
+			details.open = true;
+			details.dataset.dxDisclosureState = opening ? 'opening' : 'closing';
+			const style = getComputedStyle(details);
+			const borders = (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
+			const padding = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+			const to = opening ? details.scrollHeight + borders : summary.getBoundingClientRect().height + borders + padding;
+			run(details,from,to,commit => {
+				if (commit) details.open = opening;
+				delete details.dataset.dxDisclosureState;
+			},saved);
+		});
+	});
+	// Complianz owns category state. Observe its disclosure button after its own
+	// handler updates aria-expanded/hidden; switches and consent events are untouched.
+	const consent = document.querySelector('#cmplz-manage-consent-container');
+	if (consent && !consent.dataset.dxDisclosureMotion && 'MutationObserver' in window) {
+		consent.dataset.dxDisclosureMotion = 'true';
+		const starts = new WeakMap();
+		consent.addEventListener('click', event => {
+			const button = event.target.closest('.cmplz-category-toggle');
+			if (!button || !consent.contains(button)) return;
+			const description = button.closest('.cmplz-category')?.querySelector('.cmplz-description');
+			if (description) starts.set(button,description.getBoundingClientRect().height);
+		},true);
+		const observer = new MutationObserver(records => records.forEach(mutation => {
+			const button = mutation.target;
+			if (mutation.type !== 'attributes' || !button.matches('.cmplz-category-toggle') || !starts.has(button)) return;
+			const description = button.closest('.cmplz-category')?.querySelector('.cmplz-description');
+			const from = starts.get(button);
+			starts.delete(button);
+			if (!description || reduced.matches || typeof description.animate !== 'function') return;
+			const opening = button.getAttribute('aria-expanded') === 'true';
+			const prior = active.get(description);
+			const saved = prior?.saved || savedStyles(description);
+			prior?.finish(false);
+			const aria = description.getAttribute('aria-hidden');
+			if (!opening) {
+				description.dataset.dxConsentClosing = 'true';
+				description.setAttribute('aria-hidden','true');
+			}
+			const style = getComputedStyle(description);
+			const borders = (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
+			const to = opening ? description.scrollHeight + borders : 0;
+			run(description,from,to,() => {
+				delete description.dataset.dxConsentClosing;
+				if (aria === null) description.removeAttribute('aria-hidden');
+				else description.setAttribute('aria-hidden',aria);
+			},saved);
+		}));
+		observer.observe(consent,{ subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
+	}
+	const finishAll = () => [...active.values()].forEach(record => record.finish());
+	addEventListener('resize',finishAll,{ passive: true });
+	addEventListener('pagehide',finishAll);
+	reduced.addEventListener('change',() => { if (reduced.matches) finishAll(); });
+	if (!reduced.matches && 'IntersectionObserver' in window) {
+		const entrances = [...document.querySelectorAll('.dx-n118-faq > details,.gym-review-radar')];
+		const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+			if (!entry.isIntersecting) return;
+			entry.target.animate?.([{ opacity: 0, translate: '0 18px' },{ opacity: 1, translate: '0 0' }], { duration: 650, easing: 'cubic-bezier(.22,1,.36,1)' });
+			observer.unobserve(entry.target);
+		}),{ threshold: .12 });
+		entrances.forEach(node => observer.observe(node));
+	}
+}
+
+function initEveningScenes(reduced) {
+	const reveal = (nodes, stagger = 70) => {
+		if (reduced.matches || !('IntersectionObserver' in window)) return;
+		const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+			if (!entry.isIntersecting) return;
+			const node = entry.target;
+			const children = [...node.children].filter(child => !child.matches('script,style,.dx-editorial-canvas'));
+			(children.length ? children : [node]).forEach((child, index) => child.animate([
+				{ opacity: 0, translate: '0 24px' }, { opacity: 1, translate: '0 0' },
+			], { duration: 850, delay: Math.min(index, 5) * stagger, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+			observer.unobserve(node);
+		}), { threshold: 0, rootMargin: '0px 0px -5% 0px' });
+		nodes.forEach(node => observer.observe(node));
+	};
+	// Observe the aside's first visible pixels, including WordPress's inner wrapper.
+	if (!reduced.matches && 'IntersectionObserver' in window) {
+		const asideObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+			if (!entry.isIntersecting) return;
+			const aside = entry.target;
+			aside.animate?.([{ opacity: 0, translate: '-24px 0' }, { opacity: 1, translate: '0 0' }], { duration: 850, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+			const inner = aside.querySelector(':scope > .wp-block-group__inner-container') || aside;
+			[...inner.children].forEach((node, index) => node.animate?.([{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }], { duration: 650, delay: 100 + Math.min(index,6) * 65, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+			asideObserver.unobserve(aside);
+		}), { threshold: 0, rootMargin: '0px 0px -3% 0px' });
+		document.querySelectorAll('.dx-contact-aside').forEach(aside => asideObserver.observe(aside));
+	}
+	const portfolio = document.querySelector('.dx-portfolio-hero');
+	if (portfolio && !reduced.matches) {
+		const background = portfolio.querySelector('.dx-project-slides');
+		background?.animate([{ opacity: 0, scale: '1.06' }, { opacity: 1, scale: '1' }], { duration: 1600, easing: 'cubic-bezier(.22,1,.36,1)' });
+		portfolio.querySelector(':scope > img')?.animate([{ opacity: 0, translate: '45px 25px' }, { opacity: 1, translate: '0 0' }], { duration: 1200, delay: 180, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' });
+	}
+
+	const roots = [...document.querySelectorAll('.dx-n118-waitlist,body.single-service .service-detail')];
+	roots.forEach(root => {
+		if (root.dataset.editorialScenes) return;
+		const sections = [...root.querySelectorAll('.dx-n118-section,.service-detail-section,.service-detail-enquiry')];
+		if (!sections.length) return;
+		root.dataset.editorialScenes = 'true';
+		root.classList.add('dx-has-editorial-canvas');
+		const canvas = document.createElement('div');
+		canvas.className = 'dx-editorial-canvas';
+		canvas.setAttribute('aria-hidden', 'true');
+		canvas.inert = true;
+		const palette = [['#18313b','#4c3924'],['#353025','#173b3a'],['#2b2343','#174247'],['#173c32','#4a342b'],['#28304a','#413227']];
+		const photo = root.querySelector('.dx-page-hero-art,.service-detail-art img');
+		const layers = palette.map(([first, second], index) => {
+			const layer = document.createElement('div');
+			layer.className = 'dx-editorial-canvas__layer';
+			layer.style.setProperty('--scene-first', first);
+			layer.style.setProperty('--scene-second', second);
+			layer.style.setProperty('--scene-x', `${20 + index * 16}%`);
+			layer.style.setProperty('--scene-turn', `${index * 28}deg`);
+			if (photo && index % 2 === 0) {
+				const image = document.createElement('img');
+				image.src = photo.currentSrc || photo.src;
+				image.alt = '';
+				image.decoding = 'async';
+				image.loading = 'lazy';
+				layer.append(image);
+			}
+			canvas.append(layer);
+			return layer;
+		});
+		root.prepend(canvas);
+		reveal(sections);
+		let frame = 0, activeIndex = -1;
+		const paint = () => {
+			frame = 0;
+			const end = root.getBoundingClientRect();
+			canvas.classList.toggle('is-visible', sections[0].getBoundingClientRect().top < innerHeight * .9 && end.bottom > 0 && end.top < innerHeight);
+			let current = 0;
+			sections.forEach((section, index) => { if (section.getBoundingClientRect().top <= innerHeight * .55) current = index; });
+			if (activeIndex === current) return;
+			activeIndex = current;
+			root.dataset.editorialScene = String(current);
+			layers.forEach((layer, index) => layer.classList.toggle('is-active', index === current % palette.length));
+		};
+		const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
+		addEventListener('scroll', schedule, { passive: true });
+		addEventListener('resize', schedule, { passive: true });
+		addEventListener('pageshow', schedule);
+		paint();
+	});
+}
+
+function dxSlideshowControl(button, paused) {
+	if (!button) return;
+	button.classList.add('dx-slideshow-control');
+	button.dataset.paused = String(paused);
+	button.setAttribute('aria-pressed', String(paused));
+	button.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+	let label = button.querySelector('.dx-slideshow-control__label');
+	if (!label) {
+		label = document.createElement('span');
+		label.className = 'dx-slideshow-control__label';
+		const icon = document.createElement('span');
+		icon.className = 'dx-slideshow-control__icon';
+		icon.setAttribute('aria-hidden', 'true');
+		button.replaceChildren(label, icon);
+	}
+	label.textContent = paused ? 'Play slideshow' : 'Pause slideshow';
+}
+
+function initEditorialRefinements() {
+	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+	initEveningScenes(reduced);
+	initOct30Public(reduced);
+	document.querySelectorAll('button').forEach(button => {
+		const text = button.textContent.trim();
+		if (/^(?:Play|Pause) slideshow$/i.test(text)) dxSlideshowControl(button, /^Play/i.test(text));
+	});
+	// The same section reading line drives every secondary navigation row.
+	const bars = [...document.querySelectorAll('.dx-service-index,.dxf-nav,.dxb-nav,.dx-section-nav,.cv-nav')];
+	const entries = bars.map(bar => ({ bar, links: [...bar.querySelectorAll('a[href*="#"]')].map(link => {
+		try {
+			const url = new URL(link.href, location.href);
+			const target = url.origin === location.origin && url.pathname === location.pathname && document.getElementById(decodeURIComponent(url.hash.slice(1)));
+			return target ? { link, target } : null;
+		} catch (_) { return null; }
+	}).filter(Boolean) })).filter(entry => entry.links.length);
+	let navFrame;
+	const paintNavigation = () => {
+		navFrame = 0;
+		entries.forEach(({ bar, links }) => {
+			const row = bar.getBoundingClientRect();
+			const edge = Math.max(120, Math.max(0, row.bottom) + 45);
+			const ordered = [...links].sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
+			let active = ordered[0];
+			ordered.forEach(item => { if (item.target.getBoundingClientRect().top <= edge) active = item; });
+			links.forEach(item => {
+				item.link.classList.toggle('is-current', item === active);
+				if (item === active) item.link.setAttribute('aria-current', 'location');
+				else item.link.removeAttribute('aria-current');
+			});
+		});
+	};
+	const scheduleNavigation = () => { if (!navFrame) navFrame = requestAnimationFrame(paintNavigation); };
+	if (entries.length) {
+		addEventListener('scroll', scheduleNavigation, { passive: true });
+		addEventListener('resize', scheduleNavigation, { passive: true });
+		addEventListener('hashchange', scheduleNavigation);
+		paintNavigation();
+	}
+
+
+	const story = document.querySelector('#fitness-story');
+	const opening = story?.querySelector('.dxf-story-opening');
+	const figure = opening?.querySelector('.dxf-story-image');
+	if (figure && !opening.querySelector('.dxf-story-image-glow')) {
+		const glow = figure.cloneNode(true);
+		glow.className = 'dxf-story-image-glow';
+		glow.setAttribute('aria-hidden', 'true');
+		glow.inert = true;
+		glow.removeAttribute('id');
+		glow.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+		glow.querySelectorAll('img').forEach(img => { img.alt = ''; img.removeAttribute('fetchpriority'); });
+		opening.prepend(glow);
+	}
+	const reading = story?.querySelector('.dxf-story-read-time');
+	if (reading) {
+		const chapters = story.querySelectorAll('.dxf-story-chapter');
+		const words = [...chapters].map(node => node.textContent).join(' ').trim().split(/\s+/).length;
+		reading.textContent = `${chapters.length} chapters · ${Math.max(1, Math.ceil(words / 220))} minute read`;
+	}
+
+	// This hint follows the pointer only on a mouse/trackpad, leaving touch native.
+	const marquee = document.querySelector('body.page-id-16 .dx-project-reel');
+	if (marquee && matchMedia('(min-width: 1101px) and (hover: hover) and (pointer: fine)').matches) {
+		const hint = document.createElement('span');
+		hint.className = 'dx-scroll-hint';
+		hint.setAttribute('aria-hidden', 'true');
+		hint.innerHTML = '<svg class="dx-scroll-hint__mouse" viewBox="0 0 24 32" aria-hidden="true"><rect x="4" y="2" width="16" height="27" rx="8"/><path class="dx-scroll-hint__wheel" d="M12 8v5"/></svg><span>Scroll to explore</span>';
+		document.body.append(hint);
+		marquee.addEventListener('pointerenter', () => hint.classList.add('is-visible'));
+		marquee.addEventListener('pointerleave', () => hint.classList.remove('is-visible'));
+		const hideHint = () => hint.classList.remove('is-visible');
+		addEventListener('blur', hideHint);
+		addEventListener('pagehide', hideHint);
+		document.querySelector('#dx-menu-toggle')?.addEventListener('click', hideHint);
+		marquee.addEventListener('pointermove', event => {
+			const bounds = hint.getBoundingClientRect();
+			hint.style.left = `${Math.max(12, Math.min(innerWidth - bounds.width - 12, event.clientX + 20))}px`;
+			hint.style.top = `${Math.max(12, Math.min(innerHeight - bounds.height - 12, event.clientY + 20))}px`;
+		}, { passive: true });
+	}
+
+	// Every question remains in the original document and works without scripting.
+	const faq = document.querySelector('[data-faq-journeys]');
+	if (faq) {
+		const controls = faq.querySelector('[data-faq-choices]');
+		const items = [...faq.querySelectorAll('[data-faq-audience]')];
+		const status = faq.querySelector('[data-faq-status]');
+		const choose = (audience, animate = true) => {
+			controls.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.faqChoice === audience)));
+			items.forEach(item => {
+				const visible = item.dataset.faqAudience.split(' ').includes(audience);
+				item.hidden = !visible;
+				if (visible && animate && !reduced.matches) item.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 340, easing: 'ease-out' });
+			});
+			status.textContent = `${items.filter(item => !item.hidden).length} answers for ${audience === 'client' ? 'potential clients' : audience === 'hiring' ? 'employers and recruiters' : 'curious visitors'}.`;
+		};
+		controls.hidden = false;
+		controls.addEventListener('click', event => {
+			const button = event.target.closest('[data-faq-choice]');
+			if (button) choose(button.dataset.faqChoice);
+		});
+		choose('client', false);
+	}
+}
+	return { dxSlideshowControl, initEditorialRefinements };
+})();
+
+// Consolidated intent-scenes.
+/* Decorative intent photography and gentle entrances. Content and navigation
+ * remain available without this enhancement; no journey is chosen on hover. */
+(() => {
+	'use strict';
+	const init = () => {
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+		document.querySelectorAll('[data-intent-scene]').forEach(scene => {
+			if (scene.dataset.intentReady) return;
+			scene.dataset.intentReady = 'true';
+			const layers = [...scene.querySelectorAll('[data-intent-art]')];
+			const controls = [...scene.querySelectorAll('[data-intent-key]')];
+			const requestedImages = new Map();
+			let requested = null;
+			let pointer = null;
+			let focused = null;
+			const selected = () => controls.find(control => control.hasAttribute('aria-current'))?.dataset.intentKey || null;
+			const paint = async key => {
+				requested = key;
+				const layer = layers.find(item => item.dataset.intentArt === key);
+				if (!layer) {
+					layers.forEach(item => item.classList.remove('is-visible'));
+					delete scene.dataset.intentPreview;
+					return;
+				}
+				if (!requestedImages.has(key)) {
+					const image = document.createElement('img');
+					image.alt = '';
+					image.decoding = 'async';
+					image.src = layer.dataset.intentSrc;
+					layer.append(image);
+					const ready = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
+					requestedImages.set(key, ready.catch(() => false));
+				}
+				if (await requestedImages.get(key) === false || requested !== key) return;
+				layers.forEach(item => item.classList.toggle('is-visible', item === layer));
+				scene.dataset.intentPreview = key;
+			};
+			const restore = () => paint(pointer || focused || selected());
+			scene.addEventListener('pointerover', event => {
+				if (event.pointerType === 'touch') return;
+				const control = event.target.closest('[data-intent-key]');
+				if (!control || !scene.contains(control)) return;
+				pointer = control.dataset.intentKey;
+				paint(pointer);
+			});
+			scene.addEventListener('pointerleave', () => { pointer = null; restore(); });
+			scene.addEventListener('focusin', event => {
+				const control = event.target.closest('[data-intent-key]');
+				if (control) { focused = control.dataset.intentKey; paint(focused); }
+			});
+			scene.addEventListener('focusout', event => {
+				const next = event.relatedTarget?.closest?.('[data-intent-key]');
+				focused = next && scene.contains(next) ? next.dataset.intentKey : null;
+				restore();
+			});
+			if (scene.matches('[data-home-paths]')) {
+				window.addEventListener('dx:journeychange', event => { pointer = null; focused = null; paint(event.detail?.journey || null); });
+			}
+			window.addEventListener('blur', () => { pointer = null; focused = null; paint(selected()); });
+			paint(selected());
+		});
+		const entranceRoots = [...document.querySelectorAll('[data-intent-entrance]')];
+		if (!reduced.matches && 'IntersectionObserver' in window) {
+			const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+				if (!entry.isIntersecting) return;
+				const nodes = entry.target.matches('[data-home-paths]')
+					? [...entry.target.querySelectorAll('.dx-home-paths__heading > *, .dx-home-paths__choices > a, .dx-home-paths__note')]
+					: [...entry.target.querySelectorAll('.dx-eyebrow, h2, .dx-persona-card')];
+				nodes.forEach((node, index) => node.animate?.(
+					[{ opacity: 0, translate: '0 20px' }, { opacity: 1, translate: '0 0' }],
+					{ duration: 780, delay: Math.min(index, 6) * 75, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' },
+				));
+				observer.unobserve(entry.target);
+			}), { threshold: .16 });
+			entranceRoots.forEach(root => observer.observe(root));
+		}
+	};
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+	else init();
+})();
+;
+
+// Consolidated gym-dashboard.
+/* Gym discovery: server-rendered views share the authoritative review scoring model. */
+(() => {
+	'use strict';
+// DX_EARLY_SCRIPT_BEGIN:gym-theme
+(() => {
+	if (document.documentElement.hasAttribute('data-dxgym-theme')) {
+		try { const saved = localStorage.getItem('dxgym_theme'); if (saved === 'light' || saved === 'dark') document.documentElement.dataset.dxgymTheme = saved; } catch {}
+		const scheme = document.querySelector('meta[name="color-scheme"]'); if (scheme) scheme.content = document.documentElement.dataset.dxgymTheme || 'dark';
+	}
+})();
+// DX_EARLY_SCRIPT_END:gym-theme
+
+
+	const previewReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	document.querySelectorAll('[data-gym-preview]').forEach(preview => {
+		const form = preview.querySelector('[data-gym-quick-form]');
+		const input = form.querySelector('[name="q"]');
+		const results = preview.querySelector('[data-gym-quick-results]');
+		const status = preview.querySelector('[data-gym-quick-status]');
+		let timer, request, cardObserver, sequence = 0;
+		function revealCards() {
+			if (previewReduce || !window.IntersectionObserver) return;
+			cardObserver?.disconnect();
+			const observer = cardObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+				if (!entry.isIntersecting) return;
+				entry.target.classList.add('is-visible'); observer.unobserve(entry.target);
+			}), { threshold: 0.12 });
+			results.querySelectorAll('.dxgym-quick-card').forEach((card, index) => {
+				card.style.setProperty('--card-delay', `${index * 100}ms`);
+				card.classList.add('is-reveal-ready'); observer.observe(card);
+			});
+		}
+		async function search() {
+			request?.abort(); request = new AbortController(); const current = ++sequence;
+			const endpoint = new URL(preview.dataset.api); endpoint.searchParams.set('mode', 'quick');
+			endpoint.searchParams.set('q', input.value); endpoint.searchParams.set('chain', preview.dataset.chain || '');
+			status.textContent = 'Finding your next gym…'; results.setAttribute('aria-busy', 'true');
+			try {
+				const response = await fetch(endpoint, { signal: request.signal, credentials: 'same-origin' });
+				if (!response.ok) throw new Error('Search failed');
+				const data = await response.json(); if (current !== sequence) return;
+				if (typeof data.cardsHtml !== 'string') throw new Error('Invalid search response');
+				results.innerHTML = data.cardsHtml; revealCards();
+				status.textContent = input.value.trim() ? `${data.total} gym${data.total === 1 ? '' : 's'} found${data.total > 3 ? ' · Showing the top three' : ''}.` : '';
+				preview.dataset.searchFailed = 'false';
+				const full = new URL(form.action); full.searchParams.set('view', input.value.trim() ? 'explorer' : 'league'); if (input.value.trim()) full.searchParams.set('q', input.value.trim());
+				if (preview.dataset.chain) full.searchParams.set('chain', preview.dataset.chain);
+				preview.querySelector('[data-gym-full-results]').href = full.href;
+			} catch (error) {
+				if (error.name !== 'AbortError' && current === sequence) { status.textContent = 'Search could not update. Use “Find Your Next Gym” to open the full results.'; preview.dataset.searchFailed = 'true'; }
+			} finally { if (current === sequence) results.removeAttribute('aria-busy'); }
+		}
+		input.addEventListener('input', () => { clearTimeout(timer); request?.abort(); sequence++; timer = setTimeout(search, 320); });
+		form.addEventListener('submit', event => { if (preview.dataset.searchFailed === 'true') return; event.preventDefault(); clearTimeout(timer); search(); });
+		revealCards();
+	});
+	const app = document.querySelector('#dxgym-app');
+	if (!app) return;
+	const content = app.querySelector('[data-gym-content]');
+	const loading = app.querySelector('.dxgym-loading');
+	const notice = app.querySelector('.dxgym-notice');
+	const views = { overview: 'Overview', league: 'League Table', explorer: 'Gym Explorer', compare: 'Compare Gyms', map: 'Map View', reviews: 'Reviews', insights: 'Insights' };
+	let controller, requestId = 0, searchTimer, maps = [], moreController, moreObserver;
+	let moreBusy = false;
+	let compare = app.dataset.selected.split(',').map(Number).filter(Number.isSafeInteger).filter(id => id > 0).slice(0, 3);
+	const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+	let reduce = motionPreference.matches;
+	let listingObserver, heroState, heroTimer, slideshowPaused = false, donutObserver, donutAnimations = [], themeTimer, lastShareTrigger, shareCloseTimer;
+	try { slideshowPaused = localStorage.getItem('dxgym_slideshow_paused') === 'true'; } catch {}
+	const sidebar = app.querySelector('.dxgym-sidebar');
+	const desktop = matchMedia('(min-width: 992px)');
+	function syncDrawerAccessibility() {
+		const concealed = !desktop.matches && !app.classList.contains('is-navigation-open');
+		sidebar.inert = concealed;
+		if (concealed) sidebar.setAttribute('aria-hidden', 'true'); else sidebar.removeAttribute('aria-hidden');
+	}
+	desktop.addEventListener('change', syncDrawerAccessibility);
+	const shareDialog = app.querySelector('[data-gym-share-dialog]');
+	function applyTheme(mode, persist = false) {
+		mode = mode === 'light' ? 'light' : 'dark';
+		document.documentElement.dataset.dxgymTheme = mode;
+		const scheme = document.querySelector('meta[name="color-scheme"]'); if (scheme) scheme.content = mode;
+		const toggle = app.querySelector('[data-gym-theme-toggle]');
+		if (toggle) {
+			toggle.setAttribute('aria-label', `Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`);
+			toggle.dataset.currentTheme = mode;
+			toggle.querySelector('[data-gym-theme-label]').textContent = mode === 'dark' ? 'Light Mode' : 'Dark Mode';
+			toggle.querySelector('.dxgym-theme-sun').hidden = mode === 'light'; toggle.querySelector('.dxgym-theme-moon').hidden = mode !== 'light';
+		}
+		if (persist) {
+			try { localStorage.setItem('dxgym_theme', mode); } catch {}
+			document.cookie = `dxgym_theme=${mode}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+		}
+	}
+	function showNotice(message, type = '') {
+		notice.textContent = ''; notice.hidden = !message; notice.classList.toggle('is-comparison-full', type === 'comparison');
+		if (!message) return;
+		const text = document.createElement('span'); text.textContent = message; notice.append(text);
+		if (type === 'comparison') {
+			const button = document.createElement('button'); button.type = 'button'; button.dataset.gymNoticeDismiss = ''; button.setAttribute('aria-label', 'Dismiss comparison notice');
+			const icon = app.querySelector('[data-gym-share-close] svg'); if (icon) button.append(icon.cloneNode(true)); else button.textContent = '×';
+			notice.append(button);
+		}
+	}
+	function comparisonURL() {
+		const url = new URL(app.dataset.base); url.searchParams.set('view', 'compare'); url.searchParams.set('compare', compare.join(',')); return url.href;
+	}
+	function closeShare() {
+		if (!shareDialog || !shareDialog.open || shareDialog.classList.contains('is-closing')) return;
+		const finish = () => {
+			if (typeof shareDialog.close === 'function') shareDialog.close(); else shareDialog.removeAttribute('open');
+			shareDialog.classList.remove('is-closing');
+			if (lastShareTrigger?.isConnected) lastShareTrigger.focus({ preventScroll: true });
+		};
+		if (reduce) finish();
+		else { shareDialog.classList.add('is-closing'); shareCloseTimer = setTimeout(finish, 180); }
+	}
+	function openShare(trigger) {
+		if (!shareDialog || !compare.length) return;
+		clearTimeout(shareCloseTimer); shareDialog.classList.remove('is-closing');
+		lastShareTrigger = trigger;
+		const input = shareDialog.querySelector('[data-gym-share-url]'); input.value = comparisonURL();
+		shareDialog.querySelector('[data-gym-share-summary]').textContent = `${compare.length} gym${compare.length === 1 ? '' : 's'} selected. Open the same line-up from any browser using this link.`;
+		shareDialog.querySelector('[data-gym-share-status]').textContent = '';
+		if (typeof shareDialog.showModal === 'function') shareDialog.showModal(); else shareDialog.setAttribute('open', '');
+		input.focus(); input.select();
+	}
+	async function copyShare() {
+		if (!shareDialog || !compare.length) return;
+		const input = shareDialog.querySelector('[data-gym-share-url]'); input.value = comparisonURL();
+		let copied = false;
+		if (navigator.clipboard?.writeText) { try { await navigator.clipboard.writeText(input.value); copied = true; } catch {} }
+		if (!copied) { input.focus(); input.select(); try { copied = typeof document.execCommand === 'function' && document.execCommand('copy'); } catch {} }
+		shareDialog.querySelector('[data-gym-share-status]').textContent = copied ? 'Comparison link copied.' : 'Select and copy the link above.';
+	}
+	if (shareDialog) shareDialog.addEventListener('cancel', event => { event.preventDefault(); closeShare(); });
+	function initialiseSummary(previous = null) {
+		const summary = content.querySelector('[data-gym-list-summary]'); if (!summary) return;
+		summary.querySelectorAll('.dxgym-summary-control').forEach(control => {
+			const select = control.querySelector('select'), label = control.querySelector('[data-gym-summary-label]');
+			if (select && label) label.textContent = select.selectedOptions[0]?.dataset.summaryLabel || select.selectedOptions[0]?.textContent || label.textContent;
+		});
+		if (!previous || reduce) return;
+		if (summary.dataset.total !== previous.total || summary.dataset.filters !== previous.filters) summary.querySelector('.dxgym-summary-count')?.classList.add('is-changed');
+		if (summary.dataset.sort !== previous.sort) summary.querySelector('.dxgym-summary-sort')?.classList.add('is-changed');
+	}
+	function initialiseDonuts() {
+		donutObserver?.disconnect(); donutAnimations.forEach(animation => animation.cancel?.()); donutAnimations = [];
+		if (reduce) return;
+		const charts = [...content.querySelectorAll('[data-gym-donut]')];
+		function animate(chart) {
+			chart.querySelectorAll('[data-gym-donut-segment]').forEach((segment, index) => {
+				if (segment.animate) donutAnimations.push(segment.animate([{ strokeDasharray: '0 100' }, { strokeDasharray: segment.getAttribute('stroke-dasharray') }], { duration: 900, delay: index * 70, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' }));
+			});
+		}
+		if (!window.IntersectionObserver) { charts.forEach(animate); return; }
+		donutObserver = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { animate(entry.target); donutObserver.unobserve(entry.target); } }), { threshold: 0.25 });
+		charts.forEach(chart => donutObserver.observe(chart));
+	}
+
+	// Dashboard bars preserve their authoritative widths and animate only when visible.
+	let scoreObserver, valueFrames = new Set(), scoreAnimations = new Set();
+	const previousScores = new Map();
+	function initialiseScoreMotion() {
+		scoreObserver?.disconnect(); scoreAnimations.forEach(animation => animation.cancel()); scoreAnimations.clear();
+		valueFrames.forEach(frame => cancelAnimationFrame(frame)); valueFrames.clear();
+		const bars = [...content.querySelectorAll('.dxgym-bar > i')];
+		const values = [...content.querySelectorAll('.dxgym-stats strong, .dxgym-insight-list strong')];
+		function reveal(node) {
+			if (node.matches('.dxgym-bar > i')) {
+				const finalWidth = parseFloat(node.style.width) || 0, key = node.dataset.gymScoreKey;
+				const from = key && previousScores.has(key) ? previousScores.get(key) : 0;
+				if (key) previousScores.set(key, finalWidth);
+				if (!reduce && finalWidth && node.animate) {
+					const animation = node.animate([{ transform: `scaleX(${Math.min(from / finalWidth, 1.4)})` }, { transform: 'scaleX(1)' }], { duration: 950, easing: 'cubic-bezier(.2,.7,.2,1)' });
+					scoreAnimations.add(animation); animation.finished.catch(() => {}).finally(() => scoreAnimations.delete(animation));
+				}
+				return;
+			}
+			const original = node.textContent.trim(), match = original.match(/^(\d+(?:\.\d+)?)(%)?$/);
+			if (reduce || !match) return;
+			const finalValue = Number(match[1]), decimals = match[1].includes('.') ? match[1].split('.')[1].length : 0;
+			node.setAttribute('aria-label', original);
+			let started;
+			function tick(now) {
+				if (!node.isConnected) return;
+				if (started === undefined) started = now;
+				const progress = reduce ? 1 : Math.min((now - started) / 850, 1), eased = 1 - Math.pow(1 - progress, 3);
+				node.textContent = progress === 1 ? original : `${(finalValue * eased).toFixed(decimals)}${match[2] || ''}`;
+				if (progress < 1) { const frame = requestAnimationFrame(time => { valueFrames.delete(frame); tick(time); }); valueFrames.add(frame); }
+			}
+			tick(performance.now());
+		}
+		if (reduce || !window.IntersectionObserver) { bars.concat(values).forEach(reveal); return; }
+		scoreObserver = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { reveal(entry.target); scoreObserver.unobserve(entry.target); } }), { threshold: .2 });
+		bars.concat(values).forEach(node => scoreObserver.observe(node));
+	}
+	function announceDashboardRender() {
+		initialiseScoreMotion();
+		// Shared radar animation also enhances individual review pages without duplicate observers.
+		app.dispatchEvent(new CustomEvent('dxgym:rendered', { bubbles: true }));
+	}
+
+	function canonicalURL(input) {
+		const url = new URL(input, location.href);
+		if (url.origin !== location.origin || url.pathname !== new URL(app.dataset.base).pathname) return null;
+		const view = url.searchParams.get('view') || 'overview';
+		if (!views[view]) url.searchParams.set('view', 'overview');
+		return url;
+	}
+	function syncNavigation(url) {
+		const view = url.searchParams.get('view') || 'overview';
+		app.querySelectorAll('[data-gym-view]').forEach(link => {
+			if (link.dataset.gymView === view) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+			const target = new URL(link.href); target.searchParams.set('compare', compare.join(',')); link.href = target.href;
+		});
+		app.querySelector('[data-gym-current]').textContent = views[view] || views.overview;
+		app.querySelectorAll('[data-compare-count]').forEach(count => { count.textContent = compare.length; });
+	}
+	function closeDrawer(focus = false) {
+		app.classList.remove('is-navigation-open');
+		app.querySelector('.dxgym-drawer-shade').hidden = true;
+		app.querySelector('.dxgym-menu-toggle').setAttribute('aria-expanded', 'false');
+		syncDrawerAccessibility();
+		if (focus) app.querySelector('.dxgym-menu-toggle').focus();
+	}
+	function revealListings(nodes = null) {
+		if (reduce || !window.IntersectionObserver) return;
+		if (!listingObserver) listingObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+			if (!entry.isIntersecting) return;
+			entry.target.classList.add('is-card-visible'); listingObserver.unobserve(entry.target);
+		}), { threshold: 0.08, rootMargin: '0px 0px 30px 0px' });
+		(nodes || [...content.querySelectorAll('.dxgym-gym-card, .dxgym-compare-card, .dxgym-compare-options > div, .dxgym-stats > article, .dxgym-overview-grid > section, .dxgym-overview-bottom > section, .dxgym-find, .dxgym-method')]).forEach((card, index) => {
+			if (card.dataset.revealBound) return;
+			card.dataset.revealBound = 'true'; card.style.setProperty('--card-delay', `${(index % 3) * 75}ms`);
+			card.classList.add('dxgym-card-reveal-ready'); listingObserver.observe(card);
+		});
+	}
+	function animateSidebar() {
+		if (reduce || sidebar.classList.contains('is-sidebar-ready')) return;
+		sidebar.classList.add('is-sidebar-ready');
+		const elements = [...sidebar.querySelectorAll('.dxgym-brand, .dxgym-sidebar-search, .dxgym-eyebrow, nav a, .dxgym-sidebar-bottom > div, .dxgym-sidebar-bottom > a')];
+		elements.forEach((item, index) => { item.style.setProperty('--enter-delay', `${Math.min(index * 45, 500)}ms`); item.classList.add('dxgym-aside-item'); });
+	}
+	function initialiseSlideshow() {
+		const previousBranch = heroState?.photos[heroState.index]?.branch;
+		clearTimeout(heroTimer); heroState = null;
+		const slideshow = content.querySelector('[data-gym-slideshow]'); if (!slideshow) return;
+		let photos; try { photos = JSON.parse(slideshow.querySelector('.dxgym-slideshow-data').textContent); } catch { return; }
+		if (photos.length < 2) return;
+		const index = Math.max(0, photos.findIndex(photo => photo.branch === previousBranch));
+		heroState = { element: slideshow, photos, index, active: 0, layers: [...slideshow.querySelectorAll('.dxgym-hero-slide')] };
+		heroState.layers[0].style.backgroundImage = `url("${photos[index].image.replace(/["\\]/g, '\\$&')}")`;
+		const credit = content.querySelector('[data-gym-slide-credit]'); if (credit) { credit.textContent = `Inside ${photos[index].name} ↗`; credit.href = photos[index].url; }
+		updateSlideshowControl(); scheduleSlideshow();
+	}
+	function updateSlideshowControl() {
+		const button = content.querySelector('[data-gym-slide-toggle]'); if (!button) return; button.hidden = false;
+		const paused = reduce || slideshowPaused;
+		button.setAttribute('aria-pressed', String(paused));
+		button.querySelector('span').textContent = reduce ? 'Next Photograph' : (paused ? 'Play Slideshow' : 'Pause Slideshow');
+		button.querySelector('.dxgym-pause-icon').hidden = paused;
+		button.querySelector('.dxgym-play-icon').hidden = !paused;
+	}
+	function scheduleSlideshow() {
+		clearTimeout(heroTimer);
+		if (!heroState || reduce || slideshowPaused || document.hidden) return;
+		heroTimer = setTimeout(() => advanceSlideshow(), 6500);
+	}
+	function advanceSlideshow(manual = false) {
+		const state = heroState; if (!state) return;
+		const nextIndex = (state.index + 1) % state.photos.length;
+		const photo = state.photos[nextIndex]; const image = new Image();
+		image.onload = () => {
+			if (heroState !== state || !state.element.isConnected || (!manual && (slideshowPaused || reduce || document.hidden))) return;
+			const nextLayer = (state.active + 1) % 2;
+			state.layers[nextLayer].style.backgroundImage = `url("${photo.image.replace(/["\\]/g, '\\$&')}")`;
+			state.layers[nextLayer].classList.add('is-active'); state.layers[state.active].classList.remove('is-active');
+			state.active = nextLayer; state.index = nextIndex;
+			const credit = content.querySelector('[data-gym-slide-credit]'); if (credit) { credit.textContent = `Inside ${photo.name} ↗`; credit.href = photo.url; }
+			scheduleSlideshow();
+		};
+		image.onerror = () => { if (heroState === state) { state.index = nextIndex; scheduleSlideshow(); } };
+		image.src = photo.image;
+	}
+	motionPreference.addEventListener('change', event => { reduce = event.matches; if (reduce) { donutAnimations.forEach(animation => animation.cancel?.()); scoreAnimations.forEach(animation => animation.cancel?.()); content.querySelectorAll('.dxgym-card-reveal-ready').forEach(node => node.classList.add('is-card-visible')); } updateSlideshowControl(); scheduleSlideshow(); });
+	document.addEventListener('visibilitychange', scheduleSlideshow);
+	function stopIncremental() {
+		moreObserver?.disconnect(); moreObserver = null;
+		moreController?.abort(); moreController = null; moreBusy = false;
+	}
+	function restorePagination() {
+		content.classList.remove('is-progressive-league', 'is-progressive-list');
+		const pagination = content.querySelector('.dxgym-pagination');
+		if (pagination) { pagination.hidden = false; pagination.querySelectorAll('a').forEach(link => link.removeAttribute('data-gym-nav')); }
+	}
+	function initialiseListings() {
+		stopIncremental();
+		listingObserver?.disconnect(); listingObserver = null;
+		revealListings();
+		content.classList.remove('is-progressive-league', 'is-progressive-list');
+		const controls = content.querySelector('[data-gym-incremental]');
+		if (!content.querySelector('.dxgym-table, .dxgym-card-grid, .dxgym-compare-options')) return;
+		content.classList.add('is-progressive-list');
+		const pagination = content.querySelector('.dxgym-pagination'); if (pagination) pagination.hidden = true;
+		if (!controls) return;
+		const sentinel = controls.querySelector('[data-gym-load-sentinel]');
+		if (window.IntersectionObserver) {
+			moreObserver = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) loadMore(); }, { rootMargin: '0px 0px 800px 0px', threshold: 0 });
+			moreObserver.observe(sentinel);
+		}
+	}
+	async function loadMore() {
+		const controls = content.querySelector('[data-gym-incremental]');
+		const next = controls?.querySelector('[data-gym-load-more]');
+		if (!next || moreBusy || controls.dataset.failed === 'true') return;
+		const url = canonicalURL(next.href); if (!url) return;
+		const list = content.querySelector('.dxgym-table tbody') || content.querySelector('.dxgym-card-grid') || content.querySelector('.dxgym-compare-options'); if (!list) return;
+		const tableView = list.tagName === 'TBODY';
+		const compareOptions = list.classList.contains('dxgym-compare-options');
+		const hadFocus = document.activeElement === next;
+		const ownNavigation = requestId; moreBusy = true; moreController = new AbortController();
+		const status = controls.querySelector('[data-gym-more-status]');
+		next.setAttribute('aria-disabled', 'true'); list.setAttribute('aria-busy', 'true'); status.textContent = 'Loading more gyms…';
+		try {
+			const endpoint = new URL(app.dataset.api); endpoint.search = url.search;
+			const response = await fetch(endpoint, { signal: moreController.signal, credentials: 'same-origin' });
+			if (!response.ok) throw new Error('More results could not load');
+			const data = await response.json();
+			if (ownNavigation !== requestId || !list.isConnected) return;
+			const fragment = document.createElement('template'); fragment.innerHTML = data.html;
+			const rows = [...fragment.content.querySelectorAll(tableView ? '.dxgym-table tbody tr' : (compareOptions ? '.dxgym-compare-options > div' : '.dxgym-card-grid > .dxgym-gym-card'))];
+			if (!rows.length) throw new Error('No rows returned');
+			const before = list.children.length;
+			// Append a batch once. Table rows use an opacity entrance only, avoiding layout motion while scrolling.
+			const batch = document.createDocumentFragment(); rows.forEach(row => batch.append(row)); list.append(batch);
+			if (!tableView) revealListings(rows);
+			else if (!reduce) rows.forEach(row => { if (row.animate) row.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' }); });
+			const updated = fragment.content.querySelector('[data-gym-incremental]');
+			const following = updated?.querySelector('[data-gym-load-more]');
+			const loaded = before + rows.length;
+			content.querySelector('.dxgym-results-count').textContent = `Showing ${controls.dataset.start}–${Number(controls.dataset.start) + loaded - 1} of ${controls.dataset.total} ${url.searchParams.get('view') === 'reviews' ? 'recorded visits' : 'gyms'}`;
+			status.textContent = `${rows.length} more gyms loaded.`;
+			if (following) { next.href = following.href; controls.dataset.page = updated.dataset.page; }
+			else { moreObserver?.disconnect(); next.remove(); controls.querySelector('[data-gym-load-sentinel]').remove(); status.textContent = 'All matching gyms are shown.'; }
+			if (hadFocus) rows[0].querySelector('a')?.focus({ preventScroll: true });
+			const pagination = content.querySelector('.dxgym-pagination'); const newPagination = fragment.content.querySelector('.dxgym-pagination');
+			if (pagination && newPagination) pagination.innerHTML = newPagination.innerHTML;
+		} catch (error) {
+			if (error.name !== 'AbortError' && ownNavigation === requestId) {
+				controls.dataset.failed = 'true'; moreObserver?.disconnect();
+				status.textContent = 'More gyms could not load here. Open the next page or use the page links below.';
+				next.textContent = 'Open Next Page ↗'; next.removeAttribute('data-gym-load-more');
+				restorePagination();
+			}
+		} finally { if (ownNavigation === requestId) { moreBusy = false; next.removeAttribute('aria-disabled'); list.removeAttribute('aria-busy'); } }
+	}
+	function initialiseMaps() {
+		maps.forEach(map => map.remove()); maps = [];
+		content.querySelectorAll('[data-gym-map]').forEach(element => {
+			let records;
+			try { records = JSON.parse(element.querySelector('.dxgym-markers').textContent); } catch { return; }
+			const message = element.querySelector('.dxgym-map-message');
+			if (!records.length) return;
+			if (!window.L) { message.textContent = 'The map could not load. All gym locations remain available in the list.'; return; }
+			message.hidden = true;
+			const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView([records[0].lat, records[0].lng], 11);
+			maps.push(map);
+			element.classList.add('is-osm-map');
+			const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>', maxZoom: 19,
+			}).addTo(map);
+			let tileFailures = 0;
+			tiles.on('tileload', () => { tileFailures = 0; message.hidden = true; });
+			tiles.on('tileerror', () => {
+				if (++tileFailures < 3) return;
+				message.textContent = 'Map tiles are unavailable. All gym details remain available in the list.';
+				message.classList.add('is-map-warning'); message.hidden = false;
+			});
+			const bounds = [];
+			records.forEach(gym => {
+				const marker = L.circleMarker([gym.lat, gym.lng], { radius: 7, color: gym.band.color, fillColor: gym.band.color, weight: 2, fillOpacity: 0.8 }).addTo(map);
+				const popup = document.createElement('article'); popup.className = 'dxgym-map-popup';
+				if (gym.image || gym.imageSmall) { const photo = document.createElement('a'); photo.className = 'dxgym-map-popup__photo'; photo.href = gym.url; const image = document.createElement('img'); image.src = gym.image || gym.imageSmall; image.alt = gym.name; image.loading = 'lazy'; photo.append(image); popup.append(photo); }
+				const body = document.createElement('div'); body.className = 'dxgym-map-popup__body';
+				const title = document.createElement('h3'); title.textContent = gym.name; body.append(title);
+				const location = document.createElement('p'); location.textContent = gym.location || 'Location not recorded'; body.append(location);
+				const score = document.createElement('strong'); score.textContent = gym.overall === null ? 'Not assessed' : `${gym.overall.toFixed(1)}% overall`; score.style.setProperty('--score-color', gym.band.color); body.append(score);
+				const link = document.createElement('a'); link.className = 'dxgym-map-popup__link'; link.textContent = 'Read full review ↗'; link.href = gym.url; body.append(link); popup.append(body);
+				marker.bindPopup(popup, { className: 'dxgym-leaflet-popup', minWidth: 240, maxWidth: 300 }); marker.bindTooltip(gym.name, { direction: 'top' });
+				marker.on('add', () => { const node = marker.getElement(); if (node) { node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button'); node.setAttribute('aria-label', `${gym.name}, ${score.textContent}`); node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); marker.openPopup(); } }); } });
+				const node = marker.getElement(); if (node) { node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button'); node.setAttribute('aria-label', gym.name); node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); marker.openPopup(); } }); }
+				bounds.push([gym.lat, gym.lng]);
+			});
+			if (bounds.length > 1) map.fitBounds(bounds, { padding: [26, 26], maxZoom: 13 });
+		});
+	}
+	async function navigate(input, { historyMode = 'push', focus = false, retainSearchFocus = false, scrollToTop = false } = {}) {
+		const url = canonicalURL(input); if (!url) return;
+		if (!url.searchParams.has('compare')) url.searchParams.set('compare', compare.join(','));
+		stopIncremental(); controller?.abort(); controller = new AbortController(); const ownId = ++requestId;
+		const active = document.activeElement;
+		const focusedSummaryControl = retainSearchFocus && active?.matches('[data-gym-summary-sort], [data-gym-summary-count]') ? (active.hasAttribute('data-gym-summary-sort') ? '[data-gym-summary-sort]' : '[data-gym-summary-count]') : null;
+		const focusName = retainSearchFocus && (active instanceof HTMLInputElement || active instanceof HTMLSelectElement) ? active.name : '';
+		const focusForm = focusName ? active.closest('form')?.className : '';
+		const selection = focusName && active instanceof HTMLInputElement && typeof active.selectionStart === 'number' ? [active.selectionStart, active.selectionEnd] : null;
+		loading.hidden = false; content.setAttribute('aria-busy', 'true'); app.classList.add('is-loading'); showNotice('');
+		try {
+			const endpoint = new URL(app.dataset.api); endpoint.search = url.search;
+			const response = await fetch(endpoint, { signal: controller.signal, credentials: 'same-origin', headers: { Accept: 'application/json' } });
+			if (!response.ok) throw new Error('Could not load gyms');
+			const result = await response.json(); if (ownId !== requestId) return;
+			compare = result.compare || [];
+			const oldHeroHeight = content.querySelector('.dxgym-hero')?.getBoundingClientRect().height;
+			const oldSummary = content.querySelector('[data-gym-list-summary]');
+			const previousSummary = oldSummary ? { total: oldSummary.dataset.total, sort: oldSummary.dataset.sort, filters: oldSummary.dataset.filters } : null;
+			content.innerHTML = result.html;
+			if (historyMode === 'push') history.pushState({}, '', url);
+			if (historyMode === 'replace') history.replaceState({}, '', url);
+			syncNavigation(url); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseDonuts(); announceDashboardRender(); closeDrawer();
+			const hero = content.querySelector('.dxgym-hero');
+			if (!reduce && oldHeroHeight && hero?.animate) hero.animate([{ minHeight: `${oldHeroHeight}px` }, { minHeight: `${hero.getBoundingClientRect().height}px` }], { duration: 550, easing: 'cubic-bezier(.2,.7,.2,1)' });
+			if (!reduce && content.animate) content.animate([{ opacity: 0.65, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 230, easing: 'ease-out' });
+			if (focusedSummaryControl) {
+				content.querySelector(focusedSummaryControl)?.focus({ preventScroll: true });
+			} else if (focusName) {
+				const targetForm = Array.from(app.querySelectorAll('form')).find(form => form.className === focusForm);
+				const target = targetForm?.elements.namedItem(focusName);
+				if (target) { target.focus({ preventScroll: true }); if (selection && target.setSelectionRange) target.setSelectionRange(...selection); }
+			} else if (focus) {
+				content.querySelector('h1')?.focus({ preventScroll: true });
+			}
+			// A new workspace starts at its own heading; its entrance already supplies motion.
+			// Instant positioning also avoids CSS smooth-scroll keeping the next view offscreen.
+			if (scrollToTop) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+		} catch (error) {
+			if (error.name !== 'AbortError' && ownId === requestId) {
+				restorePagination();
+				showNotice('The gym workspace could not update. Your current view is still here. ');
+				const fallback = document.createElement('a'); fallback.href = url.href; fallback.textContent = 'Open these results ↗'; notice.append(fallback);
+			}
+		} finally {
+			if (ownId === requestId) { loading.hidden = true; content.removeAttribute('aria-busy'); app.classList.remove('is-loading'); }
+		}
+	}
+	function formURL(form) {
+		const url = new URL(app.dataset.base); const fields = new FormData(form);
+		fields.forEach((value, key) => { if (value) url.searchParams.set(key, value); });
+		url.searchParams.set('compare', compare.join(',')); return url;
+	}
+	app.addEventListener('submit', event => {
+		if (!event.target.matches('[data-gym-filters]')) return;
+		event.preventDefault(); clearTimeout(searchTimer); navigate(formURL(event.target), { retainSearchFocus: true });
+	});
+	app.addEventListener('input', event => {
+		if (!event.target.matches('[data-gym-filters] input[type="search"]')) return;
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => navigate(formURL(event.target.form), { historyMode: 'replace', retainSearchFocus: true }), 320);
+	});
+	app.addEventListener('change', event => {
+		if (event.target.matches('[data-gym-summary-sort], [data-gym-summary-count]')) {
+			clearTimeout(searchTimer);
+			const key = event.target.hasAttribute('data-gym-summary-sort') ? 'sort' : 'chain';
+			const form = content.querySelector('[data-gym-filters]');
+			const field = form?.elements.namedItem(key); if (field) field.value = event.target.value;
+			const url = form ? formURL(form) : new URL(location.href); url.searchParams.delete('page');
+			if (event.target.value) url.searchParams.set(key, event.target.value); else url.searchParams.delete(key);
+			navigate(url, { retainSearchFocus: true }); return;
+		}
+		if (event.target.matches('[data-compare-replace]')) {
+			const old = Number(event.target.dataset.compareReplace), next = Number(event.target.value);
+			const url = new URL(location.href); url.searchParams.set('compare', compare.map(id => id === old ? next : id).join(',')); navigate(url); return;
+		}
+		if (event.target.matches('[data-gym-filters] select, [data-gym-filters] input[type="checkbox"]')) navigate(formURL(event.target.form), { retainSearchFocus: true });
+	});
+	app.addEventListener('click', event => {
+		if (event.target.closest('[data-gym-theme-toggle]')) {
+			const next = document.documentElement.dataset.dxgymTheme === 'light' ? 'dark' : 'light';
+			const update = () => applyTheme(next, true);
+			if (!reduce && typeof document.startViewTransition === 'function') document.startViewTransition(update);
+			else { clearTimeout(themeTimer); document.documentElement.classList.add('is-dxgym-theme-changing'); update(); themeTimer = setTimeout(() => document.documentElement.classList.remove('is-dxgym-theme-changing'), 450); }
+			return;
+		}
+		if (event.target.closest('[data-gym-notice-dismiss]')) { showNotice(''); return; }
+		if (event.target.closest('[data-gym-share-copy]')) { copyShare(); return; }
+		if (event.target.closest('[data-gym-share-close]') || event.target === shareDialog) { closeShare(); return; }
+		const share = event.target.closest('[data-gym-share]'); if (share) { openShare(share); return; }
+		const slideToggle = event.target.closest('[data-gym-slide-toggle]');
+		if (slideToggle) {
+			if (reduce) advanceSlideshow(true);
+			else { slideshowPaused = !slideshowPaused; try { localStorage.setItem('dxgym_slideshow_paused', String(slideshowPaused)); } catch {} updateSlideshowControl(); scheduleSlideshow(); }
+			return;
+		}
+		const scoreBand = event.target.closest('[data-score-band]');
+		if (scoreBand) {
+			const method = scoreBand.closest('.dxgym-method'), status = method.querySelector('[data-score-band-status]');
+			method.querySelectorAll('[data-score-band]').forEach(button => button.setAttribute('aria-pressed', String(button === scoreBand)));
+			const previousHeight = status.getBoundingClientRect().height;
+			method.querySelector('[data-score-band-prompt]').hidden = true;
+			method.querySelectorAll('[data-score-band-panel]').forEach(panel => { panel.hidden = panel.id !== scoreBand.getAttribute('aria-controls'); });
+			status.style.setProperty('--active-band-color', scoreBand.dataset.bandColor);
+			const active = method.querySelector('[data-score-band-panel]:not([hidden])');
+			if (!reduce && status.animate && active) {
+				status.animate([{ height: `${previousHeight}px` }, { height: `${status.getBoundingClientRect().height}px` }], { duration: 320, easing: 'cubic-bezier(.2,.7,.2,1)' });
+				active.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 320, easing: 'ease-out' });
+			}
+			return;
+		}
+		const more = event.target.closest('[data-gym-load-more]');
+		if (more && !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0)) { event.preventDefault(); loadMore(); return; }
+		const menu = event.target.closest('.dxgym-menu-toggle');
+		if (menu) { const open = menu.getAttribute('aria-expanded') !== 'true'; app.classList.toggle('is-navigation-open', open); menu.setAttribute('aria-expanded', String(open)); app.querySelector('.dxgym-drawer-shade').hidden = !open; syncDrawerAccessibility(); if (open) { animateSidebar(); app.querySelector('.dxgym-sidebar a').focus(); } return; }
+		if (event.target.closest('.dxgym-drawer-shade')) { closeDrawer(true); return; }
+		const link = event.target.closest('a[data-gym-nav], a[data-compare-id]');
+		if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
+		const url = canonicalURL(link.href); if (!url) return;
+		event.preventDefault(); clearTimeout(searchTimer);
+		if (link.hasAttribute('data-compare-id')) {
+			const id = Number(link.dataset.compareId);
+			if (!compare.includes(id) && compare.length >= 3) { showNotice('Your comparison has three gyms. Remove or replace one to add another.', 'comparison'); return; }
+			const current = new URL(location.href); const view = current.searchParams.get('view') || 'overview';
+			const next = compare.includes(id) ? compare.filter(item => item !== id) : [...compare, id];
+			current.searchParams.set('compare', next.join(','));
+			if (view === 'overview') current.searchParams.set('view', 'compare');
+			navigate(current, { focus: view === 'overview', scrollToTop: view === 'overview' }); return;
+		}
+		const changingView = (url.searchParams.get('view') || 'overview') !== (new URL(location.href).searchParams.get('view') || 'overview');
+		navigate(url, { focus: changingView || link.hasAttribute('data-gym-view'), scrollToTop: changingView || link.hasAttribute('data-gym-view') });
+	});
+	app.addEventListener('keydown', event => {
+		if (shareDialog?.open) {
+			if (event.key === 'Escape') { event.preventDefault(); closeShare(); return; }
+			if (event.key === 'Tab') { const nodes = [...shareDialog.querySelectorAll('button:not([disabled]), input')]; if (event.shiftKey && document.activeElement === nodes[0]) { event.preventDefault(); nodes.at(-1)?.focus(); } else if (!event.shiftKey && document.activeElement === nodes.at(-1)) { event.preventDefault(); nodes[0]?.focus(); } }
+			return;
+		}
+		if (event.key === 'Escape' && notice.classList.contains('is-comparison-full')) { showNotice(''); return; }
+		if (event.key === 'Escape' && app.classList.contains('is-navigation-open')) closeDrawer(true);
+		if (event.key === 'Tab' && app.classList.contains('is-navigation-open')) {
+			const nodes = [...app.querySelectorAll('.dxgym-sidebar a, .dxgym-sidebar input, .dxgym-sidebar button')].filter(node => !node.classList.contains('screen-reader-text'));
+			if (event.shiftKey && document.activeElement === nodes[0]) { event.preventDefault(); nodes.at(-1)?.focus(); }
+			else if (!event.shiftKey && document.activeElement === nodes.at(-1)) { event.preventDefault(); nodes[0]?.focus(); }
+		}
+	});
+	window.addEventListener('popstate', () => navigate(location.href, { historyMode: 'none' }));
+	applyTheme(document.documentElement.dataset.dxgymTheme || 'dark'); initialiseSummary(); initialiseDonuts(); syncNavigation(new URL(location.href)); syncDrawerAccessibility(); initialiseMaps(); initialiseListings(); initialiseSlideshow(); announceDashboardRender(); if (desktop.matches) animateSidebar();
+})();
+;
+
+// Consolidated diary-polls.
+// Journey annotations and community polls progressively enhance their server-rendered records.
+(() => {
+	const ready = (callback) => document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback, {once: true}) : callback();
+	ready(() => {
+		document.querySelectorAll('[data-dx-journey-map]').forEach((element) => {
+			if (element.dataset.journeyBound) return;
+			element.dataset.journeyBound = 'true';
+			if (typeof window.L === 'undefined') {
+				const message = document.createElement('p'); message.className = 'dx-journey-map-empty';
+				message.textContent = 'The map could not load. You can still explore the journey’s Story and Timeline views.';
+				element.append(message); return;
+			}
+			const entry = element.closest('.bus-diary-entry');
+			let pins = [];
+			try { pins = JSON.parse(entry.querySelector('[data-journey-pins]')?.textContent || '[]'); } catch (_) { /* The readable timeline remains available. */ }
+			const validPoint = (lat, lng) => Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+			pins = pins.filter((pin) => validPoint(Number(pin.lat), Number(pin.lng)));
+			const start = [Number.parseFloat(element.dataset.startLat), Number.parseFloat(element.dataset.startLng)];
+			const end = [Number.parseFloat(element.dataset.endLat), Number.parseFloat(element.dataset.endLng)];
+			const coordinates = [];
+			if (validPoint(...start)) coordinates.push(start);
+			pins.forEach((pin) => coordinates.push([Number(pin.lat), Number(pin.lng)]));
+			if (validPoint(...end)) coordinates.push(end);
+			if (!coordinates.length) {
+				const empty = document.createElement('p');
+				empty.className = 'dx-journey-map-empty'; empty.textContent = 'This journey’s map is waiting for its recorded locations. You can still explore the story.';
+				element.append(empty); return;
+			}
+			const L = window.L;
+			const map = L.map(element, {scrollWheelZoom: false, zoomControl: true});
+			L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', subdomains: 'abcd', maxZoom: 20,
+			}).addTo(map);
+			const markers = new Map();
+			const makeLabel = (title, subtitle) => {
+				const content = document.createElement('div');
+				const strong = document.createElement('strong'); strong.textContent = title; content.append(strong);
+				if (subtitle) { const small = document.createElement('p'); small.textContent = subtitle; content.append(small); }
+				return content;
+			};
+			const endpoint = (point, name, type) => {
+				if (!validPoint(...point)) return;
+				const icon = L.divIcon({className: `dx-journey-marker dx-journey-marker--${type}`, html: '<span></span>', iconSize: [18,18], iconAnchor: [9,9]});
+				L.marker(point, {icon, title: name, alt: name}).addTo(map).bindPopup(makeLabel(name, element.dataset.route ? `Route ${element.dataset.route}` : ''));
+			};
+			endpoint(start, element.dataset.startName || 'Journey start', 'start');
+			endpoint(end, element.dataset.endName || 'Journey end', 'end');
+			const selectPin = (id, fromMap) => {
+				const card = [...entry.querySelectorAll('[data-journey-pin]')].find((node) => node.dataset.journeyPin === id);
+				entry.querySelectorAll('[data-journey-pin]').forEach((node) => node.classList.toggle('is-current', node === card));
+				if (fromMap) {
+					entry.querySelector('[data-view-toggle="timeline"]')?.click();
+					if (card) {
+						const pane = card.closest('.bus-pane-view');
+						if (pane) pane.scrollTo({top: Math.max(0, card.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop - 16), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+					}
+				} else {
+					const marker = markers.get(id);
+					if (marker) { map.panTo(marker.getLatLng(), {animate: !matchMedia('(prefers-reduced-motion: reduce)').matches}); marker.openPopup(); }
+				}
+			};
+			pins.forEach((pin, index) => {
+				const icon = L.divIcon({className: 'dx-journey-marker dx-journey-marker--pin', html: `<span>${index + 1}</span>`, iconSize: [32,32], iconAnchor: [16,16]});
+				const popup = makeLabel(pin.title, pin.time || 'Journey note');
+				const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Open Timeline →';
+				button.addEventListener('click', () => selectPin(pin.id, true)); popup.append(button);
+				const marker = L.marker([pin.lat, pin.lng], {icon, title: `${index + 1}. ${pin.title}`, alt: pin.title}).addTo(map).bindPopup(popup);
+				marker.on('click', () => selectPin(pin.id, true)); markers.set(pin.id, marker);
+			});
+			if (coordinates.length > 1) L.polyline(coordinates, {color: '#e22c3a', weight: 4, opacity: .92, lineCap: 'round'}).addTo(map);
+			if (coordinates.length === 1) map.setView(coordinates[0], 13);
+			else map.fitBounds(coordinates, {padding: [45,45]});
+			entry.querySelectorAll('[data-journey-point]').forEach((button) => button.addEventListener('click', () => selectPin(button.dataset.journeyPoint, false)));
+			window.addEventListener('resize', () => map.invalidateSize(), {passive: true});
+			if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize()).observe(element);
+		});
+
+		document.querySelectorAll('[data-dx-poll]').forEach((card) => {
+			if (card.dataset.pollBound) return;
+			card.dataset.pollBound = 'true';
+			const form = card.querySelector('[data-poll-form]');
+			const status = card.querySelector('[data-poll-status]');
+			const retry = card.querySelector('[data-poll-retry]');
+			const results = card.querySelector('[data-poll-results]');
+			let state, pending = false, closingTimer;
+			const render = (next) => {
+				state = next;
+				card.classList.toggle('is-poll-closed', next.closed);
+				card.classList.toggle('is-poll-voted', Boolean(next.voted));
+				form.hidden = next.closed || Boolean(next.voted) || !next.configured;
+				form.querySelectorAll('input').forEach((input) => { input.disabled = next.closed || Boolean(next.voted) || !next.configured; });
+				form.querySelector('button').disabled = !next.configured || next.closed || Boolean(next.voted);
+				results.hidden = !next.showResults;
+				card.querySelector('[data-poll-state]').textContent = next.closed ? 'The Final Word' : next.voted ? 'Your Vote Is Counted' : 'Your View';
+				card.querySelector('[data-poll-deadline-label]').textContent = next.closed ? 'Voting Closed' : 'Voting Closes';
+				card.querySelector('[data-poll-results-title]').textContent = next.closed ? 'Final Results' : 'Results So Far';
+				next.options.forEach((option) => {
+					const row = [...results.querySelectorAll('[data-poll-result]')].find((node) => node.dataset.pollResult === option.key);
+					if (!row) return;
+					row.querySelector('[data-poll-percent]').textContent = `${option.percent}%`;
+					row.querySelector('[data-poll-count]').textContent = `${option.votes} ${option.votes === 1 ? 'vote' : 'votes'}`;
+					row.querySelector('.dx-poll-bar span').style.setProperty('--vote-share', `${option.percent}%`);
+					row.classList.toggle('is-your-vote', option.key === next.voted);
+				});
+				card.querySelector('[data-poll-total]').textContent = `${next.total} ${next.total === 1 ? 'vote' : 'votes'} in total`;
+				status.textContent = next.message || (next.closed ? 'Voting has closed. These are the final results.' : next.voted ? 'Your vote is counted. Results stay provisional until voting closes.' : next.configured ? 'One choice. One vote. Have your say.' : 'Voting will open when this poll is ready.');
+				clearTimeout(closingTimer);
+				if (!next.closed && next.closesAt) {
+					const remaining = new Date(next.closesAt).getTime() - Date.now();
+					closingTimer = setTimeout(() => { if (document.hidden) return; load(); }, Math.max(1500, Math.min(remaining + 300, 2147480000)));
+				}
+			};
+			const request = async (vote) => {
+				if (pending) return;
+				pending = true; retry.hidden = true; card.setAttribute('aria-busy', 'true');
+				if (vote) form.querySelector('button').disabled = true;
+				try {
+					const endpoint = new URL(card.dataset.pollEndpoint, location.href);
+					if (endpoint.origin !== location.origin) throw new Error('The poll address could not be verified.');
+					const response = await fetch(endpoint, {
+						method: vote ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
+						headers: {'Accept': 'application/json', ...(card.dataset.restNonce ? {'X-WP-Nonce': card.dataset.restNonce} : {}), ...(vote ? {'Content-Type': 'application/json'} : {})},
+						...(vote ? {body: JSON.stringify({choice: vote, token: state?.token || ''})} : {}),
+					});
+					const data = await response.json();
+					if (!response.ok && !(response.status === 409 && Array.isArray(data.options))) throw new Error(data.message || 'The poll could not be loaded. Please try again.');
+					if (!Array.isArray(data.options)) throw new Error('The poll response was incomplete. Please try again.');
+					render(data);
+					if (vote && data.showResults) card.querySelector('[data-poll-results-title]').focus({preventScroll: true});
+				} catch (error) {
+					status.textContent = error.message || 'The poll is temporarily unavailable. Please try again.';
+					retry.hidden = false;
+					if (state?.configured && !state.closed && !state.voted) form.querySelector('button').disabled = false;
+				} finally { pending = false; card.removeAttribute('aria-busy'); }
+			};
+			const load = () => request();
+			form.addEventListener('submit', (event) => {
+				event.preventDefault();
+				if (!state || !form.reportValidity()) return;
+				status.textContent = 'Counting your vote…';
+				request(new FormData(form).get('choice'));
+			});
+			retry.addEventListener('click', load);
+			document.addEventListener('visibilitychange', () => { if (!document.hidden && state?.closesAt && !state.closed && Date.now() >= new Date(state.closesAt).getTime()) load(); });
+			load();
+		});
+	});
+})();
+;
+
+// Existing shared theme controllers retain their internal initialization order.
+// Theme entry: emitted as build/index.js and build/index.css.
 
 // faq-motion — private module scope.
 const { initFaqMotion } = (() => {
@@ -1183,7 +2880,7 @@ const { initAccountSky } = (() => {
 		};
 		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
-		document.querySelectorAll(".auth.dx-account-photo").forEach((auth) => {
+		document.querySelectorAll(".auth.dx-account-photo, .dx-404-hero").forEach((auth) => {
 			const graphic = auth.querySelector(".graphic-content");
 			if (!graphic || graphic.querySelector(".dx-account-sky")) return;
 			const sky = document.createElement("div");
@@ -5074,30 +6771,27 @@ function initGymLeague(archive, cards) {
 	========================== */
 
 	dxOnPageReady(() => {
-		const calendlyButtons = document.querySelectorAll(".js-calendly-popup");
-
-		if (!calendlyButtons.length) return;
-
-		calendlyButtons.forEach((button) => {
-			button.addEventListener("click", (e) => {
-				e.preventDefault();
-
-				if (
-					typeof Calendly === "undefined" ||
-					typeof Calendly.initPopupWidget !== "function"
-				) {
-					console.warn("Calendly widget script is not loaded yet.");
-					return;
-				}
-
-				Calendly.initPopupWidget({
-					url: "https://calendly.com/dxndre/30min",
-				});
-			});
+		// Keep a working link even when Safari or consent settings block the widget.
+		const bookingURL = 'https://calendly.com/dxndre/30min';
+		document.querySelectorAll('.js-calendly-popup').forEach(trigger => {
+			const link = trigger.matches('a') ? trigger : trigger.querySelector('a');
+			if (link && (!link.getAttribute('href') || link.getAttribute('href').startsWith('#'))) link.href = bookingURL;
 		});
-
-		console.log("Calendly popup initialized for buttons:", calendlyButtons);
+		if (document.documentElement.dataset.dxBookingInit) return;
+		document.documentElement.dataset.dxBookingInit = 'true';
+		document.addEventListener('click', event => {
+			const link = event.target.closest?.('a');
+			if (!link?.closest('.js-calendly-popup') || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+			if (typeof window.Calendly?.initPopupWidget !== 'function') return;
+			try {
+				window.Calendly.initPopupWidget({ url: link.href || bookingURL });
+				event.preventDefault();
+			} catch {
+				// Let the original link navigate; no delayed popup or extra click required.
+			}
+		});
 	});
+
 
 	/* ==========================
 		BUS NFS ARCHIVE
@@ -5431,77 +7125,49 @@ function initGymLeague(archive, cards) {
 
 		const initialiseOverallScore = () => {
 			const scoreElements = document.querySelectorAll("[data-overall-score]");
-
-			if (!scoreElements.length) {
-				return;
-			}
-
 			const animateScore = (element) => {
-				const target = parseFloat(element.dataset.overallScore);
-
-				if (!Number.isFinite(target)) {
-					return;
-				}
-
-				element.style.color = gymOverallBand(target).color;
-
-				if (reduceMotion) {
-					element.textContent = `${target.toFixed(1)}%`;
-
-					return;
-				}
-
-				const duration = 1100;
-
-				const start = performance.now();
-
-				const frame = (time) => {
-					const elapsed = time - start;
-
-					const progress = clamp(elapsed / duration, 0, 1);
-
-					const eased = 1 - Math.pow(1 - progress, 3);
-
-					const current = target * eased;
-
+				const parsed = parseScore(element.dataset.overallScore);
+				if (parsed === null || element.dataset.overallAnimated) return;
+				element.dataset.overallAnimated = "true";
+				const target = clamp(parsed, 0, 100);
+				const section = element.closest(".gym-review-final, .gym-review-rating");
+				const label = section?.querySelector("[data-score-label-source]");
+				const review = element.closest(".gym-review-editorial");
+				const isFinal = Boolean(element.closest(".gym-review-final"));
+				element.setAttribute("aria-label", `${target.toFixed(1)} percent, ${gymOverallBand(target).label}`);
+				const paint = (current) => {
+					const band = gymOverallBand(current);
 					element.textContent = `${current.toFixed(1)}%`;
-					element.style.color = gymOverallBand(current).color;
-
-					if (progress < 1) {
-						requestAnimationFrame(frame);
+					element.style.color = band.color;
+					if (label) {
+						label.textContent = band.label;
+						label.style.color = band.color;
 					}
+					if (isFinal) review?.style.setProperty("--gym-overall-colour", band.color);
 				};
-
+				if (reduceMotion) { paint(target); return; }
+				const start = performance.now();
+				paint(0);
+				const frame = (time) => {
+					if (!element.isConnected) return;
+					const progress = clamp((time - start) / 1500, 0, 1);
+					paint(target * (1 - Math.pow(1 - progress, 3)));
+					if (progress < 1) requestAnimationFrame(frame);
+				};
 				requestAnimationFrame(frame);
 			};
-
-			if (!("IntersectionObserver" in window)) {
+			if (reduceMotion || !("IntersectionObserver" in window)) {
 				scoreElements.forEach(animateScore);
-
 				return;
 			}
-
-			const observer = new IntersectionObserver(
-				(entries) => {
-					entries.forEach((entry) => {
-						if (!entry.isIntersecting) {
-							return;
-						}
-
-						animateScore(entry.target);
-
-						observer.unobserve(entry.target);
-					});
-				},
-
-				{
-					threshold: 0.4,
-				},
-			);
-
-			scoreElements.forEach((element) => {
-				observer.observe(element);
-			});
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return;
+					animateScore(entry.target);
+					observer.unobserve(entry.target);
+				});
+			}, {threshold: 0.4});
+			scoreElements.forEach((element) => observer.observe(element));
 		};
 
 		// ================================================================
@@ -5518,52 +7184,87 @@ function initGymLeague(archive, cards) {
 		// ================================================================
 
 		const initialiseMap = () => {
-			const maps = document.querySelectorAll(".gym-review-map");
-
-			if (!maps.length) {
-				return;
-			}
-
-			maps.forEach((map) => {
-				const location =
-					map.dataset.title || map.dataset.location || "this gym";
-				const embed = map.dataset.mapEmbed;
-
-				if (!embed) {
-					const unavailable = document.createElement("p");
-					unavailable.className = "gym-review-map__unavailable";
-					unavailable.textContent =
-						"A map is not available for this branch yet.";
-					map.appendChild(unavailable);
-					return;
-				}
-
+			const initialise = (element) => {
+				if (element.dataset.mapInitialised) return;
+				element.dataset.mapInitialised = "true";
+				const location = element.dataset.title || element.dataset.location || "this gym";
+				const embed = element.dataset.mapEmbed;
+				const point = [parseFloat(element.dataset.mapLat), parseFloat(element.dataset.mapLng)];
+				const confirmedPoint = point.every(Number.isFinite) && Math.abs(point[0]) <= 90 && Math.abs(point[1]) <= 180;
 				const loading = document.createElement("div");
-
 				loading.className = "gym-review-map__loading";
-
-				loading.textContent = "Loading map";
-
-				map.appendChild(loading);
-
-				const iframe = document.createElement("iframe");
-
-				iframe.title = `Map showing ${location}`;
-
-				iframe.loading = "lazy";
-
-				iframe.referrerPolicy = "strict-origin-when-cross-origin";
-
-				iframe.setAttribute("allowfullscreen", "");
-
-				iframe.src = embed;
-
-				iframe.addEventListener("load", () => {
-					loading.remove();
+				loading.textContent = "Finding your gym";
+				element.appendChild(loading);
+				const embeddedMap = () => {
+					if (element.querySelector("iframe")) return;
+					if (!embed) {
+						loading.className = "gym-review-map__unavailable";
+						loading.textContent = "A map is not available for this branch yet.";
+						return;
+					}
+					const iframe = document.createElement("iframe");
+					iframe.title = `Map showing ${location}`;
+					iframe.loading = "lazy";
+					iframe.referrerPolicy = "strict-origin-when-cross-origin";
+					iframe.setAttribute("allowfullscreen", "");
+					iframe.src = embed;
+					iframe.addEventListener("load", () => loading.remove(), {once: true});
+					element.appendChild(iframe);
+				};
+				if (!confirmedPoint || !window.L) { embeddedMap(); return; }
+				const canvas = document.createElement("div");
+				canvas.className = "gym-review-map__canvas";
+				canvas.setAttribute("aria-label", `Map showing ${location}`);
+				element.appendChild(canvas);
+				let map;
+				let resize;
+				let failed = false;
+				const fallback = () => {
+					if (failed) return;
+					failed = true;
+					resize?.disconnect();
+					map?.remove();
+					canvas.remove();
+					element.classList.remove("has-coordinate-map");
+					embeddedMap();
+				};
+				try {
+					element.classList.add("has-coordinate-map");
+					map = L.map(canvas, {scrollWheelZoom: false, zoomControl: false}).setView(point, 14);
+					L.control.zoom({position: "topright"}).addTo(map);
+					const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+						maxZoom: 19,
+						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+					});
+					let tileFailures = 0;
+					tiles.once("load", () => loading.remove());
+					tiles.on("tileload", () => { tileFailures = 0; });
+					tiles.on("tileerror", () => { if (++tileFailures >= 3) fallback(); });
+					tiles.addTo(map);
+					const icon = L.divIcon({
+						className: "gym-review-map__pin",
+						iconSize: [36, 46], iconAnchor: [18, 44], tooltipAnchor: [0, -36],
+						html: '<svg viewBox="0 0 36 46" width="36" height="46" aria-hidden="true"><path d="M18 1.5C8.9 1.5 1.5 8.9 1.5 18c0 12 16.5 26.5 16.5 26.5S34.5 30 34.5 18C34.5 8.9 27.1 1.5 18 1.5Z" fill="#ed3343" stroke="#ffe5e6" stroke-width="2"/><circle cx="18" cy="18" r="6" fill="#fff5ee"/></svg>',
+					});
+					const tooltip = document.createElement("span");
+					tooltip.textContent = location;
+					L.marker(point, {icon, title: location, keyboard: true}).addTo(map).bindTooltip(tooltip, {direction: "top", className: "gym-review-map__tooltip"});
+					if ("ResizeObserver" in window) {
+						resize = new ResizeObserver(() => { if (canvas.isConnected && !failed) map.invalidateSize({pan: false}); });
+						resize.observe(canvas);
+					}
+				} catch (_) { fallback(); }
+			};
+			const maps = document.querySelectorAll(".gym-review-map");
+			if (!("IntersectionObserver" in window)) { maps.forEach(initialise); return; }
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return;
+					initialise(entry.target);
+					observer.unobserve(entry.target);
 				});
-
-				map.appendChild(iframe);
-			});
+			}, {rootMargin: "300px"});
+			maps.forEach((element) => observer.observe(element));
 		};
 
 		// ================================================================
@@ -5930,6 +7631,13 @@ function initHomepageHeroMotion() {
 	const portrait = hero?.querySelector(".hero-foreground > img");
 	if (!hero || !background || !portrait || hero.dataset.motionInit) return;
 	hero.dataset.motionInit = "true";
+	let glow = hero.querySelector(':scope > .dx-home-glow');
+	if (!glow) {
+		glow = document.createElement('div');
+		glow.className = 'dx-home-glow';
+		glow.setAttribute('aria-hidden', 'true');
+		hero.prepend(glow);
+	}
 
 	const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 	const desktop = matchMedia(
@@ -6025,26 +7733,16 @@ function initHomepageHeroMotion() {
 			return;
 		}
 		hero.classList.add("hero-entering");
-		const opacity = getComputedStyle(portrait).opacity;
 		const bgAnimation = background.animate(
 			[{ filter: "brightness(.38)" }, { filter: "brightness(.55)" }],
 			{ duration: 1800, easing: "cubic-bezier(.22,1,.36,1)" },
 		);
-		const portraitAnimation = portrait.animate(
-			[
-				{ opacity: 0, translate: "0 12px" },
-				{ opacity, translate: "0 0" },
-			],
-			{
-				duration: 1200,
-				delay: 100,
-				fill: "backwards",
-				easing: "cubic-bezier(.22,1,.36,1)",
-			},
-		);
+		const glowAnimation = glow.animate([
+			{ opacity: 0, scale: '.88' }, { opacity: 1, scale: '1' },
+		], { duration: 1600, delay: 100, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' });
 		animations.add(bgAnimation);
-		animations.add(portraitAnimation);
-		Promise.allSettled([bgAnimation.finished, portraitAnimation.finished]).then(
+		animations.add(glowAnimation);
+		Promise.allSettled([bgAnimation.finished, glowAnimation.finished]).then(
 			stopEntrance,
 		);
 	};
@@ -6113,14 +7811,13 @@ function initHomepageHeroMotion() {
 		portrait.style.setProperty("--hero-scroll-y", "0px");
 		hero.style.setProperty("--hero-glow-y", "0px");
 	});
-	const observer = new IntersectionObserver(
-		(entries) => {
+	if ('IntersectionObserver' in window) {
+		const observer = new IntersectionObserver(entries => {
 			visible = entries[0].isIntersecting;
 			refresh();
-		},
-		{ threshold: 0 },
-	);
-	observer.observe(hero);
+		}, { threshold: 0 });
+		observer.observe(hero);
+	} else { visible = true; refresh(); }
 }
 dxOnPageReady(initHomepageHeroMotion);
 
@@ -6732,6 +8429,38 @@ dxOnPageReady(initHomepageHeroMotion);
 		[...form.querySelectorAll('[name="service"]')].forEach(
 			(el) => (el.checked = el.value === incoming),
 		);
+
+	if (/^Calculator project outline:/i.test(form.elements.brief.value.trim())) {
+		form.querySelector('.enquiry-calculator-note')?.remove();
+		const banner = document.createElement('div');
+		banner.className = 'enquiry-quote-choice';
+		banner.setAttribute('role', 'region');
+		banner.setAttribute('aria-label', 'Your pricing calculator estimate');
+		const copy = document.createElement('p');
+		copy.textContent = 'It looks like you have an estimate from the pricing calculator. Keep it as your starting point, or clear the estimate details.';
+		const actions = document.createElement('div');
+		const keep = document.createElement('button');
+		keep.type = 'button'; keep.textContent = 'Keep estimate';
+		const clear = document.createElement('button');
+		clear.type = 'button'; clear.textContent = 'Clear estimate';
+		actions.append(keep, clear); banner.append(copy, actions);
+		steps[1].querySelector('legend').after(banner);
+		keep.addEventListener('click', () => {
+			banner.replaceChildren();
+			const status = document.createElement('p');
+			status.textContent = 'Estimate retained. You can edit the details below.';
+			status.setAttribute('role', 'status'); banner.append(status);
+			form.elements.brief.focus();
+		});
+		clear.addEventListener('click', () => {
+			form.elements.brief.value = '';
+			if (form.elements.budget.value !== '£40 photography' && form.elements.budget.value !== '£50 photography — 24 hours') form.elements.budget.value = '';
+			form.elements.timing.value = '';
+			try { sessionStorage.removeItem('dxndre-calculator-handoff'); } catch (_) {}
+			const url = new URL(location.href); url.searchParams.delete('from_calculator'); history.replaceState(null, '', url);
+			save(); review(); banner.remove(); form.elements.brief.focus();
+		});
+	}
 	form.addEventListener("input", save);
 	form.addEventListener("change", () => {
 		save();
@@ -6941,6 +8670,7 @@ dxOnPageReady(initHomepageHeroMotion);
 	});
 })();
 
+// Natural column mosaics use CSS spacing without rounded grid-row spans.
 // Reuse the established photographic viewer on the landing page and route app.
 window.dxInitBusGallery = (root) => {
 	if (root.dxOpenBusPhoto) return root.dxOpenBusPhoto;
@@ -7183,6 +8913,90 @@ window.dxInitBusGallery = (root) => {
 	const root = document.querySelector(".dxbus-app,.dxb");
 	if (!root || !window.DXB) return;
 	const app = root.matches('.dxbus-app');
+	// Parallax only translates the decorative image; text, layout and tab loading stay native.
+	function initBusPresentation() {
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+		const hero = root.querySelector('.dxbus-hero');
+		let frame = 0, visible = true, suspended = false;
+		const cancel = () => { if (frame) cancelAnimationFrame(frame); frame = 0; };
+		const paint = () => {
+			frame = 0;
+			if (!hero || suspended || document.hidden || reduced.matches) return;
+			const bounds = hero.getBoundingClientRect();
+			if (bounds.bottom <= 0 || bounds.top >= innerHeight) return;
+			const limit = innerWidth < 768 ? 24 : 48;
+			const offset = Math.max(-limit, Math.min(limit, -bounds.top * .16));
+			hero.style.setProperty('--dxbus-parallax-y', `${offset.toFixed(2)}px`);
+		};
+		const schedule = () => {
+			if (hero && visible && !frame && !suspended && !document.hidden && !reduced.matches) frame = requestAnimationFrame(paint);
+		};
+		const preferences = () => {
+			cancel();
+			if (!hero) return;
+			if (reduced.matches) {
+				delete hero.dataset.parallaxReady;
+				hero.style.removeProperty('--dxbus-parallax-y');
+			} else {
+				hero.dataset.parallaxReady = 'true';
+				schedule();
+			}
+		};
+		const observer = hero && 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+			visible = entries[0].isIntersecting;
+			if (visible) schedule(); else cancel();
+		}, { rootMargin: '80px 0px' }) : null;
+		observer?.observe(hero);
+		if (hero) {
+			addEventListener('scroll', schedule, { passive: true });
+			addEventListener('resize', schedule, { passive: true });
+			document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); else schedule(); });
+			addEventListener('pagehide', () => { suspended = true; cancel(); observer?.disconnect(); });
+			addEventListener('pageshow', () => { suspended = false; observer?.observe(hero); schedule(); });
+			reduced.addEventListener('change', preferences);
+			preferences();
+		}
+
+		// Delegate so links in freshly fetched route panels work without extra listeners.
+		root.addEventListener('click', event => {
+			if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+			const link = event.target.closest?.('a[href*="#"]');
+			if (!link || !root.contains(link) || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+			let url, target;
+			try {
+				url = new URL(link.href, location.href);
+				if (!url.hash || url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search) return;
+				target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+			} catch (_) { return; }
+			if (!target) return;
+			const panel = target.closest('[role="tabpanel"]');
+			if (panel?.hidden) {
+				const button = [...root.querySelectorAll('[data-tab]')].find(node => node.getAttribute('aria-controls') === panel.id);
+				if (!button || button.disabled) return;
+				button.click();
+			}
+			if (target.closest('[hidden]')) return;
+			event.preventDefault();
+			// Account for fixed headers and the section navigation when it becomes sticky.
+			let inset = 24;
+			document.querySelectorAll('#header,.dxb-nav,.dxbus-topbar').forEach(bar => {
+				const style = getComputedStyle(bar), bounds = bar.getBoundingClientRect();
+				if (bounds.height && (style.position === 'fixed' || style.position === 'sticky')) inset = Math.max(inset, (parseFloat(style.top) || 0) + bounds.height + 24);
+			});
+			const top = Math.max(0, scrollY + target.getBoundingClientRect().top - inset);
+			if (location.hash !== url.hash) history.pushState(history.state, '', url.hash);
+			if (!event.detail && typeof target.focus === 'function') {
+				const hadTabindex = target.hasAttribute('tabindex');
+				if (!hadTabindex) {
+					target.setAttribute('tabindex', '-1');
+					target.addEventListener('blur', () => target.removeAttribute('tabindex'), { once: true });
+				}
+				target.focus({ preventScroll: true });
+			}
+			window.scrollTo({ top, behavior: reduced.matches ? 'instant' : 'smooth' });
+		});
+	}
+	initBusPresentation();
 	const openPhoto = (app || root.querySelector("#dxbus-lookup,#dxb-route-input")) ? window.dxInitBusGallery(root) : () => {};
 	if (!root.querySelector('#dxb-route-input')) {
 		// Quick Lookup deliberately has no old route panels. Keep the journal navigation.
@@ -7256,6 +9070,7 @@ window.dxInitBusGallery = (root) => {
 		try {
 			localStorage.setItem(key, JSON.stringify(value));
 		} catch {}
+		if (app && key === "dxb-marked-vehicles") syncAppPins();
 	};
 	let recent = readSaved("dxb-recent-routes"),
 		marked = readSaved("dxb-marked-vehicles"),
@@ -7612,11 +9427,13 @@ window.dxInitBusGallery = (root) => {
 		const dialog = text("dialog", "", "dxb-fleet-modal");
 		dialog.setAttribute(
 			"aria-label",
-			`${type} deckers tracking on route ${route}`,
+			type === "all" ? `All buses tracking on route ${route}` : `${type} deckers tracking on route ${route}`,
 		);
 		const heading = text(
 			"h2",
-			type === "vehicle"
+			type === "all"
+				? `All buses on Route ${route}`
+				: type === "vehicle"
 				? `Bus details on route ${route}`
 				: type === "unknown"
 				? `Type unconfirmed on Route ${route}`
@@ -7633,13 +9450,13 @@ window.dxInitBusGallery = (root) => {
         const fleetGrid = text("div", "", "dxb-fleet-grid"); dialog.append(fleetGrid);
 		if (!vehicles.length)
 			dialog.append(
-				text("p", "No confirmed vehicles of this type are currently tracking."),
+				text("p", type === "all" ? "No buses are currently tracking on this route." : "No confirmed vehicles of this type are currently tracking."),
 			);
 		vehicles.forEach((vehicle) => {
 			const card = text("article", "", "dxb-fleet-item");
 			const identity = text("header", "", "dxb-fleet-identity");
 			identity.append(text("h3", vehicle.model || "Model unconfirmed"));
-			const identifiers = text("div", "", "dxb-fleet-identifiers");
+			const identifiers = text("div", "", type === "vehicle" ? "dxbus-vehicle-parameters" : "dxb-fleet-identifiers");
 			identifiers.append(
 				vehicleField("Registration", formatRegistration(vehicle.registration)),
 				vehicleField("Fleet number", vehicle.fleet || "Unconfirmed"),
@@ -7647,8 +9464,7 @@ window.dxInitBusGallery = (root) => {
 			identity.append(identifiers);
 			card.append(identity);
 			if (type === "vehicle") {
-				const detail = text("div", "", "dxb-line-detail");
-				detail.append(
+				identifiers.append(
 					vehicleField(
 						"Vehicle type",
 						sentenceCase(vehicle.type || "Unconfirmed"),
@@ -7656,11 +9472,10 @@ window.dxInitBusGallery = (root) => {
 					vehicleField("Fuel", sentenceCase(vehicle.fuel || "Unconfirmed")),
 					vehicleField(
 						"USB charging",
-						vehicle.usb === true ? "Available" : "Not confirmed",
+						vehicle.usb === true ? "Available" : vehicle.usb === false ? "Not fitted" : "Not confirmed",
 					),
 					vehicleField("Garage", vehicle.garage || "Not confirmed"),
 				);
-				card.append(detail);
 			}
 			const position = text(
 				"div",
@@ -7670,6 +9485,7 @@ window.dxInitBusGallery = (root) => {
 			card.append(position);
 			const mark = text("button", "", "dxb-mark-button");
 			mark.type = "button";
+			mark.dataset.pinRegistration = dxBusRegistration(vehicle.registration);
 			const update = () => {
 				setPinLabel(
 					mark,
@@ -7894,7 +9710,7 @@ window.dxInitBusGallery = (root) => {
 				),
 			);
 
-			box.append(vehicleField("Garage", v.garage || "Not confirmed"));
+			box.append(vehicleField("Garage", v.garage || "Not confirmed", "is-garage"));
 			const footer = card.querySelector(".dxb-arrival-footer");
 			footer.prepend(
 				vehicleField("Make / model", v.model || "Not available", "is-model"),
@@ -8289,6 +10105,7 @@ window.dxInitBusGallery = (root) => {
 				),
 			);
 			select.value = data.direction;
+			dxBusApplyDirections(root, labels, data);
 			host.replaceChildren();
 			const note = text(
 				"p",
@@ -8392,14 +10209,17 @@ window.dxInitBusGallery = (root) => {
 					list.append(item);
 				});
 				column.append(list);
-				if (!buses.length && positions)
-					column.prepend(
-						text(
-							"p",
-							"No buses with a matching predicted stop in this direction.",
-							"dxb-small",
-						),
-					);
+				if (!buses.length && positions) {
+					const notice = text('div', '', 'dxbus-direction-notice');
+					notice.setAttribute('role', 'note');
+					const icon = text('span', '', 'dxbus-direction-notice__icon');
+					icon.setAttribute('aria-hidden', 'true');
+					icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="14" height="16" rx="2"/><path d="M5 10h14M8 19v2m8-2v2M9 6h6"/><circle cx="8.5" cy="14.5" r=".75"/><circle cx="15.5" cy="14.5" r=".75"/></svg>';
+					const copy = text('div', '', 'dxbus-direction-notice__copy');
+					copy.append(text('strong', 'No matching buses right now'), text('p', 'No buses with a matching predicted stop in this direction.'));
+					notice.append(icon, copy);
+					column.insertBefore(notice, list);
+				}
 				if (!stops.length)
 					column.append(
 						text("p", "Stop information is unavailable for this direction."),
@@ -8910,15 +10730,10 @@ window.dxInitBusGallery = (root) => {
 		if (profile.badgeType === "former" && profile.history) {
 			const h = profile.history,
 				history = text("div", "", "dxb-route-history");
-			history.append(
-				text(
-					"strong",
-					h.tenure ? "In service · " + h.tenure : "Operating history",
-				),
-			);
-			if (h.start) history.append(text("p", "Introduced · " + h.start));
-			if (h.end) history.append(text("p", "Withdrawn · " + h.end));
-			if (!h.tenure)
+			const periods = dxBusHistoryPeriods(h);
+			history.append(text("strong", periods.length > 1 && periods.every(period => period.start && period.end) ? "Operating periods" : h.tenure ? "In service · " + h.tenure : "Operating history"));
+			dxBusAppendHistory(history, h);
+			if (!periods.some(period => period.start))
 				history.append(
 					text(
 						"p",
@@ -9305,6 +11120,8 @@ window.dxInitBusGallery = (root) => {
 			if (token !== sequence) return;
 			if (transition) commitAppRoute(transition);
 			current = data;
+			delete root.dataset.directionCount;
+			$$(".is-single-direction").forEach((select) => select.classList.remove("is-single-direction"));
 			if (app) { root.dataset.serviceType = data.serviceType || "regular"; root.dataset.routeTheme = data.serviceType === "night" || /^N/i.test(data.name) ? "night" : "day"; }
 			setRouteTabAvailability(data.profile);
 			input.value = route;
@@ -9327,6 +11144,7 @@ window.dxInitBusGallery = (root) => {
 						directionSelect.value = data.direction;
 						directionSelect.disabled = directionSelect.options.length < 2;
 						if (app && $('#dxbus-overview-direction')) { $('#dxbus-overview-direction').replaceChildren(...Array.from(directionSelect.options).map((option) => new Option(option.text, option.value))); $('#dxbus-overview-direction').value = data.direction; $('#dxbus-overview-direction').disabled = directionSelect.disabled; }
+						dxBusApplyDirections(root, labels, data);
 					})
 					.catch(() => {
 						if (token === sequence) {
@@ -9688,16 +11506,7 @@ window.dxInitBusGallery = (root) => {
 		if (document.hidden) stopArrivals();
 		else if (tab === "arrivals") refreshArrivals();
 	});
-	$("#dxb-share")?.addEventListener("click", async () => {
-		const button = $("#dxb-share");
-		try {
-			await navigator.clipboard.writeText(location.href);
-			button.textContent = "Route link copied ✓";
-		} catch {
-			button.textContent = "Copy the route URL from your address bar";
-		}
-		setTimeout(() => (button.textContent = "Copy route link ↗"), 4000);
-	});
+	// The unified route-sharing dialog owns this control.
 	// The app owns one route-wide refresh loop. View changes never create another.
 	let appPollTimer = 0,
 		appPollTicker = 0,
@@ -9891,6 +11700,34 @@ window.dxInitBusGallery = (root) => {
 		const vehicle = await getVehicle(reg).catch(() => ({ registration: reg, found: false }));
 		if (token === sequence && current?.name === route) openFleet('vehicle', [{ ...vehicle, ...context, registration: reg }], route);
 	}
+	async function openAppAllVehicles(card) {
+		if (!current || current.archive || card.getAttribute('aria-busy') === 'true') return;
+		if (!latestRunning) { announce('Live vehicle information is not available yet. Please try again shortly.', true); return; }
+		const route = current.name, token = sequence;
+		const ids = [...new Set((latestRunning.vehicles || []).map(dxBusRegistration).filter((reg) => /^[A-Z0-9]{3,12}$/.test(reg)))];
+		card.setAttribute('aria-busy', 'true');
+		const vehicles = new Array(ids.length);
+		let index = 0;
+		try {
+			await Promise.all(Array.from({ length: Math.min(4, ids.length) }, async () => {
+				while (index < ids.length && token === sequence) {
+					const slot = index++, registration = ids[slot];
+					const vehicle = await getVehicle(registration).catch(() => ({ found: false }));
+					vehicles[slot] = { ...vehicle, registration };
+				}
+			}));
+			// An unavailable model never removes an actual vehicle from the TfL running feed.
+			if (token === sequence && current?.name === route) openFleet('all', vehicles.filter(Boolean), route);
+		} finally { card.removeAttribute('aria-busy'); }
+	}
+	function syncAppPins() {
+		dxBusSyncMapPins(appMaps, marked);
+		$$('[data-pin-registration]').forEach((button) => {
+			const reg = button.dataset.pinRegistration, pinned = marked.includes(reg);
+			setPinLabel(button, (pinned ? 'Pinned ' : 'Pin ') + formatRegistration(reg));
+			button.setAttribute('aria-pressed', String(pinned));
+		});
+	}
 	async function updateAppVehicleStats(running, token, poll) {
 		const ids = [...new Set(running.vehicles || [])];
 		appFleet = { single: [], double: [], unknown: [] };
@@ -10016,15 +11853,20 @@ window.dxInitBusGallery = (root) => {
 				state.map.fitBounds(L.latLngBounds(points), { padding: [22, 22], maxZoom: 13 }); state.identity = identity;
 			}
 			state.buses.clearLayers();
+			state.pinMarkers = [];
 			(positions?.vehicles || []).forEach((bus) => {
 				if (bus.direction && bus.direction !== routeData.direction) return;
 				const stop = stops.find((item) => item.id === bus.stopId);
 				if (!stop || Date.parse(bus.expected) < Date.now() - 15000) return;
-				const marker = L.marker([Number(stop.lat), Number(stop.lon)], { icon: L.divIcon({ className: 'dxbus-map-bus', html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="17" rx="3"/><path d="M5 10h14M8 20v2m8-2v2M8 15h1m6 0h1"/></svg>', iconSize: [28, 28], iconAnchor: [14, 14] }), title: `${formatRegistration(bus.registration)} · next predicted stop ${stop.name}, not GPS`, keyboard: true }).addTo(state.buses);
+				const marker = L.marker([Number(stop.lat), Number(stop.lon)], { icon: L.divIcon({ className: 'dxbus-map-bus' + (marked.includes(dxBusRegistration(bus.registration)) ? ' is-pinned' : ''), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="17" rx="3"/><path d="M5 10h14M8 20v2m8-2v2M8 15h1m6 0h1"/></svg>', iconSize: [28, 28], iconAnchor: [14, 14] }), title: `${formatRegistration(bus.registration)} · next predicted stop ${stop.name}, not GPS`, keyboard: true }).addTo(state.buses);
 				const tip = text('div', '', 'dxbus-map-bus-tooltip__body');
                 const model = text('span', 'Checking make and model…');
-                tip.append(text('strong', formatRegistration(bus.registration)), model, text('span', 'Route ' + (bus.route || current.name) + (bus.destination ? ' · ' + bus.destination : '')), text('small', 'Next predicted stop: ' + stop.name + ' · not GPS'));
+                const pinnedBadge = text('span', 'PINNED', 'dxbus-map-pinned-badge');
+                pinnedBadge.hidden = !marked.includes(dxBusRegistration(bus.registration));
+                tip.append(pinnedBadge, text('strong', formatRegistration(bus.registration)), model, text('span', 'Route ' + (bus.route || current.name) + (bus.destination ? ' · ' + bus.destination : '')), text('small', 'Next predicted stop: ' + stop.name + ' · not GPS'));
+                dxBusAnimateMapTooltip(marker);
                 marker.bindTooltip(tip, { className: 'dxbus-map-bus-tooltip', direction: 'top', opacity: 1 });
+                state.pinMarkers.push({ marker, registration: bus.registration, badge: pinnedBadge });
                 getVehicle(bus.registration).then(vehicle => {
                     if (token !== sequence || !state.buses.hasLayer(marker)) return;
                     model.textContent = vehicle.model || 'Make and model unconfirmed';
@@ -10131,22 +11973,14 @@ window.dxInitBusGallery = (root) => {
         if (profile.badgeType === 'former') {
             const h = profile.history || {};
             const tenure = text('p', '', 'dxbus-route-tenure');
-            const displayDate = value => {
-                const raw = String(value || '');
-                if (!/^\d{1,2}\s+[A-Za-z]+\s+\d{4}$/.test(raw)) return raw;
-                const date = new Date(raw + ' 12:00:00 GMT');
-                return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: '2-digit', year: 'numeric' }).format(date) : raw;
-            };
-            if (h.start && h.end) tenure.append(document.createTextNode(displayDate(h.start) + ' – ' + displayDate(h.end)));
-            else if (h.end) tenure.append(document.createTextNode('RAN UNTIL ' + displayDate(h.end)));
-            else if (h.tenure) tenure.append(document.createTextNode('IN SERVICE · ' + h.tenure));
-            else tenure.append(document.createTextNode('FORMER ROUTE · Operating dates not confirmed'));
-            if (h.source) { tenure.append(document.createTextNode(' · ')); tenure.append(sourceLink('Route history ↗', h.source)); }
+            dxBusAppendHistory(tenure, h);
+            if (h.source) tenure.append(sourceLink('Route history ↗', h.source));
             host.append(tenure);
         }
     }
     function applyAppProfile(profile) {
         renderAppRouteTrivia(profile);
+        dxBusServiceWarning($('.dxbus-hero'), profile);
 		root.dataset.serviceType = profile.badgeType || current?.serviceType || 'regular';
 		root.dataset.routeTheme = root.dataset.serviceType === 'night' || /^N\d/i.test(current?.name || '') ? 'night' : 'day';
 		const operator = $('[data-dxbus-operator]'), allocation = $('[data-dxbus-allocation]'), summary = $('#dxbus-route-summary');
@@ -10164,7 +11998,13 @@ window.dxInitBusGallery = (root) => {
 		$$('.dxbus-card--map .dxbus-small').forEach((note) => { note.textContent = 'Lines connect published stops rather than an exact road path. Vehicle markers show the next predicted stop, not live GPS.'; });
 		const explorerNote = $('#panel-line .dxbus-view__head p:last-child'); if (explorerNote) explorerNote.textContent = 'Explore published stops in either direction. Map lines connect stops rather than following the exact road path. Vehicle markers show the next predicted stop, not live GPS.';
 		if ($('#dxbus-overview-arrivals') && !$('#dxbus-overview-arrivals-note')) { const note = text('p', 'Next predicted stop for each vehicle · not a GPS position', 'dxbus-source-note'); note.id = 'dxbus-overview-arrivals-note'; $('#dxbus-overview-arrivals').after(note); }
-		['single','double'].forEach((type) => { const card = $('.dxbus-stat--' + type); if (!card) return; card.setAttribute('role', 'button'); card.tabIndex = 0; card.setAttribute('aria-label', 'View confirmed ' + type + '-decker vehicles'); card.addEventListener('click', () => openFleet(type, appFleet[type], current?.name)); card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); } }); });
+		['total','single','double'].forEach((type) => { const card = $('.dxbus-stat--' + type); if (!card) return; card.setAttribute('role', 'button'); card.tabIndex = 0; card.setAttribute('aria-label', type === 'total' ? 'View all buses tracking on this route' : 'View confirmed ' + type + '-decker vehicles'); card.addEventListener('click', () => type === 'total' ? openAppAllVehicles(card) : openFleet(type, appFleet[type], current?.name)); card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); } }); });
+		window.addEventListener('storage', (event) => {
+			if (event.key !== null && event.key !== 'dxb-marked-vehicles') return;
+			marked = readSaved('dxb-marked-vehicles');
+			renderMarked(); syncAppPins();
+			if ($('#dxb-arrivals') && !$('#panel-arrivals').hidden) renderArrivals();
+		});
 		$$('[data-dxbus-go]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); activateTab(canonicalTab(link.dataset.dxbusGo)); }));
 		$$('[data-dxbus-overview-mode]').forEach((button) => button.addEventListener('click', () => applyAppMapMode('overview', button.dataset.dxbusOverviewMode)));
 		$$('[data-dxbus-explorer-mode]').forEach((button) => button.addEventListener('click', () => applyAppMapMode('explorer', button.dataset.dxbusExplorerMode)));
@@ -10467,7 +12307,7 @@ dxOnPageReady(() => {
 			toggle.type = "button";
 			toggle.className = "dx-photo-pause";
 			const label = () => {
-				toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+				dxSlideshowControl(toggle, paused);
 			};
 			label();
 			toggle.addEventListener("click", () => {
@@ -10504,6 +12344,51 @@ dxOnPageReady(() => {
 		const reel = document.querySelector(".dx-project-reel"),
 			track = reel?.querySelector(".dx-project-track");
 		if (reel && track) {
+            const stage = reel.querySelector('.dx-project-reel-sticky');
+            const cards = [...track.querySelectorAll('.dx-project-poster')];
+            const glow = document.createElement('div');
+            glow.className = 'dx-project-glows'; glow.setAttribute('aria-hidden','true');
+            glow.innerHTML = '<i></i><i></i><i></i>'; stage.prepend(glow);
+            const palettes = new Map();
+            let activeCard = null;
+            const applyPalette = card => {
+                const colours = palettes.get(card) || ['#756039','#304c58','#684237'];
+                colours.forEach((colour,index) => stage.style.setProperty(`--project-glow-${index+1}`,colour));
+            };
+            const sample = card => {
+                const img = card.querySelector('img');
+                if (!img?.naturalWidth) return;
+                try {
+                    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 40;
+                    const ctx = canvas.getContext('2d',{willReadFrequently:true}); ctx.drawImage(img,0,0,40,40);
+                    const data = ctx.getImageData(0,0,40,40).data, buckets = new Map();
+                    for(let i=0;i<data.length;i+=4) {
+                        const r=data[i],g=data[i+1],b=data[i+2],max=Math.max(r,g,b),min=Math.min(r,g,b);
+                        if(max<45 || min>215 || max-min<25) continue;
+                        const key=[r,g,b].map(v=>Math.round(v/48)*48).join(',');
+                        const bucket=buckets.get(key)||{count:0,r:0,g:0,b:0};
+                        bucket.count++; bucket.r+=r; bucket.g+=g; bucket.b+=b; buckets.set(key,bucket);
+                    }
+                    const chosen=[];
+                    [...buckets.values()].sort((a,b)=>b.count-a.count).forEach(c=>{
+                        const rgb=[c.r,c.g,c.b].map(v=>Math.round(v/c.count));
+                        if(chosen.length<3 && !chosen.some(other=>rgb.reduce((sum,v,i)=>sum+(v-other[i])**2,0)<5500)) chosen.push(rgb);
+                    });
+                    if(chosen.length) {
+                        while(chosen.length<3) chosen.push(chosen[chosen.length-1].map(v=>Math.round(v*.65)));
+                        palettes.set(card,chosen.map(rgb=>`rgb(${rgb.join(',')})`));
+                        if(card===activeCard) applyPalette(card);
+                    }
+                } catch (_) { /* The neutral palette remains available for cross-origin media. */ }
+            };
+            cards.forEach(card=>{ const img=card.querySelector('img'); if(img?.complete) sample(card); else img?.addEventListener('load',()=>sample(card),{once:true}); });
+            const updateGlow = () => {
+                const nearest = cards.reduce((best,card)=>{
+                    const rect=card.getBoundingClientRect(),delta=Math.abs(rect.left+rect.width/2-innerWidth/2);
+                    return !best || delta<best.delta ? {card,delta} : best;
+                },null)?.card;
+                if(nearest && nearest!==activeCard) { activeCard=nearest; applyPalette(nearest); }
+            };
 			let distance = 0;
 			const size = () => {
 				distance = Math.max(
@@ -10516,12 +12401,13 @@ dxOnPageReady(() => {
 				update();
 			};
 			const update = () => {
-				if (reduced.matches) return;
+				if (reduced.matches) { updateGlow(); return; }
 				const progress = Math.min(
 					distance,
 					Math.max(0, -reel.getBoundingClientRect().top),
 				);
 				track.style.transform = `translate3d(${-progress}px,0,0)`;
+                updateGlow();
 			};
 			window.addEventListener("scroll", update, { passive: true });
 			window.addEventListener("resize", size);
@@ -10639,15 +12525,6 @@ dxOnPageReady(() => {
 				/Raise the bar\./i,
 				'<span class="dx-gold">Raise the bar.</span>',
 			);
-		const cover = body.classList.contains("home")
-			? document.querySelector(".hero-background")
-			: null;
-		if (cover) {
-			const glow = document.createElement("div");
-			glow.className = "dx-home-glow";
-			glow.setAttribute("aria-hidden", "true");
-			cover.prepend(glow);
-		}
 		// Carry the user's own saved estimate into registration without URL personal data.
 		if (body.classList.contains("page-template-page-signup")) {
 			try {
@@ -10728,11 +12605,11 @@ dxOnPageReady(() => {
 	if (slides.length && toggle) {
 		let index = -1,
 			paused = reduced.matches;
-		toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+		dxSlideshowControl(toggle, paused);
 		toggle.setAttribute("aria-pressed", String(paused));
 		toggle.addEventListener("click", () => {
 			paused = !paused;
-			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			dxSlideshowControl(toggle, paused);
 			toggle.setAttribute("aria-pressed", String(paused));
 		});
 		setInterval(() => {
@@ -10746,7 +12623,7 @@ dxOnPageReady(() => {
 		}, 5500);
 		reduced.addEventListener("change", (e) => {
 			paused = e.matches;
-			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			dxSlideshowControl(toggle, paused);
 			toggle.setAttribute("aria-pressed", String(paused));
 		});
 	}
@@ -10765,76 +12642,86 @@ dxOnPageReady(() => {
 	);
 	document.querySelectorAll("video[data-video-src]").forEach((video, index) => {
 		const frame = video.closest(".dxf-media-frame");
-		if (!frame) {
-			lazy.observe(video);
-			return;
-		}
-		// The custom Play button owns the paused state; native controls assist active playback.
+		if (!frame) { lazy.observe(video); return; }
+		if (video.dataset.controlsReady) return;
+		video.dataset.controlsReady = "true";
+		// One playback owner serves both the poster button and the accessible transport bar.
 		let nativeFallback = false;
 		video.controls = false;
 		video.id ||= `fitness-training-video-${index + 1}`;
-		const control = document.createElement("button");
-		control.type = "button";
-		control.className = "dxf-video-toggle";
-		control.setAttribute("aria-controls", video.id);
-		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		svg.setAttribute("viewBox", "0 0 24 24");
-		svg.setAttribute("aria-hidden", "true");
-		const path = document.createElementNS(svg.namespaceURI, "path");
-		svg.append(path);
-		control.append(svg);
-		frame.append(control);
+		const icon = (path) => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${path}"/></svg>`;
+		const playPath = 'M7 4v16l13-8z', pausePath = 'M6 4h4v16H6zM14 4h4v16h-4z';
+		const control = document.createElement('button');
+		control.type = 'button'; control.className = 'dxf-video-toggle';
+		control.setAttribute('aria-controls', video.id);
+		const bar = document.createElement('div');
+		bar.className = 'dxf-video-controls'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Training video controls');
+		const button = (className, label, path) => {
+			const node = document.createElement('button'); node.type = 'button'; node.className = className;
+			node.setAttribute('aria-label', label); node.setAttribute('aria-controls', video.id); node.innerHTML = icon(path); return node;
+		};
+		const play = button('dxf-video-controls__play', 'Play training video', playPath);
+		const time = document.createElement('output'); time.className = 'dxf-video-controls__time'; time.setAttribute('aria-label', 'Video time');
+		const seek = document.createElement('input'); seek.type = 'range'; seek.min = '0'; seek.max = '100'; seek.step = '.1'; seek.value = '0'; seek.disabled = true;
+		seek.className = 'dxf-video-controls__seek'; seek.setAttribute('aria-label', 'Seek training video'); seek.setAttribute('aria-controls', video.id);
+		const mute = button('dxf-video-controls__mute', 'Mute training video', 'M3 9v6h4l5 4V5L7 9H3zm12-2v2a4 4 0 0 1 0 6v2a6 6 0 0 0 0-10zm3-3v2a8 8 0 0 1 0 12v2a10 10 0 0 0 0-16z');
+		const fullscreen = button('dxf-video-controls__fullscreen', 'Enter fullscreen', 'M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z');
+		if (!frame.requestFullscreen && !frame.webkitRequestFullscreen && !video.webkitEnterFullscreen) fullscreen.hidden = true;
+		bar.append(play, time, seek, mute, fullscreen); frame.append(control, bar);
+		const clock = value => {
+			const seconds = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+			return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+		};
+		const syncTime = () => {
+			const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
+			time.textContent = `${clock(video.currentTime)} / ${clock(duration)}`;
+			seek.disabled = !duration; seek.max = String(duration || 100); seek.value = String(video.currentTime || 0);
+			seek.setAttribute('aria-valuetext', `${clock(video.currentTime)} of ${clock(duration)}`);
+			seek.style.setProperty('--video-progress', `${duration ? Math.min(100, video.currentTime / duration * 100) : 0}%`);
+		};
 		const syncControl = () => {
 			const playing = !video.paused && !video.ended;
-			video.controls = playing || nativeFallback;
-			frame.classList.toggle("is-playing", playing);
-			control.setAttribute(
-				"aria-label",
-				playing
-					? "Pause training video"
-					: video.ended
-					? "Replay training video"
-					: "Play training video",
-			);
-			control.setAttribute("aria-pressed", String(playing));
-			path.setAttribute(
-				"d",
-				playing ? "M6 4h4v16H6zM14 4h4v16h-4z" : "M7 4v16l13-8z",
-			);
+			video.controls = nativeFallback; bar.hidden = nativeFallback;
+			frame.classList.toggle('is-playing', playing);
+			const label = playing ? 'Pause training video' : video.ended ? 'Replay training video' : 'Play training video';
+			[control, play].forEach(node => { node.setAttribute('aria-label', label); node.setAttribute('aria-pressed', String(playing)); node.innerHTML = icon(playing ? pausePath : playPath); });
+			mute.setAttribute('aria-label', video.muted ? 'Unmute training video' : 'Mute training video');
+			mute.setAttribute('aria-pressed', String(video.muted)); mute.classList.toggle('is-muted', video.muted);
+			syncTime();
 		};
-		control.addEventListener("click", async () => {
-			if (!video.paused && !video.ended) {
-				video.pause();
-				return;
-			}
-			if (!video.getAttribute("src")) {
-				video.src = video.dataset.videoSrc;
-				video.load();
-				lazy.unobserve(video);
-			}
+		const toggle = async () => {
+			if (!video.paused && !video.ended) { video.pause(); return; }
+			if (!video.getAttribute('src')) { video.src = video.dataset.videoSrc; video.load(); lazy.unobserve(video); }
 			if (video.ended) video.currentTime = 0;
+			try { await video.play(); } catch { nativeFallback = true; syncControl(); }
+		};
+		control.addEventListener('click', toggle); play.addEventListener('click', toggle);
+		video.addEventListener('click', () => { if (!nativeFallback) toggle(); });
+		seek.addEventListener('input', () => { if (Number.isFinite(video.duration)) { video.currentTime = Number(seek.value); syncTime(); } });
+		mute.addEventListener('click', () => { video.muted = !video.muted; syncControl(); });
+		const fullscreenFrame = () => document.fullscreenElement || document.webkitFullscreenElement;
+		fullscreen.addEventListener('click', async () => {
 			try {
-				await video.play();
-			} catch {
-				// Failed playback leaves the native controls and central Play button usable.
-				nativeFallback = true;
-				syncControl();
-			}
+				if (fullscreenFrame() === frame) {
+					if (document.exitFullscreen) await document.exitFullscreen();
+					else document.webkitExitFullscreen?.();
+				} else if (frame.requestFullscreen) await frame.requestFullscreen();
+				else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+				else video.webkitEnterFullscreen?.();
+			} catch { /* Inline playback stays available if fullscreen is restricted. */ }
 		});
-		["play", "playing", "pause", "ended", "emptied"].forEach((event) =>
-			video.addEventListener(event, syncControl),
-		);
-		video.addEventListener("loadeddata", () => frame.classList.add("is-ready"));
-		video.addEventListener("error", () => {
-			nativeFallback = true;
-			video.controls = true;
-			frame.classList.remove("is-playing", "is-ready");
-			control.hidden = true;
-			const text = frame.querySelector(".dxf-media-loading");
-			if (text) text.textContent = "Video unavailable. Please try again later.";
+		const syncFullscreen = () => fullscreen.setAttribute('aria-label', fullscreenFrame() === frame ? 'Exit fullscreen' : 'Enter fullscreen');
+		document.addEventListener('fullscreenchange', syncFullscreen);
+		document.addEventListener('webkitfullscreenchange', syncFullscreen);
+		['play','playing','pause','ended','emptied','volumechange'].forEach(event => video.addEventListener(event, syncControl));
+		['timeupdate','loadedmetadata','durationchange'].forEach(event => video.addEventListener(event, syncTime));
+		video.addEventListener('loadeddata', () => frame.classList.add('is-ready'));
+		video.addEventListener('error', () => {
+			nativeFallback = true; video.controls = true; bar.hidden = true; control.hidden = true;
+			frame.classList.remove('is-playing', 'is-ready');
+			const text = frame.querySelector('.dxf-media-loading'); if (text) text.textContent = 'Video unavailable. Please try again later.';
 		});
-		syncControl();
-		lazy.observe(video);
+		syncControl(); lazy.observe(video);
 	});
 	const dialog = document.querySelector(".dxf-media-dialog");
 	if (dialog) {
@@ -10910,7 +12797,7 @@ dxOnPageReady(() => {
 			button.type = "button";
 			button.className = "dx-promo-pause";
 			const label = () => {
-				button.textContent = paused ? "Play slideshow" : "Pause slideshow";
+				dxSlideshowControl(button, paused);
 				button.setAttribute("aria-pressed", String(paused));
 			};
 			label();
@@ -11215,7 +13102,7 @@ dxOnPageReady(() => {
 		pause.type = "button";
 		pause.className = "dx-model-pause";
 		const label = () => {
-			pause.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			dxSlideshowControl(pause, paused);
 			pause.setAttribute("aria-pressed", String(paused));
 		};
 		label();
@@ -11557,7 +13444,7 @@ document.addEventListener("click", (event) => {
 });
 
 // One document-wheel controller. Native touch, keyboard and nested scrollers remain native.
-// The animation stops at rest; it never feeds its own scroll events back into a target.
+// Move on the first wheel event, then soften only the remaining distance.
 (() => {
 	const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 	let frame = 0,
@@ -11575,6 +13462,10 @@ document.addEventListener("click", (event) => {
 		document.body.classList.contains("nav-open") ||
 		document.body.classList.contains("modal-open") ||
 		getComputedStyle(document.body).overflowY === "hidden";
+	const write = (top) => {
+		window.scrollTo({ top, behavior: "instant" });
+		lastWritten = scrollY;
+	};
 	const step = (time) => {
 		if (reduce.matches || blocked() || Math.abs(scrollY - lastWritten) > 3) {
 			stop();
@@ -11585,21 +13476,18 @@ document.addEventListener("click", (event) => {
 		previousTime = time;
 		const distance = target - scrollY;
 		if (Math.abs(distance) < 1) {
-			window.scrollTo({ top: target, behavior: "instant" });
+			write(target);
 			stop();
 			return;
 		}
-		window.scrollTo({
-			top:
-				scrollY +
+		write(
+			scrollY +
 				Math.sign(distance) *
 					Math.min(
 						Math.abs(distance),
-						Math.max(1, Math.abs(distance) * (1 - Math.exp(-dt / 110))),
+						Math.max(1, Math.abs(distance) * (1 - Math.exp(-dt / 80))),
 					),
-			behavior: "instant",
-		});
-		lastWritten = scrollY;
+		);
 		frame = requestAnimationFrame(step);
 	};
 	window.addEventListener(
@@ -11607,6 +13495,7 @@ document.addEventListener("click", (event) => {
 		(event) => {
 			if (
 				event.defaultPrevented ||
+				!event.cancelable ||
 				event.ctrlKey ||
 				event.metaKey ||
 				reduce.matches ||
@@ -11616,7 +13505,7 @@ document.addEventListener("click", (event) => {
 				stop();
 				return;
 			}
-			// Let controls, overlays and components that scroll internally own their wheel input.
+			// Leave controls and components with their own scroll behaviour in charge.
 			for (
 				let el = event.target instanceof Element ? event.target : null;
 				el && el !== document.body;
@@ -11624,7 +13513,7 @@ document.addEventListener("click", (event) => {
 			) {
 				if (
 					el.matches(
-						'input,textarea,select,[role="dialog"],[data-native-scroll]',
+						'input,textarea,select,video,[role="dialog"],[data-native-scroll],[contenteditable]:not([contenteditable="false"])',
 					) ||
 					(/(auto|scroll)/.test(getComputedStyle(el).overflowY) &&
 						el.scrollHeight > el.clientHeight + 1)
@@ -11633,17 +13522,26 @@ document.addEventListener("click", (event) => {
 					return;
 				}
 			}
-			if (!event.deltaY || !maximum()) return;
-			if (!frame) target = scrollY;
+			const limit = maximum();
+			if (!event.deltaY || !limit) return;
+			if (!frame || Math.abs(scrollY - lastWritten) > 3) {
+				stop();
+				target = scrollY;
+			}
 			const delta =
 				event.deltaY *
 				(event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
-			target = Math.max(0, Math.min(maximum(), target + delta));
-			event.preventDefault();
-			if (!frame) {
-				lastWritten = scrollY;
-				frame = requestAnimationFrame(step);
+			// A change of direction should respond immediately, without the old tail pushing back.
+			if (Math.sign(delta) !== Math.sign(target - scrollY)) target = scrollY;
+			target = Math.max(0, Math.min(limit, target + delta));
+			const distance = target - scrollY;
+			if (!distance) {
+				stop();
+				return;
 			}
+			event.preventDefault();
+			write(scrollY + distance * 0.55);
+			if (!frame) frame = requestAnimationFrame(step);
 		},
 		{ passive: false },
 	);
@@ -11713,7 +13611,7 @@ dxOnPageReady(() => {
 });
 
 dxOnPageReady(() => {
-	const accounts = [...document.querySelectorAll(".auth.dx-account-photo")];
+	const accounts = [...document.querySelectorAll(".auth.dx-account-photo, .dx-404-hero")];
 	if (!accounts.length) return;
 	const dateFormat = new Intl.DateTimeFormat("en-CA", {
 		timeZone: "Europe/London",
@@ -11808,7 +13706,7 @@ dxOnPageReady(() => {
 		conditions.append(clock);
 		const weather = document.querySelector("#dx-london-weather-template");
 		if (weather?.content) conditions.append(weather.content.cloneNode(true));
-		graphic.append(conditions);
+		(auth.matches(".dx-404-hero") ? auth : graphic).append(conditions);
 		const actions = auth.parentElement.querySelector(".auth-actions");
 		if (actions) graphic.append(actions);
 		graphic.querySelector("img")?.remove();
@@ -11982,8 +13880,8 @@ dxOnPageReady(() => {
 			}
 		});
 	const teaser = document.querySelector("body.home .dx-n118-teaser");
-	const photo = document.querySelector("body.home img.wp-image-1877");
-	const section = photo?.closest("section");
+	const section = document.querySelector("body.home .dx-fitness-promo");
+	const photo = section?.querySelector("img.wp-image-1877");
 	if (
 		teaser &&
 		photo &&
@@ -12025,6 +13923,7 @@ dxOnPageReady(() => {
 		};
 		addEventListener("scroll", schedule, { passive: true });
 		addEventListener("resize", schedule);
+		addEventListener("dx:journeychange", schedule);
 		figure.querySelector("img").addEventListener("load", schedule);
 		update();
 	}
@@ -12413,13 +14312,6 @@ dxOnPageReady(() => {
 			watchReveal(span);
 		}
 	});
-	const photoHeading = document.querySelector(".dx-photo-hero h1");
-	if (photoHeading) {
-		photoHeading.replaceChildren(
-			document.createTextNode("Life through the "),
-			el("span", "dx-lens-word", "lens."),
-		);
-	}
 	document
 		.querySelectorAll(
 			".service-detail-form input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.service-detail-form textarea",
@@ -12463,7 +14355,7 @@ dxOnPageReady(() => {
 		toggle.setAttribute("aria-pressed", String(paused));
 		toggle.addEventListener("click", () => {
 			paused = !paused;
-			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			dxSlideshowControl(toggle, paused);
 			toggle.setAttribute("aria-pressed", String(paused));
 		});
 		portfolio.append(toggle);
@@ -12475,7 +14367,7 @@ dxOnPageReady(() => {
 		}, 6500);
 		reduced.addEventListener("change", () => {
 			paused = reduced.matches;
-			toggle.textContent = paused ? "Play slideshow" : "Pause slideshow";
+			dxSlideshowControl(toggle, paused);
 			toggle.setAttribute("aria-pressed", String(paused));
 		});
 	}
@@ -12724,7 +14616,14 @@ dxOnPageReady(() => {
 		nav.append(link);
 		links.push({ chapter, link });
 	});
-	if (links.length) review.querySelector('.gym-review-canvas')?.after(nav);
+	if (links.length) {
+		review.querySelector('.gym-review-canvas')?.after(nav);
+		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			nav.animate([{ opacity: 0, translate: '-20px 0' }, { opacity: 1, translate: '0 0' }], { duration: 900, easing: 'cubic-bezier(.22,1,.36,1)' });
+			links.forEach(({ link }, index) => link.animate([{ opacity: 0, translate: '-12px 0' }, { opacity: 1, translate: '0 0' }], { duration: 650, delay: 100 + index * 65, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' }));
+		}
+	}
+	const reviewFooter = document.querySelector('.site-footer');
 	let frame = 0;
 	let activeScene = '';
 	const paint = () => {
@@ -12746,7 +14645,8 @@ dxOnPageReady(() => {
 			else link.removeAttribute('aria-current');
 		});
 		const bounds = review.getBoundingClientRect();
-		nav.classList.toggle('is-outside-review', bounds.bottom < innerHeight * .25 || bounds.top > innerHeight * .75);
+		const footerCollision = reviewFooter && reviewFooter.getBoundingClientRect().top <= nav.getBoundingClientRect().bottom + 24;
+		nav.classList.toggle('is-outside-review', Boolean(footerCollision) || bounds.bottom < innerHeight * .25 || bounds.top > innerHeight * .75);
 	};
 	const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
 	addEventListener('scroll', schedule, { passive: true });
@@ -13187,28 +15087,7 @@ dxOnPageReady(() => {
 
 // Intentional homepage journeys progressively enhance real links.
 dxOnPageReady(() => {
-	const paths = document.querySelector('[data-home-paths]');
 	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-	if (paths) {
-		const choose = (focus, update = true) => {
-			const panel = paths.querySelector(`[data-home-panel="${focus}"]`);
-			if (!panel) return;
-			paths.dataset.focus = focus;
-			paths.querySelectorAll('[data-home-choice]').forEach(link => {
-				if (link.dataset.homeChoice === focus) link.setAttribute('aria-current', 'true');
-				else link.removeAttribute('aria-current');
-			});
-			paths.querySelectorAll('[data-home-panel]').forEach(item => { item.hidden = item !== panel; });
-			if (!reduced.matches && update) panel.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 450, easing: 'cubic-bezier(.22,1,.36,1)' });
-			if (update) { const url = new URL(location.href); url.searchParams.set('focus', focus); url.hash = 'start-here'; history.replaceState(null, '', url); }
-		};
-		choose(paths.querySelector('[aria-current]')?.dataset.homeChoice || 'web', false);
-		paths.addEventListener('click', event => { const link = event.target.closest('[data-home-choice]'); if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button) return; event.preventDefault(); choose(link.dataset.homeChoice); });
-		const cover = document.querySelector('body.home .cover-content');
-		if (cover && !cover.querySelector('.dx-home-paths-jump')) {
-			const link = document.createElement('a'); link.href = '#start-here'; link.className = 'service-text-link dx-home-paths-jump'; link.textContent = 'Web, fitness or photography? Start here ↓'; (cover.querySelector('.wp-block-group__inner-container') || cover).append(link);
-		}
-	}
 	document.querySelectorAll('.dx-menu__list > li > a').forEach(link => {
 		const path = new URL(link.href, location.href).pathname;
 		if (/^\/buses(?:\/|$)/.test(path)) link.dataset.menuArea = 'buses';
@@ -13227,3 +15106,220 @@ dxOnPageReady(() => {
 		steps.forEach(step => observer.observe(step));
 	}
 });
+
+// Fine-grained editorial additions retain each original page controller.
+dxOnPageReady(initEditorialRefinements);
+
+// Morph the data polygons themselves; keep the axes and labels still and readable.
+(() => {
+	const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+	const prepare = (scope = document) => {
+		scope.querySelectorAll("[data-gym-radar], .dxgym-radar").forEach((radar) => {
+			if (radar.dataset.radarMotionReady) return;
+			radar.dataset.radarMotionReady = "true";
+			const svg = radar.querySelector("svg");
+			if (!svg || reduced) return;
+			const polygons = [...svg.querySelectorAll(".dxgym-radar-top, .dxgym-radar-average")].map((shape) => {
+				const points = (shape.getAttribute("points") || "").trim().split(/\s+/).map((point) => point.split(",").map(Number));
+				return {shape, points};
+			}).filter(({points}) => points.length >= 3 && points.every((point) => point.length === 2 && point.every(Number.isFinite)));
+			if (!polygons.length) return;
+			const dots = [...svg.querySelectorAll("[data-gym-radar-point], :scope > circle")].map((shape) => ({shape, x: Number(shape.getAttribute("cx")), y: Number(shape.getAttribute("cy"))}));
+			// Both polygons share the centre of their six evenly-spaced axes.
+			const centre = [170, 143];
+			const paint = (progress) => {
+				polygons.forEach(({shape, points}) => {
+					shape.setAttribute("points", points.map(([x, y]) => `${(centre[0] + (x - centre[0]) * progress).toFixed(2)},${(centre[1] + (y - centre[1]) * progress).toFixed(2)}`).join(" "));
+					shape.style.opacity = String(progress);
+				});
+				dots.forEach(({shape, x, y}) => {
+					shape.setAttribute("cx", String(centre[0] + (x - centre[0]) * progress));
+					shape.setAttribute("cy", String(centre[1] + (y - centre[1]) * progress));
+					shape.style.opacity = String(progress);
+				});
+			};
+			paint(0);
+			const animate = () => {
+				const start = performance.now();
+				const frame = (time) => {
+					if (!radar.isConnected) return;
+					const progress = Math.min(1, Math.max(0, (time - start) / 1250));
+					paint(1 - Math.pow(1 - progress, 3));
+					if (progress < 1) requestAnimationFrame(frame);
+				};
+				requestAnimationFrame(frame);
+			};
+			if (!("IntersectionObserver" in window)) { animate(); return; }
+			const observer = new IntersectionObserver((entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				animate();
+			}, {threshold: 0.2, rootMargin: "0px 0px -24px 0px"});
+			observer.observe(svg);
+		});
+	};
+	dxOnPageReady(() => prepare());
+	document.addEventListener("dxgym:rendered", (event) => prepare(event.target));
+})();
+
+// November 3 — scoped public-page refinements, retaining existing page owners.
+dxOnPageReady(() => {
+	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+	const intro = [...document.querySelectorAll('body.home section.text-image')].find(section => /A little introduction/i.test(section.textContent));
+	if (intro) intro.classList.add('dx-home-introduction');
+	const promo = document.querySelector('body.home .dx-fitness-promo');
+	if (promo) {
+		const first = promo.querySelector('a[href*="fitness"]');
+		const actions = first?.closest('.wp-block-buttons');
+		if (actions) {
+			actions.classList.add('dx-home-fitness-actions');
+			let league = promo.querySelector('.dx-gym-league-link');
+			if (!league) {
+				league = document.createElement('a');
+				league.href = '/fitness/gyms/?view=league';
+				league.textContent = 'Gym League';
+			}
+			league.className = 'wp-block-button__link wp-element-button dx-gym-league-link';
+			let wrapper = league.closest('.wp-block-button');
+			if (!wrapper || wrapper === first.closest('.wp-block-button')) {
+				wrapper = document.createElement('div');
+				wrapper.className = 'wp-block-button secondary';
+				wrapper.append(league);
+			}
+			actions.append(wrapper);
+		}
+	}
+	const next = document.querySelector('#fitness-next');
+	const targets = [intro, next].filter(Boolean);
+	if (!reduced.matches && 'IntersectionObserver' in window) {
+		const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+			if (!entry.isIntersecting) return;
+			entry.target.classList.add('dx-nov3-arrived');
+			if (entry.target === next) {
+				[...next.querySelectorAll('.dxf-next-copy > .wp-block-group__inner-container > *, .dxf-next-art')].forEach((node, index) => node.animate?.([
+					{ opacity: 0, translate: '0 24px' }, { opacity: 1, translate: '0 0' },
+				], { duration: 850, delay: index * 85, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+			}
+			observer.unobserve(entry.target);
+		}), { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+		targets.forEach(node => observer.observe(node));
+	} else targets.forEach(node => node.classList.add('dx-nov3-arrived'));
+});
+
+dxOnPageReady(() => {
+ const steps = [...document.querySelectorAll('body.page-id-1889 .dx-about-story-copy')].find(node => node.querySelector('h3')?.textContent.includes('Tell me where'));
+ if (!steps || steps.classList.contains('dx-n118-onboarding')) return;
+ steps.classList.add('dx-n118-onboarding');
+ steps.querySelectorAll('.dx-training-card').forEach((card,index) => {
+  const h = card.querySelector('h3');
+  h.textContent = h.textContent.replace(/^\d+\s*\/\s*/, '');
+  const number = document.createElement('span');
+  number.className = 'dx-step-number'; number.textContent = String(index + 1).padStart(2,'0');
+  number.setAttribute('aria-hidden','true'); card.prepend(number);
+  h.setAttribute('aria-label', `Step ${index+1}: ${h.textContent}`);
+ });
+});
+
+}
+// DX_CONSOLIDATED_FRONTEND_END
+
+// The same compiled entry serves only the journey-pin editor in WordPress admin.
+if (document.body && document.body.classList.contains("wp-admin")) {
+(() => {
+	const editor = document.querySelector('[data-pin-editor]');
+	const template = document.querySelector('[data-pin-template]');
+	if (!editor || !template) return;
+	const status = document.querySelector('[data-pin-editor-status]');
+	const mapElement = document.querySelector('[data-pin-admin-map]');
+	const mapStatus = document.querySelector('[data-pin-map-status]');
+	let activeRow, map;
+	const markers = new Map();
+	const coordinates = (row) => [Number.parseFloat(row.querySelector('[data-pin-field="lat"]').value), Number.parseFloat(row.querySelector('[data-pin-field="lng"]').value)];
+	const validPoint = (point) => point.every(Number.isFinite) && Math.abs(point[0]) <= 90 && Math.abs(point[1]) <= 180;
+	const setPoint = (row, point) => {
+		row.querySelector('[data-pin-field="lat"]').value = Number(point.lat).toFixed(7);
+		row.querySelector('[data-pin-field="lng"]').value = Number(point.lng).toFixed(7);
+		syncMarkers();
+		mapStatus.textContent = 'Coordinates captured. Add the title and notes, then update the post to save.';
+	};
+	const syncMarkers = () => {
+		if (!map) return;
+		markers.forEach((marker, row) => { if (!editor.contains(row)) { map.removeLayer(marker); markers.delete(row); } });
+		[...editor.children].forEach((row) => {
+			const point = coordinates(row);
+			if (!validPoint(point)) { if (markers.has(row)) { map.removeLayer(markers.get(row)); markers.delete(row); } return; }
+			if (markers.has(row)) { markers.get(row).setLatLng(point); return; }
+			const marker = L.marker(point, {draggable: true}).addTo(map);
+			marker.on('dragend', () => setPoint(row, marker.getLatLng()));
+			marker.on('click', () => { activeRow = row; row.querySelector('[data-pin-field="title"]').focus(); mapStatus.textContent = 'This pin is selected. Click the map to move it, or drag its marker.'; });
+			markers.set(row, marker);
+		});
+	};
+	if (mapElement && window.L) {
+		map = L.map(mapElement, {scrollWheelZoom: false});
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20}).addTo(map);
+		const start = [Number.parseFloat(mapElement.dataset.startLat), Number.parseFloat(mapElement.dataset.startLng)];
+		map.setView(validPoint(start) ? start : [51.5074,-.1278], 12);
+		syncMarkers();
+		map.on('click', (event) => {
+			if (!activeRow || !editor.contains(activeRow)) { mapStatus.textContent = 'Add a pin or choose “Pick coordinates on the map” for the pin you want to place.'; return; }
+			setPoint(activeRow, event.latlng);
+		});
+		if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize()).observe(mapElement);
+	}
+	const renumber = () => {
+		[...editor.children].forEach((row, index) => {
+			row.querySelector('[data-pin-number]').textContent = index + 1;
+			row.querySelectorAll('[data-pin-field]').forEach((field) => {
+				field.name = `dx_journey_pins[${index}][${field.dataset.pinField}]`;
+			});
+		});
+	};
+	document.querySelector('[data-pin-add]').addEventListener('click', () => {
+		if (editor.children.length >= 80) { status.textContent = 'The limit is 80 pins per journey.'; return; }
+		editor.append(template.content.cloneNode(true));
+		renumber();
+		activeRow = editor.lastElementChild;
+		editor.lastElementChild.querySelector('[data-pin-field="title"]').focus();
+		status.textContent = 'Pin added. Enter its title and coordinates.';
+	});
+	editor.addEventListener('click', (event) => {
+		const row = event.target.closest('.dx-pin-editor-row');
+		if (!row) return;
+		if (event.target.closest('[data-pin-remove]')) {
+			const focusTarget = row.nextElementSibling || row.previousElementSibling;
+			row.remove(); renumber(); syncMarkers();
+			(focusTarget?.querySelector('input:not([type="hidden"])') || document.querySelector('[data-pin-add]')).focus();
+			status.textContent = 'Pin removed. Update the post to save.';
+		}
+		const move = event.target.closest('[data-pin-move]');
+		if (move) {
+			if (move.dataset.pinMove === 'up' && row.previousElementSibling) editor.insertBefore(row, row.previousElementSibling);
+			if (move.dataset.pinMove === 'down' && row.nextElementSibling) editor.insertBefore(row.nextElementSibling, row);
+			renumber(); move.focus(); status.textContent = 'Journey order updated. Update the post to save.';
+		}
+		if (event.target.closest('[data-pin-locate]')) {
+			activeRow = row;
+			if (map) { if (validPoint(coordinates(row))) map.setView(coordinates(row), 14); mapElement.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center'}); }
+			mapStatus.textContent = 'Click the map to place this pin. You can then drag its marker to adjust it.';
+		}
+		if (event.target.closest('[data-pin-image]') && window.wp?.media) {
+			const media = wp.media({title: 'Choose a journey photograph', library: {type: 'image'}, multiple: false});
+			media.on('select', () => { row.querySelector('[data-pin-field="image"]').value = media.state().get('selection').first().id; });
+			media.open();
+		}
+	});
+	editor.addEventListener('change', (event) => { if (event.target.matches('[data-pin-field="lat"], [data-pin-field="lng"]')) syncMarkers(); });
+	editor.closest('form')?.addEventListener('submit', (event) => {
+		for (const row of editor.children) {
+			const title = row.querySelector('[data-pin-field="title"]');
+			const lat = row.querySelector('[data-pin-field="lat"]');
+			const lng = row.querySelector('[data-pin-field="lng"]');
+			const otherContent = [...row.querySelectorAll('[data-pin-field="body"], [data-pin-field="time"], [data-pin-field="video"]')].some((field) => field.value.trim()) || Number(row.querySelector('[data-pin-field="image"]').value) > 0;
+			if (!title.value.trim() && !lat.value && !lng.value && !otherContent) continue;
+			const invalid = !title.value.trim() ? title : !lat.value || !lat.checkValidity() ? lat : !lng.value || !lng.checkValidity() ? lng : null;
+			if (invalid) { event.preventDefault(); invalid.focus(); status.textContent = 'Please complete the title and valid coordinates for each pin before saving.'; break; }
+		}
+	});
+})();
+}

@@ -52,7 +52,7 @@ function dxndre_editorial_projects_archive($atts = []) {
     <div class="portfolio-editorial">
       <section class="dx-project-reel" aria-label="Selected projects"><div class="dx-project-reel-sticky"><p class="dx-eyebrow">Selected work / Scroll to explore</p><h2>Ideas, brought to life.</h2><div class="dx-project-track">
 <?php foreach($projects as $project): $d=dxndre_portfolio_project_data($project); ?><a class="dx-project-poster" href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo dxndre_portfolio_image($project,$d,'large','dx-project-poster-image'); ?><div><p class="dx-eyebrow"><?php echo esc_html($d['year'].' / '.$d['context_label']); ?></p><h3><?php echo esc_html($d['title']); ?></h3><p><?php echo esc_html($d['excerpt']); ?></p><span>Read the story ↗</span></div></a><?php endforeach; ?>
-</div></div></section>
+</div><p class="dx-project-touch-hint"><svg viewBox="0 0 24 32" aria-hidden="true"><path d="m6 10 6-6 6 6M12 5v15"/><circle cx="12" cy="26" r="3"/></svg><span>Swipe up to explore</span></p></div></section>
       <div class="portfolio-archive" data-projects-archive>
         <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
         <div class="filter-inputs">
