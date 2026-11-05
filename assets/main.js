@@ -15220,6 +15220,21 @@ dxOnPageReady(() => {
  });
 });
 
+dxOnPageReady(() => {
+ if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+ const sections = document.querySelectorAll('body.home .what-i-do, .service-detail-enquiry');
+ const reveal = section => {
+  if (!section.classList.contains('dx-service-entry-pending')) return;
+  section.classList.remove('dx-service-entry-pending');
+  section.animate([{opacity:0,translate:'0 24px'},{opacity:1,translate:'0 0'}],{duration:800,easing:'cubic-bezier(.22,1,.36,1)'});
+  const pieces = section.matches('.what-i-do') ? section.querySelectorAll('.services-tabs .nav-link, .tab-pane.active > *, .dx-mobile-services > .accordion-item') : section.querySelectorAll('.service-detail-form, .service-detail-enquiry > div:first-child > *');
+  [...pieces].forEach((node,index)=>node.animate([{opacity:0,translate:'0 18px'},{opacity:1,translate:'0 0'}],{duration:750,delay:Math.min(index*65,350),fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
+  observer.unobserve(section);
+ };
+ const observer = new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting) reveal(entry.target);}),{threshold:0,rootMargin:'0px 0px -8% 0px'});
+ sections.forEach(section=>{section.classList.add('dx-service-entry-pending');observer.observe(section);section.addEventListener('focusin',()=>reveal(section),{once:true});});
+});
+
 }
 // DX_CONSOLIDATED_FRONTEND_END
 
