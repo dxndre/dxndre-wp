@@ -51,7 +51,7 @@
 
 				<?php
 					// Navigation assets.
-					$menu_bus = get_template_directory_uri() . '/assets/img/bus.png';
+					$menu_bus = get_template_directory_uri() . '/assets/img/menu-bus.webp';
 
 					// Social profiles from the site's .site-footer-social links.
 					$menu_socials = array(
@@ -177,7 +177,7 @@
 								<div class="dx-menu__visual-glow"></div>
 
 								<img
-									src="<?php echo esc_url( $menu_bus ); ?>"
+									data-src="<?php echo esc_url( $menu_bus ); ?>"
 									alt=""
 									class="dx-menu__bus"
 									decoding="async"

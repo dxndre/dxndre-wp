@@ -231,10 +231,20 @@ while ( have_posts() ) :
 	}
 
 
+	$padel_status = dxgym_padel_status( $post_id );
+	if ( $padel_status ) {
+		$facilities[] = [
+			'name' => dxgym_facility_options()['padel'],
+			'status' => $padel_status,
+			'notice' => $padel_status === 'unavailable' ? 'Unavailable' : '',
+		];
+	}
+
+
 ?>
 
 
-<article <?php post_class( 'gym-review-single gym-review-editorial' ); ?> style="--gym-overall-colour: <?php echo esc_attr( $overall_score !== null ? $score_color : '#d9b36b' ); ?>">
+<article <?php post_class( 'gym-review-single gym-review-editorial' ); ?> data-gym-chain="<?php echo esc_attr( $chain ?: '' ); ?>" data-gym-price="<?php echo esc_attr( get_field( 'gym_price_category', $post_id ) ?: '' ); ?>" style="--gym-overall-colour: <?php echo esc_attr( $overall_score !== null ? $score_color : '#d9b36b' ); ?>">
 	<div class="gym-review-canvas" aria-hidden="true">
 		<div class="gym-review-canvas__layer is-active" data-gym-canvas="ink"></div>
 		<div class="gym-review-canvas__layer" data-gym-canvas="brass"></div>
@@ -289,7 +299,7 @@ while ( have_posts() ) :
 				class="gym-review-back"
 			>
 				<span class="gym-review-back__arrow" aria-hidden="true">←</span>
-				<span>All Reviews</span>
+				<span>All Gyms</span>
 			</a>
 
 

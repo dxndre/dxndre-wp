@@ -2494,6 +2494,9 @@ const { initServiceIndexMotion } = (() => {
 		if (!bars.length || !header || header.dataset.serviceIndexMotionReady) return;
 		header.dataset.serviceIndexMotionReady = "true";
 		const root = document.documentElement;
+		const wordmark = header.querySelector(".navbar-brand");
+		const headerContainer = header.querySelector(":scope > .container");
+		const reviewRail = matchMedia("(min-width: 768px)");
 		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 		let frame = 0;
 		let followUntil = 0;
@@ -2556,17 +2559,30 @@ const { initServiceIndexMotion } = (() => {
 				root.style.setProperty("--dx-service-index-offset", value);
 				lastOffset = value;
 			}
+			const viewportWidth = root.clientWidth || innerWidth;
+			const headerBounds = headerContainer?.getBoundingClientRect();
+			const wordmarkBounds = wordmark?.getBoundingClientRect();
+			const compact = header.classList.contains("dx-header-compact") || header.classList.contains("scrolled");
+			const compactGutter = headerBounds ? headerBounds.left + 12 : 0;
+			const wordmarkLeft = compact && wordmarkBounds?.width ? wordmarkBounds.left : compactGutter;
 			entries.forEach((entry) => {
 				const { bar, slot } = entry;
+				if (reviewRail.matches && bar.classList.contains("dx-review-section-nav")) {
+					slot.style.height = "";
+					bar.classList.remove("dx-secondary-nav-stuck");
+					return;
+				}
 				const slotRect = slot.getBoundingClientRect();
-				const left = slotRect.left + entry.inset;
+				const stuck = slotRect.top + entry.marginTop <= offset + 0.5;
+				const left = stuck ? wordmarkLeft : slotRect.left + entry.inset;
+				bar.style.setProperty("--dx-secondary-wordmark-padding", `${Math.max(0, wordmarkLeft - left).toFixed(2)}px`);
+				const width = stuck ? Math.max(0, viewportWidth - 2 * left) : entry.width;
 				bar.style.setProperty("--dx-secondary-native-left", `${left.toFixed(2)}px`);
-				bar.style.setProperty("--dx-secondary-native-width", `${entry.width.toFixed(2)}px`);
+				bar.style.setProperty("--dx-secondary-native-width", `${width.toFixed(2)}px`);
 				bar.style.setProperty("--dx-secondary-bleed-left", `${(-left).toFixed(2)}px`);
-				bar.style.setProperty("--dx-secondary-bleed-right", `${(-((root.clientWidth || innerWidth) - left - entry.width)).toFixed(2)}px`);
+				bar.style.setProperty("--dx-secondary-bleed-right", `${(-(viewportWidth - left - width)).toFixed(2)}px`);
 				const height = bar.getBoundingClientRect().height || entry.height;
 				entry.height = height;
-				const stuck = slotRect.top + entry.marginTop <= offset + 0.5;
 				// This slot has the same height before, during and after the hand-off.
 				slot.style.height = stuck ? `${height + entry.marginTop + entry.marginBottom}px` : "";
 				bar.classList.toggle("dx-secondary-nav-stuck", stuck);
@@ -6932,7 +6948,10 @@ function initGymLeague(archive, cards) {
 				".gym-review-final .container",
 			];
 
-			const elements = document.querySelectorAll(selectors.join(","));
+			const selector = selectors.join(",");
+			const elements = Array.from(document.querySelectorAll(selector)).filter(
+				(element) => !element.parentElement.closest(selector),
+			);
 
 			elements.forEach((element) => {
 				if (!element.hasAttribute("data-gym-reveal")) {
@@ -7085,6 +7104,7 @@ function initGymLeague(archive, cards) {
 
 				requestAnimationFrame(() => {
 					fill.style.width = width;
+					item.classList.add("is-score-revealed");
 				});
 			};
 
@@ -12012,19 +12032,28 @@ window.dxInitBusGallery = (root) => {
 		$('#dxbus-overview-direction')?.addEventListener('change', (event) => changeAppDirection(event.target.value));
 		let menuFocus = null;
 		const sidebar = $('.dxbus-sidebar'), toggle = $('[data-dxbus-menu]');
+		const focusRouteInput = () => {
+			input.focus({ preventScroll: true });
+			if (document.activeElement === input) input.select();
+		};
 		const closeMenu = (restore = true) => {
 			root.classList.remove('is-menu-open'); document.body.classList.remove('dxbus-menu-open'); toggle?.setAttribute('aria-expanded', 'false'); $$('[data-dxbus-close]').forEach((node) => { node.hidden = true; });
 			if (restore) menuFocus?.focus();
 		};
-		toggle?.addEventListener('click', () => {
-			if (root.classList.contains('is-menu-open')) { closeMenu(); return; }
-			menuFocus = document.activeElement; $$('[data-dxbus-close]').forEach((node) => { node.hidden = false; }); root.classList.add('is-menu-open'); document.body.classList.add('dxbus-menu-open'); toggle.setAttribute('aria-expanded', 'true');
+		const openMenu = (focusTarget) => {
+			menuFocus = document.activeElement; $$('[data-dxbus-close]').forEach((node) => { node.hidden = false; }); root.classList.add('is-menu-open'); document.body.classList.add('dxbus-menu-open'); toggle?.setAttribute('aria-expanded', 'true');
 			const focusMenu = () => {
-				if (root.classList.contains('is-menu-open') && sidebar && !sidebar.contains(document.activeElement)) sidebar.querySelector('input,button,a')?.focus();
+				if (!root.classList.contains('is-menu-open') || !sidebar || sidebar.contains(document.activeElement)) return;
+				if (focusTarget === input) focusRouteInput();
+				else sidebar.querySelector('input,button,a')?.focus();
 			};
 			requestAnimationFrame(focusMenu);
 			// Retry after the drawer reveal for browsers that defer focus during visibility transitions.
 			setTimeout(focusMenu, 350);
+		};
+		toggle?.addEventListener('click', () => {
+			if (root.classList.contains('is-menu-open')) closeMenu();
+			else openMenu();
 		});
 		$$('[data-dxbus-close-menu],[data-dxbus-scrim],[data-dxbus-close]').forEach((button) => button.addEventListener('click', () => closeMenu()));
 		root.addEventListener('keydown', (event) => {
@@ -12040,7 +12069,10 @@ window.dxInitBusGallery = (root) => {
 		});
 		$$('[data-tab]').forEach((link) => link.addEventListener('click', () => closeMenu(false)));
 		$$('[data-dxbus-nav]:not([data-tab])').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); activateTab(canonicalTab(link.dataset.dxbusNav)); closeMenu(false); }));
-		$$('[data-dxbus-switch]').forEach((button) => button.addEventListener('click', () => { if (!matchMedia('(min-width: 992px)').matches && !root.classList.contains('is-menu-open')) toggle?.click(); input.focus(); input.select(); }));
+		$$('[data-dxbus-switch]').forEach((button) => button.addEventListener('click', () => {
+			if (!matchMedia('(min-width: 992px)').matches && !root.classList.contains('is-menu-open')) openMenu(input);
+			else focusRouteInput();
+		}));
 		window.addEventListener('popstate', () => {
 			const pathRoute = decodeURIComponent(location.pathname.replace(/\/+$/, '').split('/').at(-1)).toUpperCase();
 			if (/^[A-Z0-9]{1,6}$/.test(pathRoute) && pathRoute !== String(current?.name || root.dataset.route).toUpperCase()) {
@@ -13264,15 +13296,23 @@ dxOnPageReady(() => {
 	const visual = document.querySelector(".dx-menu__visual"),
 		bus = visual?.querySelector(".dx-menu__bus");
 	if (bus && base) {
-		bus.src = location.origin + "/wp-content/uploads/2025/12/92.png";
+		const loadBus = () => {
+			if (!document.body.classList.contains("nav-open") || !bus.dataset.src) return;
+			bus.src = bus.dataset.src;
+			delete bus.dataset.src;
+			busObserver.disconnect();
+		};
+		const busObserver = new MutationObserver(loadBus);
+		busObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+		loadBus();
 		const portraits = {
-			about: base + "assets/img/portrait-editorial.png",
+			about: base + "assets/img/menu-portrait.webp",
 			fitness: base + "assets/img/fitness-repaired.webp",
 		};
 		const layers = {};
 		Object.entries(portraits).forEach(([key, src]) => {
 			const img = new Image();
-			img.src = src;
+			img.dataset.src = src;
 			img.alt = "";
 			img.className = "dx-menu__alternate";
 			visual.append(img);
@@ -13283,6 +13323,7 @@ dxOnPageReady(() => {
 			requested = key;
 			const layer = layers[key];
 			if (layer) {
+				if (!layer.hasAttribute("src")) layer.src = layer.dataset.src;
 				try {
 					await layer.decode();
 				} catch {
@@ -13385,30 +13426,25 @@ dxOnPageReady(() => {
 		new MutationObserver(() => attachCounters(mosaic)).observe(mosaic, {
 			childList: true,
 		});
-	// Text presentation selectors stop Unicode arrows being rendered as emoji.
+	// Request monochrome text arrows, including text inserted by live results.
+	const skipArrowText = (node) => node.parentElement?.closest("script,style,textarea,input,svg");
+	const setTextArrows = (node) => {
+		if (skipArrowText(node)) return;
+		const text = node.data.replace(/([↗↘↙↖⬇⬆↧↓↑→←])[\uFE0E\uFE0F]?/g, "$1\uFE0E");
+		if (text !== node.data) node.data = text;
+	};
 	const arrows = (root) => {
-		const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-			acceptNode: (n) =>
-				n.parentElement?.closest("script,style,textarea,input,svg")
-					? NodeFilter.FILTER_REJECT
-					: NodeFilter.FILTER_ACCEPT,
-		});
-		const nodes = [];
-		while (walker.nextNode()) nodes.push(walker.currentNode);
-		nodes.forEach((n) => {
-			const text = n.data.replace(
-				/([↗↘↙↖⬇⬆↧↓↑→←])[\uFE0E\uFE0F]?/g,
-				"$1\uFE0E",
-			);
-			if (text !== n.data) n.data = text;
-		});
+		const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+		while (walker.nextNode()) setTextArrows(walker.currentNode);
 	};
 	arrows(document.body);
 	new MutationObserver((records) => {
-		for (const record of records)
+		for (const record of records) {
 			for (const node of record.addedNodes) {
-				if (node.nodeType === 1) arrows(node);
+				if (node.nodeType === Node.ELEMENT_NODE) arrows(node);
+				if (node.nodeType === Node.TEXT_NODE) setTextArrows(node);
 			}
+		}
 	}).observe(document.body, { childList: true, subtree: true });
 	document.querySelectorAll(".dxb-bad-photo").forEach((el) => {
 		const first = el.firstChild;
@@ -14116,6 +14152,7 @@ dxOnPageReady(() => {
 		spa: "M7 13c-4 4 0 8 5 8s9-4 5-8M8 3c-3 4 3 4 0 8m5-8c-3 4 3 4 0 8m5-8c-3 4 3 4 0 8",
 		cafe: "M4 8h13v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Zm13 1h2a3 3 0 0 1 0 6h-2M7 2v3m5-3v3",
 		parking: "M5 3h14v18H5Zm5 14V7h3a3 3 0 0 1 0 6h-3",
+		padel: "M9 15 4 20l-1-1 5-5m1 1c-3-3-2-7 1-10s7-4 10-1 2 7-1 10-7 4-10 1Zm2-6h.01m4-2h.01m-2 5h.01m4-2h.01",
 	};
 	document.querySelectorAll(".gym-review-facility").forEach((card) => {
 		const name = card.textContent.toLowerCase();
@@ -14127,6 +14164,8 @@ dxOnPageReady(() => {
 			? "cafe"
 			: /park/.test(name)
 			? "parking"
+			: /padel/.test(name)
+			? "padel"
 			: "gym";
 		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		svg.setAttribute("viewBox", "0 0 24 24");
@@ -14594,8 +14633,19 @@ dxOnPageReady(() => {
 	const layers = [...review.querySelectorAll('[data-gym-canvas]')];
 	if (!chapters.length || !layers.length) return;
 	const nav = document.createElement('nav');
-	nav.className = 'gym-review-chapters';
+	nav.className = 'dx-section-nav dx-review-section-nav';
 	nav.setAttribute('aria-label', 'Gym review chapters');
+	const title = review.querySelector('.gym-review-hero__title');
+	const header = document.getElementById('header');
+	const railTitle = document.createElement('p');
+	railTitle.className = 'dx-review-rail-title';
+	railTitle.textContent = title?.textContent.trim() || '';
+	railTitle.setAttribute('aria-hidden', 'true');
+	const chain = document.createElement('span');
+	chain.className = 'dx-review-rail-chain';
+	chain.textContent = review.dataset.gymChain || '';
+	chain.hidden = !chain.textContent;
+	railTitle.prepend(chain);
 	const links = [];
 	chapters.forEach((chapter, index) => {
 		const label = chapter.dataset.gymChapter;
@@ -14603,6 +14653,7 @@ dxOnPageReady(() => {
 		if (!chapter.id) chapter.id = `gym-review-chapter-${index + 1}`;
 		const link = document.createElement('a');
 		link.href = `#${chapter.id}`;
+		link.style.setProperty('--chapter-enter-delay', `${index * 55}ms`);
 		link.setAttribute('aria-label', label);
 		const text = document.createElement('span');
 		text.textContent = label;
@@ -14617,10 +14668,18 @@ dxOnPageReady(() => {
 		links.push({ chapter, link });
 	});
 	if (links.length) {
-		review.querySelector('.gym-review-canvas')?.after(nav);
-		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			nav.animate([{ opacity: 0, translate: '-20px 0' }, { opacity: 1, translate: '0 0' }], { duration: 900, easing: 'cubic-bezier(.22,1,.36,1)' });
-			links.forEach(({ link }, index) => link.animate([{ opacity: 0, translate: '-12px 0' }, { opacity: 1, translate: '0 0' }], { duration: 650, delay: 100 + index * 65, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' }));
+		const slot = document.createElement('div');
+		slot.className = 'container dx-section-nav-slot dx-review-section-nav-slot';
+		slot.append(nav);
+		review.querySelector('.gym-review-canvas')?.after(slot);
+		initServiceIndexMotion();
+		const back = review.querySelector('.gym-review-back')?.cloneNode(true);
+		if (back) {
+			const heading = document.createElement('div');
+			heading.className = 'dx-review-rail-heading';
+			back.className = 'dx-review-rail-back';
+			heading.append(railTitle, back);
+			nav.prepend(heading);
 		}
 	}
 	const reviewFooter = document.querySelector('.site-footer');
@@ -14629,6 +14688,10 @@ dxOnPageReady(() => {
 	const paint = () => {
 		frame = 0;
 		const readingLine = innerHeight * .42;
+		if (title) {
+			const top = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);
+			railTitle.classList.toggle('is-visible', title.getBoundingClientRect().bottom <= top);
+		}
 		let active = chapters[0];
 		for (const chapter of chapters) {
 			if (chapter.getBoundingClientRect().top <= readingLine) active = chapter;
@@ -15227,12 +15290,156 @@ dxOnPageReady(() => {
   if (!section.classList.contains('dx-service-entry-pending')) return;
   section.classList.remove('dx-service-entry-pending');
   section.animate([{opacity:0,translate:'0 24px'},{opacity:1,translate:'0 0'}],{duration:800,easing:'cubic-bezier(.22,1,.36,1)'});
-  const pieces = section.matches('.what-i-do') ? section.querySelectorAll('.services-tabs .nav-link, .tab-pane.active > *, .dx-mobile-services > .accordion-item') : section.querySelectorAll('.service-detail-form, .service-detail-enquiry > div:first-child > *');
+  const pieces = section.matches('.what-i-do') ? section.querySelectorAll('.services-tabs .nav-link, .tab-pane.active > *, .dx-mobile-services:not(.is-cinema) > .accordion-item') : section.querySelectorAll('.service-detail-form, .service-detail-enquiry > div:first-child > *');
   [...pieces].forEach((node,index)=>node.animate([{opacity:0,translate:'0 18px'},{opacity:1,translate:'0 0'}],{duration:750,delay:Math.min(index*65,350),fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
   observer.unobserve(section);
  };
  const observer = new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting) reveal(entry.target);}),{threshold:0,rootMargin:'0px 0px -8% 0px'});
  sections.forEach(section=>{section.classList.add('dx-service-entry-pending');observer.observe(section);section.addEventListener('focusin',()=>reveal(section),{once:true});});
+});
+
+dxOnPageReady(() => {
+	const deck = document.querySelector('body.home #servicesAccordion');
+	if (!deck) return;
+	const slides = [...deck.querySelectorAll(':scope > .accordion-item')];
+	if (slides.length < 2) return;
+	const mobile = matchMedia('(max-width: 991px)');
+	const controls = document.createElement('div');
+	controls.className = 'dx-service-cinema-controls';
+	const previous = document.createElement('button');
+	const next = document.createElement('button');
+	previous.type = next.type = 'button';
+	previous.textContent = '←\uFE0E';
+	next.textContent = '→\uFE0E';
+	previous.setAttribute('aria-label', 'Previous service');
+	next.setAttribute('aria-label', 'Next service');
+	const count = document.createElement('span');
+	count.setAttribute('aria-live', 'polite');
+	controls.append(previous, count, next);
+	deck.append(controls);
+	const switcher = document.querySelector('[data-home-switcher]');
+	let controlsNearViewport = false;
+	const clearControls = () => {
+		switcher?.classList.toggle('is-clear-of-service-controls', mobile.matches && controlsNearViewport);
+	};
+	if (switcher && 'IntersectionObserver' in window) {
+		new IntersectionObserver(([entry]) => {
+			controlsNearViewport = entry.isIntersecting;
+			clearControls();
+		}, { rootMargin: '0px 0px 96px 0px' }).observe(controls);
+	}
+	let current = 0;
+	let start;
+	const paint = () => {
+		const enabled = mobile.matches;
+		deck.classList.toggle('is-cinema', enabled);
+		controls.hidden = !enabled;
+		clearControls();
+		slides.forEach((slide, index) => {
+			slide.classList.toggle('is-current', index === current);
+			slide.inert = enabled && index !== current;
+		});
+		count.textContent = `${current + 1} / ${slides.length}`;
+	};
+	const advance = offset => {
+		current = (current + offset + slides.length) % slides.length;
+		paint();
+	};
+	previous.addEventListener('click', () => advance(-1));
+	next.addEventListener('click', () => advance(1));
+	deck.addEventListener('touchstart', event => {
+		start = event.touches[0];
+	}, { passive: true });
+	deck.addEventListener('touchend', event => {
+		if (!mobile.matches || !start) return;
+		const end = event.changedTouches[0];
+		const x = end.clientX - start.clientX;
+		const y = end.clientY - start.clientY;
+		start = null;
+		if (Math.abs(x) > 45 && Math.abs(x) > Math.abs(y)) advance(x < 0 ? 1 : -1);
+	}, { passive: true });
+	mobile.addEventListener('change', paint);
+	paint();
+});
+
+
+// Tint the sticky dashboard bar as it approaches hero copy.
+dxOnPageReady(() => {
+	const bar = document.querySelector('.dxbus-topbar, .dxgym-topbar, .dxcp-topbar');
+	if (!bar) return;
+	const workspace = bar.parentElement;
+	const heroSelector = '.dxbus-hero, .dxgym-hero, .dxcp-view:not([hidden]) > :is(.dxcp-welcome-hero, .dxcp-view-heading)';
+	let frame = 0;
+	let previousHeight = 0;
+	const paint = () => {
+		frame = 0;
+		const barBox = bar.getBoundingClientRect();
+		if (barBox.height !== previousHeight) {
+			previousHeight = barBox.height;
+			workspace.style.setProperty('--workspace-bar-height', `${barBox.height}px`);
+		}
+
+		const hero = workspace.querySelector(heroSelector);
+		const heroBox = hero?.getBoundingClientRect();
+		const overHero = heroBox?.height > 0 && heroBox.bottom > barBox.bottom;
+		const approachingText = overHero && [...hero.querySelectorAll('h1, h2, p, .dxbus-route-badge')].some((text) => {
+			const box = text.getBoundingClientRect();
+			return box.height > 0 && box.bottom > barBox.top && box.top < barBox.bottom + 16;
+		});
+		bar.classList.toggle('is-over-workspace-hero', overHero);
+		bar.classList.toggle('is-near-workspace-hero-text', approachingText);
+	};
+	const schedule = () => {
+		if (!frame) frame = requestAnimationFrame(paint);
+	};
+
+	addEventListener('scroll', schedule, { passive: true });
+	addEventListener('resize', schedule, { passive: true });
+	if ('ResizeObserver' in window) {
+		const observer = new ResizeObserver(schedule);
+		observer.observe(bar);
+		observer.observe(workspace);
+	}
+	schedule();
+});
+
+// Count into the rendered values as ranking rows enter the viewport.
+dxOnPageReady(() => {
+	const content = document.querySelector('[data-gym-content]');
+	if (!content || !('IntersectionObserver' in window)) return;
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	const observed = new WeakSet();
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach(({ target, isIntersecting }) => {
+			if (!isIntersecting) return;
+			observer.unobserve(target);
+			if (reducedMotion.matches) return;
+			const scores = [...target.querySelectorAll('[data-league-score]')].map((score) => ({
+				node: score.firstChild,
+				value: Number(score.dataset.leagueScore),
+				decimals: Number(score.dataset.leagueDecimals),
+				text: score.firstChild.nodeValue,
+			}));
+			const start = performance.now();
+			const tick = (now) => {
+				const progress = Math.min(1, (now - start) / 650);
+				scores.forEach(({ node, value, decimals, text }) => {
+					node.nodeValue = progress === 1 ? text : (value * (1 - (1 - progress) ** 3)).toFixed(decimals);
+				});
+				if (progress < 1 && target.isConnected) requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		});
+	});
+	const observe = () => content.querySelectorAll('.dxgym-table tbody tr').forEach((row) => {
+		if (observed.has(row)) return;
+		observed.add(row);
+		observer.observe(row);
+	});
+	observe();
+	new MutationObserver((records) => {
+		if (records.some(({ addedNodes }) => [...addedNodes].some((node) => node.nodeType === 1))) observe();
+	}).observe(content, { childList: true, subtree: true });
 });
 
 }

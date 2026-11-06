@@ -35,11 +35,28 @@ function dxndre_portfolio_project_data($project) {
         'hover' => $field('header_image'),
     ];
 }
+function dxndre_portfolio_webp_url($url) {
+    $uploads = wp_get_upload_dir();
+    $base = trailingslashit(wp_parse_url($uploads['baseurl'], PHP_URL_PATH));
+    $path = wp_parse_url($url, PHP_URL_PATH);
+    if (!$path || strpos($path, $base) !== 0) return '';
+    $key = substr(hash('sha256', rawurldecode(substr($path, strlen($base)))), 0, 20);
+    $variant = 'assets/img/portfolio-webp/' . $key . '.webp';
+    return is_file(get_theme_file_path($variant)) ? get_theme_file_uri($variant) : '';
+}
 function dxndre_portfolio_image($project, $data, $size, $class, $eager = false) {
     $image_id = is_array($data['hover']) ? ($data['hover']['ID'] ?? 0) : (int) $data['hover'];
     $attributes = ['class'=>$class,'loading'=>$eager ? 'eager' : 'lazy'];
-    if ($image_id) return wp_get_attachment_image($image_id, $size, false, $attributes);
-    return get_the_post_thumbnail($project, $size, $attributes);
+    $markup = $image_id ? wp_get_attachment_image($image_id, $size, false, $attributes) : get_the_post_thumbnail($project, $size, $attributes);
+    if ($class !== 'dx-project-poster-image') return $markup;
+    $tags = new WP_HTML_Tag_Processor($markup);
+    if (!$tags->next_tag('IMG')) return $markup;
+    $webp = dxndre_portfolio_webp_url($tags->get_attribute('src'));
+    if (!$webp) return $markup;
+    $tags->set_attribute('src', $webp);
+    $tags->remove_attribute('srcset');
+    $tags->remove_attribute('sizes');
+    return $tags->get_updated_html();
 }
 function dxndre_editorial_projects_archive($atts = []) {
     $projects = get_posts(['post_type'=>'project','post_status'=>'publish','numberposts'=>-1,'orderby'=>'date','order'=>'DESC']);
@@ -51,7 +68,7 @@ function dxndre_editorial_projects_archive($atts = []) {
     ob_start(); ?>
     <div class="portfolio-editorial">
       <section class="dx-project-reel" aria-label="Selected projects"><div class="dx-project-reel-sticky"><p class="dx-eyebrow">Selected work / Scroll to explore</p><h2>Ideas, brought to life.</h2><div class="dx-project-track">
-<?php foreach($projects as $project): $d=dxndre_portfolio_project_data($project); ?><a class="dx-project-poster" href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo dxndre_portfolio_image($project,$d,'large','dx-project-poster-image'); ?><div><p class="dx-eyebrow"><?php echo esc_html($d['year'].' / '.$d['context_label']); ?></p><h3><?php echo esc_html($d['title']); ?></h3><p><?php echo esc_html($d['excerpt']); ?></p><span>Read the story ↗</span></div></a><?php endforeach; ?>
+<?php foreach($projects as $project): $d=dxndre_portfolio_project_data($project); ?><a class="dx-project-poster" href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo dxndre_portfolio_image($project,$d,'large','dx-project-poster-image'); ?><div><p class="dx-eyebrow"><?php echo esc_html($d['year'].' / '.$d['context_label']); ?></p><h3><?php echo esc_html($d['title']); ?></h3><p><?php echo esc_html($d['excerpt']); ?></p><span class="dx-project-poster-action">Read the Case Study <span aria-hidden="true">↗︎</span></span></div></a><?php endforeach; ?>
 </div><p class="dx-project-touch-hint"><svg viewBox="0 0 24 32" aria-hidden="true"><path d="m6 10 6-6 6 6M12 5v15"/><circle cx="12" cy="26" r="3"/></svg><span>Swipe up to explore</span></p></div></section>
       <div class="portfolio-archive" data-projects-archive>
         <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
@@ -89,7 +106,7 @@ add_action('wp_enqueue_scripts', function () {
         $image_id=is_array($preview) ? (int)($preview['ID'] ?? $preview['id'] ?? 0) : (is_numeric($preview) ? (int)$preview : 0);
         $url=$image_id ? wp_get_attachment_image_url($image_id,'full') : (is_array($preview) ? ($preview['url'] ?? '') : (is_string($preview) ? $preview : ''));
         $url=esc_url_raw($url);
-        if ($url) $slides[]=['src'=>$url,'title'=>get_the_title($project)];
+        if ($url) $slides[]=['src'=>dxndre_portfolio_webp_url($url) ?: $url,'title'=>get_the_title($project)];
     }
     wp_localize_script('dxndre-theme','DX_PROJECT_SLIDES',array_values($slides));
 },30);

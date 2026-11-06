@@ -10,6 +10,22 @@ function dxgym_categories() {
 	];
 }
 
+function dxgym_price_categories() {
+	return ['budget' => 'Budget', 'midrange' => 'Mid-Range', 'premium' => 'Premium', 'luxury' => 'Luxury'];
+}
+
+function dxgym_facility_options() {
+	return [
+		'gym' => 'Gym', 'swim' => 'Wetside', 'spa' => 'Spa / sauna',
+		'cafe' => 'Café / work', 'parking' => 'Parking', 'padel' => 'Padel Court',
+	];
+}
+
+function dxgym_padel_status($post_id) {
+	$status = get_field('gym_padel_court', $post_id);
+	return in_array($status, ['available', 'unavailable'], true) ? $status : '';
+}
+
 /** Existing review thresholds, exposed once for the dashboard's explanatory controls. */
 function dxgym_thresholds() {
 	return [[85,'Outstanding','#b9eaff'],[71,'Excellent','#6ed9c5'],[57,'Positive','#82c995'],[43,'Mixed','#e5a653'],[29,'Poor','#ef8585'],[15,'Bad','#d85b70'],[0,'Diabolical','#8c354b']];
@@ -60,15 +76,22 @@ add_action('acf/init', function () {
 	acf_add_local_field_group([
 		'key' => 'group_dxgym_discovery', 'title' => 'Gym discovery (optional)',
 		'fields' => [
-			['key'=>'field_dxgym_price','name'=>'gym_price_category','label'=>'Price category','type'=>'select','allow_null'=>1,'choices'=>['budget'=>'Budget','midrange'=>'Mid-range','premium'=>'Premium'],'instructions'=>'Only set a category when confirmed. Leave blank if unknown.'],
+			['key'=>'field_dxgym_price','name'=>'gym_price_category','label'=>'Price category','type'=>'select','allow_null'=>1,'choices'=>dxgym_price_categories(),'instructions'=>'Only set a category when confirmed. Leave blank if unknown.'],
 			['key'=>'field_dxgym_open','name'=>'gym_open_24_hours','label'=>'Open 24/7','type'=>'select','allow_null'=>1,'choices'=>['yes'=>'Confirmed 24/7','no'=>'Not 24/7'],'instructions'=>'Leave blank if opening hours have not been confirmed.'],
+			[
+				'key' => 'field_dxgym_padel', 'name' => 'gym_padel_court',
+				'label' => dxgym_facility_options()['padel'], 'type' => 'select',
+				'allow_null' => 1, 'return_format' => 'value',
+				'choices' => ['available' => 'Available', 'unavailable' => 'Unavailable'],
+				'instructions' => 'Leave blank if the facility was not confirmed on this visit.',
+			],
 		],
 		'location' => [[['param'=>'post_type','operator'=>'==','value'=>'gym-review']]],
 	]);
 });
 
 function dxgym_clear_cache($id = 0) {
-	if (!$id || in_array(get_post_type($id), ['gym-review','attachment'], true)) delete_transient('dxgym_records_v1');
+	if (!$id || in_array(get_post_type($id), ['gym-review','attachment'], true)) delete_transient('dxgym_records_v2');
 }
 add_action('save_post_gym-review', 'dxgym_clear_cache', 30);
 add_action('acf/save_post', 'dxgym_clear_cache', 30);
@@ -80,7 +103,7 @@ add_action('deleted_post_meta', function ($meta_id, $post_id) { if (get_post_typ
 
 /** Compact summaries only: full editorial content remains at its original URL. */
 function dxgym_data() {
-	$cached = get_transient('dxgym_records_v1');
+	$cached = get_transient('dxgym_records_v2');
 	if (is_array($cached)) return $cached;
 	$posts = get_posts(['post_type'=>'gym-review','post_status'=>'publish','numberposts'=>-1,'orderby'=>'date','order'=>'DESC']);
 	$groups = [];
@@ -108,6 +131,7 @@ function dxgym_data() {
 			$thumb = get_post_thumbnail_id($id);
 			if (!$thumb) { $gallery = (array) get_field('gym_gallery', $id); $first = reset($gallery); $thumb = is_array($first) ? ($first['ID'] ?? 0) : absint($first); }
 			$image = $thumb ? wp_get_attachment_image_url($thumb, 'medium_large') : '';
+			$price = (string) get_field('gym_price_category', $id);
 			$record = [
 				'id'=>$id, 'root'=>(int)$root, 'title'=>$title, 'name'=>$name, 'chain'=>$chain, 'chainKey'=>$chain_key,
 				'location'=>(string)get_field('gym_location',$id), 'scores'=>$scores, 'overall'=>$percentage,
@@ -117,8 +141,9 @@ function dxgym_data() {
 				'published'=>get_the_date('j F Y',$id), 'publishedISO'=>get_the_date('Y-m-d',$id),
 				'excerpt'=>wp_trim_words(wp_strip_all_tags((string)get_field('notes',$id)), 23),
 				'lat'=>$coords['lat'], 'lng'=>$coords['lng'], 'visits'=>count($visits),
-				'price'=>in_array(get_field('gym_price_category',$id),['budget','midrange','premium'],true) ? get_field('gym_price_category',$id) : '',
+				'price'=>isset(dxgym_price_categories()[$price]) ? $price : '',
 				'open24'=>get_field('gym_open_24_hours',$id) === 'yes',
+				'padel'=>dxgym_padel_status($id),
 			];
 			$reviews[] = $record;
 			if ($index === 0) $records[] = $record;
@@ -129,7 +154,7 @@ function dxgym_data() {
 	unset($record);
 	usort($reviews, function ($a,$b) { return strcmp($b['dateISO'] ?: $b['publishedISO'], $a['dateISO'] ?: $a['publishedISO']) ?: ($b['id'] <=> $a['id']); });
 	$data = ['gyms'=>$records,'reviews'=>$reviews,'visits'=>count($posts)];
-	set_transient('dxgym_records_v1',$data,HOUR_IN_SECONDS);
+	set_transient('dxgym_records_v2',$data,HOUR_IN_SECONDS);
 	return $data;
 }
 
@@ -153,7 +178,9 @@ function dxgym_filtered($records,$state) {
 		if ($state['location'] && $record['location'] !== $state['location']) return false;
 		if ($state['price'] && $record['price'] !== $state['price']) return false;
 		if ($state['open24'] && !$record['open24']) return false;
-		if ($state['facility'] && (!array_key_exists($state['facility'],$record['scores']) || !is_numeric($record['scores'][$state['facility']]))) return false;
+		$facility = $state['facility'];
+		if ($facility === 'padel') return $record['padel'] === 'available';
+		if ($facility && !is_numeric($record['scores'][$facility] ?? null)) return false;
 		return true;
 	}));
 	$sort = $state['sort'];
@@ -185,14 +212,17 @@ function dxgym_icon($name) {
 		'moon'=>'<path d="M20.5 14a8.7 8.7 0 0 1-10.5-10.5A8.8 8.8 0 1 0 20.5 14Z"/>',
 		'share'=>'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4m-6.6 7 6.6 4"/>',
 		'chevron'=>'<path d="m6 9 6 6 6-6"/>',
+		'menu'=>'<path d="M4 6h16M4 12h16M4 18h16"/>',
 		'play'=>'<path d="m8 4 12 8-12 8Z"/>',
 	];
 	return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.($paths[$name]??$paths['overview']).'</svg>';
 }
-function dxgym_score($score,$overall=false) {
+function dxgym_score($score,$overall=false,$animate=false) {
 	if (!is_numeric($score)) return '<span class="dxgym-unassessed">'.($score==='unavailable'?'Unavailable':'Not assessed').'</span>';
 	$band = dxgym_band($overall ? $score : $score*10);
-	return '<span class="dxgym-score" style="--score-color:'.esc_attr($band['color']).'" title="'.esc_attr($band['label']).'">'.esc_html(number_format_i18n((float)$score,$overall?1:($score == floor($score)?0:1))).($overall?'<small>%</small>':'<small>/10</small>').'</span>';
+	$decimals = $overall || $score != floor($score) ? 1 : 0;
+	$animation = $animate ? ' data-league-score="'.esc_attr($score).'" data-league-decimals="'.$decimals.'"' : '';
+	return '<span class="dxgym-score"'.$animation.' style="--score-color:'.esc_attr($band['color']).'" title="'.esc_attr($band['label']).'">'.esc_html(number_format_i18n((float)$score,$overall?1:($score == floor($score)?0:1))).($overall?'<small>%</small>':'<small>/10</small>').'</span>';
 }
 function dxgym_image($record,$small=false) {
 	if (!$record['image']) return '<span class="dxgym-image-empty" aria-label="No gym photograph recorded"><img class="dxgym-placeholder-art" src="'.esc_url(get_theme_file_uri('assets/img/gym-placeholder.svg')).'" alt="" loading="lazy" decoding="async"></span>';
@@ -203,7 +233,7 @@ function dxgym_amenities($record) {
 	foreach (['gym'=>'Gym','swim'=>'Wetside','spa'=>'Spa / sauna','cafe'=>'Café / work','parking'=>'Parking'] as $key=>$label) {
 		if (is_numeric($record['scores'][$key])) $html.='<span>'.esc_html($label).'</span>';
 	}
-	if ($record['price']) $html.='<span>'.esc_html(ucfirst($record['price'])).'</span>';
+	if ($record['price']) $html.='<span>'.esc_html((dxgym_price_categories()[$record['price']] ?? $record['price'])).'</span>';
 	if ($record['open24']) $html.='<span>24/7</span>';
 	return '<div class="dxgym-tags">'.$html.'</div>';
 }
@@ -235,8 +265,8 @@ function dxgym_listing_summary($total,$state) {
 	if($state['q'])$filters[]='“'.$state['q'].'”';
 	if($state['chain']){foreach($data['gyms']as$gym){if($gym['chainKey']===$state['chain']){$filters[]=$gym['chain'];break;}}}
 	if($state['location'])$filters[]=$state['location'];
-	if($state['facility'])$filters[]=dxgym_categories()[$state['facility']][0]??$state['facility'];
-	if($state['price'])$filters[]=ucfirst($state['price']);
+	if($state['facility'])$filters[]=dxgym_facility_options()[$state['facility']]??$state['facility'];
+	if($state['price'])$filters[]=dxgym_price_categories()[$state['price']] ?? $state['price'];
 	if($state['open24'])$filters[]='24/7';
 	$filter_text=implode(' · ',$filters);
 	// Chain counts retain every other active filter and use visits on the Reviews view.
@@ -281,13 +311,13 @@ function dxgym_distribution_chart($distribution,$scored_count,$average,$missing=
 
 function dxgym_filters($data,$state) {
 	$chains=[];$locations=[];$prices=[];$has24=false;
-	foreach ($data['gyms'] as $gym) { if($gym['chain'])$chains[$gym['chainKey']]=$gym['chain'];if($gym['location'])$locations[$gym['location']]=$gym['location'];if($gym['price'])$prices[$gym['price']]=ucfirst($gym['price']);if($gym['open24'])$has24=true; }
+	foreach ($data['gyms'] as $gym) { if($gym['chain'])$chains[$gym['chainKey']]=$gym['chain'];if($gym['location'])$locations[$gym['location']]=$gym['location'];if($gym['price'])$prices[$gym['price']]=dxgym_price_categories()[$gym['price']] ?? $gym['price'];if($gym['open24'])$has24=true; }
 	natcasesort($chains);natcasesort($locations);
 	ob_start(); ?>
 	<form class="dxgym-filters" method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-filters>
 	<input type="hidden" name="view" value="<?php echo esc_attr($state['view']); ?>"><input type="hidden" name="compare" value="<?php echo esc_attr(implode(',',$state['compare'])); ?>">
 	<label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Search gyms, locations or chains</span><input type="search" name="q" placeholder="Search gyms, locations or chains…" value="<?php echo esc_attr($state['q']); ?>" autocomplete="off"></label>
-	<?php foreach (['chain'=>['All chains',$chains],'location'=>['All locations',$locations],'facility'=>['All facilities',['gym'=>'Gym','swim'=>'Wetside','spa'=>'Spa / sauna','cafe'=>'Café / work','parking'=>'Parking']],'sort'=>['Sort by',['overall'=>'Overall score ↓','name'=>'Gym name A–Z','recent'=>'Most recently visited','gym'=>'Gym score ↓','swim'=>'Wetside score ↓','spa'=>'Spa score ↓','cafe'=>'Café score ↓','clean'=>'Cleanliness score ↓','parking'=>'Parking score ↓']]] as $key=>$config): ?>
+	<?php foreach (['chain'=>['All chains',$chains],'location'=>['All locations',$locations],'facility'=>['All facilities',dxgym_facility_options()],'sort'=>['Sort by',['overall'=>'Overall score ↓','name'=>'Gym name A–Z','recent'=>'Most recently visited','gym'=>'Gym score ↓','swim'=>'Wetside score ↓','spa'=>'Spa score ↓','cafe'=>'Café score ↓','clean'=>'Cleanliness score ↓','parking'=>'Parking score ↓']]] as $key=>$config): ?>
 	<label><span class="screen-reader-text"><?php echo esc_html($config[0]); ?></span><select name="<?php echo esc_attr($key); ?>"><?php if($key!=='sort'): ?><option value=""><?php echo esc_html($config[0]); ?></option><?php endif; ?><?php foreach($config[1] as $value=>$label): ?><option value="<?php echo esc_attr($value); ?>" <?php selected($state[$key],(string)$value); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
 	<?php endforeach; ?>
 	<?php if($prices): ?><label><span class="screen-reader-text">Price category</span><select name="price"><option value="">Any price</option><?php foreach($prices as $key=>$label): ?><option value="<?php echo esc_attr($key); ?>" <?php selected($state['price'],$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label><?php endif; ?>
@@ -380,7 +410,52 @@ function dxgym_view($data,$state) {
 		echo dxgym_listing_summary($total,$state);
 		?><p class="dxgym-results-count" role="status"><?php echo $total?esc_html('Showing '.(($state['page']-1)*$size+1).'–'.min($total,$state['page']*$size).' of '.$total.($view==='reviews'?' recorded visits':' gyms')):'No matching gyms'; ?></p>
 		<?php if(!$total): echo dxgym_empty(); elseif($view==='league'): ?>
-		<div class="dxgym-table-scroll"><table class="dxgym-table"><caption class="screen-reader-text">Gym rankings — category scores out of 10; overall score is a weighted percentage.</caption><thead><tr><th scope="col">#</th><th scope="col">Gym</th><th scope="col">Location</th><th scope="col">Visits</th><?php foreach(dxgym_categories()as$key=>$category): ?><th scope="col"><?php $sortargs=$state;$sortargs['sort']=$key;$sortargs['page']=1;$sortargs['compare']=implode(',',$state['compare']); ?><a data-gym-nav href="<?php echo esc_url(dxgym_url($sortargs)); ?>"><?php echo esc_html($category[0]); ?><small>×<?php echo esc_html($category[2]); ?></small></a></th><?php endforeach; ?><th scope="col">Overall</th><th scope="col"><span class="screen-reader-text">Compare</span></th></tr></thead><tbody><?php foreach($page as$index=>$gym): ?><tr><td class="dxgym-table-rank"><?php echo str_pad(($state['page']-1)*$size+$index+1,2,'0',STR_PAD_LEFT); ?></td><th scope="row"><a class="dxgym-table-name" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym,true); ?><span><?php echo esc_html($gym['name']); ?></span></a></th><td data-label="Location"><?php echo esc_html($gym['location']?:'Not recorded'); ?></td><td data-label="Visits"><?php echo esc_html($gym['visits']); ?></td><?php foreach(dxgym_categories()as$key=>$category): ?><td data-label="<?php echo esc_attr($category[0]); ?>"><?php echo dxgym_score($gym['scores'][$key]); ?></td><?php endforeach; ?><td data-label="Overall"><?php echo dxgym_score($gym['overall'],true); ?></td><td><?php echo dxgym_compare_link($gym,$state); ?></td></tr><?php endforeach; ?></tbody></table></div><p class="dxgym-map-note">Latest dated visit per branch. Unassessed and unavailable facilities are excluded from the weighted overall score; a recorded zero is retained. Category order reflects your selected sort.</p>
+		<?php
+		$league_sort_url = static function ($key) use ($state) {
+			return dxgym_url(array_merge($state, [
+				'sort' => $key,
+				'page' => 1,
+				'compare' => implode(',', $state['compare']),
+			]));
+		};
+		$league_categories = dxgym_categories();
+		?>
+		<div class="dxgym-table-scroll">
+			<table class="dxgym-table">
+				<caption class="screen-reader-text">Gym rankings — category scores out of 10; overall score is a weighted percentage.</caption>
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col"<?php if ($state['sort'] === 'name') echo ' aria-sort="ascending"'; ?>><a data-gym-nav href="<?php echo esc_url($league_sort_url('name')); ?>">Gym</a></th>
+						<th scope="col">Location</th>
+						<th scope="col">Visits</th>
+						<?php foreach ($league_categories as $key => $category) : ?>
+							<th scope="col"<?php if ($state['sort'] === $key) echo ' aria-sort="descending"'; ?>>
+								<a data-gym-nav href="<?php echo esc_url($league_sort_url($key)); ?>"><?php echo esc_html($category[0]); ?><small>×<?php echo esc_html($category[2]); ?></small></a>
+							</th>
+						<?php endforeach; ?>
+						<th scope="col"<?php if ($state['sort'] === 'overall') echo ' aria-sort="descending"'; ?>><a data-gym-nav href="<?php echo esc_url($league_sort_url('overall')); ?>">Overall</a></th>
+						<th scope="col"><span class="screen-reader-text">Compare</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ($page as $index => $gym) : ?>
+						<tr>
+							<td class="dxgym-table-rank"><?php echo str_pad(($state['page'] - 1) * $size + $index + 1, 2, '0', STR_PAD_LEFT); ?></td>
+							<th scope="row"<?php if ($state['sort'] === 'name') echo ' class="is-league-sort-column"'; ?>><a class="dxgym-table-name" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym, true); ?><span><?php echo esc_html($gym['name']); ?></span></a></th>
+							<td data-label="Location"><?php echo esc_html($gym['location'] ?: 'Not recorded'); ?></td>
+							<td data-label="Visits"><?php echo esc_html($gym['visits']); ?></td>
+							<?php foreach ($league_categories as $key => $category) : ?>
+								<td data-label="<?php echo esc_attr($category[0]); ?>"<?php if ($state['sort'] === $key) echo ' class="is-league-sort-column"'; ?>><?php echo dxgym_score($gym['scores'][$key], false, true); ?></td>
+							<?php endforeach; ?>
+							<td data-label="Overall"<?php if ($state['sort'] === 'overall') echo ' class="is-league-sort-column"'; ?>><?php echo dxgym_score($gym['overall'], true, true); ?></td>
+							<td><?php echo dxgym_compare_link($gym, $state); ?></td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+		<p class="dxgym-map-note">Latest dated visit per branch. Unassessed and unavailable facilities are excluded from the weighted overall score; a recorded zero is retained. Category order reflects your selected sort.</p>
 		<?php else: ?><div class="dxgym-card-grid"><?php foreach($page as$gym)echo dxgym_card($gym,$state,$view==='reviews'); ?></div><?php endif; echo dxgym_incremental($total,$state,$size); echo dxgym_pagination($total,$state,$size); ?>
 	<?php elseif($view==='compare'):
 		$compare_total=count($filtered);$compare_size=12;$state['page']=min($state['page'],max(1,(int)ceil($compare_total/$compare_size)));

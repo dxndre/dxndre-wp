@@ -72,6 +72,26 @@ add_filter('the_content', function ($content) {
 }, 25);
 
 
+// Match the booking page's light palette in Calendly's cross-origin frame.
+add_filter('render_block', function ($html) {
+	if (!is_page('book-a-call') || !str_contains($html, 'calendly-inline-widget')) return $html;
+
+	$tags = new WP_HTML_Tag_Processor($html);
+	while ($tags->next_tag(['class_name' => 'calendly-inline-widget'])) {
+		$url = $tags->get_attribute('data-url');
+		if (!is_string($url) || wp_parse_url($url, PHP_URL_HOST) !== 'calendly.com') continue;
+
+		$tags->set_attribute('data-url', add_query_arg([
+			'background_color' => 'ffffff',
+			'text_color' => '17252e',
+			'primary_color' => '87621c',
+		], $url));
+	}
+
+	return $tags->get_updated_html();
+}, 25);
+
+
 // Booking remains a real link before JavaScript or the optional widget loads.
 add_filter('render_block', function ($html, $block) {
 	if (!str_contains($html, 'js-calendly-popup') || !class_exists('WP_HTML_Tag_Processor')) return $html;
@@ -94,8 +114,8 @@ add_filter('render_block', function ($html, $block) {
 	$tags = new WP_HTML_Tag_Processor($html);
 	if ($tags->next_tag(['tag_name' => 'IMG'])) {
 		$tags->set_attribute('src', get_theme_file_uri('/assets/img/home-hero-portrait-4k.webp'));
-		$tags->remove_attribute('srcset');
-		$tags->remove_attribute('sizes');
+		$tags->set_attribute('srcset', get_theme_file_uri('/assets/img/home-hero-portrait-mobile.webp') . ' 1280w, ' . get_theme_file_uri('/assets/img/home-hero-portrait-4k.webp') . ' 3840w');
+		$tags->set_attribute('sizes', '100vw');
 		$tags->set_attribute('width', '3840');
 		$tags->set_attribute('height', '2480');
 		$tags->set_attribute('loading', 'eager');
@@ -103,6 +123,33 @@ add_filter('render_block', function ($html, $block) {
 	}
 	return $tags->get_updated_html();
 }, 26, 2);
+
+// Serve responsive WebP covers on the homepage while preserving the media library originals.
+add_filter('render_block_core/cover', function ($html) {
+	if (!is_front_page() || !class_exists('WP_HTML_Tag_Processor')) return $html;
+
+	$tags = new WP_HTML_Tag_Processor($html);
+	if (!$tags->next_tag(['tag_name' => 'IMG', 'class_name' => 'wp-block-cover__image-background'])) return $html;
+	$source = wp_parse_url((string) $tags->get_attribute('src'), PHP_URL_PATH);
+	$covers = [
+		'Rectangle-135-scaled.png' => 'hero',
+		'Rectangle-127-scaled.png' => 'portfolio',
+		'Rectangle-128.png' => 'fitness',
+	];
+	$cover = $covers[wp_basename((string) $source)] ?? '';
+	if (!$cover) return $html;
+
+	$srcset = [];
+	foreach ([768, 1280, $cover === 'fitness' ? 1728 : 2048] as $width) {
+		$url = get_theme_file_uri("/assets/img/home-cover-$cover-$width.webp");
+		$srcset[] = "$url {$width}w";
+	}
+	$tags->set_attribute('src', get_theme_file_uri("/assets/img/home-cover-$cover-1280.webp"));
+	$tags->set_attribute('srcset', implode(', ', $srcset));
+	$tags->set_attribute('sizes', '100vw');
+	if ($cover !== 'hero') $tags->set_attribute('loading', 'lazy');
+	return $tags->get_updated_html();
+});
 
 // Render the hero letters before first paint; the heading keeps one accessible name.
 add_filter('render_block', function ($html, $block) {

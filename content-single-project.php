@@ -65,7 +65,7 @@
 
 					<?php endif; ?>
 
-					<a href="#chapter-1" class="dx-read-study" data-read-study>Read the story <span aria-hidden="true">↓</span></a>
+					<a href="#chapter-1" class="dx-read-study" data-read-study>Read the Case Study <span aria-hidden="true">↓︎</span></a>
 					<?php if ( ! empty( $services ) && is_array( $services ) ) : ?>
 						<ul class="project-services">
 							<?php foreach ( $services as $service ) : ?>

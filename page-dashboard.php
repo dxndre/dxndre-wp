@@ -128,13 +128,13 @@ get_header( 'client-portal' );
 	<div class="dxcp-workspace">
 		<header class="dxcp-topbar">
 			<div class="dxcp-inline">
-				<button class="dxcp-mobile-toggle" type="button" data-dxcp-menu aria-expanded="false" aria-controls="dxcp-sidebar" aria-label="Open workspace menu"><?php echo dxcp_icon( 'menu' ); ?></button>
 				<span class="dxcp-breadcrumb">Your workspace <span>/</span> <strong data-dxcp-breadcrumb><?php echo esc_html( $sections[ $section ] ); ?></strong></span>
 			</div>
 			<div class="dxcp-topbar__account">
 				<span class="dxcp-secure"><?php echo dxcp_icon( 'check' ); ?> Private <?php echo $is_owner ? 'business' : 'client'; ?> space</span>
 				<button type="button" class="dxcp-theme-toggle" data-dxcp-theme aria-pressed="false" aria-label="Switch to dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg><span data-dxcp-theme-label>Dark mode</span></button>
 				<a href="<?php echo esc_url( dxcp_portal_url( $is_owner ? 'admin' : 'profile', $pid ) ); ?>" class="dxcp-avatar" aria-label="<?php echo esc_attr( $is_owner ? 'Your admin overview' : 'Your account details' ); ?>"><?php echo esc_html( mb_strtoupper( mb_substr( $first_name, 0, 1 ) ) ); ?></a>
+				<button class="dxcp-mobile-toggle" type="button" data-dxcp-menu aria-expanded="false" aria-controls="dxcp-sidebar" aria-label="Open workspace menu"><?php echo dxcp_icon( 'menu' ); ?></button>
 			</div>
 		</header>
 		<div class="dxcp-project-switch">
