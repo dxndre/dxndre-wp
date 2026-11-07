@@ -10,7 +10,7 @@ add_shortcode('dx_project_enquiry', function () {
  wp_localize_script('dxndre-theme', 'DX_ENQUIRY', ['url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('dx_project_enquiry')]);
  ob_start(); ?>
 <section class="project-enquiry" aria-labelledby="enquiry-title">
- <a class="enquiry-back-site" href="<?php echo esc_url(home_url('/portfolio/')); ?>">← Back to the work</a>
+ <a class="enquiry-back-site" href="<?php echo esc_url(home_url('/portfolio/')); ?>"><span class="dx-back-arrow" aria-hidden="true">←&#xfe0e;</span><span>Back to the work</span></a>
  <header class="enquiry-heading"><p class="enquiry-eyebrow">Let’s work together</p><h1 id="enquiry-title">Your next chapter<br>starts here.</h1><p>Tell me what you have in mind. It’s fine if you’re still figuring it out.</p></header>
  <noscript><p>This guided form needs JavaScript. Please <a href="<?php echo esc_url(home_url('/contact/')); ?>">use the contact page</a> instead.</p></noscript>
  <div class="enquiry-layout"><form class="enquiry-form" method="post" novalidate>

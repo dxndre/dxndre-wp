@@ -227,6 +227,33 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 	const initial = fromURL() || readSaved();
 	apply(initial, { initial: true, save: Boolean(initial), announce: false });
 	history.replaceState({ ...(history.state || {}), dxHomeJourney: current }, '', location.href);
+	const options = switcher?.querySelector('.dx-home-journey-switcher__options');
+	let switcherExpanded = Boolean(switcher?.open);
+	let switcherAnimation;
+	const setSwitcherOpen = opening => {
+		if (!switcher || switcherExpanded === opening) return;
+		switcherExpanded = opening;
+		const opacity = options && switcher.open ? getComputedStyle(options).opacity : '0';
+		const transform = options && switcher.open ? getComputedStyle(options).transform : 'translateY(8px)';
+		switcherAnimation?.cancel();
+		if (options) options.inert = !opening;
+		if (!options || reducedMotion.matches || !options.animate) {
+			switcher.open = opening;
+			return;
+		}
+		switcher.open = true;
+		const animation = options.animate([
+			{ opacity, transform },
+			{ opacity: opening ? 1 : 0, transform: opening ? 'translateY(0)' : 'translateY(8px)' },
+		], { duration: 260, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' });
+		switcherAnimation = animation;
+		animation.finished.then(() => {
+			if (switcherAnimation !== animation) return;
+			switcher.open = opening;
+			animation.cancel();
+			switcherAnimation = null;
+		}, () => {});
+	};
 	const handleSelection = event => {
 		const choice = event.target.closest('[data-home-journey]');
 		const reset = event.target.closest('[data-home-original]');
@@ -234,7 +261,7 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 		event.preventDefault();
 		apply(reset ? null : choice.dataset.homeJourney, { save: true, updateURL: true, navigate: Boolean(choice) });
 		if (switcher?.contains(event.target)) {
-			switcher.open = false;
+			setSwitcherOpen(false);
 			switcher.querySelector('summary').focus({ preventScroll: true });
 		}
 	};
@@ -250,6 +277,10 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 		// This moves the existing control only; homepage content is unchanged.
 		document.body.append(switcher);
 		switcher.addEventListener('click', handleSelection);
+		switcher.querySelector('summary').addEventListener('click', event => {
+			event.preventDefault();
+			setSwitcherOpen(!switcherExpanded);
+		});
 		switcher.hidden = false;
 		const updateVisibility = () => {
 			const bounds = switcher.getBoundingClientRect();
@@ -259,7 +290,7 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 			const visible = selector.getBoundingClientRect().bottom < 100 && !overlapsFooter;
 			switcher.dataset.visible = String(visible);
 			switcher.inert = !visible;
-			if (!visible) switcher.open = false;
+			if (!visible) setSwitcherOpen(false);
 		};
 		let scheduled = false;
 		const schedule = () => {
@@ -274,9 +305,9 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 		window.addEventListener('load', schedule, { once: true });
 		switcher.addEventListener('toggle', schedule);
 		switcher.addEventListener('keydown', event => {
-			if (event.key === 'Escape') { switcher.open = false; switcher.querySelector('summary').focus({ preventScroll: true }); }
+			if (event.key === 'Escape') { setSwitcherOpen(false); switcher.querySelector('summary').focus({ preventScroll: true }); }
 		});
-		document.addEventListener('click', event => { if (!switcher.contains(event.target)) switcher.open = false; });
+		document.addEventListener('click', event => { if (!switcher.contains(event.target)) setSwitcherOpen(false); });
 		updateVisibility();
 	}
 })();
@@ -788,7 +819,8 @@ function initEveningScenes(reduced) {
 }
 
 function dxSlideshowControl(button, paused) {
-	if (!button) return;
+	// The Gym dashboard owns its SVG states and must retain its control markup.
+	if (!button || button.matches('[data-gym-slide-toggle]')) return;
 	button.classList.add('dx-slideshow-control');
 	button.dataset.paused = String(paused);
 	button.setAttribute('aria-pressed', String(paused));
@@ -813,8 +845,8 @@ function initEditorialRefinements() {
 		const text = button.textContent.trim();
 		if (/^(?:Play|Pause) slideshow$/i.test(text)) dxSlideshowControl(button, /^Play/i.test(text));
 	});
-	// The same section reading line drives every secondary navigation row.
-	const bars = [...document.querySelectorAll('.dx-service-index,.dxf-nav,.dxb-nav,.dx-section-nav,.cv-nav')];
+	// Gym reviews track their active chapter alongside the background scene.
+	const bars = [...document.querySelectorAll('.dx-service-index,.dxf-nav,.dxb-nav,.dx-section-nav:not(.dx-review-section-nav),.cv-nav')];
 	const entries = bars.map(bar => ({ bar, links: [...bar.querySelectorAll('a[href*="#"]')].map(link => {
 		try {
 			const url = new URL(link.href, location.href);
@@ -1134,6 +1166,16 @@ function initEditorialRefinements() {
 		shareDialog.querySelector('[data-gym-share-status]').textContent = copied ? 'Comparison link copied.' : 'Select and copy the link above.';
 	}
 	if (shareDialog) shareDialog.addEventListener('cancel', event => { event.preventDefault(); closeShare(); });
+	function initialiseStatPreviews() {
+		content.querySelectorAll('[data-gym-stat-preview-toggle]').forEach(button => { button.hidden = false; });
+	}
+	function closeStatPreviews(dismiss = false) {
+		content.querySelectorAll('.dxgym-stat--winner').forEach(card => {
+			card.classList.remove('is-preview-open');
+			card.classList.toggle('is-preview-dismissed', dismiss);
+			card.querySelector('[data-gym-stat-preview-toggle]')?.setAttribute('aria-expanded', 'false');
+		});
+	}
 	function initialiseSummary(previous = null) {
 		const summary = content.querySelector('[data-gym-list-summary]'); if (!summary) return;
 		summary.querySelectorAll('.dxgym-summary-control').forEach(control => {
@@ -1417,7 +1459,7 @@ function initEditorialRefinements() {
 			content.innerHTML = result.html;
 			if (historyMode === 'push') history.pushState({}, '', url);
 			if (historyMode === 'replace') history.replaceState({}, '', url);
-			syncNavigation(url); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseDonuts(); announceDashboardRender(); closeDrawer();
+			syncNavigation(url); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseStatPreviews(); initialiseDonuts(); announceDashboardRender(); closeDrawer();
 			const hero = content.querySelector('.dxgym-hero');
 			if (!reduce && oldHeroHeight && hero?.animate) hero.animate([{ minHeight: `${oldHeroHeight}px` }, { minHeight: `${hero.getBoundingClientRect().height}px` }], { duration: 550, easing: 'cubic-bezier(.2,.7,.2,1)' });
 			if (!reduce && content.animate) content.animate([{ opacity: 0.65, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 230, easing: 'ease-out' });
@@ -1473,7 +1515,26 @@ function initEditorialRefinements() {
 		}
 		if (event.target.matches('[data-gym-filters] select, [data-gym-filters] input[type="checkbox"]')) navigate(formURL(event.target.form), { retainSearchFocus: true });
 	});
+	app.addEventListener('pointerover', event => {
+		const card = event.target.closest('.dxgym-stat--winner');
+		if (card && !card.contains(event.relatedTarget)) card.classList.remove('is-preview-dismissed');
+	});
+	app.addEventListener('focusin', event => {
+		event.target.closest('.dxgym-stat--winner')?.classList.remove('is-preview-dismissed');
+	});
+	app.addEventListener('focusout', event => {
+		const card = event.target.closest('.dxgym-stat--winner');
+		if (card && !card.contains(event.relatedTarget)) closeStatPreviews();
+	});
 	app.addEventListener('click', event => {
+		const previewToggle = event.target.closest('[data-gym-stat-preview-toggle]');
+		if (previewToggle) {
+			const card = previewToggle.closest('.dxgym-stat--winner');
+			const open = !card.classList.contains('is-preview-open');
+			closeStatPreviews(); card.classList.toggle('is-preview-open', open);
+			previewToggle.setAttribute('aria-expanded', String(open)); return;
+		}
+		if (!event.target.closest('.dxgym-stat--winner')) closeStatPreviews();
 		if (event.target.closest('[data-gym-theme-toggle]')) {
 			const next = document.documentElement.dataset.dxgymTheme === 'light' ? 'dark' : 'light';
 			const update = () => applyTheme(next, true);
@@ -1528,6 +1589,7 @@ function initEditorialRefinements() {
 		navigate(url, { focus: changingView || link.hasAttribute('data-gym-view'), scrollToTop: changingView || link.hasAttribute('data-gym-view') });
 	});
 	app.addEventListener('keydown', event => {
+		if (event.key === 'Escape' && event.target.closest('.dxgym-stat--winner')) closeStatPreviews(true);
 		if (shareDialog?.open) {
 			if (event.key === 'Escape') { event.preventDefault(); closeShare(); return; }
 			if (event.key === 'Tab') { const nodes = [...shareDialog.querySelectorAll('button:not([disabled]), input')]; if (event.shiftKey && document.activeElement === nodes[0]) { event.preventDefault(); nodes.at(-1)?.focus(); } else if (!event.shiftKey && document.activeElement === nodes.at(-1)) { event.preventDefault(); nodes[0]?.focus(); } }
@@ -1542,7 +1604,7 @@ function initEditorialRefinements() {
 		}
 	});
 	window.addEventListener('popstate', () => navigate(location.href, { historyMode: 'none' }));
-	applyTheme(document.documentElement.dataset.dxgymTheme || 'dark'); initialiseSummary(); initialiseDonuts(); syncNavigation(new URL(location.href)); syncDrawerAccessibility(); initialiseMaps(); initialiseListings(); initialiseSlideshow(); announceDashboardRender(); if (desktop.matches) animateSidebar();
+	applyTheme(document.documentElement.dataset.dxgymTheme || 'dark'); initialiseSummary(); initialiseStatPreviews(); initialiseDonuts(); syncNavigation(new URL(location.href)); syncDrawerAccessibility(); initialiseMaps(); initialiseListings(); initialiseSlideshow(); announceDashboardRender(); if (desktop.matches) animateSidebar();
 })();
 ;
 
@@ -2520,6 +2582,7 @@ const { initServiceIndexMotion } = (() => {
 				bar, slot, inner,
 				limit: bar.closest(".dx-services-editorial,.dx-fitness,.dxb,.cv-experience,#main"),
 				marginTop: 0, marginBottom: 0, inset: 0, width: 0, height: 0,
+				activeLink: null, activeWidth: 0, activeDocked: false,
 			};
 		});
 		const measure = (entry) => {
@@ -2544,6 +2607,24 @@ const { initServiceIndexMotion } = (() => {
 			bar.classList.add("dx-secondary-nav", ...nativeStates);
 			entry.height = bar.getBoundingClientRect().height;
 			if (stuck) bar.classList.add("dx-secondary-nav-stuck");
+		};
+		const revealActiveLink = (entry, stuck) => {
+			const { inner } = entry;
+			const active = inner.querySelector('a[aria-current]:not([aria-current="false"])');
+			const width = inner.clientWidth;
+			if (active === entry.activeLink && width === entry.activeWidth && stuck === entry.activeDocked) return;
+			entry.activeLink = active;
+			entry.activeWidth = width;
+			entry.activeDocked = stuck;
+			if (!active || !width || inner.scrollWidth <= width) return;
+
+			const left = inner.getBoundingClientRect().left + inner.clientLeft;
+			const bounds = active.getBoundingClientRect();
+			const right = left + width;
+			const start = left + parseFloat(getComputedStyle(inner).paddingLeft);
+			const delta = bounds.left < left ? bounds.left - start :
+				bounds.right > right ? bounds.right - right + 8 : 0;
+			if (Math.abs(delta) > 1) inner.scrollBy({ left: delta, behavior: reduced.matches ? "instant" : "smooth" });
 		};
 		const paint = () => {
 			frame = 0;
@@ -2592,6 +2673,7 @@ const { initServiceIndexMotion } = (() => {
 				bar.style.top = `${top.toFixed(2)}px`;
 				const cv = bar.closest(".cv-experience");
 				if (cv) cv.style.setProperty("--cv-nav-height", `${height.toFixed(2)}px`);
+				revealActiveLink(entry, stuck);
 			});
 			if (!reduced.matches && performance.now() < followUntil) frame = requestAnimationFrame(paint);
 		};
@@ -2599,6 +2681,10 @@ const { initServiceIndexMotion } = (() => {
 			if (!reduced.matches) followUntil = Math.max(followUntil, performance.now() + duration);
 			if (!frame) frame = requestAnimationFrame(paint);
 		};
+		const activeLinks = new MutationObserver(() => schedule());
+		entries.forEach(({ inner }) => activeLinks.observe(inner, {
+			subtree: true, attributes: true, attributeFilter: ["aria-current"],
+		}));
 		new MutationObserver(() => schedule(600)).observe(header, {
 			attributes: true, attributeFilter: ["class", "style"],
 		});
@@ -7238,11 +7324,13 @@ function initGymLeague(archive, cards) {
 				element.appendChild(canvas);
 				let map;
 				let resize;
+				let arrivalObserver;
 				let failed = false;
 				const fallback = () => {
 					if (failed) return;
 					failed = true;
 					resize?.disconnect();
+					arrivalObserver?.disconnect();
 					map?.remove();
 					canvas.remove();
 					element.classList.remove("has-coordinate-map");
@@ -7268,7 +7356,49 @@ function initGymLeague(archive, cards) {
 					});
 					const tooltip = document.createElement("span");
 					tooltip.textContent = location;
-					L.marker(point, {icon, title: location, keyboard: true}).addTo(map).bindTooltip(tooltip, {direction: "top", className: "gym-review-map__tooltip"});
+					const marker = L.marker(point, {icon, keyboard: true}).addTo(map)
+						.bindTooltip(tooltip, {direction: "top", permanent: true, className: "gym-review-map__tooltip"});
+					const pin = marker.getElement();
+					if (pin) {
+						pin.setAttribute("aria-label", location);
+						pin.removeAttribute("aria-describedby");
+						marker.getTooltip().getElement()?.setAttribute("aria-hidden", "true");
+						let pointerType = "";
+						const allowTooltip = () => pin.classList.remove("is-tooltip-dismissed");
+						pin.addEventListener("focus", allowTooltip);
+						pin.addEventListener("pointerenter", (event) => {
+							if (event.pointerType === "touch") return;
+							allowTooltip();
+							pin.classList.add("is-tooltip-hovered");
+						});
+						pin.addEventListener("pointerleave", () => pin.classList.remove("is-tooltip-hovered"));
+						pin.addEventListener("pointerdown", (event) => { pointerType = event.pointerType; });
+						marker.on("click", () => {
+							if (pointerType !== "touch") return;
+							allowTooltip();
+							pin.classList.toggle("is-tooltip-pinned");
+						});
+						map.on("click", () => pin.classList.remove("is-tooltip-pinned"));
+						pin.addEventListener("keydown", (event) => {
+							pointerType = "";
+							if (event.key === "Escape") {
+								pin.classList.remove("is-tooltip-pinned");
+								pin.classList.add("is-tooltip-dismissed");
+							}
+						});
+					}
+					const pinArtwork = pin?.querySelector("svg");
+					if (pinArtwork && !reduceMotion && "IntersectionObserver" in window) {
+						pinArtwork.classList.add("is-awaiting-map-drop");
+						arrivalObserver = new IntersectionObserver(([entry]) => {
+							if (!entry.isIntersecting) return;
+							pinArtwork.classList.replace("is-awaiting-map-drop", "is-dropping-into-map");
+							arrivalObserver.disconnect();
+						}, {threshold: 0.5});
+						const observePin = () => { if (!failed && pin.isConnected) arrivalObserver.observe(pin); };
+						if (tiles.isLoading()) tiles.once("load", observePin);
+						else observePin();
+					}
 					if ("ResizeObserver" in window) {
 						resize = new ResizeObserver(() => { if (canvas.isConnected && !failed) map.invalidateSize({pan: false}); });
 						resize.observe(canvas);
@@ -8578,6 +8708,12 @@ dxOnPageReady(initHomepageHeroMotion);
 		const form = root.querySelector('[data-dxbus-lookup-form],#dxbus-lookup-form,form') || (root.matches('form') ? root : null);
 		const input = root.querySelector('[data-dxbus-route-input],#dxbus-lookup-input,input[name=route]');
 		if (!form || !input) return;
+		if (input.dataset.placeholderDesktop && input.dataset.placeholderMobile) {
+			const widePlaceholder = matchMedia('(min-width: 768px)');
+			const updatePlaceholder = () => { input.placeholder = widePlaceholder.matches ? input.dataset.placeholderDesktop : input.dataset.placeholderMobile; };
+			widePlaceholder.addEventListener('change', updatePlaceholder);
+			updatePlaceholder();
+		}
 		let list = root.querySelector('[data-dxbus-suggestions],#dxbus-lookup-options');
 		let status = root.querySelector('[data-dxbus-lookup-status],#dxbus-lookup-status');
 		if (!list) { list = document.createElement('ul'); list.className = 'dxbus-lookup__options'; list.hidden = true; input.after(list); }
@@ -8755,7 +8891,16 @@ window.dxInitBusGallery = (root) => {
 		}),
 	);
 	$("#dxb-photo-search")?.addEventListener("input", filterPhotos);
-	function renderPhoto() {
+	const previousPhoto = $("[data-lightbox-prev]");
+	const nextPhoto = $("[data-lightbox-next]");
+	function photoChoices() {
+		const activeRoute = root.matches(".dxbus-app") ? String(DXB.route).toUpperCase() : "";
+		return DXB.photos.reduce((indices, item, index) => {
+			if (!activeRoute || String(item.route).toUpperCase() === activeRoute) indices.push(index);
+			return indices;
+		}, []);
+	}
+	function renderPhoto(choices = photoChoices()) {
 		const p = DXB.photos[photoIndex];
 		if (!p) return;
 		if (window.dxSetPhoto) window.dxSetPhoto($("#dxb-lightbox-image"), p);
@@ -8809,7 +8954,11 @@ window.dxInitBusGallery = (root) => {
 			label.className = "dx-photo-location";
 			map.append(label);
 		}
-		$("#dxb-lightbox-count").textContent = `${root.matches(".dxbus-app") ? DXB.photos.filter((item, index) => index <= photoIndex && String(item.route).toUpperCase() === String(DXB.route).toUpperCase()).length : photoIndex + 1} / ${root.matches(".dxbus-app") ? DXB.photos.filter((item) => String(item.route).toUpperCase() === String(DXB.route).toUpperCase()).length : DXB.photos.length}`;
+		$("#dxb-lightbox-count").textContent = `${choices.indexOf(photoIndex) + 1} / ${choices.length}`;
+		const singlePhoto = choices.length < 2;
+		previousPhoto.disabled = singlePhoto;
+		nextPhoto.disabled = singlePhoto;
+		lightbox.classList.toggle("has-single-photo", singlePhoto);
 	}
 	function openPhoto(index) {
 		photoIndex = index;
@@ -8896,12 +9045,13 @@ window.dxInitBusGallery = (root) => {
 		}
 	});
 	function movePhoto(delta) {
-		const choices = root.matches(".dxbus-app") ? DXB.photos.map((item, index) => String(item.route).toUpperCase() === String(DXB.route).toUpperCase() ? index : -1).filter((index) => index >= 0) : DXB.photos.map((_, index) => index);
+		const choices = photoChoices();
+		if (choices.length < 2) return;
 		photoIndex = choices[(choices.indexOf(photoIndex) + delta + choices.length) % choices.length] ?? photoIndex;
-		renderPhoto();
+		renderPhoto(choices);
 	}
-	$("[data-lightbox-prev]").addEventListener("click", () => movePhoto(-1));
-	$("[data-lightbox-next]").addEventListener("click", () => movePhoto(1));
+	previousPhoto.addEventListener("click", () => movePhoto(-1));
+	nextPhoto.addEventListener("click", () => movePhoto(1));
 	$(".dxb-close").addEventListener("click", () => lightbox.close());
 	lightbox.addEventListener("close", () => {
 		document.body.classList.remove("dxb-lightbox-open");
@@ -9071,6 +9221,7 @@ window.dxInitBusGallery = (root) => {
 		svg.append(path);
 		return svg;
 	};
+	const doubleDeckerArtwork = () => '<svg viewBox="0 0 100 104" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" data-bus-illustration="double-decker"><rect x="20" y="6" width="60" height="84" rx="5"/><rect x="27" y="13" width="46" height="8" rx="1"/><rect x="27" y="28" width="46" height="22" rx="2"/><path d="M50 28v22M20 55h60"/><rect x="27" y="61" width="46" height="15" rx="2"/><path d="M50 61v15M29 83h8m26 0h8M26 90v7h9v-7m30 0v7h9v-7M13 101h74"/></svg>';
 	const setPinLabel = (button, label) => {
 		button.replaceChildren(pinIcon(), document.createTextNode(label));
 	};
@@ -9443,8 +9594,14 @@ window.dxInitBusGallery = (root) => {
 	function sentenceCase(value) {
 		return String(value).replace(/^\w/, (c) => c.toUpperCase());
 	}
-	function openFleet(type, vehicles, route) {
+	function openFleet(type, vehicles, route, loadDetails = false) {
 		const dialog = text("dialog", "", "dxb-fleet-modal");
+		const arrivalsRequest = new AbortController();
+		const detailJobs = [];
+		const setValue = (element, value, pending = false) => {
+			element.textContent = pending ? "Loading…" : value;
+			element.toggleAttribute("data-vehicle-loading", pending);
+		};
 		dialog.setAttribute(
 			"aria-label",
 			type === "all" ? `All buses tracking on route ${route}` : `${type} deckers tracking on route ${route}`,
@@ -9475,33 +9632,36 @@ window.dxInitBusGallery = (root) => {
 		vehicles.forEach((vehicle) => {
 			const card = text("article", "", "dxb-fleet-item");
 			const identity = text("header", "", "dxb-fleet-identity");
-			identity.append(text("h3", vehicle.model || "Model unconfirmed"));
+			const model = text("h3", "");
+			setValue(model, vehicle.model || "Model unconfirmed", loadDetails);
+			identity.append(model);
 			const identifiers = text("div", "", type === "vehicle" ? "dxbus-vehicle-parameters" : "dxb-fleet-identifiers");
-			identifiers.append(
-				vehicleField("Registration", formatRegistration(vehicle.registration)),
-				vehicleField("Fleet number", vehicle.fleet || "Unconfirmed"),
-			);
-			identity.append(identifiers);
-			card.append(identity);
+			identifiers.append(vehicleField("Registration", formatRegistration(vehicle.registration)));
+			const parameters = [["Fleet number", (v) => v.fleet || "Unconfirmed"]];
 			if (type === "vehicle") {
-				identifiers.append(
-					vehicleField(
-						"Vehicle type",
-						sentenceCase(vehicle.type || "Unconfirmed"),
-					),
-					vehicleField("Fuel", sentenceCase(vehicle.fuel || "Unconfirmed")),
-					vehicleField(
-						"USB charging",
-						vehicle.usb === true ? "Available" : vehicle.usb === false ? "Not fitted" : "Not confirmed",
-					),
-					vehicleField("Garage", vehicle.garage || "Not confirmed"),
+				parameters.push(
+					["Vehicle type", (v) => sentenceCase(v.type || "Unconfirmed")],
+					["Fuel", (v) => sentenceCase(v.fuel || "Unconfirmed")],
+					["USB charging", (v) => v.usb === true ? "Available" : v.usb === false ? "Not fitted" : "Not confirmed"],
+					["Garage", (v) => v.garage || "Not confirmed"],
 				);
 			}
-			const position = text(
-				"div",
-				"Checking destination and position…",
-				"dxb-fleet-position",
-			);
+			const parameterValues = parameters.map(([label, read]) => {
+				const field = vehicleField(label, "");
+				const value = field.lastElementChild;
+				setValue(value, read(vehicle), loadDetails);
+				identifiers.append(field);
+				return [value, read];
+			});
+			if (loadDetails) identity.setAttribute("aria-busy", "true");
+			identity.append(identifiers);
+			card.append(identity);
+			const position = text("div", "", "dxb-fleet-position");
+			position.setAttribute("aria-busy", "true");
+			const destination = vehicleField("Final destination", "");
+			const location = vehicleField("Next predicted stop", "");
+			[destination, location].forEach((field) => setValue(field.lastElementChild, "", true));
+			position.append(destination, location);
 			card.append(position);
 			const mark = text("button", "", "dxb-mark-button");
 			mark.type = "button";
@@ -9535,39 +9695,35 @@ window.dxInitBusGallery = (root) => {
 			});
 			const actions = text("div", "", "dxbus-vehicle-actions");
 			actions.append(mark);
-			if (vehicle.source) actions.append(sourceLink("Open full vehicle details ↗", vehicle.source));
+			const appendSource = (source) => {
+				if (source) actions.append(sourceLink("Open full vehicle details ↗", source));
+			};
+			appendSource(vehicle.source);
 			card.append(actions);
 			fleetGrid.append(card);
-			request(
-				"vehicle/" + encodeURIComponent(vehicle.registration) + "/arrivals",
-			)
-				.then((data) => {
-					if (!dialog.isConnected) return;
-					const next = data.arrivals?.find(
-						(item) => item.route.toUpperCase() === String(route).toUpperCase(),
-					);
-					position.replaceChildren();
-					if (next) {
-						position.append(
-							vehicleField(
-								"Final destination",
-								next.destination || vehicle.destination || "Unconfirmed",
-							),
-							vehicleField(
-								next.location ? "Current location" : "Next predicted stop",
-								next.location || next.stop,
-							),
-						);
-					} else {
-						position.textContent =
-							"⚠ Destination and current position unavailable.";
-						position.classList.add("is-warning");
-					}
-				})
-				.catch(() => {
-					position.textContent = "⚠ Vehicle position temporarily unavailable.";
-					position.classList.add("is-warning");
+			if (loadDetails) {
+				detailJobs.push(async () => {
+					const details = await getVehicle(vehicle.registration).catch(() => null);
+					if (!dialog.open) return;
+					setValue(model, details ? details.model || "Model unconfirmed" : "Model temporarily unavailable");
+					parameterValues.forEach(([value, read]) => setValue(value, details ? read(details) : "Temporarily unavailable"));
+					if (!vehicle.source) appendSource(details?.source);
+					identity.removeAttribute("aria-busy");
 				});
+			}
+			const updatePosition = (next, fallback) => {
+				if (!dialog.open) return;
+				location.firstElementChild.textContent = next?.location ? "Current location" : "Next predicted stop";
+				setValue(destination.lastElementChild, next?.destination || (next && vehicle.destination) || fallback);
+				setValue(location.lastElementChild, next?.location || next?.stop || fallback);
+				position.removeAttribute("aria-busy");
+			};
+			request("vehicle/" + encodeURIComponent(vehicle.registration) + "/arrivals", arrivalsRequest.signal)
+				.then((data) => {
+					const next = data.arrivals?.find((item) => item.route?.toUpperCase() === String(route).toUpperCase());
+					updatePosition(next, "No current prediction");
+				})
+				.catch(() => updatePosition(null, "Temporarily unavailable"));
 		});
 		dialog.addEventListener("click", (event) => {
 			if (event.target === dialog) {
@@ -9581,9 +9737,17 @@ window.dxInitBusGallery = (root) => {
 					dialog.close();
 			}
 		});
-		dialog.addEventListener("close", () => dialog.remove(), { once: true });
+		dialog.addEventListener("close", () => {
+			arrivalsRequest.abort();
+			dialog.remove();
+		}, { once: true });
 		root.append(dialog);
 		dialog.showModal();
+		let detailIndex = 0;
+		const loadNextDetails = async () => {
+			while (dialog.open && detailIndex < detailJobs.length) await detailJobs[detailIndex++]();
+		};
+		for (let worker = 0; worker < Math.min(4, detailJobs.length); worker++) loadNextDetails();
 	}
 
 	// Animate native details while preserving keyboard activation and open state.
@@ -10038,16 +10202,14 @@ window.dxInitBusGallery = (root) => {
 				? "Discover photographs, stories and operating history from this former route’s archive."
 				: "Explore stops and arrival predictions, or discover photographs and journeys from the archive.";
 		["arrivals", "line"].forEach((name) => {
-			const button = $(`[data-tab="${name}"]`);
-			button.disabled = former;
-			button.setAttribute("aria-disabled", String(former));
-			if (former) {
-				button.tabIndex = -1;
-				button.title =
-					"Unavailable for a withdrawn route. Explore its overview and archive instead.";
-			} else {
-				button.removeAttribute("title");
-			}
+			$$(`[data-tab="${name}"]`).forEach(button => {
+				button.disabled = former;
+				button.setAttribute("aria-disabled", String(former));
+				if (former) {
+					button.tabIndex = -1;
+					button.title = "Unavailable for a withdrawn route. Explore its overview and archive instead.";
+				} else button.removeAttribute("title");
+			});
 		});
 		if (former && ["arrivals", "line"].includes(tab)) activateTab("overview");
 	}
@@ -10059,7 +10221,7 @@ window.dxInitBusGallery = (root) => {
 		$$("[data-tab]").forEach((button) => {
 			const active = button.dataset.tab === name;
 			button.setAttribute("aria-selected", String(active));
-			button.tabIndex = app ? 0 : active ? 0 : -1;
+			button.tabIndex = button.disabled ? -1 : app ? 0 : active ? 0 : -1;
 			if (app) { if (active) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); }
 		});
 		$$("[role=tabpanel]").forEach(
@@ -10068,7 +10230,15 @@ window.dxInitBusGallery = (root) => {
 		stopArrivals();
 		if (app) {
 			root.dataset.view = viewNames[name] || 'overview';
-			if (historyMode !== 'none' && current) history[historyMode === 'replace' ? 'replaceState' : 'pushState']({ dxbus: true, view: root.dataset.view }, '', appURL(name));
+			if (historyMode !== 'none') {
+				// Keep a tab chosen during the first route request when that request completes.
+				const url = current ? appURL(name) : new URL(location.href);
+				if (!current) {
+					if (name === 'overview') url.searchParams.delete('view');
+					else url.searchParams.set('view', viewNames[name] || 'overview');
+				}
+				history[historyMode === 'replace' ? 'replaceState' : 'pushState']({ dxbus: true, view: root.dataset.view }, '', url);
+			}
 			if (name === 'overview') { renderRouteMap($('#dxbus-overview-map')); appMaps.forEach(({ map }) => requestAnimationFrame(() => map.invalidateSize())); }
 		}
 		if (name === "line" && current) loadLine();
@@ -10080,8 +10250,8 @@ window.dxInitBusGallery = (root) => {
 	$$("[data-tab]").forEach((button) => {
 		button.addEventListener("click", (event) => { if (app) event.preventDefault(); activateTab(button.dataset.tab); });
 		button.addEventListener("keydown", (event) => {
-			const buttons = $$("[data-tab]").filter(
-				(item) => !item.hidden && !item.disabled,
+			const buttons = [...(button.closest('[role="tablist"]') || root).querySelectorAll('[data-tab]')].filter(
+				(item) => !item.hidden && !item.disabled && item.getClientRects().length,
 			);
 			const i = buttons.indexOf(button);
 			let next;
@@ -10211,6 +10381,10 @@ window.dxInitBusGallery = (root) => {
 								})
 								.catch(() => {});
 							button.addEventListener("click", async () => {
+								if (app) {
+										if (current?.id === route) openAppVehicle(bus.registration, bus);
+										return;
+								}
 								button.disabled = true;
 								try {
 									const vehicle = await getVehicle(bus.registration).catch(() => ({}));
@@ -10234,7 +10408,7 @@ window.dxInitBusGallery = (root) => {
 					notice.setAttribute('role', 'note');
 					const icon = text('span', '', 'dxbus-direction-notice__icon');
 					icon.setAttribute('aria-hidden', 'true');
-					icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="14" height="16" rx="2"/><path d="M5 10h14M8 19v2m8-2v2M9 6h6"/><circle cx="8.5" cy="14.5" r=".75"/><circle cx="15.5" cy="14.5" r=".75"/></svg>';
+					icon.innerHTML = doubleDeckerArtwork();
 					const copy = text('div', '', 'dxbus-direction-notice__copy');
 					copy.append(text('strong', 'No matching buses right now'), text('p', 'No buses with a matching predicted stop in this direction.'));
 					notice.append(icon, copy);
@@ -11222,7 +11396,11 @@ window.dxInitBusGallery = (root) => {
 			const endpoints = $("#dxb-endpoints");
 			endpoints.replaceChildren();
 			const branches = [...new Set(data.branches?.filter(Boolean) || [])];
-			if (app && $('[data-dxbus-route-title]')) $('[data-dxbus-route-title]').textContent = branches[0] || (stops.length ? `${stops[0].name} ↔ ${stops.at(-1).name}` : `Route ${data.name}`);
+			const routeTitle = app && $('[data-dxbus-route-title]');
+			if (routeTitle) {
+				routeTitle.textContent = routeTitle.dataset.dxbusRouteTitle || branches[0] ||
+					(stops.length ? `${stops[0].name} ↔ ${stops.at(-1).name}` : `Route ${data.name}`);
+			}
 			if (!branches.length)
 				branches.push(
 					stops.length
@@ -11569,15 +11747,16 @@ window.dxInitBusGallery = (root) => {
         box.setAttribute('role', state === 'loading' ? 'status' : 'alert');
         box.setAttribute('aria-live', state === 'loading' ? 'polite' : 'assertive');
         const art = text('div', '', 'dxbus-route-feedback__art'); art.setAttribute('aria-hidden', 'true');
-        art.innerHTML = '<svg viewBox="0 0 100 80" fill="none" stroke="currentColor" stroke-width="2"><rect x="20" y="8" width="60" height="57" rx="5"/><path d="M20 35h60M30 16h40M30 65v8m40-8v8M32 49h7m22 0h7M10 78h80"/></svg>';
+        art.innerHTML = doubleDeckerArtwork();
         const copy = text('div', '', 'dxbus-route-feedback__copy');
         copy.append(text('span', route ? 'ROUTE ' + route : 'LONDON BUSES', 'dxbus-route-feedback__route'));
         copy.append(text('h2', state === 'loading' ? 'Your next route is arriving…' : state === 'notfound' ? 'That route could not be found.' : 'This route is taking a little longer.'));
         copy.append(text('p', message || (state === 'loading' ? 'Finding the route, photographs and published details.' : 'Check the route number or try again shortly.')));
         if (state !== 'loading') {
             const actions = text('div', '', 'dxbus-route-feedback__actions');
-            const dismiss = text('button', 'Return to the route search', 'dxbus-button'); dismiss.type = 'button';
-            dismiss.addEventListener('click', () => { box.remove(); input.focus(); input.select(); });
+            const dismiss = text('button', 'Return to route search', 'dxbus-button'); dismiss.type = 'button';
+            dismiss.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>');
+            dismiss.addEventListener('click', () => { box.remove(); const routeSearch = $('[data-dxbus-switch]'); if (routeSearch) routeSearch.click(); else { input.focus(); input.select(); } });
             actions.append(dismiss); copy.append(actions);
         }
         box.append(art, copy); document.body.append(box);
@@ -11599,6 +11778,9 @@ window.dxInitBusGallery = (root) => {
 		hero?.querySelector('.dxbus-hero__image')?.remove();
 		if (nextHero?.querySelector('.dxbus-hero__image')) hero?.prepend(document.importNode(nextHero.querySelector('.dxbus-hero__image'), true));
 		hero?.classList.toggle('has-image', nextHero?.classList.contains('has-image') || false);
+		const title = hero?.querySelector('[data-dxbus-route-title]');
+		const nextTitle = nextHero?.querySelector('[data-dxbus-route-title]');
+		if (title && nextTitle) title.dataset.dxbusRouteTitle = nextTitle.dataset.dxbusRouteTitle || '';
 		for (const selector of ['.dxbus-route-identity .dxbus-eyebrow', '[data-dxbus-route-label]', '[data-dxbus-breadcrumb]', '#dxbus-route-summary', '[data-dxbus-operator]', '[data-dxbus-allocation]']) {
 			const target = $(selector), incoming = page.querySelector(selector);
 			if (target && incoming) target.textContent = incoming.textContent;
@@ -11715,30 +11897,14 @@ window.dxInitBusGallery = (root) => {
 		if (!vehicleCache.has(reg)) vehicleCache.set(reg, request('vehicle/' + encodeURIComponent(reg)).catch((error) => { vehicleCache.delete(reg); throw error; }));
 		return vehicleCache.get(reg);
 	}
-	async function openAppVehicle(reg, context = {}) {
-		const route = current?.name, token = sequence;
-		const vehicle = await getVehicle(reg).catch(() => ({ registration: reg, found: false }));
-		if (token === sequence && current?.name === route) openFleet('vehicle', [{ ...vehicle, ...context, registration: reg }], route);
+	function openAppVehicle(reg, context = {}) {
+		openFleet('vehicle', [{ ...context, registration: reg }], current?.name, true);
 	}
-	async function openAppAllVehicles(card) {
-		if (!current || current.archive || card.getAttribute('aria-busy') === 'true') return;
+	function openAppAllVehicles() {
+		if (!current || current.archive) return;
 		if (!latestRunning) { announce('Live vehicle information is not available yet. Please try again shortly.', true); return; }
-		const route = current.name, token = sequence;
 		const ids = [...new Set((latestRunning.vehicles || []).map(dxBusRegistration).filter((reg) => /^[A-Z0-9]{3,12}$/.test(reg)))];
-		card.setAttribute('aria-busy', 'true');
-		const vehicles = new Array(ids.length);
-		let index = 0;
-		try {
-			await Promise.all(Array.from({ length: Math.min(4, ids.length) }, async () => {
-				while (index < ids.length && token === sequence) {
-					const slot = index++, registration = ids[slot];
-					const vehicle = await getVehicle(registration).catch(() => ({ found: false }));
-					vehicles[slot] = { ...vehicle, registration };
-				}
-			}));
-			// An unavailable model never removes an actual vehicle from the TfL running feed.
-			if (token === sequence && current?.name === route) openFleet('all', vehicles.filter(Boolean), route);
-		} finally { card.removeAttribute('aria-busy'); }
+		openFleet('all', ids.map((registration) => ({ registration })), current.name, true);
 	}
 	function syncAppPins() {
 		dxBusSyncMapPins(appMaps, marked);
@@ -12018,7 +12184,7 @@ window.dxInitBusGallery = (root) => {
 		$$('.dxbus-card--map .dxbus-small').forEach((note) => { note.textContent = 'Lines connect published stops rather than an exact road path. Vehicle markers show the next predicted stop, not live GPS.'; });
 		const explorerNote = $('#panel-line .dxbus-view__head p:last-child'); if (explorerNote) explorerNote.textContent = 'Explore published stops in either direction. Map lines connect stops rather than following the exact road path. Vehicle markers show the next predicted stop, not live GPS.';
 		if ($('#dxbus-overview-arrivals') && !$('#dxbus-overview-arrivals-note')) { const note = text('p', 'Next predicted stop for each vehicle · not a GPS position', 'dxbus-source-note'); note.id = 'dxbus-overview-arrivals-note'; $('#dxbus-overview-arrivals').after(note); }
-		['total','single','double'].forEach((type) => { const card = $('.dxbus-stat--' + type); if (!card) return; card.setAttribute('role', 'button'); card.tabIndex = 0; card.setAttribute('aria-label', type === 'total' ? 'View all buses tracking on this route' : 'View confirmed ' + type + '-decker vehicles'); card.addEventListener('click', () => type === 'total' ? openAppAllVehicles(card) : openFleet(type, appFleet[type], current?.name)); card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); } }); });
+		['total','single','double'].forEach((type) => { const card = $('.dxbus-stat--' + type); if (!card) return; card.setAttribute('role', 'button'); card.tabIndex = 0; card.setAttribute('aria-label', type === 'total' ? 'View all buses tracking on this route' : 'View confirmed ' + type + '-decker vehicles'); card.addEventListener('click', () => type === 'total' ? openAppAllVehicles() : openFleet(type, appFleet[type], current?.name)); card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); } }); });
 		window.addEventListener('storage', (event) => {
 			if (event.key !== null && event.key !== 'dxb-marked-vehicles') return;
 			marked = readSaved('dxb-marked-vehicles');
@@ -13000,14 +13166,22 @@ window.dxRenderPhotoMap = (() => {
 				15,
 			);
 			previous = map;
-			window.L.tileLayer(
-				"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
-				{
-					maxZoom: 20,
-					attribution:
-						'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-				},
-			).addTo(map);
+			const tileUrl = "https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9";
+			const baseLayer = window.L.tileLayer(tileUrl.replace("dark_all", "dark_nolabels"), {
+				maxZoom: 20,
+				attribution:
+					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+			}).addTo(map);
+			map.createPane("photo-labels").style.zIndex = "350";
+			const labels = window.L.tileLayer(tileUrl.replace("dark_all", "dark_only_labels"), {
+				maxZoom: 20,
+				pane: "photo-labels",
+			});
+			labels.once("tileerror", () => {
+				labels.remove();
+				baseLayer.setUrl(tileUrl);
+			});
+			labels.addTo(map);
 			window.L.circleMarker([lat, lon], {
 				radius: 7,
 				color: "#f5d78e",
@@ -13029,7 +13203,9 @@ window.dxRenderPhotoMap = (() => {
 			lon;
 		link.target = "_blank";
 		link.rel = "noopener";
-		link.textContent = "View photo location ↗";
+		link.className = 'dx-photo-location-link';
+		link.textContent = 'View photo location';
+		const arrow = document.createElement('span'); arrow.setAttribute('aria-hidden', 'true'); arrow.textContent = '↗'; link.append(arrow);
 		container.append(link);
 		if (photo.location) {
 			const label = document.createElement("p");
@@ -14671,7 +14847,7 @@ dxOnPageReady(() => {
 		const slot = document.createElement('div');
 		slot.className = 'container dx-section-nav-slot dx-review-section-nav-slot';
 		slot.append(nav);
-		review.querySelector('.gym-review-canvas')?.after(slot);
+		chapters[0].after(slot);
 		initServiceIndexMotion();
 		const back = review.querySelector('.gym-review-back')?.cloneNode(true);
 		if (back) {
@@ -15232,7 +15408,7 @@ dxOnPageReady(() => {
 	if (intro) intro.classList.add('dx-home-introduction');
 	const promo = document.querySelector('body.home .dx-fitness-promo');
 	if (promo) {
-		const first = promo.querySelector('a[href*="fitness"]');
+		const first = promo.querySelector('a[href*="fitness"]:not(.dx-gym-league-link)');
 		const actions = first?.closest('.wp-block-buttons');
 		if (actions) {
 			actions.classList.add('dx-home-fitness-actions');
@@ -15249,7 +15425,16 @@ dxOnPageReady(() => {
 				wrapper.className = 'wp-block-button secondary';
 				wrapper.append(league);
 			}
-			actions.append(wrapper);
+			wrapper.className = 'wp-block-button primary dx-fitness-league-primary';
+			first.closest('.wp-block-button')?.classList.add('dx-fitness-learn-more');
+			if (!league.querySelector('.dx-fitness-cta-arrow')) {
+				const arrow = document.createElement('span');
+				arrow.className = 'dx-fitness-cta-arrow';
+				arrow.setAttribute('aria-hidden', 'true');
+				arrow.textContent = '↗\uFE0E';
+				league.append(' ', arrow);
+			}
+			actions.prepend(wrapper);
 		}
 	}
 	const next = document.querySelector('#fitness-next');
@@ -15329,7 +15514,8 @@ dxOnPageReady(() => {
 		}, { rootMargin: '0px 0px 96px 0px' }).observe(controls);
 	}
 	let current = 0;
-	let start;
+	let start = null;
+	let suppressClickUntil = 0;
 	const paint = () => {
 		const enabled = mobile.matches;
 		deck.classList.toggle('is-cinema', enabled);
@@ -15347,17 +15533,46 @@ dxOnPageReady(() => {
 	};
 	previous.addEventListener('click', () => advance(-1));
 	next.addEventListener('click', () => advance(1));
-	deck.addEventListener('touchstart', event => {
-		start = event.touches[0];
-	}, { passive: true });
-	deck.addEventListener('touchend', event => {
-		if (!mobile.matches || !start) return;
-		const end = event.changedTouches[0];
-		const x = end.clientX - start.clientX;
-		const y = end.clientY - start.clientY;
-		start = null;
-		if (Math.abs(x) > 45 && Math.abs(x) > Math.abs(y)) advance(x < 0 ? 1 : -1);
-	}, { passive: true });
+	const beginSwipe = (point, pointerId = null) => {
+		if (!mobile.matches) return;
+		start = { x: point.clientX, y: point.clientY, pointerId, horizontal: false };
+	};
+	const moveSwipe = (point, event) => {
+		if (!start || !mobile.matches) return;
+		const x = point.clientX - start.x, y = point.clientY - start.y;
+		if (!start.horizontal && Math.abs(y) > 10 && Math.abs(y) > Math.abs(x)) { start = null; return; }
+		if (Math.abs(x) > 10 && Math.abs(x) > Math.abs(y) * 1.2) {
+			start.horizontal = true;
+			if (start.pointerId !== null && !deck.hasPointerCapture(start.pointerId)) deck.setPointerCapture(start.pointerId);
+			if (event.cancelable) event.preventDefault();
+		}
+	};
+	const finishSwipe = point => {
+		if (!start || !mobile.matches) return;
+		const gesture = start; start = null;
+		const x = point.clientX - gesture.x, y = point.clientY - gesture.y;
+		if (Math.abs(x) > Math.max(30, deck.clientWidth * .08) && Math.abs(x) > Math.abs(y) * 1.2) {
+			suppressClickUntil = performance.now() + 350;
+			advance(x < 0 ? 1 : -1);
+		}
+	};
+	if ('PointerEvent' in window) {
+		deck.addEventListener('pointerdown', event => {
+			if (event.pointerType === 'mouse' || !event.isPrimary || event.target.closest('.dx-service-cinema-controls')) return;
+			beginSwipe(event, event.pointerId);
+		});
+		deck.addEventListener('pointermove', event => { if (start?.pointerId === event.pointerId) moveSwipe(event, event); }, { passive: false });
+		deck.addEventListener('pointerup', event => { if (start?.pointerId === event.pointerId) finishSwipe(event); });
+		deck.addEventListener('pointercancel', () => { start = null; });
+	} else {
+		deck.addEventListener('touchstart', event => { if (event.touches.length === 1) beginSwipe(event.touches[0]); else start = null; }, { passive: true });
+		deck.addEventListener('touchmove', event => { if (event.touches.length === 1) moveSwipe(event.touches[0], event); }, { passive: false });
+		deck.addEventListener('touchend', event => { if (event.changedTouches[0]) finishSwipe(event.changedTouches[0]); }, { passive: true });
+		deck.addEventListener('touchcancel', () => { start = null; });
+	}
+	deck.addEventListener('click', event => {
+		if (performance.now() < suppressClickUntil) { event.preventDefault(); event.stopImmediatePropagation(); }
+	}, true);
 	mobile.addEventListener('change', paint);
 	paint();
 });
@@ -15545,3 +15760,50 @@ if (document.body && document.body.classList.contains("wp-admin")) {
 	});
 })();
 }
+
+// Keep a softly blurred copy of the current photo behind its sharp gallery image.
+{
+	const viewers = [
+		['#dxb-lightbox-image', '.dxb-photo-viewport'],
+		['.dxf-media-dialog img', '.dxf-media-dialog'],
+		['.gym-review-lightbox__image', '.gym-review-lightbox'],
+		['.wp-lightbox-overlay .lightbox-image-container img', '.wp-lightbox-overlay'],
+	];
+	document.addEventListener('load', ({ target: image }) => {
+		if (!(image instanceof HTMLImageElement) || !image.naturalWidth) return;
+		const viewer = viewers.find(([selector]) => image.matches(selector));
+		const surround = viewer && image.closest(viewer[1]);
+		if (!surround) return;
+		surround.style.setProperty('--dx-gallery-ambient-photo', `url(${JSON.stringify(image.currentSrc || image.src)})`);
+		surround.classList.add('dx-gallery-ambient');
+	}, true);
+}
+
+// Let the route status meet the footer edge instead of covering its content.
+(() => {
+ const initialise = () => {
+	const status = document.querySelector('body.dxbus-page #dxb-status');
+	const footer = document.querySelector('body.dxbus-page .site-footer');
+	if (!status || !footer) return;
+	let frame = 0;
+	const update = () => {
+		frame = 0;
+		const clearance = parseFloat(getComputedStyle(status).bottom) || 0;
+		const fixedBottom = innerHeight - clearance;
+		const shift = Math.min(0, footer.getBoundingClientRect().top - fixedBottom);
+		status.style.setProperty('--dxbus-status-footer-shift', `${shift.toFixed(2)}px`);
+		status.classList.toggle('is-footer-docked', shift < 0);
+	};
+	const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+	addEventListener('scroll', schedule, { passive: true });
+	addEventListener('resize', schedule, { passive: true });
+	if ('ResizeObserver' in window) {
+		const observer = new ResizeObserver(schedule);
+		[status, footer, status.closest('.dxbus-main')].filter(Boolean).forEach(node => observer.observe(node));
+	}
+	schedule();
+ };
+ const run = () => Promise.resolve(window.dxPageReady).then(initialise);
+ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+ else run();
+})();

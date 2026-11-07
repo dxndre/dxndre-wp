@@ -242,9 +242,36 @@ function dxgym_compare_link($record,$state) {
 	$ids = $selected ? array_diff($state['compare'],[$record['id']]) : array_slice(array_merge($state['compare'],[$record['id']]),0,3);
 	return '<a class="dxgym-link dxgym-compare-toggle" data-compare-id="'.esc_attr($record['id']).'" aria-pressed="'.($selected?'true':'false').'" href="'.esc_url(dxgym_url(['view'=>'compare','compare'=>implode(',',$ids)])).'">'.($selected?'Remove comparison −':'Compare +').'</a>';
 }
+/** Keep the chain as a small headline and the branch as the main name. */
+function dxgym_identity_parts($record) {
+	$chain = trim((string) ($record['chain'] ?? ''));
+	if (($record['chainKey'] ?? '') === 'other') $chain = '';
+	$branch = trim((string) ($record['title'] ?? $record['name'] ?? ''));
+	if ($chain !== '') {
+		$aliases = [$chain];
+		// Review titles predate the full chain label in the editor.
+		if (($record['chainKey'] ?? '') === 'bodyworks') $aliases[] = 'Bodyworks';
+		foreach ($aliases as $alias) {
+			$pattern = '/^' . preg_quote($alias, '/') . '(?:[\s\x{00a0}\x{2013}\x{2014}:,\-]+|$)/iu';
+			$normalised = preg_replace($pattern, '', $branch, 1, $count);
+			if ($count) { $branch = trim($normalised); break; }
+		}
+	}
+	if ($branch === '') $branch = trim((string) ($record['location'] ?? ''));
+	return ['chain' => $chain, 'branch' => $branch];
+}
+function dxgym_identity_markup($record) {
+	$identity = dxgym_identity_parts($record);
+	$single_name = $identity['chain'] === '' || $identity['branch'] === '';
+	return '<span class="dxgym-gym-identity' . ($single_name ? ' is-single-name' : '') . '">'
+		. ($identity['chain'] !== '' ? '<small class="dxgym-chain">' . esc_html($identity['chain']) . '</small>' : '')
+		. ($identity['branch'] !== '' ? '<span class="dxgym-branch">' . esc_html($identity['branch']) . '</span>' : '')
+		. '</span>';
+}
+
 function dxgym_card($record,$state,$review=false) {
 	ob_start(); ?>
-	<article class="dxgym-gym-card"><a class="dxgym-card-photo" href="<?php echo esc_url($record['url']); ?>"><?php echo dxgym_image($record); ?></a><div class="dxgym-gym-card__body"><div class="dxgym-card-heading"><h3><a href="<?php echo esc_url($record['url']); ?>"><?php echo esc_html($record['name']); ?></a></h3><?php echo dxgym_score($record['overall'],true); ?></div><div class="dxgym-card-meta"><p class="dxgym-card-location"><?php echo dxgym_icon('map'); ?><span><?php echo esc_html($record['location'] ?: 'Location not recorded'); ?></span></p><p class="dxgym-card-date"><?php echo dxgym_icon('visits'); ?><time datetime="<?php echo esc_attr($record['dateISO'] ?: $record['publishedISO']); ?>"><?php echo esc_html($record['date'] ?: $record['published']); ?></time><span class="screen-reader-text"><?php echo $record['date']?' visited':' published'; ?></span></p></div>
+	<article class="dxgym-gym-card"><a class="dxgym-card-photo" href="<?php echo esc_url($record['url']); ?>"><?php echo dxgym_image($record); ?></a><div class="dxgym-gym-card__body"><div class="dxgym-card-heading"><h3><a href="<?php echo esc_url($record['url']); ?>"><?php echo dxgym_identity_markup($record); ?></a></h3><?php echo dxgym_score($record['overall'],true); ?></div><div class="dxgym-card-meta"><p class="dxgym-card-location"><?php echo dxgym_icon('map'); ?><span><?php echo esc_html($record['location'] ?: 'Location not recorded'); ?></span></p><p class="dxgym-card-date"><?php echo dxgym_icon('visits'); ?><time datetime="<?php echo esc_attr($record['dateISO'] ?: $record['publishedISO']); ?>"><?php echo esc_html($record['date'] ?: $record['published']); ?></time><span class="screen-reader-text"><?php echo $record['date']?' visited':' published'; ?></span></p></div>
 	<?php if ($review): ?><p><?php echo esc_html($record['excerpt']); ?></p><?php else: echo dxgym_amenities($record); endif; ?>
 	<div class="dxgym-card-actions"><a class="dxgym-link" href="<?php echo esc_url($record['url']); ?>"><?php echo $review?'Read review':'View full review'; ?> <?php echo dxgym_icon('arrow'); ?></a><?php echo dxgym_compare_link($record,$state); ?></div></div></article>
 	<?php return ob_get_clean();
@@ -390,12 +417,26 @@ function dxgym_view($data,$state) {
 	<?php if($hero_photos): ?><div class="dxgym-hero-slideshow" data-gym-slideshow aria-hidden="true"><div class="dxgym-hero-slide is-active" style="background-image:url('<?php echo esc_url($hero_photos[0]['image']); ?>')"></div><div class="dxgym-hero-slide"></div><script type="application/json" class="dxgym-slideshow-data"><?php echo wp_json_encode($hero_photos,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?></script></div><?php endif; ?>
 	<p class="dxgym-eyebrow">DXNDRE / Fitness</p><h1 id="dxgym-heading" tabindex="-1"><?php echo esc_html($titles[$view]); ?></h1><p><?php echo esc_html($descriptions[$view]); ?></p>
 	<?php if($view==='overview'): ?><span class="dxgym-hero-caption">Different gyms.<br>Same commitment.</span><?php endif; ?>
-	<?php if(count($hero_photos)>1): ?><div class="dxgym-slideshow-controls"><button class="dxgym-slideshow-toggle" type="button" data-gym-slide-toggle aria-pressed="false" hidden><span>Pause Slideshow</span><span class="dxgym-pause-icon"><?php echo dxgym_icon('pause'); ?></span><span class="dxgym-play-icon" hidden><?php echo dxgym_icon('play'); ?></span></button><a class="dxgym-slideshow-credit" data-gym-slide-credit href="<?php echo esc_url($hero_photos[0]['url']); ?>">Inside <?php echo esc_html($hero_photos[0]['name']); ?> ↗</a></div><?php endif; ?>
+	<?php if(count($hero_photos)>1): ?><div class="dxgym-slideshow-controls"><button class="dxgym-slideshow-toggle" type="button" data-gym-slide-toggle aria-pressed="false" hidden><span>Pause Slideshow</span><span class="dxgym-pause-icon" aria-hidden="true"><?php echo dxgym_icon('pause'); ?></span><span class="dxgym-play-icon" aria-hidden="true" hidden><?php echo dxgym_icon('play'); ?></span></button><a class="dxgym-slideshow-credit" data-gym-slide-credit href="<?php echo esc_url($hero_photos[0]['url']); ?>">Inside <?php echo esc_html($hero_photos[0]['name']); ?> ↗</a></div><?php endif; ?>
 	</header>
 	<?php if($view==='overview'):
 		$scored=array_values(array_filter($gyms,static function($g){return is_numeric($g['overall']);}));$average=$scored?array_sum(array_column($scored,'overall'))/count($scored):null;
 		?>
-		<div class="dxgym-stats"><?php foreach([['visits',$data['visits'],'Recorded visits','Each published visit'],['map',count($gyms),'Unique gyms reviewed','Latest visit sets the rating'],['insights',count(dxgym_categories()),'Score categories','Weighted, not a simple average'],['reviews',$scored?number_format_i18n($scored[0]['overall'],1).'%':'—','Highest rated','Current recorded score']]as$stat): ?><article><?php echo dxgym_icon($stat[0]); ?><div><strong><?php echo esc_html($stat[1]); ?></strong><p><?php echo esc_html($stat[2]); ?></p><small><?php echo esc_html($stat[3]); ?></small></div></article><?php endforeach; ?></div>
+		<?php $winner = $scored[0] ?? null; $winner_identity = $winner ? dxgym_identity_parts($winner) : null; ?>
+		<div class="dxgym-stats"><?php foreach([
+			['visits',$data['visits'],'Recorded visits','Each published visit','reviews'],
+			['map',count($gyms),'Unique gyms reviewed','Latest visit sets the rating','explorer'],
+			['insights',count(dxgym_categories()),'Score categories','Weighted, not a simple average','insights'],
+			['reviews',$winner?number_format_i18n($winner['overall'],1).'%':'—','Highest rated','Current recorded score',$winner?$winner['url']:'league'],
+		] as $stat_index => $stat): $is_winner = $stat_index === 3 && $winner; $target = $is_winner ? $stat[4] : dxgym_url(['view'=>$stat[4]]); ?>
+			<article<?php echo $is_winner?' class="dxgym-stat--winner"':''; ?>>
+				<a class="dxgym-stat-link" href="<?php echo esc_url($target); ?>"<?php echo $is_winner?' aria-describedby="dxgym-winner-preview"':' data-gym-nav'; ?>><?php echo dxgym_icon($stat[0]); ?><div><strong><?php echo esc_html($stat[1]); ?></strong><p><?php echo esc_html($stat[2]); ?></p><small><?php echo esc_html($stat[3]); ?></small></div></a>
+				<?php if($is_winner): ?>
+					<button type="button" class="dxgym-stat-preview-toggle" data-gym-stat-preview-toggle aria-controls="dxgym-winner-preview" aria-expanded="false" aria-label="<?php echo esc_attr('Preview '.$winner['name']); ?>" hidden><?php echo dxgym_icon('explorer'); ?></button>
+					<div class="dxgym-stat-preview" id="dxgym-winner-preview" role="tooltip"><?php if($winner['image']): ?><img src="<?php echo esc_url($winner['image']); ?>" alt="" loading="lazy" decoding="async"><?php endif; ?><div><?php if($winner_identity['chain']): ?><span class="dxgym-stat-preview__chain"><?php echo esc_html($winner_identity['chain']); ?></span><?php endif; ?><span class="dxgym-stat-preview__branch"><?php echo esc_html($winner_identity['branch']); ?></span></div></div>
+				<?php endif; ?>
+			</article>
+		<?php endforeach; ?></div>
 		<div class="dxgym-overview-grid"><section class="dxgym-panel dxgym-top-three"><?php echo dxgym_panel_heading('Top 5 Gyms','league','Full league table'); ?><div class="dxgym-top-list"><?php foreach(array_slice($gyms,0,5) as$gym): ?><a href="<?php echo esc_url($gym['url']); ?>"><span class="dxgym-rank"><?php echo str_pad($gym['rank'],2,'0',STR_PAD_LEFT); ?></span><?php echo dxgym_image($gym,true); ?><div><h3><?php echo esc_html($gym['name']); ?></h3><p><?php echo esc_html($gym['location']); ?></p></div><?php echo dxgym_score($gym['overall'],true); ?><span aria-hidden="true">↗</span></a><?php endforeach; ?></div></section>
 		<section class="dxgym-panel"><?php echo dxgym_panel_heading('Score Breakdown','insights','View insights'); ?><p class="dxgym-muted"><?php echo !empty($gyms[0])?esc_html($gyms[0]['name']):'No gym records yet'; ?></p><?php echo dxgym_radar($gyms); ?></section>
 		<section class="dxgym-panel"><?php echo dxgym_panel_heading('Recent Reviews','reviews'); ?><div class="dxgym-recent-list"><?php foreach(array_slice($data['reviews'],0,3)as$gym): ?><a href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym,true); ?><div><h3><?php echo esc_html($gym['name']); ?></h3><time><?php echo esc_html($gym['date']?:$gym['published']); ?></time><p><?php echo esc_html(wp_trim_words($gym['excerpt'],11)); ?></p></div><?php echo dxgym_score($gym['overall'],true); ?></a><?php endforeach; ?></div></section></div>
@@ -407,8 +448,8 @@ function dxgym_view($data,$state) {
 		<div class="dxgym-view-switch"><a data-gym-nav href="<?php $args=$state;$args['display']='map';$args['compare']=implode(',',$state['compare']);echo esc_url(dxgym_url($args)); ?>" <?php echo $state['display']==='map'?'aria-current="true"':''; ?>>Map</a><a data-gym-nav href="<?php $args['display']='list';echo esc_url(dxgym_url($args)); ?>" <?php echo $state['display']==='list'?'aria-current="true"':''; ?>>List</a></div>
 		<?php if($state['display']==='map')echo dxgym_map($filtered); endif;
 		$total=count($filtered);$size=$view==='league'?10:9;$max_page=max(1,(int)ceil($total/$size));$state['page']=min($state['page'],$max_page);$page=array_slice($filtered,($state['page']-1)*$size,$size);
-		echo dxgym_listing_summary($total,$state);
-		?><p class="dxgym-results-count" role="status"><?php echo $total?esc_html('Showing '.(($state['page']-1)*$size+1).'–'.min($total,$state['page']*$size).' of '.$total.($view==='reviews'?' recorded visits':' gyms')):'No matching gyms'; ?></p>
+		echo '<div class="dxgym-results-heading">' . dxgym_listing_summary($total,$state);
+		?><p class="dxgym-results-count" role="status"><?php echo $total?esc_html('Showing '.(($state['page']-1)*$size+1).'–'.min($total,$state['page']*$size).' of '.$total.($view==='reviews'?' recorded visits':' gyms')):'No matching gyms'; ?></p></div>
 		<?php if(!$total): echo dxgym_empty(); elseif($view==='league'): ?>
 		<?php
 		$league_sort_url = static function ($key) use ($state) {
@@ -428,7 +469,6 @@ function dxgym_view($data,$state) {
 						<th scope="col">#</th>
 						<th scope="col"<?php if ($state['sort'] === 'name') echo ' aria-sort="ascending"'; ?>><a data-gym-nav href="<?php echo esc_url($league_sort_url('name')); ?>">Gym</a></th>
 						<th scope="col">Location</th>
-						<th scope="col">Visits</th>
 						<?php foreach ($league_categories as $key => $category) : ?>
 							<th scope="col"<?php if ($state['sort'] === $key) echo ' aria-sort="descending"'; ?>>
 								<a data-gym-nav href="<?php echo esc_url($league_sort_url($key)); ?>"><?php echo esc_html($category[0]); ?><small>×<?php echo esc_html($category[2]); ?></small></a>
@@ -442,9 +482,8 @@ function dxgym_view($data,$state) {
 					<?php foreach ($page as $index => $gym) : ?>
 						<tr>
 							<td class="dxgym-table-rank"><?php echo str_pad(($state['page'] - 1) * $size + $index + 1, 2, '0', STR_PAD_LEFT); ?></td>
-							<th scope="row"<?php if ($state['sort'] === 'name') echo ' class="is-league-sort-column"'; ?>><a class="dxgym-table-name" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym, true); ?><span><?php echo esc_html($gym['name']); ?></span></a></th>
+							<th scope="row"<?php if ($state['sort'] === 'name') echo ' class="is-league-sort-column"'; ?>><a class="dxgym-table-name" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym, true); ?><?php echo dxgym_identity_markup($gym); ?></a></th>
 							<td data-label="Location"><?php echo esc_html($gym['location'] ?: 'Not recorded'); ?></td>
-							<td data-label="Visits"><?php echo esc_html($gym['visits']); ?></td>
 							<?php foreach ($league_categories as $key => $category) : ?>
 								<td data-label="<?php echo esc_attr($category[0]); ?>"<?php if ($state['sort'] === $key) echo ' class="is-league-sort-column"'; ?>><?php echo dxgym_score($gym['scores'][$key], false, true); ?></td>
 							<?php endforeach; ?>
@@ -463,7 +502,7 @@ function dxgym_view($data,$state) {
 		?>
 		<div class="dxgym-compare-toolbar"><p><?php echo count($selected); ?> of 3 gyms selected</p><div class="dxgym-comparison-actions"><button class="dxgym-button dxgym-share-comparison" type="button" data-gym-share <?php disabled(!$selected); ?>><?php echo dxgym_icon('share'); ?> Share Comparison</button><a class="dxgym-button dxgym-clear-comparison" data-gym-nav href="<?php echo esc_url(dxgym_url(['view'=>'compare','compare'=>''])); ?>"><?php echo dxgym_icon('close'); ?> Clear Comparison</a></div></div>
 		<?php if($selected): ?><div class="dxgym-comparison" style="--compare-count:<?php echo count($selected); ?>"><?php foreach($selected as$gym): ?><article class="dxgym-panel dxgym-compare-card" data-gym-record="<?php echo esc_attr($gym['id']); ?>"><a class="dxgym-compare-visual" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym); ?><div class="dxgym-compare-visual__caption"><h2><?php echo esc_html($gym['name']); ?></h2><p><?php echo esc_html($gym['location']); ?></p><?php echo dxgym_score($gym['overall'],true); ?></div></a><?php echo dxgym_compare_link($gym,$state); ?><label class="dxgym-replace"><span>Replace gym</span><select data-compare-replace="<?php echo esc_attr($gym['id']); ?>" aria-label="Replace <?php echo esc_attr($gym['name']); ?>"><?php foreach($gyms as$option):if(in_array($option['id'],$state['compare'],true)&&$option['id']!==$gym['id'])continue; ?><option value="<?php echo esc_attr($option['id']); ?>" <?php selected($gym['id'],$option['id']); ?>><?php echo esc_html($option['name']); ?></option><?php endforeach; ?></select></label><dl class="dxgym-compare-scores"><?php foreach(dxgym_categories()as$key=>$category):$numbers=array_filter(array_column(array_column($selected,'scores'),$key),'is_numeric');$value=$gym['scores'][$key];$best=is_numeric($value)&&$numbers&&$value===max($numbers); ?><div<?php echo $best?' class="is-category-best"':''; ?>><dt><?php echo esc_html($category[0]); ?><?php if($best&&count($selected)>1): ?><span class="screen-reader-text"> — joint or highest selected score</span><?php endif; ?></dt><dd><?php echo dxgym_score($value); ?><span class="dxgym-bar" aria-hidden="true"><i data-gym-score-key="<?php echo esc_attr('compare-'.$gym['id'].'-'.$key); ?>" style="width:<?php echo is_numeric($value)?esc_attr($value*10):'0'; ?>%;--score-color:<?php echo esc_attr(dxgym_band(is_numeric($value)?$value*10:null)['color']); ?>"></i></span></dd></div><?php endforeach; ?></dl><?php echo dxgym_amenities($gym); ?><a class="dxgym-button" href="<?php echo esc_url($gym['url']); ?>">View Full Review <?php echo dxgym_icon('arrow'); ?></a></article><?php endforeach; ?></div><?php else: ?><div class="dxgym-empty"><h2>Start With a Gym You Know.</h2><p>Search below, then add up to three gyms to see their recorded scores together.</p></div><?php endif; ?>
-		<section class="dxgym-panel"><h2><?php echo count($selected)===3?'Change Your Line-up.':'Add a Gym to Compare.'; ?></h2><form class="dxgym-compare-search" method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-filters><input type="hidden" name="view" value="compare"><input type="hidden" name="sort" value="<?php echo esc_attr($state['sort']); ?>"><input type="hidden" name="compare" value="<?php echo esc_attr(implode(',',$state['compare'])); ?>"><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a gym to compare</span><input name="q" type="search" value="<?php echo esc_attr($state['q']); ?>" placeholder="Search gym, chain or location…"></label><button class="dxgym-button">Find gyms</button></form><?php echo dxgym_listing_summary($compare_total,$state); ?><p class="dxgym-results-count" role="status"><?php echo $compare_total?esc_html('Showing '.(($state['page']-1)*$compare_size+1).'–'.min($compare_total,$state['page']*$compare_size).' of '.$compare_total.' gyms'):'No matching gyms'; ?></p><div class="dxgym-compare-options"><?php foreach(array_slice($filtered,($state['page']-1)*$compare_size,$compare_size)as$gym): ?><div><a href="<?php echo esc_url($gym['url']); ?>"><?php echo esc_html($gym['name']); ?></a><?php echo dxgym_score($gym['overall'],true); echo dxgym_compare_link($gym,$state); ?></div><?php endforeach; ?></div><?php if(!$filtered)echo dxgym_empty(); echo dxgym_incremental($compare_total,$state,$compare_size); echo dxgym_pagination($compare_total,$state,$compare_size); ?><p class="dxgym-muted">Category values are out of 10. Overall scores are weighted percentages. Missing ratings remain unassessed.</p></section>
+		<section class="dxgym-panel"><h2><?php echo count($selected)===3?'Change Your Line-up.':'Add a Gym to Compare.'; ?></h2><form class="dxgym-compare-search" method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-filters><input type="hidden" name="view" value="compare"><input type="hidden" name="sort" value="<?php echo esc_attr($state['sort']); ?>"><input type="hidden" name="compare" value="<?php echo esc_attr(implode(',',$state['compare'])); ?>"><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a gym to compare</span><input name="q" type="search" value="<?php echo esc_attr($state['q']); ?>" placeholder="Search gym, chain or location…"></label><button class="dxgym-button">Find gyms</button></form><div class="dxgym-results-heading"><?php echo dxgym_listing_summary($compare_total,$state); ?><p class="dxgym-results-count" role="status"><?php echo $compare_total?esc_html('Showing '.(($state['page']-1)*$compare_size+1).'–'.min($compare_total,$state['page']*$compare_size).' of '.$compare_total.' gyms'):'No matching gyms'; ?></p></div><div class="dxgym-compare-options"><?php foreach(array_slice($filtered,($state['page']-1)*$compare_size,$compare_size)as$gym): ?><div><a href="<?php echo esc_url($gym['url']); ?>"><?php echo esc_html($gym['name']); ?></a><?php echo dxgym_score($gym['overall'],true); echo dxgym_compare_link($gym,$state); ?></div><?php endforeach; ?></div><?php if(!$filtered)echo dxgym_empty(); echo dxgym_incremental($compare_total,$state,$compare_size); echo dxgym_pagination($compare_total,$state,$compare_size); ?><p class="dxgym-muted">Category values are out of 10. Overall scores are weighted percentages. Missing ratings remain unassessed.</p></section>
 	<?php elseif($view==='insights'):
 		$scored=array_values(array_filter($gyms,static function($g){return is_numeric($g['overall']);}));$chains=[];$distribution=['85–100%'=>0,'71–84.9%'=>0,'57–70.9%'=>0,'43–56.9%'=>0,'Below 43%'=>0];
 		foreach($gyms as$gym){$key=$gym['chain']?:'Other / unspecified';$chains[$key][]=$gym['overall'];if(!is_numeric($gym['overall']))continue;$score=$gym['overall'];$bucket=$score>=85?'85–100%':($score>=71?'71–84.9%':($score>=57?'57–70.9%':($score>=43?'43–56.9%':'Below 43%')));$distribution[$bucket]++;}

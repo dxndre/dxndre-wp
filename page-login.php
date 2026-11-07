@@ -41,7 +41,7 @@ get_header();
 
 			<div class="auth-action__cta">
 				<a href="/reset-password" aria-label="Send password reset email" class="btn">
-					Send a Password Reset
+					<span class="auth-action__label">Send a Password Reset</span>
 				</a>
 			</div>
 		</div>
@@ -55,7 +55,7 @@ get_header();
 
 			<div class="auth-action__cta">
 				<a href="/sign-up" class="btn">
-					New Account
+					<span class="auth-action__label">New Account</span>
 				</a>
 			</div>
 		</div>
