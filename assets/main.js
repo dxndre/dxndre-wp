@@ -1,6 +1,10 @@
 import "regenerator-runtime/runtime.js";
 import "./main.scss";
-import * as bootstrap from "bootstrap";
+import Collapse from "bootstrap/js/src/collapse";
+import Modal from "bootstrap/js/src/modal";
+import Popover from "bootstrap/js/src/popover";
+import "bootstrap/js/src/dropdown";
+import "bootstrap/js/src/tab";
 
 // DX_CONSOLIDATED_FRONTEND_BEGIN
 if (document.body && !document.body.classList.contains("wp-admin")) {
@@ -4231,7 +4235,7 @@ function initGymLeague(archive, cards) {
 		document.querySelectorAll('[data-bs-toggle="popover"]'),
 	);
 	popoverTriggerList.map(function (popoverTriggerEl) {
-		return new bootstrap.Popover(popoverTriggerEl, {
+		return new Popover(popoverTriggerEl, {
 			trigger: "focus",
 		});
 	});
@@ -4554,7 +4558,7 @@ function initGymLeague(archive, cards) {
 			if (event.key === "Escape") {
 				event.preventDefault();
 
-				const instance = bootstrap.Collapse.getOrCreateInstance(menu, {
+				const instance = Collapse.getOrCreateInstance(menu, {
 					toggle: false,
 				});
 
@@ -4602,7 +4606,7 @@ function initGymLeague(archive, cards) {
 
 				if (!samePage) return;
 
-				const instance = bootstrap.Collapse.getOrCreateInstance(menu, {
+				const instance = Collapse.getOrCreateInstance(menu, {
 					toggle: false,
 				});
 
@@ -4909,9 +4913,9 @@ function initGymLeague(archive, cards) {
 		const hireBtn = document.querySelector(".js-hire-me");
 		if (!hireBtn) return;
 
-		const hireModal = new bootstrap.Modal("#hireMeModal");
-		const clientModal = new bootstrap.Modal("#clientModal");
-		const recruiterModal = new bootstrap.Modal("#recruiterModal");
+		const hireModal = new Modal("#hireMeModal");
+		const clientModal = new Modal("#clientModal");
+		const recruiterModal = new Modal("#recruiterModal");
 
 		hireBtn.addEventListener("click", (e) => {
 			e.preventDefault();
@@ -5030,11 +5034,11 @@ function initGymLeague(archive, cards) {
 
 		if (!targetModal || !currentModal) return;
 
-		const currentInstance = bootstrap.Modal.getInstance(currentModal);
+		const currentInstance = Modal.getInstance(currentModal);
 		currentInstance.hide();
 
 		const nextModalEl = document.querySelector(targetModal);
-		const nextInstance = new bootstrap.Modal(nextModalEl);
+		const nextInstance = new Modal(nextModalEl);
 		nextInstance.show();
 	});
 
@@ -5051,7 +5055,7 @@ function initGymLeague(archive, cards) {
 				let remaining = openModals.length;
 
 				openModals.forEach((modal) => {
-					const instance = bootstrap.Modal.getInstance(modal);
+					const instance = Modal.getInstance(modal);
 					if (!instance) {
 						remaining--;
 						return;
@@ -5082,7 +5086,7 @@ function initGymLeague(archive, cards) {
 			// 👇 Check if this is YOUR gym modal
 			const isGymModal = modalEl.classList.contains("dx-gym-share-modal");
 
-			const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+			const modal = Modal.getOrCreateInstance(modalEl, {
 				backdrop: isGymModal ? false : "static",
 				focus: true,
 			});
@@ -6951,15 +6955,37 @@ function initGymLeague(archive, cards) {
 		});
 		if (document.documentElement.dataset.dxBookingInit) return;
 		document.documentElement.dataset.dxBookingInit = 'true';
-		document.addEventListener('click', event => {
+		let widgetRequest;
+		const loadWidget = () => {
+			if (typeof window.Calendly?.initPopupWidget === 'function') return Promise.resolve();
+			widgetRequest ??= new Promise((resolve, reject) => {
+				const stylesheet = document.createElement('link');
+				stylesheet.rel = 'stylesheet';
+				stylesheet.href = 'https://assets.calendly.com/assets/external/widget.css';
+				const script = document.createElement('script');
+				script.src = 'https://assets.calendly.com/assets/external/widget.js';
+				const timeout = setTimeout(() => reject(new Error('Calendly timed out')), 4000);
+				script.onload = () => { clearTimeout(timeout); resolve(); };
+				script.onerror = () => { clearTimeout(timeout); reject(new Error('Calendly unavailable')); };
+				document.head.append(stylesheet, script);
+			});
+			return widgetRequest;
+		};
+		let opening = false;
+		document.addEventListener('click', async event => {
 			const link = event.target.closest?.('a');
 			if (!link?.closest('.js-calendly-popup') || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-			if (typeof window.Calendly?.initPopupWidget !== 'function') return;
+			event.preventDefault();
+			if (opening) return;
+			opening = true;
+			const url = link.href || bookingURL;
 			try {
-				window.Calendly.initPopupWidget({ url: link.href || bookingURL });
-				event.preventDefault();
+				await loadWidget();
+				window.Calendly.initPopupWidget({ url });
 			} catch {
-				// Let the original link navigate; no delayed popup or extra click required.
+				window.location.assign(url);
+			} finally {
+				opening = false;
 			}
 		});
 	});
@@ -16230,13 +16256,6 @@ if (document.body && document.body.classList.contains("wp-admin")) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-	const hero = document.querySelector('.gym-review-hero__image');
-	if (hero && !reduce.matches) {
-		const reveal = () => hero.animate([{opacity:0},{opacity:1}], {duration:800,easing:'ease-out'});
-		if (hero.complete && hero.naturalWidth) reveal();
-		else hero.addEventListener('load', reveal, {once:true});
-	}
 	const fitness = document.querySelector('body.page-fitness .dxf-hero');
 	const script = document.querySelector('script[src*="/themes/dxndre/build/index.js"]');
 	if (fitness && script) {
@@ -16471,6 +16490,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	launcher.hidden = false;
 	launcher.addEventListener('click', open);
 	dialog.querySelector('[data-command-close]').addEventListener('click', () => close());
+	dialog.addEventListener('keydown', event => {
+		if (event.key !== 'Escape' || event.isComposing) return;
+		event.preventDefault();
+		event.stopPropagation();
+		close();
+	});
 	dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
 	dialog.addEventListener('close', () => opener?.focus());
 	dialog.addEventListener('click', event => {

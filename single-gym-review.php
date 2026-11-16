@@ -279,6 +279,22 @@ while ( have_posts() ) :
 					decoding="async"
 					fetchpriority="high"
 				>
+				<?php wp_print_inline_script_tag( <<<'JS'
+(() => {
+	const image = document.currentScript.previousElementSibling;
+	const motion = matchMedia('(prefers-reduced-motion: reduce)');
+	if (motion.matches || typeof image.decode !== 'function' || typeof image.animate !== 'function') return;
+
+	image.style.opacity = '0';
+	image.decode().then(() => {
+		image.style.removeProperty('opacity');
+		if (!motion.matches) {
+			image.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 650, easing: 'ease-out' });
+		}
+	}, () => image.style.removeProperty('opacity'));
+})();
+JS
+				); ?>
 
 			</div>
 

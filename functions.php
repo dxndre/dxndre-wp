@@ -633,7 +633,7 @@ function dxndre_print_theme_bootstrap( $name ) {
 // Build process. Admin screens explicitly enqueue this same entry where needed.
 $asset = include get_theme_file_path('build/index.asset.php');
 if ( ! is_admin() ) {
-	wp_enqueue_script( 'dxndre-theme', get_theme_file_uri('build/index.js'), $asset['dependencies'], $asset['version'], true );
+	wp_enqueue_script( 'dxndre-theme', get_theme_file_uri('build/index.js'), $asset['dependencies'], $asset['version'], array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	wp_enqueue_style( 'dxndre-theme', get_theme_file_uri('build/index.css'), [], $asset['version'] );
 }
 
@@ -2387,6 +2387,10 @@ add_action('wp_enqueue_scripts', 'dx_bus_diary_enqueue_assets', 20);
 // Calendly Popup Widget
 
 function dx_enqueue_calendly_widget() {
+	if ( ! is_page( 'book-a-call' ) ) {
+		return;
+	}
+
 	wp_enqueue_style(
 		'calendly-widget-css',
 		'https://assets.calendly.com/assets/external/widget.css',

@@ -33,7 +33,8 @@
 
 						if ( ! empty( $header_logo ) ) :
 					?>
-						<img src="<?php echo esc_url( $header_logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
+						<?php $logo_size = wp_get_attachment_metadata( attachment_url_to_postid( $header_logo ) ); ?>
+						<img src="<?php echo esc_url( $header_logo ); ?>"<?php if ( ! empty( $logo_size['width'] ) && ! empty( $logo_size['height'] ) ) : ?> width="<?php echo (int) $logo_size['width']; ?>" height="<?php echo (int) $logo_size['height']; ?>"<?php endif; ?> alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
 					<?php
 						else :
 							echo esc_attr( get_bloginfo( 'name', 'display' ) );

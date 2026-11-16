@@ -1,0 +1,649 @@
+/* Fitness*/
+/* Fitness editorial shell. Gym controls and calculator assets remain independent. */
+html:has(.dx-fitness) {
+	overflow-x: clip;
+	overflow-y: visible;
+}
+body {
+	&:has(.dx-fitness) {
+		background: #080b0a;
+		background-image: none;
+	}
+	&:has(.dx-fitness):not(.nav-open):not(.modal-open) {
+		overflow-x: clip;
+		overflow-y: visible;
+	}
+	&:has(.dx-fitness) {
+		#main {
+			padding: 0;
+			max-width: none;
+			min-height: 100vh;
+			.dx-fitness section {
+				opacity: 1 !important;
+				transform: none !important;
+				transition: none !important;
+			}
+		}
+	}
+}
+.dx-fitness {
+	--dxf-gold: #d5ad63;
+	--dxf-line: #d5ad6338;
+	--dxf-muted: #b7bdb8;
+	position: relative;
+	isolation: isolate;
+	color: #f3f1eb;
+	font:
+		400 16px/1.75 Outfit,
+		sans-serif;
+	padding-bottom: 0;
+	* {
+		box-sizing: border-box;
+	}
+	.dxf-background {
+		position: absolute;
+		inset: 0 0 auto;
+		z-index: -1;
+		margin: 0;
+		max-width: none;
+		pointer-events: none;
+		mask-image: linear-gradient(#000 40%, transparent);
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			opacity: 0.46;
+		}
+		&:after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(90deg, #060c0bde, transparent 100%);
+		}
+	}
+	.dxf-hero {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+	.dxf-eyebrow {
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--dxf-gold);
+		margin: 0 0 16px;
+		line-height: 1.6;
+	}
+	.dxf-heading {
+		font-family: Outfit, sans-serif;
+		font-weight: 300;
+		line-height: 1.12;
+		letter-spacing: -0.035em;
+		text-transform: none;
+		color: #f3f1eb;
+		padding: 0;
+		margin: 0 0 20px;
+		font-size: clamp(30px, 3.1vw, 44px);
+	}
+	h1.dxf-heading {
+		font-weight: 200;
+		text-transform: uppercase;
+		max-width: 800px;
+		line-height: 1.04;
+		margin-bottom: 24px;
+	}
+	.dxf-intro {
+		color: #ced0c9;
+		margin: 0 0 28px;
+		line-height: 1.65;
+	}
+	.dxf-actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	.dxf-primary,
+	.dxf-link {
+		margin: 0;
+	}
+	.dxf-primary {
+		a {
+			background: var(--dxf-gold);
+			border: 1px solid var(--dxf-gold);
+			color: #15170f;
+			display: inline-flex;
+			gap: 28px;
+			align-items: center;
+			padding: 13px 22px;
+			text-decoration: none;
+			line-height: 1.5;
+			min-height: 48px;
+			&:hover {
+				background: #ebca8d;
+			}
+		}
+	}
+	.dxf-link a {
+		color: #e3c183;
+		text-decoration: none;
+		font-size: 14px;
+		display: inline-flex;
+		gap: 20px;
+		align-items: center;
+		padding: 10px 0;
+	}
+	a:focus-visible {
+		outline: 2px solid #f4d394;
+		outline-offset: 5px;
+	}
+	.dxf-nav {
+		position: sticky;
+		display: flex;
+		overflow-x: auto;
+		scrollbar-width: thin;
+		background: #080d0ceb;
+		backdrop-filter: blur(16px);
+		border-bottom: 1px solid var(--dxf-line);
+		margin: 0 0 45px;
+		padding: 0;
+		max-width: none;
+		a {
+			color: #c4c7c0;
+			text-decoration: none;
+			white-space: nowrap;
+			border-bottom: 2px solid transparent;
+			line-height: 1.6;
+		}
+	}
+	.dxf-nav a:hover,
+	.dxf-nav a[aria-current] {
+		color: #e3bf79;
+		border-color: var(--dxf-gold);
+	}
+	.dxf-section {
+		margin: 0 0 85px;
+		padding: 0;
+		max-width: none;
+	}
+	#fitness-overview {
+		scroll-margin-top: 130px;
+	}
+	.dxf-league-intro {
+		display: grid;
+		align-items: start;
+	}
+	.dxf-section-title > p:not(.dxf-eyebrow) {
+		color: var(--dxf-muted);
+		max-width: 510px;
+		margin: 0;
+	}
+	.dxf-context {
+		border-left: 1px solid var(--dxf-line);
+		font-size: 14px;
+		color: var(--dxf-muted);
+	}
+	.dxf-context {
+		p {
+			margin: 0 0 12px;
+			&:last-child {
+				margin: 0;
+			}
+		}
+	}
+	.dxf-story {
+		display: grid;
+		gap: 0;
+		border: 1px solid var(--dxf-line);
+		background: #0c1210;
+	}
+	.dxf-story-image {
+		margin: 0;
+		min-width: 0;
+		position: relative;
+		img {
+			width: 100%;
+			position: absolute;
+			inset: 0;
+			object-fit: cover;
+			object-position: 50% 35%;
+			filter: saturate(0.65);
+		}
+	}
+	.dxf-story-copy {
+		align-self: center;
+		& > p:not(.dxf-eyebrow):not(.dxf-link) {
+			color: var(--dxf-muted);
+			font-size: 16px;
+			line-height: 1.8;
+			margin: 0 0 20px;
+		}
+	}
+	.dxf-story-stats {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+		margin: 30px 0 22px;
+		padding-top: 24px;
+		border-top: 1px solid var(--dxf-line);
+	}
+	.dxf-story-stat {
+		h3 {
+			color: #e5c997;
+			font-size: 36px;
+			margin-bottom: 5px;
+		}
+		p {
+			font-size: 12px;
+			color: var(--dxf-muted);
+			margin: 0;
+		}
+	}
+	.dxf-records-grid {
+		display: grid;
+		border: 1px solid var(--dxf-line);
+		background: linear-gradient(120deg, #10201b85, #101410);
+	}
+	.dxf-record {
+		border-right: 1px solid var(--dxf-line);
+		min-width: 0;
+		&:last-child {
+			border-right: 0;
+		}
+		.dxf-eyebrow {
+			font-size: 10px;
+			margin-bottom: 28px;
+		}
+	}
+	.dxf-record-value {
+		font-family: Outfit, sans-serif;
+		font-weight: 200;
+		color: #eee4cd;
+		line-height: 1;
+		margin: 0 0 20px;
+		letter-spacing: -0.05em;
+		padding: 0;
+		span {
+			font-size: 18px;
+			letter-spacing: 0;
+			color: var(--dxf-gold);
+			margin-left: 5px;
+		}
+	}
+	.dxf-record > p:last-child {
+		font-size: 13px;
+		color: var(--dxf-muted);
+		margin: 0;
+		line-height: 1.5;
+	}
+	.dxf-next {
+		display: grid;
+		overflow: hidden;
+		border-top: 1px solid var(--dxf-line);
+		border-bottom: 1px solid var(--dxf-line);
+	}
+	.dxf-next-copy > p:not(.dxf-eyebrow):not(.dxf-primary) {
+		color: var(--dxf-muted);
+		max-width: 440px;
+		margin: 0 0 28px;
+	}
+	.dxf-next-art {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background: radial-gradient(
+			ellipse at 50% 70%,
+			#81734e35,
+			transparent 70%
+		);
+		min-width: 0;
+	}
+	.dxf-wordmark {
+		font-family: "Space Grotesk", sans-serif;
+		font-weight: 300;
+		letter-spacing: -0.08em;
+		line-height: 1;
+		color: #c5ac7e;
+		margin: 0;
+	}
+	.dxf-next-note {
+		font-size: 11px;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--dxf-muted);
+		margin: 25px 0 0;
+	}
+	.dxf-signoff {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 20px;
+		& > p {
+			margin: 0;
+			font-size: 12px;
+			color: var(--dxf-muted);
+		}
+	}
+	.dxf-hero {
+		padding-top: 150px;
+	}
+	.dxf-background {
+		height: 650px;
+		img {
+			object-position: 60% center;
+		}
+	}
+	.dxf-hero {
+		padding: 135px 0 32px;
+		min-height: 490px;
+	}
+	h1.dxf-heading {
+		font-size: clamp(42px, 10.6vw, 62px);
+	}
+	.dxf-intro {
+		font-size: 16px;
+		max-width: 330px;
+	}
+	.dxf-actions {
+		gap: 12px 24px;
+	}
+	.dxf-primary a {
+		font-size: 13px;
+	}
+	.dxf-nav {
+		gap: 26px;
+		margin-bottom: 32px;
+		a {
+			font-size: 12px;
+			padding: 16px 0;
+		}
+	}
+	.dxf-section {
+		margin-bottom: 50px;
+		scroll-margin-top: 148px;
+	}
+	.dxf-league-intro {
+		grid-template-columns: 1fr;
+		gap: 22px;
+		margin-bottom: 24px;
+	}
+	.dxf-context {
+		padding-left: 18px;
+	}
+	.dxf-story {
+		grid-template-columns: 1fr;
+	}
+	.dxf-story-image {
+		min-height: 380px;
+	}
+	.dxf-story-copy {
+		padding: 28px 24px;
+	}
+	.dxf-records-grid {
+		grid-template-columns: 1fr 1fr;
+		margin-top: 24px;
+	}
+	.dxf-record {
+		padding: 24px;
+		&:nth-child(2) {
+			border-right: 0;
+		}
+		&:nth-child(-n + 2) {
+			border-bottom: 1px solid var(--dxf-line);
+		}
+	}
+	.dxf-record-value {
+		font-size: 52px;
+	}
+	.dxf-next {
+		grid-template-columns: 1fr;
+		margin-bottom: 0;
+	}
+	.dxf-next-copy {
+		padding: 32px 0;
+	}
+	.dxf-next-art {
+		padding: 30px 0 40px;
+		border-left: 0;
+		border-top: 1px solid var(--dxf-line);
+	}
+	.dxf-wordmark {
+		font-size: 110px;
+	}
+	.dxf-signoff {
+		padding: 22px 0;
+		.dxf-link a {
+			font-size: 12px;
+		}
+	}
+}
+@include respond-from(701px) {
+	.dx-fitness {
+		.dxf-wrap {
+			width: 90%;
+		}
+
+		.dxf-background {
+			height: 760px;
+
+			img {
+				object-position: 60% 35%;
+			}
+		}
+
+		.dxf-hero {
+			padding-top: 150px;
+
+			padding-bottom: 45px;
+
+			min-height: 530px;
+		}
+
+		h1.dxf-heading {
+			font-size: clamp(48px, 5.8vw, 84px);
+		}
+
+		.dxf-intro {
+			font-size: 18px;
+
+			max-width: 520px;
+		}
+
+		.dxf-actions {
+			gap: 30px;
+		}
+
+		.dxf-primary a {
+			font-size: 14px;
+		}
+
+		.dxf-nav {
+			top: 90px;
+
+			margin-bottom: 45px;
+
+			a {
+				font-size: 14px;
+
+				padding-top: 20px;
+
+				padding-bottom: 18px;
+			}
+		}
+
+		.dxf-section {
+			margin-bottom: 85px;
+
+			scroll-margin-top: 180px;
+		}
+
+		.dxf-league-intro {
+			grid-template-columns: 1fr 1fr;
+
+			gap: 30px;
+
+			margin-bottom: 32px;
+		}
+
+		.dxf-context {
+			padding-left: 30px;
+		}
+
+		.dxf-story {
+			grid-template-columns: 0.9fr 1.1fr;
+		}
+
+		.dxf-story-image {
+			min-height: 560px;
+		}
+
+		.dxf-story-copy {
+			padding-top: 30px;
+
+			padding-right: 30px;
+
+			padding-bottom: 30px;
+
+			padding-left: 30px;
+		}
+
+		.dxf-records-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+
+			margin-top: 30px;
+		}
+
+		.dxf-record {
+			padding-right: 20px;
+
+			padding-left: 20px;
+
+			&:nth-child(2) {
+				border-right: 1px solid var(--dxf-line);
+			}
+
+			&:nth-child(-n + 2) {
+				border-bottom: 0;
+			}
+		}
+
+		.dxf-record-value {
+			font-size: clamp(44px, 4.4vw, 66px);
+		}
+
+		.dxf-next {
+			grid-template-columns: 1.1fr 1fr;
+		}
+
+		.dxf-next-copy {
+			padding-top: 50px;
+
+			padding-right: 55px;
+
+			padding-bottom: 50px;
+		}
+
+		.dxf-next-art {
+			padding-top: 0;
+
+			padding-bottom: 0;
+
+			border-left: 1px solid var(--dxf-line);
+
+			border-top: 0;
+		}
+
+		.dxf-wordmark {
+			font-size: clamp(80px, 10vw, 160px);
+		}
+
+		.dxf-signoff {
+			padding-top: 26px;
+
+			padding-bottom: 26px;
+
+			.dxf-link a {
+				font-size: 14px;
+			}
+		}
+	}
+}
+@include respond-from(1001px) {
+	.dx-fitness {
+		.dxf-wrap {
+			width: min(1280px, 87.2%);
+		}
+
+		.dxf-hero {
+			padding-top: 180px;
+		}
+
+		.dxf-nav {
+			top: 124px;
+
+			gap: 34px;
+		}
+
+		.dxf-section {
+			scroll-margin-top: 215px;
+		}
+
+		.dxf-league-intro {
+			gap: 65px;
+		}
+
+		.dxf-story-copy {
+			padding-top: 48px;
+
+			padding-right: 48px;
+
+			padding-bottom: 48px;
+
+			padding-left: 48px;
+		}
+
+		.dxf-record {
+			padding-top: 30px;
+
+			padding-right: 30px;
+
+			padding-bottom: 30px;
+
+			padding-left: 30px;
+		}
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.dx-fitness * {
+		scroll-behavior: auto !important;
+		transition: none !important;
+	}
+}
+
+.dx-fitness {
+	.dxf-actions > p {
+		width: auto;
+		flex: 0 0 auto;
+		margin: 0;
+	}
+
+	.wp-block-group__inner-container {
+		display: contents;
+	}
+}
+body.is-frontend #main .dx-fitness .dxf-league-content {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	max-width: none;
+}
+.dx-fitness {
+	.dxf-hero > .wp-block-group__inner-container > p {
+		margin-top: 0;
+	}
+	.dxf-actions .dxf-primary,
+	.dxf-actions .dxf-link {
+		margin: 0;
+	}
+}
