@@ -797,7 +797,7 @@ function initEveningScenes(reduced) {
 			return layer;
 		});
 		root.prepend(canvas);
-		reveal(sections);
+		reveal(sections.filter(section => !section.matches('.service-detail-enquiry')));
 		let frame = 0, activeIndex = -1;
 		const paint = () => {
 			frame = 0;
@@ -1429,7 +1429,17 @@ function initEditorialRefinements() {
 				const location = document.createElement('p'); location.textContent = gym.location || 'Location not recorded'; body.append(location);
 				const score = document.createElement('strong'); score.textContent = gym.overall === null ? 'Not assessed' : `${gym.overall.toFixed(1)}% overall`; score.style.setProperty('--score-color', gym.band.color); body.append(score);
 				const link = document.createElement('a'); link.className = 'dxgym-map-popup__link'; link.textContent = 'Read full review ↗'; link.href = gym.url; body.append(link); popup.append(body);
-				marker.bindPopup(popup, { className: 'dxgym-leaflet-popup', minWidth: 240, maxWidth: 300 }); marker.bindTooltip(gym.name, { direction: 'top' });
+				marker.bindPopup(popup, { className: 'dxgym-leaflet-popup', minWidth: 240, maxWidth: 300 }); const tooltipLabel = document.createElement('span');
+				tooltipLabel.textContent = gym.name;
+				marker.bindTooltip(tooltipLabel, { direction: 'top', permanent: true, className: 'dxgym-marker-tooltip' });
+				const setTooltip = (visible) => marker.getTooltip()?.getElement()?.classList.toggle('is-visible', visible);
+				marker.on('mouseover focus', () => setTooltip(true));
+				marker.on('mouseout blur popupopen', () => setTooltip(false));
+				marker.on('add', () => {
+					const icon = marker.getElement();
+					icon?.addEventListener('focus', () => setTooltip(true));
+					icon?.addEventListener('blur', () => setTooltip(false));
+				});
 				marker.on('add', () => { const node = marker.getElement(); if (node) { node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button'); node.setAttribute('aria-label', `${gym.name}, ${score.textContent}`); node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); marker.openPopup(); } }); } });
 				const node = marker.getElement(); if (node) { node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button'); node.setAttribute('aria-label', gym.name); node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); marker.openPopup(); } }); }
 				bounds.push([gym.lat, gym.lng]);
@@ -1456,7 +1466,23 @@ function initEditorialRefinements() {
 			const oldHeroHeight = content.querySelector('.dxgym-hero')?.getBoundingClientRect().height;
 			const oldSummary = content.querySelector('[data-gym-list-summary]');
 			const previousSummary = oldSummary ? { total: oldSummary.dataset.total, sort: oldSummary.dataset.sort, filters: oldSummary.dataset.filters } : null;
+			const league = url.searchParams.get('view') === 'league';
+			const oldRows = new Map();
+			if (league && !reduce) content.querySelectorAll('.dxgym-table tbody tr').forEach(row => {
+				const link = row.querySelector('a[href]');
+				if (link) oldRows.set(link.href, row.getBoundingClientRect().top);
+			});
 			content.innerHTML = result.html;
+			if (league && !reduce) {
+				const rows = [...content.querySelectorAll('.dxgym-table tbody tr')];
+				const changes = rows.map(row => [row, oldRows.get(row.querySelector('a[href]')?.href), row.getBoundingClientRect().top]);
+				changes.forEach(([row, before, after], index) => {
+					if (before === after) return;
+					row.animate(before === undefined ? [{opacity:.35},{opacity:1}] : [
+						{translate:`0 ${before - after}px`},{translate:'0 0'},
+					], {duration:260, delay:before === undefined ? Math.min(index * 15, 90) : 0, easing:'ease-out', fill:'backwards'});
+				});
+			}
 			if (historyMode === 'push') history.pushState({}, '', url);
 			if (historyMode === 'replace') history.replaceState({}, '', url);
 			syncNavigation(url); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseStatPreviews(); initialiseDonuts(); announceDashboardRender(); closeDrawer();
@@ -3668,6 +3694,7 @@ function initGymLeague(archive, cards) {
 			});
 	}
 	function setLeagueView(useMap, useGrid = false) {
+		const changed = mapView !== useMap || gridView !== useGrid;
 		mapView = useMap;
 		gridView = useGrid;
 		layout.hidden = gridView;
@@ -3680,6 +3707,13 @@ function initGymLeague(archive, cards) {
 		mapPane.hidden = !mapView;
 		place();
 		renderLeagueMap();
+		if (changed && !useGrid) leagueFade(useMap ? mapPane : grid);
+	}
+	function leagueFade(element) {
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		element.animate([{ opacity: .3, translate: '0 5px' }, { opacity: 1, translate: '0 0' }], {
+			duration: 240, easing: 'ease-out',
+		});
 	}
 	listButton.addEventListener("click", () => {
 		setLeagueView(false);
@@ -4058,6 +4092,7 @@ function initGymLeague(archive, cards) {
 		panel.replaceChildren(details.get(card));
 		panel.hidden = false;
 		panel.scrollTop = 0;
+		leagueFade(panel);
 		syncSelection();
 		place();
 		updateStickyOffset();
@@ -4126,6 +4161,7 @@ function initGymLeague(archive, cards) {
 					tile.append(caption, score);
 					mosaic.append(tile);
 				});
+			if (gridView) leagueFade(mosaic);
 			count.textContent = `${shown.length} of ${ordered.length} branches shown`;
 			if (!shown.length) {
 				stopAnimation();
@@ -4898,52 +4934,29 @@ function initGymLeague(archive, cards) {
 	// Auto-rotation of services tabs
 
 	dxOnPageReady(() => {
-		const tabs = document.querySelectorAll(".services-nav .nav-link");
+		const nav = document.querySelector('.services-nav');
+		const tabs = [...(nav?.querySelectorAll('.nav-link') || [])];
 		if (!tabs.length) return;
 
-		let index = 0;
-		let interval = null;
-		const ROTATION_DELAY = 8000; // 8s feels premium
-
-		const activateTab = (i) => {
-			tabs[i].click();
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+		const desktop = matchMedia('(min-width: 992px)');
+		let rotation;
+		const canRotate = () => tabs.length > 1 && desktop.matches && !reduced.matches && !document.hidden && !nav.matches(':hover, :focus-within');
+		const schedule = () => {
+			clearTimeout(rotation);
+			if (!canRotate()) return;
+			rotation = setTimeout(() => {
+				if (!canRotate()) return;
+				const current = tabs.findIndex(tab => tab.classList.contains('active'));
+				tabs[(current + 1) % tabs.length].click();
+			}, 8000);
 		};
-
-		const startRotation = () => {
-			interval = setInterval(() => {
-				index = (index + 1) % tabs.length;
-				activateTab(index);
-			}, ROTATION_DELAY);
-		};
-
-		const stopRotation = () => {
-			clearInterval(interval);
-			interval = null;
-		};
-
-		// Start rotation
-		startRotation();
-
-		// Pause on hover / interaction
-		tabs.forEach((tab, i) => {
-			tab.addEventListener("mouseenter", stopRotation);
-			tab.addEventListener("focus", stopRotation);
-
-			tab.addEventListener("mouseleave", () => {
-				index = i;
-				startRotation();
-			});
-
-			tab.addEventListener("click", () => {
-				index = i;
-			});
-		});
-
-		// const isTouch = window.matchMedia('(pointer: coarse)').matches;
-
-		// if (!isTouch) {
-		// startRotation();
-		// }
+		['mouseenter', 'mouseleave', 'focusin', 'click'].forEach(event => nav.addEventListener(event, schedule));
+		nav.addEventListener('focusout', () => requestAnimationFrame(schedule));
+		document.addEventListener('visibilitychange', schedule);
+		reduced.addEventListener('change', schedule);
+		desktop.addEventListener('change', schedule);
+		schedule();
 
 		// Duplicating Services Tab images for glowing backdrop effect
 
@@ -5147,45 +5160,68 @@ function initGymLeague(archive, cards) {
 		const track = marquee.querySelector(".gallery-track");
 		if (!track) return;
 
-		const galleries = track.querySelectorAll(".wp-block-gallery");
+		const galleries = track.querySelectorAll(":scope > .wp-block-gallery");
 		if (galleries.length < 2) return;
 
-		let position = 0;
-		let speed = 0.5; // gallery pace (slower than projects)
-		let paused = false;
-
-		const galleryWidth = galleries[0].offsetWidth;
-
-		function animate() {
-			if (!paused) {
-				position -= speed;
-
-				// seamless loop
-				if (Math.abs(position) >= galleryWidth) {
-					position += galleryWidth;
-				}
-
-				track.style.transform = `translate3d(${position}px, 0, 0)`;
+		const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+		let position = 0, period = 0, frame = 0, previousTime = null;
+		let visible = !("IntersectionObserver" in window), hovered = false;
+		const running = () => visible && !hovered && !document.hidden && !reduced.matches && period > 0;
+		const paint = () => { track.style.transform = "translate3d(" + position + "px, 0, 0)"; };
+		const sync = () => {
+			if (running()) {
+				if (!frame) frame = requestAnimationFrame(animate);
+			} else {
+				cancelAnimationFrame(frame);
+				frame = 0;
+				previousTime = null;
 			}
-
-			requestAnimationFrame(animate);
+		};
+		function animate(time) {
+			frame = 0;
+			if (!running()) return;
+			if (previousTime !== null) position = -((-position + Math.min(time - previousTime, 64) * .03) % period);
+			previousTime = time;
+			paint();
+			sync();
 		}
+		const measure = () => {
+			const first = galleries[0].getBoundingClientRect();
+			const second = galleries[1].getBoundingClientRect();
+			const nextPeriod = second.left - first.left;
+			if (nextPeriod > 0 && nextPeriod !== period) {
+				position = period ? position / period * nextPeriod : 0;
+				period = nextPeriod;
+				paint();
+			}
+			sync();
+		};
 
-		// Pause on hover
-		marquee.addEventListener("mouseenter", () => (paused = true));
-		marquee.addEventListener("mouseleave", () => (paused = false));
-
-		// Pause when off-screen
-		const observer = new IntersectionObserver(
-			(entries) => {
-				paused = !entries[0].isIntersecting;
-			},
-			{ threshold: 0.15 },
-		);
-
-		observer.observe(marquee);
-
-		animate();
+		track.classList.add("is-marquee-driven");
+		marquee.addEventListener("mouseenter", () => { hovered = true; sync(); });
+		marquee.addEventListener("mouseleave", () => { hovered = false; sync(); });
+		if ("IntersectionObserver" in window) {
+			const observer = new IntersectionObserver(([entry]) => {
+				visible = entry.isIntersecting;
+				sync();
+			});
+			observer.observe(marquee);
+		}
+		if ("ResizeObserver" in window) {
+			const observer = new ResizeObserver(measure);
+			observer.observe(galleries[0]);
+			observer.observe(galleries[1]);
+		}
+		addEventListener("resize", measure, { passive: true });
+		document.addEventListener("visibilitychange", sync);
+		reduced.addEventListener("change", () => {
+			if (reduced.matches) {
+				position = 0;
+				paint();
+			}
+			sync();
+		});
+		measure();
 	});
 
 	function initSmartSearchSuggestions() {
@@ -5263,6 +5299,22 @@ function initGymLeague(archive, cards) {
 		if (!sections.length || !nav || document.body.dataset.storyInit) return;
 		document.body.dataset.storyInit = "true";
 		document.documentElement.classList.add("case-study-document");
+		const railTitle = nav.querySelector('.dx-project-rail-title');
+		const heroTitle = document.querySelector('.story-hero .entry-title');
+		const header = document.getElementById('header');
+		if (railTitle && heroTitle) {
+			let frame = 0;
+			const paintRail = () => {
+				frame = 0;
+				const top = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);
+				railTitle.classList.toggle('is-visible', heroTitle.getBoundingClientRect().bottom <= top);
+			};
+			const scheduleRail = () => { if (!frame) frame = requestAnimationFrame(paintRail); };
+			addEventListener('scroll', scheduleRail, { passive: true });
+			addEventListener('resize', scheduleRail, { passive: true });
+			addEventListener('pageshow', scheduleRail);
+			paintRail();
+		}
 		const backgrounds = [
 			...document.querySelectorAll(".story-backgrounds .bg"),
 		];
@@ -6140,6 +6192,13 @@ function initGymLeague(archive, cards) {
 			});
 
 			const ordered = sortCards(eligible);
+			const animate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const previous = new Map();
+			if (animate) {
+				allCards.forEach(card => {
+					if (!card.hidden && card.getClientRects().length) previous.set(card, card.getBoundingClientRect().top);
+				});
+			}
 
 			ordered.forEach((card) => grid.appendChild(card));
 
@@ -6164,6 +6223,17 @@ function initGymLeague(archive, cards) {
 
 			updateTitle();
 			league.update(ordered, visibleCount);
+			if (animate) {
+				const changes = ordered.slice(0, visibleCount).filter(card => card.getClientRects().length)
+					.map(card => [card, previous.get(card), card.getBoundingClientRect().top]);
+				changes.forEach(([card, from, to]) => {
+					if (from === to) return;
+					card.animate(from === undefined ? [{opacity:0},{opacity:1}] : [
+						{translate:`0 ${from - to}px`},{translate:'0 0'},
+					], {duration:240,easing:'cubic-bezier(.22,1,.36,1)'});
+				});
+				if (emptyEl && !emptyEl.hidden) emptyEl.animate([{opacity:0},{opacity:1}], {duration:220});
+			}
 		};
 
 		buttons.forEach((btn) => {
@@ -8683,6 +8753,80 @@ dxOnPageReady(initHomepageHeroMotion);
 	show(0, false);
 })();
 
+const dxBusLondonClock = new Intl.DateTimeFormat('en-GB', {
+	timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
+const dxBusAllDayRoutes = new Set(['102', 'EL1']);
+const dxBusRememberAllDayRoutes = (routes) => {
+	routes.forEach((route) => { if (route.allDay) dxBusAllDayRoutes.add(String(route.name).toUpperCase()); });
+};
+
+// The overnight alias is presentation only. Requests and saved IDs stay canonical.
+const dxBusCalendarDate = new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/London', month:'numeric', day:'numeric', year:'numeric'});
+function dxBusRouteDisplay(name, type, allDay, date = new Date()) {
+	const canonical = String(name || '').trim().toUpperCase();
+	const inactive = type === 'former' || type === 'future';
+	const nativeNight = !inactive && (type === 'night' || /^N[0-9]/.test(canonical));
+	const parts = dxBusLondonClock.formatToParts(date);
+	const minutes = Number(parts.find(part => part.type === 'hour').value) * 60 + Number(parts.find(part => part.type === 'minute').value);
+	const overnight = !inactive && !nativeNight && (allDay || type === '24hour' || dxBusAllDayRoutes.has(canonical)) && minutes >= 1 && minutes < 270;
+	const londonDate = dxBusCalendarDate.formatToParts(date);
+	const part = key => Number(londonDate.find(part => part.type === key).value);
+	const lastAugustSunday = 31 - new Date(Date.UTC(part('year'), 7, 31)).getUTCDay();
+	const carnival = !inactive && part('month') === 8 && [lastAugustSunday,lastAugustSunday + 1].includes(part('day')) &&
+		/^(7|18|23|27|28|31|52|70|148|228|295|316|328|N18|N118)$/.test(canonical);
+	if (carnival || (!inactive && type === 'carnival' && /^Y(?:N)?\d+$/.test(canonical))) {
+		return { name:carnival ? 'Y' + canonical : canonical, prefix:'Y', type:'carnival', overnight:false };
+	}
+	const prefix = overnight ? '(N)' : nativeNight && canonical.startsWith('N') ? 'N' : '';
+	return { name: prefix + (prefix === 'N' ? canonical.slice(1) : canonical), prefix, type: overnight || nativeNight ? 'night' : type, overnight };
+}
+
+function dxBusPaintRouteTile(tile, display) {
+	if (tile.textContent === display.name && tile.firstElementChild?.classList.contains('dxbus-route-glyphs') &&
+		Boolean(tile.querySelector('sup')) === Boolean(display.prefix)) return;
+	const glyphs = document.createElement('span');
+	glyphs.className = 'dxbus-route-glyphs';
+	if (display.prefix) {
+		const prefix = document.createElement('sup');
+		prefix.textContent = display.prefix;
+		glyphs.append(prefix);
+	}
+	const number = document.createElement('span');
+	number.textContent = display.name.slice(display.prefix.length);
+	glyphs.append(number);
+	tile.replaceChildren(glyphs);
+}
+
+function dxBusPaintDirectoryTile(tile, name) {
+	const display = dxBusRouteDisplay(name, /^SL/i.test(name) ? 'superloop' : 'day');
+	if (display.name === 'SCS') display.type = 'shuttle';
+	dxBusPaintRouteTile(tile, display);
+	tile.dataset.type = display.type;
+}
+
+const dxBusOvernight102Title = 'Edmonton Green Bus Station ↔ Golders Green Station';
+function dxBusOvernight102Response(path, data, date = new Date()) {
+	if (!/^(?:route|directions|arrivals|line-positions)\/102(?:[/?]|$)/.test(path) || !dxBusRouteDisplay('102', '24hour', true, date).overnight) return data;
+	if (path.startsWith('route/') && !data.archive) {
+		const inbound = data.direction === 'inbound';
+		const terminusId = inbound ? '490015496GU' : '490015496GV';
+		const stops = data.stops || [];
+		const terminus = stops.findIndex((stop) => stop.id === terminusId || /^Golders Green (?:Bus )?Station$/i.test(stop.name));
+		return {
+			...data,
+			overnightShort: true,
+			branches: [dxBusOvernight102Title],
+			stops: terminus < 0 ? [] : inbound ? stops.slice(terminus) : stops.slice(0, terminus + 1),
+		};
+	}
+	if (path.startsWith('directions/') && data.outbound) return { ...data, outbound: 'Towards Golders Green Station' };
+	const withinNightService = (bus) => !/\bBrent Cross\b/i.test(bus.destination || '') && !['490004282A', '490004282D'].includes(bus.destinationId || bus.stopId);
+	if (Array.isArray(data.arrivals)) return { ...data, arrivals: data.arrivals.filter(withinNightService) };
+	if (Array.isArray(data.vehicles)) return { ...data, vehicles: data.vehicles.filter(withinNightService) };
+	return data;
+}
+
 // A lightweight directory lookup shared by the Buses landing page and app switcher.
 (() => {
 	const config = window.DXB;
@@ -8774,7 +8918,7 @@ dxOnPageReady(initHomepageHeroMotion);
 			matches.forEach((route, i) => {
 				const option = document.createElement('li'); option.id = list.id + '-' + i; option.setAttribute('role', 'option'); option.setAttribute('aria-selected', 'false');
 				const button = document.createElement('button'); button.type = 'button'; button.tabIndex = -1;
-				const badge = document.createElement('strong'); badge.className = 'dxbus-lookup__route'; badge.dataset.type = /^N\d/i.test(route.name) ? 'night' : 'day'; badge.textContent = route.name;
+				const badge = document.createElement('strong'); badge.className = 'dxbus-lookup__route'; dxBusPaintDirectoryTile(badge, route.name);
 				const label = document.createElement('span'); label.textContent = /^N\d/i.test(route.name) ? 'Night bus dashboard' : 'Route dashboard';
 				const arrow = document.createElement('span'); arrow.textContent = '↗'; arrow.setAttribute('aria-hidden', 'true');
 				button.append(badge, label, arrow); button.addEventListener('click', () => openRoute(normalise(route.name))); option.append(button); list.append(option);
@@ -8783,7 +8927,12 @@ dxOnPageReady(initHomepageHeroMotion);
 			setStatus(matches.length ? `${matches.length} matching route${matches.length === 1 ? '' : 's'}. Use the arrow keys to choose.` : directory.length ? appRoot ? 'Checking this route and its archive automatically…' : 'No directory suggestions. Press Enter to check this route and its archive.' : 'Loading the route directory…');
 		};
 		const load = async () => {
-			try { directory = await getDirectory(); if (document.activeElement === input) { suggest(); scheduleAutomatic(); } }
+			try {
+				directory = await getDirectory();
+				dxBusRememberAllDayRoutes(directory);
+				recents?.querySelectorAll('[data-route-tile]').forEach((tile) => dxBusPaintDirectoryTile(tile, tile.dataset.routeTile));
+				if (document.activeElement === input) { suggest(); scheduleAutomatic(); }
+			}
 			catch { setStatus('Suggestions are unavailable. Checking your route directly.', true); scheduleAutomatic(); }
 		};
 		input.addEventListener('focus', () => { if (!directory.length) load(); else suggest(); });
@@ -8820,7 +8969,7 @@ dxOnPageReady(initHomepageHeroMotion);
 		const recents = root.querySelector('[data-dxbus-recent],#dxbus-lookup-recent');
 		if (recents) {
 			recents.replaceChildren(); recents.hidden = !recentRoutes().length;
-			recentRoutes().forEach((route) => { const link = document.createElement('a'); link.href = destination(route); link.textContent = route; link.className = 'dxbus-lookup__recent-route'; link.dataset.type = /^N\d/.test(route) ? 'night' : 'day'; recents.append(link); });
+			recentRoutes().forEach((route) => { const link = document.createElement('a'); link.href = destination(route); link.className = 'dxbus-lookup__recent-route'; link.dataset.routeTile = route; dxBusPaintDirectoryTile(link, route); recents.append(link); });
 		}
 		if (root.id === 'dxbus-lookup') load();
 	});
@@ -8934,12 +9083,27 @@ window.dxInitBusGallery = (root) => {
 		cutoff.setHours(0, 0, 0, 0);
 		let old = $("#dxb-old-photo");
 		if (!old) {
-			old = text("span", "◷ Old Photo");
+			old = text("span", "");
+			old.append(text('span', '◷', 'dx-media-pill-icon'), document.createTextNode(' Old Photo'));
+			const tip = text('span', '', 'dx-photo-age-tooltip');
+			tip.id = 'dxb-photo-age-tooltip';
+			tip.setAttribute('role', 'tooltip');
+			old.append(tip);
+			old.setAttribute('aria-describedby', tip.id);
 			old.id = "dxb-old-photo";
 			$("#dxb-bad-photo").after(old);
 		}
 		old.hidden = !(Number.isFinite(captured.getTime()) && captured < cutoff);
-		old.title = "Photographed more than five calendar years ago.";
+		if (!old.hidden) {
+			const now = new Date();
+			let months = (now.getFullYear() - captured.getFullYear()) * 12 + now.getMonth() - captured.getMonth();
+			if (now.getDate() < captured.getDate()) months--;
+			const years = Math.floor(months / 12);
+			old.tabIndex = 0;
+			old.dataset.photoAge = `Taken ${years} year${years === 1 ? '' : 's'} and ${months % 12} month${months % 12 === 1 ? '' : 's'} ago`;
+			old.removeAttribute('title');
+			old.querySelector('.dx-photo-age-tooltip').textContent = old.dataset.photoAge;
+		}
 
 		Object.entries(p.technical || {}).forEach(([label, value]) => {
 			if (label !== "gps") {
@@ -9083,6 +9247,7 @@ window.dxInitBusGallery = (root) => {
 	const root = document.querySelector(".dxbus-app,.dxb");
 	if (!root || !window.DXB) return;
 	const app = root.matches('.dxbus-app');
+
 	// Parallax only translates the decorative image; text, layout and tab loading stay native.
 	function initBusPresentation() {
 		const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -9186,6 +9351,54 @@ window.dxInitBusGallery = (root) => {
 	const input = $("#dxb-route-input"),
 		status = $("#dxb-status"),
 		result = $("#dxb-result");
+	let routePresentation = null, routePresentationTimer = 0;
+	function refreshRoutePresentation() {
+		clearTimeout(routePresentationTimer);
+		if (!routePresentation) return;
+		const { canonicalName, baseType, allDay, baseLabel } = routePresentation;
+		const display = dxBusRouteDisplay(canonicalName, baseType, allDay);
+		const number = $('#dxb-route-number');
+		if (number) {
+			dxBusPaintRouteTile(number, display);
+			if (number.dataset.serviceType !== display.type) number.dataset.serviceType = display.type;
+			number.dataset.spacing = routeSpacing(display.name);
+		}
+		root.dataset.serviceType = display.type;
+		root.dataset.routeTheme = display.type === 'night' ? 'night' : 'day';
+		input.dataset.serviceType = display.type;
+		const label = $('#dxb-route-type');
+		const serviceLabel = display.overnight ? '24-hour bus' : baseLabel;
+		if (label && label.textContent !== serviceLabel) label.textContent = serviceLabel;
+		const eyebrow = $('.dxbus-route-identity .dxbus-eyebrow');
+		const headingLabel = display.overnight ? '24 HOUR BUS' : display.type === 'night' ? 'NIGHT BUS' : 'LONDON BUS ROUTE';
+		if (eyebrow && eyebrow.textContent !== headingLabel) eyebrow.textContent = headingLabel;
+		$$('.dxb-recent [data-route], [data-route-tile]').forEach((tile) => dxBusPaintDirectoryTile(tile, tile.dataset.routeTile || tile.dataset.route));
+		if (canonicalName === '102') {
+			const title = $('[data-dxbus-route-title]');
+			if (title && display.overnight) title.textContent = dxBusOvernight102Title;
+			if (current?.id === '102' && !current.archive && Boolean(current.overnightShort) !== display.overnight) search(canonicalName, current.direction, true);
+		}
+		// Re-check at the next minute, including either edge of the overnight window.
+		if (!document.hidden) routePresentationTimer = setTimeout(refreshRoutePresentation, 60000 - Date.now() % 60000 + 20);
+	}
+	function setRoutePresentation(data, profile = {}) {
+		const canonicalName = String(data?.name || '').trim().toUpperCase();
+		if (!canonicalName) return;
+		const catalogAllDay = app && root.dataset.route?.toUpperCase() === canonicalName && root.dataset.routeAllDay === 'true';
+		const type = profile.badgeType || data.serviceType || 'regular';
+		const allDay = Boolean(catalogAllDay || profile.allDay || data.serviceType === '24hour' || type === '24hour' || dxBusAllDayRoutes.has(canonicalName));
+		if (allDay) dxBusAllDayRoutes.add(canonicalName);
+		routePresentation = {
+			canonicalName,
+			baseType: type === 'regular' && allDay ? '24hour' : type,
+			allDay,
+			baseLabel: $('#dxb-route-type')?.textContent || 'London bus route',
+		};
+		refreshRoutePresentation();
+	}
+	document.addEventListener('visibilitychange', refreshRoutePresentation);
+	addEventListener('pageshow', refreshRoutePresentation);
+	addEventListener('pagehide', () => clearTimeout(routePresentationTimer));
 	const initialPhoto = {
 		src: $("#dxb-route-photo")?.src || "",
 		alt: $("#dxb-route-photo")?.alt || "",
@@ -9221,7 +9434,12 @@ window.dxInitBusGallery = (root) => {
 		svg.append(path);
 		return svg;
 	};
-	const doubleDeckerArtwork = () => '<svg viewBox="0 0 100 104" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" data-bus-illustration="double-decker"><rect x="20" y="6" width="60" height="84" rx="5"/><rect x="27" y="13" width="46" height="8" rx="1"/><rect x="27" y="28" width="46" height="22" rx="2"/><path d="M50 28v22M20 55h60"/><rect x="27" y="61" width="46" height="15" rx="2"/><path d="M50 61v15M29 83h8m26 0h8M26 90v7h9v-7m30 0v7h9v-7M13 101h74"/></svg>';
+	const doubleDeckerArtwork = () => `<svg viewBox="0 0 100 104" fill="currentColor" focusable="false" data-bus-illustration="double-decker">
+		<path fill-rule="evenodd" d="M21 5Q50 1 79 5Q87 6 87 13V92Q87 97 82 97H18Q13 97 13 92V13Q13 6 21 5ZM23 11Q17 11 17 17V31Q17 34 21 34H79Q83 34 83 31V17Q83 11 77 11ZM27 38Q25 38 25 40V44Q25 46 27 46H73Q75 46 75 44V40Q75 38 73 38ZM21 50Q17 50 17 54V75Q17 79 22 80Q50 83 78 80Q83 79 83 75V54Q83 50 79 50ZM17 85V89Q17 91 20 92L30 93L29 89Q28 87 25 87ZM83 85L75 87Q72 87 71 89L70 93L80 92Q83 91 83 89ZM42 92V95H58V92Z"/>
+		<path d="M17 94H28V101Q28 103 26 103H19Q17 103 17 101ZM72 94H83V101Q83 103 81 103H74Q72 103 72 101Z"/>
+		<path d="M13 55H8Q5 55 5 58V63M87 55H92Q95 55 95 58V63" fill="none" stroke="currentColor" stroke-width="2"/>
+		<rect x="2" y="60" width="7" height="13" rx="2"/><rect x="91" y="60" width="7" height="13" rx="2"/>
+	</svg>`;
 	const setPinLabel = (button, label) => {
 		button.replaceChildren(pinIcon(), document.createTextNode(label));
 	};
@@ -9264,6 +9482,7 @@ window.dxInitBusGallery = (root) => {
 			b.type = "button";
 			b.dataset.route = route;
 			b.dataset.spacing = routeSpacing(route);
+			dxBusPaintDirectoryTile(b, route);
 			b.setAttribute("aria-pressed", String(current?.name === route));
 			recentBox.append(b);
 		});
@@ -9417,11 +9636,8 @@ window.dxInitBusGallery = (root) => {
 			live.sort((a, b) => Date.parse(a.expected) - Date.parse(b.expected));
 			const badge = (route) => {
 				const el = text("span", route, "dx-route-badge");
-				el.dataset.type = /^N/i.test(route)
-					? "night"
-					: /^SL/i.test(route)
-					? "superloop"
-					: "day";
+				el.dataset.routeTile = route;
+				dxBusPaintDirectoryTile(el, route);
 				return el;
 			};
 			if (live.length) {
@@ -9634,7 +9850,12 @@ window.dxInitBusGallery = (root) => {
 			const identity = text("header", "", "dxb-fleet-identity");
 			const model = text("h3", "");
 			setValue(model, vehicle.model || "Model unconfirmed", loadDetails);
-			identity.append(model);
+			const modelRow = text('div', '', 'dxbus-fleet-model-row');
+			modelRow.append(model);
+			const classification = entry => ({single:'Single decker', double:'Double decker'}[(['single','double'].includes(entry.deck) ? entry.deck : deckType(entry.type))] || 'Deck type unconfirmed');
+			const deck = type === 'all' ? text('strong', classification(vehicle)) : null;
+			if (deck) modelRow.append(deck);
+			identity.append(modelRow);
 			const identifiers = text("div", "", type === "vehicle" ? "dxbus-vehicle-parameters" : "dxb-fleet-identifiers");
 			identifiers.append(vehicleField("Registration", formatRegistration(vehicle.registration)));
 			const parameters = [["Fleet number", (v) => v.fleet || "Unconfirmed"]];
@@ -9707,6 +9928,7 @@ window.dxInitBusGallery = (root) => {
 					if (!dialog.open) return;
 					setValue(model, details ? details.model || "Model unconfirmed" : "Model temporarily unavailable");
 					parameterValues.forEach(([value, read]) => setValue(value, details ? read(details) : "Temporarily unavailable"));
+					if (deck && details) deck.textContent = classification(details.type ? details : vehicle);
 					if (!vehicle.source) appendSource(details?.source);
 					identity.removeAttribute("aria-busy");
 				});
@@ -10171,7 +10393,7 @@ window.dxInitBusGallery = (root) => {
 			error.code = data.code;
 			throw error;
 		}
-		return data;
+		return dxBusOvernight102Response(path, data);
 	}
 	function announce(message, error = false) {
 		status.textContent = message;
@@ -10213,6 +10435,58 @@ window.dxInitBusGallery = (root) => {
 		});
 		if (former && ["arrivals", "line"].includes(tab)) activateTab("overview");
 	}
+	let pinnedMap, pinnedLayer, pinnedTimer;
+	let pinnedMapRequest = 0;
+	async function refreshPinnedMap() {
+		clearTimeout(pinnedTimer);
+		const host = $('#dxbus-pinned-map');
+		if (!host || host.hidden || tab !== 'pinned' || document.hidden) return;
+		const revision = ++pinnedMapRequest;
+		const status = $('#dxbus-pinned-map-status');
+		const registrations = [...marked];
+		try {
+			const L = await ensureRouteMap();
+			const points = await Promise.allSettled(registrations.map(async registration => {
+				const data = await request(`vehicle/${encodeURIComponent(registration)}/arrivals`);
+				const next = data.arrivals.find(arrival => arrival.stopId && Date.parse(arrival.expected) > Date.now() - 15000);
+				if (!next || !/^[A-Z0-9]{1,6}$/i.test(next.route)) return null;
+				const sequences = await Promise.allSettled(['inbound','outbound'].map(direction => request(`route/${encodeURIComponent(next.route)}?direction=${direction}`)));
+				const stop = sequences.flatMap(sequence => sequence.value?.stops || []).find(stop => stop.id === next.stopId);
+				if (stop?.lat == null || stop.lon == null || !Number.isFinite(+stop.lat) || !Number.isFinite(+stop.lon)) return null;
+				return {position:[+stop.lat,+stop.lon], bus:{...next, registration}, stop};
+			}));
+			if (revision !== pinnedMapRequest || tab !== 'pinned' || host.hidden) return;
+			const firstDraw = !pinnedMap;
+			if (firstDraw) {
+				pinnedMap = L.map(host, {scrollWheelZoom:false}).setView([51.5074,-.1278], 11);
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(pinnedMap);
+				pinnedLayer = L.layerGroup().addTo(pinnedMap);
+			}
+			pinnedLayer.clearLayers();
+			const available = points.flatMap(point => point.value ? [point.value] : []);
+			available.forEach(({position,bus,stop}) => addRouteBusMarker(L, pinnedLayer, position, bus, stop, true));
+			pinnedMap.invalidateSize();
+			if ((firstDraw || !host.dataset.hasPins) && available.length) pinnedMap.fitBounds(available.map(point => point.position), {padding:[25,25],maxZoom:14});
+			host.dataset.hasPins = available.length ? 'true' : '';
+			status.textContent = `${available.length} of ${registrations.length} pinned buses plotted at their next predicted stop.`;
+		} catch {
+			status.textContent = 'The pinned bus map is temporarily unavailable.';
+		} finally {
+			if (revision === pinnedMapRequest && tab === 'pinned' && !host.hidden) pinnedTimer = setTimeout(refreshPinnedMap, 30000);
+		}
+	}
+	if (app) {
+		$$('[data-pinned-mode]').forEach(button => button.addEventListener('click', () => {
+			const map = button.dataset.pinnedMode === 'map';
+			$('#dxbus-pinned-map').hidden = !map;
+			$('#dxbus-pinned-map-status').hidden = !map;
+			$('#dxb-marked').parentElement.hidden = map;
+			$$('[data-pinned-mode]').forEach(control => control.setAttribute('aria-pressed', String(control === button)));
+			pinnedMapRequest++;
+			refreshPinnedMap();
+		}));
+		document.addEventListener('visibilitychange', refreshPinnedMap);
+	}
 	function activateTab(name, historyMode = "push") {
 		if (app) name = canonicalTab(name);
 		if ($(`[data-tab="${name}"]`)?.disabled) name = "overview";
@@ -10227,6 +10501,7 @@ window.dxInitBusGallery = (root) => {
 		$$("[role=tabpanel]").forEach(
 			(panel) => (panel.hidden = panel.id !== `panel-${name}`),
 		);
+		if (app) { pinnedMapRequest++; refreshPinnedMap(); }
 		stopArrivals();
 		if (app) {
 			root.dataset.view = viewNames[name] || 'overview';
@@ -10942,7 +11217,8 @@ window.dxInitBusGallery = (root) => {
 			profile.badgeType === "regular" && current.serviceType === "24hour"
 				? "24hour"
 				: profile.badgeType || current.serviceType || "regular";
-		$("#dxb-route-number").dataset.serviceType = type;
+		// Restore the canonical caption before adding profile details, even overnight.
+		if (routePresentation?.canonicalName === String(current.name).toUpperCase()) $('#dxb-route-type').textContent = routePresentation.baseLabel;
 		if (
 			(profile.allDay || current.serviceType === "24hour") &&
 			!$("#dxb-route-type").textContent.includes("24-hour")
@@ -10959,7 +11235,7 @@ window.dxInitBusGallery = (root) => {
 		if (labels[type]) $("#dxb-route-type").textContent = labels[type];
 		if (profile.listingNotes && current.archive)
 			$("#dxb-route-description").textContent = profile.listingNotes;
-		if (profile.workings?.length && !current.archive) {
+		if (profile.workings?.length && !current.archive && !current.overnightShort) {
 			const endpoints = $("#dxb-endpoints");
 			endpoints.replaceChildren();
 			const seen = new Set();
@@ -11005,6 +11281,7 @@ window.dxInitBusGallery = (root) => {
 				endpoints.append(detail);
 			}
 		}
+		setRoutePresentation(current, profile);
 	}
 	async function loadProfile(route, token) {
 		profileController?.abort();
@@ -11274,6 +11551,7 @@ window.dxInitBusGallery = (root) => {
 			: `From the wider archive · ${initialPhoto.caption}`;
 	}
 	async function search(value, direction = "inbound", preserveTab = false, transition = null) {
+		const initialDashboard = app && sequence === 0 && !transition;
 		clearTimeout(debounce);
 		controller?.abort();
 		stopArrivals();
@@ -11282,7 +11560,7 @@ window.dxInitBusGallery = (root) => {
 			route = value.trim().toUpperCase().replace(/\s+/g, "");
 		++heroToken;
 		$("#dxb-route-state").hidden = true;
-		result.hidden = true;
+		if (!initialDashboard) result.hidden = true;
 		current = null;
 		setRouteTabAvailability();
 		$("#dxb-arrivals").replaceChildren(
@@ -11304,7 +11582,7 @@ window.dxInitBusGallery = (root) => {
 		}
 		controller = new AbortController();
 		announce(`Finding route ${route}…`);
-        if (app && !transition) showAppRouteFeedback("loading", route);
+        if (app && !transition && !initialDashboard) showAppRouteFeedback("loading", route);
 		$("#routes").setAttribute("aria-busy", "true");
 		try {
 			const data = transition?.data || await request(
@@ -11316,7 +11594,6 @@ window.dxInitBusGallery = (root) => {
 			current = data;
 			delete root.dataset.directionCount;
 			$$(".is-single-direction").forEach((select) => select.classList.remove("is-single-direction"));
-			if (app) { root.dataset.serviceType = data.serviceType || "regular"; root.dataset.routeTheme = data.serviceType === "night" || /^N/i.test(data.name) ? "night" : "day"; }
 			setRouteTabAvailability(data.profile);
 			input.value = route;
 			remember(route);
@@ -11351,12 +11628,7 @@ window.dxInitBusGallery = (root) => {
 							directionSelect.disabled = true;
 						}
 					});
-			$("#dxb-route-number").textContent = data.name;
 			input.dataset.spacing = routeSpacing(data.name);
-			$("#dxb-route-number").dataset.spacing =
-				/^(?:[0-9]{1,3}|[A-Z][0-9]|[0-9][A-Z])$/i.test(data.name)
-					? "tight"
-					: "normal";
 			const serviceType =
 				data.serviceType ||
 				(/^N\d+$/.test(route)
@@ -11387,18 +11659,16 @@ window.dxInitBusGallery = (root) => {
 							"London bus route",
 							"Route directory information.",
 					  ];
-			$("#dxb-route-type").textContent = description[0];
+			$("#dxb-route-type").textContent = data.id === "10" && !data.archive ? "Live route" : description[0];
 			$("#dxb-route-description").textContent = description[1];
-			const number = $("#dxb-route-number");
-			number.dataset.serviceType = "regular";
-			input.dataset.serviceType = serviceType;
+			setRoutePresentation(data, data.profile || {});
 			const stops = data.stops || [];
 			const endpoints = $("#dxb-endpoints");
 			endpoints.replaceChildren();
 			const branches = [...new Set(data.branches?.filter(Boolean) || [])];
 			const routeTitle = app && $('[data-dxbus-route-title]');
 			if (routeTitle) {
-				routeTitle.textContent = routeTitle.dataset.dxbusRouteTitle || branches[0] ||
+				routeTitle.textContent = (data.overnightShort ? dxBusOvernight102Title : routeTitle.dataset.dxbusRouteTitle) || branches[0] ||
 					(stops.length ? `${stops[0].name} ↔ ${stops.at(-1).name}` : `Route ${data.name}`);
 			}
 			if (!branches.length)
@@ -11439,11 +11709,6 @@ window.dxInitBusGallery = (root) => {
 				activateTab(preserveTab ? tab : requestedTab(), 'replace');
 				loadAppOverviewUpdates(route, token); startAppPolling();
 			} else activateTab(preserveTab ? tab : "overview");
-			// Commit the neutral colour before beginning the gradual transition.
-			void number.offsetWidth;
-			requestAnimationFrame(() => {
-				if (token === sequence) number.dataset.serviceType = serviceType;
-			});
 			announce(
 				`Route ${route} · ${
 					data.archive
@@ -11459,6 +11724,7 @@ window.dxInitBusGallery = (root) => {
 			if (error.name !== "AbortError" && token === sequence) {
 				setHero(null);
 				announce(error.message, true);
+				result.hidden = true;
 				const state = $("#dxb-route-state");
 				state.replaceChildren(
 					text(
@@ -11801,7 +12067,8 @@ window.dxInitBusGallery = (root) => {
 		$('#dxb-comment-form button').disabled = false;
 		$('#dxbus-updates-content')?.replaceChildren();
 		$$('dialog[open]').forEach((dialog) => dialog.close());
-		root.dataset.route = config.route; root.dataset.serviceType = page.querySelector('.dxbus-app').dataset.serviceType;
+		root.dataset.route = config.route;
+		root.dataset.routeAllDay = page.querySelector('.dxbus-app').dataset.routeAllDay || 'false';
 		Object.assign(DXB, config); document.title = page.title;
 		appMaps.forEach(({ map }) => map.remove()); appMaps.clear();
 		latestRoutePositions = null; latestRunning = null; appDirections = {}; appRouteSequences = [];
@@ -11988,6 +12255,13 @@ window.dxInitBusGallery = (root) => {
 			const item = text('li', '', 'dxbus-stop-row');
 			const button = text('button', stop.name, 'dxbus-stop-select'); button.type = 'button'; button.addEventListener('click', () => selectAppStop(stop.id));
 			item.append(text('small', String(index + 1).padStart(2, '0')), button);
+			const buses = latestRoutePositions?.vehicles.filter(bus => bus.stopId === stop.id) || [];
+			buses.forEach(bus => {
+				const vehicle = text('button', formatRegistration(bus.registration), 'dxbus-vehicle-select');
+				vehicle.type = 'button';
+				vehicle.addEventListener('click', () => openAppVehicle(bus.registration, bus));
+				item.append(vehicle);
+			});
 			list.append(item);
 		});
 		host.append(list);
@@ -12008,6 +12282,29 @@ window.dxInitBusGallery = (root) => {
 				script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; document.head.append(script);
 			}
 		}).catch((error) => { leafletReady = null; throw error; });
+	}
+	function addRouteBusMarker(L, layer, position, bus, stop, showRoute = false) {
+		const marker = L.marker(position, { icon: L.divIcon({ className: 'dxbus-map-bus' + (marked.includes(dxBusRegistration(bus.registration)) ? ' is-pinned' : ''), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="17" rx="3"/><path d="M5 10h14M8 20v2m8-2v2M8 15h1m6 0h1"/></svg>', iconSize: [28, 28], iconAnchor: [14, 14] }), title: `${formatRegistration(bus.registration)} · next predicted stop ${stop.name}, not GPS`, keyboard: true }).addTo(layer);
+		if (showRoute && bus.route) {
+			const label = text('span', bus.route, 'dxbus-map-marker-route');
+			label.setAttribute('aria-hidden', 'true');
+			marker.getElement()?.append(label);
+		}
+		const tip = text('div', '', 'dxbus-map-bus-tooltip__body');
+                const model = text('span', 'Checking make and model…');
+                const pinnedBadge = text('span', 'PINNED', 'dxbus-map-pinned-badge');
+                pinnedBadge.hidden = !marked.includes(dxBusRegistration(bus.registration));
+                tip.append(pinnedBadge, text('strong', formatRegistration(bus.registration)), model, text('span', 'Route ' + (bus.route || current.name) + (bus.destination ? ' · ' + bus.destination : '')), text('small', 'Next predicted stop: ' + stop.name + ' · not GPS'));
+                dxBusAnimateMapTooltip(marker);
+                marker.bindTooltip(tip, { className: 'dxbus-map-bus-tooltip', direction: 'top', opacity: 1 });
+
+                getVehicle(bus.registration).then(vehicle => {
+                    if (!layer.hasLayer(marker)) return;
+                    model.textContent = vehicle.model || 'Make and model unconfirmed';
+                    marker.getElement()?.setAttribute('aria-label', formatRegistration(bus.registration) + ' · ' + model.textContent + ' · next predicted stop ' + stop.name);
+                }).catch(() => { model.textContent = 'Make and model unavailable'; });
+                marker.on('click', () => openAppVehicle(bus.registration, bus));
+		return { marker, registration: bus.registration, badge: pinnedBadge };
 	}
 	async function renderRouteMap(host, routeData = current, positions = latestRoutePositions) {
 		if (!host || !routeData || host.hidden) return;
@@ -12044,21 +12341,7 @@ window.dxInitBusGallery = (root) => {
 				if (bus.direction && bus.direction !== routeData.direction) return;
 				const stop = stops.find((item) => item.id === bus.stopId);
 				if (!stop || Date.parse(bus.expected) < Date.now() - 15000) return;
-				const marker = L.marker([Number(stop.lat), Number(stop.lon)], { icon: L.divIcon({ className: 'dxbus-map-bus' + (marked.includes(dxBusRegistration(bus.registration)) ? ' is-pinned' : ''), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="17" rx="3"/><path d="M5 10h14M8 20v2m8-2v2M8 15h1m6 0h1"/></svg>', iconSize: [28, 28], iconAnchor: [14, 14] }), title: `${formatRegistration(bus.registration)} · next predicted stop ${stop.name}, not GPS`, keyboard: true }).addTo(state.buses);
-				const tip = text('div', '', 'dxbus-map-bus-tooltip__body');
-                const model = text('span', 'Checking make and model…');
-                const pinnedBadge = text('span', 'PINNED', 'dxbus-map-pinned-badge');
-                pinnedBadge.hidden = !marked.includes(dxBusRegistration(bus.registration));
-                tip.append(pinnedBadge, text('strong', formatRegistration(bus.registration)), model, text('span', 'Route ' + (bus.route || current.name) + (bus.destination ? ' · ' + bus.destination : '')), text('small', 'Next predicted stop: ' + stop.name + ' · not GPS'));
-                dxBusAnimateMapTooltip(marker);
-                marker.bindTooltip(tip, { className: 'dxbus-map-bus-tooltip', direction: 'top', opacity: 1 });
-                state.pinMarkers.push({ marker, registration: bus.registration, badge: pinnedBadge });
-                getVehicle(bus.registration).then(vehicle => {
-                    if (token !== sequence || !state.buses.hasLayer(marker)) return;
-                    model.textContent = vehicle.model || 'Make and model unconfirmed';
-                    marker.getElement()?.setAttribute('aria-label', formatRegistration(bus.registration) + ' · ' + model.textContent + ' · next predicted stop ' + stop.name);
-                }).catch(() => { model.textContent = 'Make and model unavailable'; });
-                marker.on('click', () => openAppVehicle(bus.registration, bus));
+				state.pinMarkers.push(addRouteBusMarker(L, state.buses, [Number(stop.lat), Number(stop.lon)], bus, stop));
 			});
 			requestAnimationFrame(() => state.map.invalidateSize());
 		} catch { if (!appMaps.has(host)) host.replaceChildren(text('p', 'The map is temporarily unavailable. The stop list and live arrivals remain available.', 'dxbus-widget-empty')); }
@@ -12078,10 +12361,26 @@ window.dxInitBusGallery = (root) => {
 		appPollController?.abort(); appPollController = new AbortController();
 		const poll = ++appPollSequence, token = sequence, route = current.id;
 		setAppStat('refresh', '…'); setAppStatus('Updating TfL predictions…', 'loading');
+		const signal = appPollController.signal;
+		const id = encodeURIComponent(route);
+		// Both vehicle endpoints use the same upstream arrivals cache. Warm it
+		// with positions first so the count request cannot collide with its lock.
+		const positionsRequest = request('line-positions/' + id, signal).then(positions => {
+			if (poll !== appPollSequence || token !== sequence || current?.id !== route) return positions;
+			latestRoutePositions = positions;
+			renderOverviewArrivals();
+			renderOverviewStopList();
+			renderRouteMap($('#dxbus-overview-map'));
+			if (tab === 'line') loadLine();
+			return positions;
+		});
 		const feeds = await Promise.allSettled([
-			request('running/' + encodeURIComponent(route), appPollController.signal),
-			request('line-positions/' + encodeURIComponent(route), appPollController.signal),
-			request('status/' + encodeURIComponent(route), appPollController.signal),
+			positionsRequest.catch(() => {}).then(() => {
+				if (signal.aborted) return;
+				return request('running/' + id, signal);
+			}),
+			positionsRequest,
+			request('status/' + id, signal),
 		]);
 		if (poll !== appPollSequence || token !== sequence || current?.id !== route) return;
 		const [running, positions, service] = feeds;
@@ -12094,12 +12393,7 @@ window.dxInitBusGallery = (root) => {
 			if (!latestRunning) { ['total', 'single', 'double'].forEach((name) => setAppStat(name, '—', 'error')); }
 			else { ['total', 'single', 'double'].forEach((name) => { const node = $(`[data-dxbus-stat="${name}"]`); if (node) node.dataset.state = 'stale'; }); }
 		}
-		if (positions.status === 'fulfilled') {
-			latestRoutePositions = positions.value;
-			renderOverviewArrivals();
-			renderRouteMap($('#dxbus-overview-map'));
-			if (tab === 'line') loadLine();
-		} else {
+		if (positions.status === 'rejected') {
 			failures++;
 			if (!latestRoutePositions) renderOverviewArrivals();
 		}
@@ -12112,11 +12406,16 @@ window.dxInitBusGallery = (root) => {
 		const caption = $('#dxbus-overview-arrivals-note');
 		if (caption) caption.textContent = positions.status === 'rejected' && latestRoutePositions ? 'Saved predictions from the last successful refresh; arrival times may have changed.' : 'Next predicted stop for each vehicle · not a GPS position';
 		appPollFailures = failures ? appPollFailures + 1 : 0;
-		scheduleAppPoll(failures ? Math.min(120000, 30000 * (appPollFailures + 1)) : 30000);
+		scheduleAppPoll(failures ? Math.min(120000, 2000 * 2 ** Math.min(appPollFailures - 1, 6)) : 30000);
 	}
 	function startAppPolling() {
 		stopAppPolling(); latestRoutePositions = null; latestRunning = null; appPollFailures = 0;
 		if (!app) return;
+		if (current?.liveFeedPending) {
+			['total', 'single', 'double', 'refresh'].forEach(name => setAppStat(name, '—'));
+			setAppStatus('Route is in service. TfL predictions are currently unavailable.');
+			return;
+		}
 		if (current?.archive) { ['total', 'single', 'double', 'refresh'].forEach((name) => setAppStat(name, '—')); setAppStatus('Live predictions are unavailable for this archived route.'); renderOverviewArrivals(); renderServiceStatus(null); return; }
 		['total', 'single', 'double'].forEach((name) => setAppStat(name, '…', 'loading'));
 		refreshAppFeed();
@@ -12156,6 +12455,21 @@ window.dxInitBusGallery = (root) => {
         const addBadge = (label, source) => { const badge = source ? sourceLink(label, source) : text('span', label); badge.className = 'dxbus-trivia-badge'; host.append(badge); };
         if (profile.crossBoundary) addBadge('Cross-boundary route ↗', profile.crossBoundarySource);
         if (profile.record) addBadge('🏆 ' + profile.record + ' ↗', profile.recordSource);
+        if (profile.previousServices?.length) {
+            const archive = text('details', '', 'dxbus-previous-services');
+            archive.append(text('summary', 'Previous services using this number'));
+            profile.previousServices.forEach(service => {
+                const entry = text('div', '', 'dxbus-previous-service');
+                entry.append(text('strong', service.endpoints));
+                const dates = text('p', '', 'dxbus-route-tenure');
+                dxBusAppendHistory(dates, service.history);
+                entry.append(dates);
+                if (service.notes) entry.append(text('p', service.notes));
+                if (service.history.source) entry.append(sourceLink('Read route history ↗', service.history.source));
+                archive.append(entry);
+            });
+            host.append(archive);
+        }
         if (profile.badgeType === 'former') {
             const h = profile.history || {};
             const tenure = text('p', '', 'dxbus-route-tenure');
@@ -12167,15 +12481,18 @@ window.dxInitBusGallery = (root) => {
     function applyAppProfile(profile) {
         renderAppRouteTrivia(profile);
         dxBusServiceWarning($('.dxbus-hero'), profile);
-		root.dataset.serviceType = profile.badgeType || current?.serviceType || 'regular';
-		root.dataset.routeTheme = root.dataset.serviceType === 'night' || /^N\d/i.test(current?.name || '') ? 'night' : 'day';
 		const operator = $('[data-dxbus-operator]'), allocation = $('[data-dxbus-allocation]'), summary = $('#dxbus-route-summary');
 		if (operator) {
 			const operators = profile.operators?.length ? profile.operators.join(' / ') : 'Operator not confirmed';
 			const garages = Array.isArray(profile.garages) ? profile.garages.filter(Boolean) : [];
+			const address = garages.includes('Greenford (G)') ? 'Bus depot, Greenford Road, Greenford UB6 9AP' : '';
+			operator.toggleAttribute('tabindex', Boolean(address));
+			if (address) { operator.tabIndex = 0; operator.dataset.garageAddress = address; }
+			else delete operator.dataset.garageAddress;
 			operator.textContent = operators + (garages.length ? ` · ${garages.length === 1 ? 'Garage' : 'Garages'}: ${garages.join(' / ')}` : '');
 		}
-		if (allocation) allocation.textContent = profile.vehicle ? profile.vehicle + (deckType(profile.vehicle) ? ' (usually)' : '') : 'Vehicle allocation not confirmed';
+		if (allocation && $('#dxb-route-number')?.textContent === 'Y316') allocation.textContent = 'Double deckers (usually)';
+		else if (allocation) allocation.textContent = profile.vehicle ? profile.vehicle + (deckType(profile.vehicle) ? ' (usually)' : '') : 'Vehicle allocation not confirmed';
 		if (summary && !summary.textContent.trim()) summary.textContent = profile.listingNotes || `Route ${current?.name || ''} connects ${current?.branches?.[0] || 'the published stops below'}.${profile.operators?.length ? ` Operated by ${profile.operators.join(' / ')}.` : ''}`;
 	}
 	function initAppControls() {
@@ -12261,10 +12578,13 @@ window.dxInitBusGallery = (root) => {
 		window.addEventListener('pagehide', () => { cancelAppRouteRequest(); stopArrivals(); stopAppPolling(); appMaps.forEach(({ map }) => map.remove()); appMaps.clear(); });
 		const media = matchMedia('(min-width: 992px)'); media.addEventListener('change', (event) => { if (event.matches) closeMenu(false); });
 	}
+	if (app) setRoutePresentation({ name: DXB.route || root.dataset.route, serviceType: root.dataset.serviceType }, { badgeType: root.dataset.serviceType, allDay: root.dataset.routeAllDay === 'true' });
 	initAppControls();
 
-	const indexReady = request("routes")
+	request("routes")
 		.then((routes) => {
+			dxBusRememberAllDayRoutes(routes);
+			recentBox.querySelectorAll('[data-route]').forEach((tile) => dxBusPaintDirectoryTile(tile, tile.dataset.route));
 			const list = $("#dxb-route-options");
 			routes.forEach((route) =>
 				list.append(new Option(route.name, route.name)),
@@ -12272,9 +12592,7 @@ window.dxInitBusGallery = (root) => {
 		})
 		.catch(() => {});
 	const initialRoute = app ? DXB.route || root.dataset.route || "" : new URL(location.href).searchParams.get("route") || "";
-	indexReady.finally(() => {
-		if (sequence === 0 && initialRoute.trim() && !(app && DXB.error)) search(initialRoute, new URL(location.href).searchParams.get("direction") || "inbound");
-	});
+	if (initialRoute.trim() && !(app && DXB.error)) search(initialRoute, new URL(location.href).searchParams.get("direction") || "inbound");
 
 	const navLinks = $$(".dxb-nav a");
 	let scrollScheduled = false;
@@ -12694,7 +13012,7 @@ dxOnPageReady(() => {
 						enquiry.querySelector("[name=service]:checked")?.value ===
 						"photography",
 					budget = enquiry.querySelector("[name=budget]");
-				if (delivery) delivery.closest(".photo-delivery-field").hidden = !photo;
+				enquiry.querySelectorAll(".photo-delivery-field").forEach(field => { field.hidden = !photo; });
 				if (budget) {
 					if (photo)
 						budget.value =
@@ -12860,7 +13178,7 @@ dxOnPageReady(() => {
 		};
 		const play = button('dxf-video-controls__play', 'Play training video', playPath);
 		const time = document.createElement('output'); time.className = 'dxf-video-controls__time'; time.setAttribute('aria-label', 'Video time');
-		const seek = document.createElement('input'); seek.type = 'range'; seek.min = '0'; seek.max = '100'; seek.step = '.1'; seek.value = '0'; seek.disabled = true;
+		const seek = document.createElement('input'); seek.type = 'range'; seek.min = '0'; seek.max = '100'; seek.step = '.001'; seek.value = '0'; seek.disabled = true;
 		seek.className = 'dxf-video-controls__seek'; seek.setAttribute('aria-label', 'Seek training video'); seek.setAttribute('aria-controls', video.id);
 		const mute = button('dxf-video-controls__mute', 'Mute training video', 'M3 9v6h4l5 4V5L7 9H3zm12-2v2a4 4 0 0 1 0 6v2a6 6 0 0 0 0-10zm3-3v2a8 8 0 0 1 0 12v2a10 10 0 0 0 0-16z');
 		const fullscreen = button('dxf-video-controls__fullscreen', 'Enter fullscreen', 'M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z');
@@ -12912,7 +13230,15 @@ dxOnPageReady(() => {
 		document.addEventListener('fullscreenchange', syncFullscreen);
 		document.addEventListener('webkitfullscreenchange', syncFullscreen);
 		['play','playing','pause','ended','emptied','volumechange'].forEach(event => video.addEventListener(event, syncControl));
-		['timeupdate','loadedmetadata','durationchange'].forEach(event => video.addEventListener(event, syncTime));
+		let progressFrame = 0;
+		const paintProgress = () => {
+			syncTime();
+			progressFrame = video.paused || video.ended || nativeFallback ? 0 : requestAnimationFrame(paintProgress);
+		};
+		video.addEventListener('playing', () => {
+			if (!progressFrame && !nativeFallback) progressFrame = requestAnimationFrame(paintProgress);
+		});
+		['timeupdate', 'loadedmetadata', 'durationchange', 'seeked'].forEach(event => video.addEventListener(event, syncTime));
 		video.addEventListener('loadeddata', () => frame.classList.add('is-ready'));
 		video.addEventListener('error', () => {
 			nativeFallback = true; video.controls = true; bar.hidden = true; control.hidden = true;
@@ -12945,7 +13271,7 @@ dxOnPageReady(() => {
 	const promo = document.querySelector(".dx-photo-promo"),
 		config = document.getElementById("dx-promo-images");
 	if (promo && config) {
-		const urls = JSON.parse(config.textContent).filter(Boolean),
+		const urls = [...new Set(JSON.parse(config.textContent).filter(Boolean).map(url => new URL(url, document.baseURI).href))],
 			original = promo.querySelector(".dx-parallax-art");
 		if (urls.length > 1 && original) {
 			const layers = [0, 1].map(() => {
@@ -12960,15 +13286,21 @@ dxOnPageReady(() => {
 				last = original.src,
 				active = 0,
 				paused = motion.matches,
-				busy = false;
+				busy = false,
+				timer;
+			const schedule = () => {
+				clearTimeout(timer);
+				if (!paused && !document.hidden && !busy) timer = setTimeout(change, 5500);
+			};
 			const next = () => {
+				// A failed or interrupted load can leave the current image next in the queue.
+				if (queue.at(-1) === last) queue.pop();
 				if (!queue.length) {
-					queue = urls.slice();
+					queue = urls.filter(url => url !== last);
 					for (let i = queue.length - 1; i > 0; i--) {
 						const j = Math.floor(Math.random() * (i + 1));
 						[queue[i], queue[j]] = [queue[j], queue[i]];
 					}
-					if (queue[queue.length - 1] === last) queue.unshift(queue.pop());
 				}
 				return queue.pop();
 			};
@@ -12980,7 +13312,7 @@ dxOnPageReady(() => {
 				img.src = url;
 				try {
 					await img.decode();
-					if (paused) return;
+					if (paused || document.hidden) return;
 					img.classList.add("is-active");
 					layers[1 - active].classList.remove("is-active");
 					original.style.opacity = "0";
@@ -12989,6 +13321,7 @@ dxOnPageReady(() => {
 				} catch (e) {
 				} finally {
 					busy = false;
+					schedule();
 				}
 			};
 			const button = document.createElement("button");
@@ -13002,21 +13335,24 @@ dxOnPageReady(() => {
 			button.addEventListener("click", () => {
 				paused = !paused;
 				label();
+				clearTimeout(timer);
 				if (!paused) change();
 			});
 			promo.append(button);
 			motion.addEventListener("change", (e) => {
 				paused = e.matches;
 				label();
+				schedule();
 			});
-			setInterval(change, 5500);
+			document.addEventListener('visibilitychange', schedule);
 			change();
 		}
 	}
 	const selector =
 		".dxb-gallery img,.dxb-gallery video,.dxf-media-grid img,.dxf-media-grid video,.wp-block-gallery img,.wp-block-gallery video,.dxf-media-dialog img,#dxb-lightbox img,#dxb-lightbox video";
 	const seen = new WeakSet(),
-		visible = new WeakSet();
+		visible = new WeakSet(),
+		revealedSources = new WeakMap();
 	const reveal = (media) => {
 		const ready =
 			media.tagName === "VIDEO"
@@ -13028,6 +13364,7 @@ dxOnPageReady(() => {
 			!media.classList.contains("dx-colour-pending")
 		)
 			return;
+		revealedSources.set(media, media.currentSrc || media.src);
 		media.classList.remove("dx-colour-pending");
 		media.classList.add("dx-colour-ready");
 		if (!motion.matches) {
@@ -13056,18 +13393,17 @@ dxOnPageReady(() => {
 		observer.observe(media);
 		media.addEventListener(
 			media.tagName === "VIDEO" ? "loadeddata" : "load",
-			() => reveal(media),
+			() => {
+				if (revealedSources.get(media) === (media.currentSrc || media.src)) return;
+				media.classList.remove("dx-colour-reveal", "dx-colour-ready");
+				media.classList.add("dx-colour-pending");
+				reveal(media);
+			},
 		);
 	};
 	document.querySelectorAll(selector).forEach(attach);
 	new MutationObserver((records) =>
 		records.forEach((record) => {
-			if (record.type === "attributes" && record.target.matches(selector)) {
-				const m = record.target;
-				m.classList.remove("dx-colour-reveal", "dx-colour-ready");
-				m.classList.add("dx-colour-pending");
-				reveal(m);
-			}
 			record.addedNodes.forEach((node) => {
 				if (node.nodeType !== 1) return;
 				if (node.matches(selector)) attach(node);
@@ -13077,8 +13413,6 @@ dxOnPageReady(() => {
 	).observe(document.querySelector("main") || document.body, {
 		childList: true,
 		subtree: true,
-		attributes: true,
-		attributeFilter: ["src", "srcset"],
 	});
 });
 
@@ -13088,13 +13422,18 @@ dxOnPageReady(() => {
 	if (motion.matches || !("IntersectionObserver" in window)) return;
 	const seen = new WeakSet();
 	const show = (section) => {
+		if (!section.classList.contains("dx-section-pending")) return;
 		section.classList.remove("dx-section-pending");
 		section.classList.add("dx-section-enter");
-		section.addEventListener(
-			"transitionend",
-			() => section.classList.remove("dx-section-enter"),
-			{ once: true },
-		);
+		const events = ["transitionend", "transitioncancel", "animationend", "animationcancel"];
+		const clear = (event) => {
+			if (event.target !== section) return;
+			if (event.type.startsWith("animation") && event.animationName !== "dx-section-enter") return;
+			if (event.type.startsWith("transition") && event.propertyName !== "opacity") return;
+			section.classList.remove("dx-section-enter");
+			events.forEach(type => section.removeEventListener(type, clear));
+		};
+		events.forEach(type => section.addEventListener(type, clear));
 	};
 	const observer = new IntersectionObserver(
 		(entries) =>
@@ -13109,6 +13448,9 @@ dxOnPageReady(() => {
 	const register = (section) => {
 		if (seen.has(section)) return;
 		seen.add(section);
+		// These components already reveal their own sections or content.
+		if (section.closest('.gym-review-editorial, .dx-contact-aside, .service-detail-enquiry, body.home .what-i-do') ||
+			section.matches('.dx-n118-waitlist .dx-n118-section, .service-detail .service-detail-section')) return;
 		if (section.getBoundingClientRect().top < innerHeight) return;
 		section.classList.add("dx-section-pending");
 		observer.observe(section);
@@ -13706,6 +14048,7 @@ document.addEventListener("click", (event) => {
 		"wheel",
 		(event) => {
 			if (
+				document.body.classList.contains("page-about") ||
 				event.defaultPrevented ||
 				!event.cancelable ||
 				event.ctrlKey ||
@@ -14815,7 +15158,12 @@ dxOnPageReady(() => {
 	const header = document.getElementById('header');
 	const railTitle = document.createElement('p');
 	railTitle.className = 'dx-review-rail-title';
-	railTitle.textContent = title?.textContent.trim() || '';
+	const name = document.createElement('span');
+	name.className = 'dx-rail-name';
+	const nameText = document.createElement('span');
+	nameText.textContent = title?.textContent.trim() || '';
+	name.append(nameText);
+	railTitle.append(name);
 	railTitle.setAttribute('aria-hidden', 'true');
 	const chain = document.createElement('span');
 	chain.className = 'dx-review-rail-chain';
@@ -14894,6 +15242,34 @@ dxOnPageReady(() => {
 	paint();
 });
 
+
+
+dxOnPageReady(() => {
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	const titles = document.querySelectorAll('.dx-review-rail-title .dx-rail-name, .dx-project-rail-title .dx-rail-name');
+	if (!titles.length) return;
+	const animations = new Map();
+	const update = (title) => {
+		const text = title.firstElementChild;
+		const overflow = Math.ceil(text.getBoundingClientRect().width - title.clientWidth);
+		const distance = !reducedMotion.matches && title.clientWidth > 0 ? Math.max(0, overflow) : 0;
+		if (animations.get(title)?.distance === distance) return;
+		animations.get(title)?.animation?.cancel();
+		const animation = distance ? text.animate([
+			{ translate: '0 0', offset: 0 },
+			{ translate: '0 0', offset: .16 },
+			{ translate: `-${distance}px 0`, offset: .84 },
+			{ translate: `-${distance}px 0`, offset: 1 },
+		], { duration: Math.max(3200, distance * 34), iterations: Infinity, direction: 'alternate', easing: 'linear' }) : null;
+		animations.set(title, { distance, animation });
+	};
+	const observer = new ResizeObserver(entries => entries.forEach(({ target }) => update(target.closest('.dx-rail-name'))));
+	titles.forEach((title) => {
+		observer.observe(title);
+		observer.observe(title.firstElementChild);
+	});
+	reducedMotion.addEventListener('change', () => titles.forEach(update));
+});
 
 // The waterfront is fixed to the viewport and revealed only beside the next steps.
 dxOnPageReady(() => {
@@ -15004,7 +15380,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			toggle?.focus();
 		}
 		if (event.key === 'Tab') {
-			const controls = [...sidebar.querySelectorAll('a[href], button:not([disabled])')].filter((item) => item.getClientRects().length);
+			const controls = [...sidebar.querySelectorAll('a[href], button:not([disabled]), summary')].filter((item) => item.getClientRects().length);
 			const first = controls[0];
 			const last = controls.at(-1);
 			if (event.shiftKey && document.activeElement === first) {
@@ -15069,7 +15445,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const query = (search?.value || '').toLowerCase().trim();
 		let visible = 0;
 		shell.querySelectorAll('[data-dxcp-ticket-status]').forEach((row) => {
-			const closed = ['resolved', 'cancelled'].includes(row.dataset.dxcpTicketStatus);
+			const closed = ['resolved', 'closed', 'cancelled'].includes(row.dataset.dxcpTicketStatus);
 			row.hidden = !(filter === 'all' || (filter === 'closed' ? closed : !closed)) || !(row.dataset.dxcpTicketTitle || '').toLowerCase().includes(query);
 			if (!row.hidden) visible++;
 		});
@@ -15807,3 +16183,317 @@ if (document.body && document.body.classList.contains("wp-admin")) {
  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
  else run();
 })();
+
+{
+	const selector = '.cv-industry';
+	const updateParts = ['.cv-hero__copy', '.cv-hero__foot', '#cv-profile', '#cv-experience', '#cv-expertise'];
+	let pending;
+	const updateIndustry = async (url, push) => {
+		const nav = document.querySelector(selector);
+		if (!nav) return;
+		pending?.abort();
+		const controller = new AbortController();
+		pending = controller;
+		nav.setAttribute('aria-busy', 'true');
+		try {
+			const response = await fetch(url, {signal:controller.signal});
+			if (!response.ok) throw new Error('CV unavailable');
+			const incoming = new DOMParser().parseFromString(await response.text(), 'text/html');
+			if (controller.signal.aborted) return;
+			const active = incoming.querySelector(`${selector} [aria-current]`);
+			const replacements = updateParts.map(part => [document.querySelector(part), incoming.querySelector(part)]);
+			if (!active || replacements.some(pair => pair.some(node => !node))) throw new Error('CV incomplete');
+			const offset = nav.getBoundingClientRect().top;
+			replacements.forEach(([previous, next]) => previous.replaceWith(next));
+			nav.querySelectorAll('a').forEach(link => {
+				if (link.href === new URL(active.getAttribute('href'), url).href) link.setAttribute('aria-current', 'true');
+				else link.removeAttribute('aria-current');
+			});
+			window.scrollBy({top:nav.getBoundingClientRect().top - offset, behavior:'instant'});
+			if (push) history.pushState(null, '', url);
+			if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				replacements.slice(2).forEach(([, next]) => next.animate([{opacity:.5},{opacity:1}], {duration:230}));
+			}
+		} catch (error) {
+			if (error.name !== 'AbortError') location.assign(url);
+		} finally {
+			if (pending === controller) nav.removeAttribute('aria-busy');
+		}
+	};
+	document.addEventListener('click', event => {
+		const link = event.target.closest(`${selector} a`);
+		if (!link || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		event.preventDefault();
+		if (!link.hasAttribute('aria-current') || pending && link.closest(selector).hasAttribute('aria-busy')) updateIndustry(link.href, true);
+	});
+	window.addEventListener('popstate', () => updateIndustry(location.href, false));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+	const hero = document.querySelector('.gym-review-hero__image');
+	if (hero && !reduce.matches) {
+		const reveal = () => hero.animate([{opacity:0},{opacity:1}], {duration:800,easing:'ease-out'});
+		if (hero.complete && hero.naturalWidth) reveal();
+		else hero.addEventListener('load', reveal, {once:true});
+	}
+	const fitness = document.querySelector('body.page-fitness .dxf-hero');
+	const script = document.querySelector('script[src*="/themes/dxndre/build/index.js"]');
+	if (fitness && script) {
+		const portrait = new Image();
+		portrait.className = 'dx-fitness-hero-portrait';
+		portrait.alt = '';
+		portrait.src = new URL('../assets/img/fitness-repaired.webp', script.src);
+		fitness.prepend(portrait);
+	}
+	if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+	const cursor = document.createElement('span');
+	cursor.className = 'dx-pointer';
+	cursor.setAttribute('aria-hidden', 'true');
+	document.body.append(cursor);
+	const clear = () => { cursor.hidden = true; document.documentElement.classList.remove('dx-pointer-active'); };
+	clear();
+	document.addEventListener('pointermove', event => {
+		if (event.pointerType !== 'mouse' || document.querySelector('dialog[open]') ||
+			event.target.closest('input, textarea, select, [contenteditable], iframe')) { clear(); return; }
+		cursor.style.translate = `${event.clientX}px ${event.clientY}px`;
+		cursor.dataset.state = event.target.closest(':disabled,[aria-disabled="true"]') ? 'disabled'
+			: event.buttons ? 'pressed' : event.target.closest('a[href],button,summary,[role="button"]') ? 'link' : 'normal';
+		cursor.hidden = false;
+		document.documentElement.classList.add('dx-pointer-active');
+	}, {passive:true});
+	document.addEventListener('pointerdown', () => { if (cursor.dataset.state !== 'disabled') cursor.dataset.state = 'pressed'; });
+	document.addEventListener('pointerup', () => { if (cursor.dataset.state === 'pressed') cursor.dataset.state = 'normal'; });
+	document.documentElement.addEventListener('pointerleave', clear);
+	window.addEventListener('blur', clear);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const buttons = [...document.querySelectorAll('[data-basket-service]')];
+	if (!buttons.length) return;
+	let basket = [];
+	const key = 'dx-service-basket';
+	try { const saved = JSON.parse(localStorage.getItem(key)); if (Array.isArray(saved)) basket = saved.filter(item => item && typeof item.slug === 'string' && typeof item.title === 'string'); } catch {}
+	const dialog = document.createElement('dialog');
+	dialog.className = 'dx-service-basket';
+	dialog.setAttribute('aria-label', 'Service basket');
+	dialog.innerHTML = '<header><h2>Basket</h2><form method="dialog"><button autofocus>Close ×</button></form></header><ul></ul>';
+	document.body.append(dialog);
+	const opener = document.createElement('button');
+	opener.type = 'button';
+	opener.className = 'dx-basket-open';
+	document.body.append(opener);
+	const paint = () => {
+		opener.textContent = `Basket (${basket.length})`;
+		const list = dialog.querySelector('ul');
+		list.replaceChildren();
+		if (!basket.length) { const empty = document.createElement('li'); empty.textContent = 'Your basket is empty.'; list.append(empty); }
+		basket.forEach(({slug,title}) => {
+			const row = document.createElement('li');
+			const label = document.createElement('strong'); label.textContent = title;
+			const configure = document.createElement('a'); configure.textContent = 'Configure estimate ↗';
+			configure.href = '/pricing-calculator/?' + new URLSearchParams({basket_service:slug});
+			const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
+			remove.setAttribute('aria-label', 'Remove ' + title);
+			remove.addEventListener('click', () => { basket = basket.filter(item => item.slug !== slug); save(); dialog.querySelector('header button').focus(); });
+			row.append(label, configure, remove);
+			list.append(row);
+		});
+	};
+	const save = () => { try { localStorage.setItem(key, JSON.stringify(basket)); } catch {} paint(); };
+	opener.addEventListener('click', () => dialog.showModal());
+	buttons.forEach(button => button.addEventListener('click', () => {
+		const {basketService:slug,basketLabel:title} = button.dataset;
+		if (!basket.some(item => item.slug === slug)) { basket.push({slug,title}); save(); }
+		dialog.showModal();
+	}));
+	paint();
+});
+
+// DX. Command
+document.addEventListener('DOMContentLoaded', () => {
+	const dialog = document.getElementById('dx-command');
+	const launcher = document.getElementById('dx-command-open');
+	const index = document.getElementById('dx-command-index');
+	if (!dialog?.showModal || !launcher || !index) return;
+
+	const entries = JSON.parse(index.textContent);
+	const query = document.getElementById('dx-command-query');
+	const results = document.getElementById('dx-command-results');
+	const preview = dialog.querySelector('[data-command-preview]');
+	const status = dialog.querySelector('[data-command-status]');
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	const buses = entries.find(item => item.title === 'Buses');
+	let visible = [];
+	let active = 0;
+	let opener;
+	let closing = false;
+
+	const normalise = value => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+	const element = (tag, value) => {
+		const node = document.createElement(tag);
+		node.textContent = value;
+		return node;
+	};
+
+	const select = (position, scroll = false) => {
+		active = position;
+		const item = visible[active];
+		preview.replaceChildren();
+		[...results.children].forEach((row, index) => row.setAttribute('aria-selected', String(index === active)));
+		if (!item) {
+			query.removeAttribute('aria-activedescendant');
+			return;
+		}
+		const row = results.children[active];
+		query.setAttribute('aria-activedescendant', row.id);
+		if (scroll) row.scrollIntoView({ block: 'nearest' });
+		if (item.image) {
+			const image = element('img', '');
+			if (item.imageSrcset) {
+				image.sizes = '(min-width: 820px) 330px, (min-width: 768px) 40vw, 90vw';
+				image.srcset = item.imageSrcset;
+			}
+			image.src = item.image;
+			image.alt = '';
+			preview.append(image);
+		}
+		const details = element('div', '');
+		details.className = 'dx-command-preview-copy';
+		details.append(element('small', item.type), element('h3', item.title), element('p', item.description));
+		preview.append(details);
+		if (!reducedMotion.matches) {
+			preview.animate([{ opacity: .35 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+		}
+		if (item.tags && item.project) details.append(element('p', item.tags));
+		const link = element('a', item.project ? 'View case study' : 'Open destination');
+		link.href = item.url;
+		link.addEventListener('click', event => {
+			if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+			event.preventDefault();
+			openDestination(item);
+		});
+		details.append(link);
+		if (item.project && item.tags) {
+			const similar = element('button', 'Find similar projects');
+			similar.type = 'button';
+			similar.addEventListener('click', () => {
+				query.value = '@' + (item.similar || item.tags.split(' ')[0]);
+				render();
+				query.focus();
+			});
+			details.append(similar);
+		}
+	};
+
+	const openDestination = item => {
+		if (!item) return;
+		close(() => location.assign(item.url));
+	};
+
+	const render = () => {
+		const raw = normalise(query.value.trim());
+		const scope = raw[0];
+		const phrase = raw.replace(/^[>@/]\s*/, '');
+		const words = phrase.split(/\s+/).filter(Boolean);
+		visible = entries.map(item => {
+			if (scope === '>' && item.type !== 'Navigate') return null;
+			if (scope === '@' && !item.project) return null;
+			if (scope === '/' && item.type !== 'Navigate') return null;
+			const title = normalise(item.title);
+			const tags = normalise(item.tags || '');
+			const text = normalise([item.type, item.description].join(' '));
+			let score = 0;
+			for (const word of words) {
+				if (title.includes(word)) score += 5;
+				else if (tags.includes(word)) score += 3;
+				else if (text.includes(word)) score += 1;
+				else if (!/^(find|me|show|go|to|the|a|about|for)$/.test(word)) return null;
+			}
+			if (phrase && title === phrase) score += 12;
+			return { item, score };
+		}).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 12).map(result => result.item);
+
+		const route = phrase.match(/^(?:(?:find|show|open)\s+)?(?:(?:bus\s+)?route\s+|bus\s+)?((?:[a-z]{1,2})?\d{1,3})(?:\s+bus)?$/i)?.[1];
+		if (route && scope !== '@' && buses) {
+			const url = new URL(buses.url);
+			url.searchParams.set('route', route.toUpperCase());
+			visible.unshift({ title: 'Route ' + route.toUpperCase(), type: 'Buses', url: url.href, description: 'Open the route dashboard.' });
+		}
+
+		results.replaceChildren(...visible.map((item, index) => {
+			const row = element('li', '');
+			row.id = 'dx-command-option-' + index;
+			row.setAttribute('role', 'option');
+			row.append(element('strong', item.title), element('small', item.type));
+			row.addEventListener('pointermove', event => {
+				if (event.pointerType === 'mouse' && active !== index) select(index);
+			});
+			row.addEventListener('click', () => {
+				if (active === index) openDestination(item);
+				else select(index);
+			});
+			return row;
+		}));
+		status.textContent = visible.length ? visible.length + ' results' : 'No results. Try a project name or route number.';
+		select(0);
+	};
+
+	const open = () => {
+		if (dialog.open || document.querySelector('dialog[open]')) return;
+		opener = document.activeElement;
+		query.value = '';
+		dialog.showModal();
+		if (!reducedMotion.matches) {
+			dialog.animate([{ opacity: 0, translate: '0 8px' }, { opacity: 1, translate: '0 0' }], { duration: 240, easing: 'ease-out' });
+		}
+		render();
+		query.focus();
+	};
+
+	const close = async (afterClose) => {
+		if (!dialog.open || closing) return;
+		closing = true;
+		const opacity = getComputedStyle(dialog).opacity;
+		dialog.getAnimations().forEach(animation => animation.cancel());
+		dialog.classList.add('is-closing');
+		if (!reducedMotion.matches) {
+			const fade = dialog.animate([{ opacity }, { opacity: 0 }], { duration: 200, easing: 'ease-in', fill: 'forwards' });
+			await fade.finished.catch(() => {});
+			fade.cancel();
+		}
+		dialog.close();
+		dialog.classList.remove('is-closing');
+		closing = false;
+		afterClose?.();
+	};
+
+	launcher.hidden = false;
+	launcher.addEventListener('click', open);
+	dialog.querySelector('[data-command-close]').addEventListener('click', () => close());
+	dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
+	dialog.addEventListener('close', () => opener?.focus());
+	dialog.addEventListener('click', event => {
+		if (event.target === dialog) {
+			const bounds = dialog.getBoundingClientRect();
+			if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
+		}
+	});
+	query.addEventListener('input', render);
+	query.addEventListener('keydown', event => {
+		if (!visible.length || event.isComposing) return;
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			openDestination(visible[active]);
+		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			event.preventDefault();
+			select((active + (event.key === 'ArrowDown' ? 1 : -1) + visible.length) % visible.length, true);
+		}
+	});
+	document.addEventListener('keydown', event => {
+		if (event.defaultPrevented || event.isComposing || event.altKey || event.shiftKey || !(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return;
+		event.preventDefault();
+		if (dialog.open) close();
+		else open();
+	});
+});

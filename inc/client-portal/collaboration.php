@@ -26,7 +26,88 @@ function dxcp_ticket_service($record_id) {
 }
 
 function dxcp_ticket_statuses() {
-    return ['new' => 'New', 'open' => 'Open', 'acknowledged' => 'Acknowledged', 'in_progress' => 'In progress', 'waiting' => 'Waiting for you', 'resolved' => 'Resolved', 'cancelled' => 'Cancelled'];
+    return ['new' => 'New', 'open' => 'Open', 'acknowledged' => 'Acknowledged', 'in_progress' => 'In progress', 'waiting' => 'Waiting for you', 'pending' => 'Pending', 'resolved' => 'Resolved', 'closed' => 'Closed', 'reopened' => 'Reopened', 'cancelled' => 'Cancelled'];
+}
+
+function dxcp_ticket_is_closed($status) {
+    return in_array($status, ['resolved', 'closed', 'cancelled'], true);
+}
+
+function dxcp_ticket_client_id($post) {
+    $post = get_post($post);
+    if (!$post || $post->post_type !== 'ticket') return 0;
+    $client = get_post_meta($post->ID, 'ticket_client', true);
+    if (is_array($client)) $client = $client['ID'] ?? reset($client);
+    if (is_object($client)) $client = $client->ID ?? 0;
+    return absint($client) ?: absint($post->post_author);
+}
+
+function dxcp_ticket_reference($id) {
+    return sprintf('SUP-%05d', absint($id));
+}
+
+function dxcp_ticket_notify($event, $post, $occurrence, $audience = 'client', $detail = '') {
+    if (!function_exists('dxbs_notify')) return false;
+    $recipient = dxbs_notification_recipient('ticket', $post->ID, $audience, $post);
+    if (!$recipient) return false;
+    $link = $audience === 'owner' && function_exists('dxcp_business_url')
+        ? dxcp_business_url('support', ['ticket_id' => $post->ID])
+        : dxcp_record_url($post->ID);
+    return dxbs_notify($event, 'ticket', $post->ID, $event . '-' . $post->ID . '-' . $audience . '-' . $occurrence, $recipient, [
+        'audience' => $audience, 'name' => $post->post_title, 'detail' => $detail,
+        'reference' => dxcp_ticket_reference($post->ID), 'link' => $link,
+    ]);
+}
+
+function dxcp_ticket_publish_change($post, $event, $old_value, $new_value, $detail = '') {
+    if ((string) $old_value === (string) $new_value) return;
+    if (function_exists('dxbs_fin_audit')) dxbs_fin_audit($event, 'ticket', $post->ID);
+    $occurrence = wp_generate_uuid4();
+    $is_staff = dxcp_is_admin();
+    if ($event === 'ticket_assigned' && $new_value && (int) $new_value !== get_current_user_id()) {
+        dxcp_ticket_notify($event, $post, $occurrence, 'assignee');
+    }
+    dxcp_ticket_notify($event, $post, $occurrence, $is_staff ? 'client' : 'owner', $detail);
+}
+
+function dxcp_ticket_set_status($post, $status) {
+    $stored = get_post_meta($post->ID, 'ticket_status', true);
+    $previous = $stored ?: 'new';
+    if ($status === 'open' && dxcp_ticket_is_closed($previous)) $status = 'reopened';
+    if ($status === $previous) return true;
+    if (!update_post_meta($post->ID, 'ticket_status', $status, $stored)) {
+        return get_post_meta($post->ID, 'ticket_status', true) === $status;
+    }
+    update_post_meta($post->ID, 'ticket_last_updated', current_time('mysql'));
+    $event = match ($status) {
+        'resolved', 'closed' => 'ticket_resolved',
+        'reopened' => 'ticket_reopened',
+        default => 'ticket_status',
+    };
+    dxcp_ticket_publish_change($post, $event, $previous, $status, dxcp_ticket_status_label($status));
+    return true;
+}
+
+function dxcp_ticket_last_reply($ticket_id, $actor = null) {
+    $args = ['post_id' => $ticket_id, 'status' => 'approve', 'number' => 1, 'orderby' => ['comment_date_gmt' => 'DESC', 'comment_ID' => 'DESC'], 'type__in' => ['comment', 'dxcp_note', '']];
+    if ($actor !== null) $args['author__not_in'] = [(int) $actor];
+    $comments = get_comments($args);
+    return $comments[0] ?? null;
+}
+
+function dxcp_ticket_unread($ticket_id, $uid = 0) {
+    $uid = $uid ?: get_current_user_id();
+    if (!$uid || !dxcp_can_access($ticket_id, $uid)) return false;
+    $last = dxcp_ticket_last_reply($ticket_id, $uid);
+    $seen = (int) get_user_meta($uid, '_dxcp_ticket_seen_' . $ticket_id, true);
+    if ($last) return (int) $last->comment_ID > $seen;
+    return !$seen && dxcp_is_admin($uid) && dxcp_ticket_client_id($ticket_id) !== $uid;
+}
+
+function dxcp_ticket_mark_read($ticket_id) {
+    if (!dxcp_can_access($ticket_id)) return;
+    $last = dxcp_ticket_last_reply($ticket_id);
+    update_user_meta(get_current_user_id(), '_dxcp_ticket_seen_' . $ticket_id, $last ? (int) $last->comment_ID : -1);
 }
 
 function dxcp_task_status_label($status) {
@@ -106,7 +187,9 @@ function dxcp_record_attachments($record_id) {
 function dxcp_comments($record_id) {
     $post = dxcp_collaboration_record($record_id);
     if (!$post || !dxcp_can_access($post)) return [];
-    $comments = get_comments(['post_id' => $post->ID, 'status' => 'approve', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'number' => 0, 'type__in' => ['comment', 'dxcp_note', '']]);
+    $types = ['comment', 'dxcp_note', ''];
+    if ($post->post_type === 'ticket' && dxcp_is_admin()) $types[] = 'dxcp_internal_note';
+    $comments = get_comments(['post_id' => $post->ID, 'status' => 'approve', 'orderby' => ['comment_date_gmt' => 'ASC', 'comment_ID' => 'ASC'], 'number' => 0, 'type__in' => $types]);
     $result = [];
     foreach ($comments as $comment) {
         $author = $comment->user_id ? get_userdata($comment->user_id) : false;
@@ -124,6 +207,7 @@ function dxcp_comments($record_id) {
             'content' => wp_kses_post($comment->comment_content),
             'own' => (int) $comment->user_id === get_current_user_id(),
             'is_staff' => $author ? user_can($author, 'manage_options') : false,
+            'internal' => $comment->comment_type === 'dxcp_internal_note',
             'attachments' => $attachments,
         ];
     }
@@ -146,7 +230,7 @@ function dxcp_collaboration_project($project_id) {
     return $project;
 }
 
-function dxcp_collaboration_file($field, $record_id, $comment_id = 0) {
+function dxcp_collaboration_file($field, $record_id, $comment_id = 0, $internal = false) {
     if (empty($_FILES[$field]['name'])) return 0;
     $record = dxcp_collaboration_require($record_id);
     if (is_wp_error($record)) return $record;
@@ -155,9 +239,13 @@ function dxcp_collaboration_file($field, $record_id, $comment_id = 0) {
     if (is_wp_error($document_id)) return $document_id;
     update_post_meta($document_id, '_dxcp_parent_id', $record->ID);
     update_post_meta($document_id, '_dxcp_project_id', absint(get_post_meta($record->ID, '_dxcp_project_id', true)));
-    $client_id = absint(get_post_meta($record->ID, 'ticket_client', true)) ?: absint(get_post_meta($record->ID, '_dxcp_client_id', true)) ?: absint($record->post_author);
+    $client_id = $record->post_type === 'ticket' ? dxcp_ticket_client_id($record) : (absint(get_post_meta($record->ID, '_dxcp_client_id', true)) ?: (int) $record->post_author);
     update_post_meta($document_id, '_dxcp_client_id', $client_id);
     if ($comment_id) update_post_meta($document_id, '_dxcp_comment_id', absint($comment_id));
+    if ($internal && !update_post_meta($document_id, '_dxcp_internal_only', 1)) {
+        wp_delete_post($document_id, true);
+        return dxcp_collaboration_error('file_visibility', 'The private file could not be prepared. Try again.');
+    }
     $upload = dxcp_private_upload($field, $document_id);
     if (is_wp_error($upload)) {
         wp_delete_post($document_id, true);
@@ -169,16 +257,19 @@ function dxcp_collaboration_file($field, $record_id, $comment_id = 0) {
 /**
  * Mutation helpers return a value/WP_Error so authorization can be tested without HTTP exits.
  */
-function dxcp_add_comment($record_id, $message, $file_field = 'dxcp_file') {
+function dxcp_add_comment($record_id, $message, $file_field = 'dxcp_file', $internal = false) {
     $post = dxcp_collaboration_require($record_id);
     if (is_wp_error($post)) return $post;
+    if ($internal && ($post->post_type !== 'ticket' || !dxcp_is_admin())) {
+        return dxcp_collaboration_error('forbidden', 'Only staff can add an internal note.', 403);
+    }
     $message = sanitize_textarea_field((string) $message);
     if (strlen($message) > 20000) return dxcp_collaboration_error('message_too_long', 'Please keep each update below 20,000 characters.');
     if ($message === '' && empty($_FILES[$file_field]['name'])) return dxcp_collaboration_error('empty_message', 'Write an update or attach a file.');
-    $file_id = dxcp_collaboration_file($file_field, $post->ID);
+    $file_id = dxcp_collaboration_file($file_field, $post->ID, 0, $internal);
     if (is_wp_error($file_id)) return $file_id;
     $user = wp_get_current_user();
-    $comment_id = wp_insert_comment(['comment_post_ID' => $post->ID, 'comment_content' => $message, 'user_id' => $user->ID, 'comment_author' => $user->display_name, 'comment_author_email' => '', 'comment_approved' => 1, 'comment_type' => 'dxcp_note']);
+    $comment_id = wp_insert_comment(['comment_post_ID' => $post->ID, 'comment_content' => $message, 'user_id' => $user->ID, 'comment_author' => $user->display_name, 'comment_author_email' => '', 'comment_approved' => 1, 'comment_type' => $internal ? 'dxcp_internal_note' : 'dxcp_note']);
     if (!$comment_id) {
         if ($file_id) wp_delete_post($file_id, true);
         return dxcp_collaboration_error('comment_failed', 'The update could not be saved. Please try again.');
@@ -187,8 +278,16 @@ function dxcp_add_comment($record_id, $message, $file_field = 'dxcp_file') {
         update_post_meta($file_id, '_dxcp_comment_id', $comment_id);
         update_comment_meta($comment_id, '_dxcp_attachment_ids', [$file_id]);
     }
-    update_post_meta($post->ID, '_dxcp_last_updated', current_time('mysql'));
-    if ($post->post_type === 'ticket') update_post_meta($post->ID, 'ticket_last_updated', current_time('mysql'));
+    if ($post->post_type === 'ticket' && function_exists('dxbs_fin_audit')) {
+        dxbs_fin_audit($internal ? 'ticket_internal_note' : 'ticket_reply', 'ticket', $post->ID);
+    }
+    if (!$internal) {
+        update_post_meta($post->ID, '_dxcp_last_updated', current_time('mysql'));
+        if ($post->post_type === 'ticket') {
+            update_post_meta($post->ID, 'ticket_last_updated', current_time('mysql'));
+            dxcp_ticket_notify('ticket_reply', $post, $comment_id, dxcp_is_admin() ? 'client' : 'owner');
+        }
+    }
     return $comment_id;
 }
 
@@ -204,6 +303,7 @@ function dxcp_set_task_status($record_id, $status) {
     if ($review_requested) update_post_meta($post->ID, '_dxcp_completion_requested', 1);
     else delete_post_meta($post->ID, '_dxcp_completion_requested');
     update_post_meta($post->ID, '_dxcp_last_updated', current_time('mysql'));
+    if (function_exists('dxbs_fin_audit') && $current !== $status) dxbs_fin_audit($review_requested ? 'task_review_requested' : 'task_status', 'task', $post->ID);
     return $review_requested ? 'task_review_requested' : 'task_updated';
 }
 
@@ -213,17 +313,19 @@ function dxcp_set_ticket_status($record_id, $status) {
     if ($post->post_type !== 'ticket' || !array_key_exists($status, dxcp_ticket_statuses())) return dxcp_collaboration_error('invalid_status', 'Choose a valid support status.');
     $current = get_post_meta($post->ID, 'ticket_status', true) ?: 'new';
     if (!current_user_can('manage_options')) {
-        $allowed = in_array($status, ['cancelled','resolved'], true) && !in_array($current, ['resolved', 'cancelled'], true);
-        $allowed = $allowed || ($status === 'open' && in_array($current, ['resolved', 'cancelled', 'waiting'], true));
+        $allowed = in_array($status, ['cancelled', 'resolved'], true) && !dxcp_ticket_is_closed($current);
+        $allowed = $allowed || ($status === 'open' && (dxcp_ticket_is_closed($current) || $current === 'waiting'));
         if (!$allowed) return dxcp_collaboration_error('invalid_transition', 'You can cancel an active request or reopen a closed request.', 403);
     }
-    update_post_meta($post->ID, 'ticket_status', $status);
-    update_post_meta($post->ID, 'ticket_last_updated', current_time('mysql'));
-    return 'ticket_updated';
+    return dxcp_ticket_set_status($post, $status)
+        ? 'ticket_updated'
+        : dxcp_collaboration_error('status_conflict', 'The support status changed. Reload it and try again.', 409);
 }
 
-function dxcp_create_ticket($project_id, $title, $message, $priority = 'normal', $file_field = 'dxcp_file') {
-    if (!is_user_logged_in()) return dxcp_collaboration_error('forbidden', 'Please sign in to send a support request.', 403);
+function dxcp_create_ticket($project_id, $title, $message, $priority = 'normal', $file_field = 'dxcp_file', $requested_client = 0) {
+    if (!is_user_logged_in() || !dxcp_is_client_user() || ($requested_client && !dxcp_is_admin())) {
+        return dxcp_collaboration_error('forbidden', 'Please sign in to send a support request.', 403);
+    }
     $project_id = absint($project_id);
     if ($project_id) {
         $project = dxcp_collaboration_project($project_id);
@@ -232,7 +334,10 @@ function dxcp_create_ticket($project_id, $title, $message, $priority = 'normal',
     $title = sanitize_text_field((string) $title);
     $message = sanitize_textarea_field((string) $message);
     if ($title === '' || $message === '' || strlen($title) > 250 || strlen($message) > 20000) return dxcp_collaboration_error('invalid_message', 'Add a short subject and explain how I can help.');
-    $client_id = $project_id ? absint(get_post_meta($project_id, '_dxcp_client_id', true)) : get_current_user_id();
+    $client_id = $project_id ? absint(get_post_meta($project_id, '_dxcp_client_id', true)) : (dxcp_is_admin() && $requested_client ? absint($requested_client) : get_current_user_id());
+    if (!$client_id || !dxcp_is_client_user($client_id) || ($requested_client && $client_id !== (int) $requested_client)) {
+        return dxcp_collaboration_error('invalid_client', 'Choose a valid client and, if supplied, a project belonging to that client.');
+    }
     $ticket_id = wp_insert_post(['post_type' => 'ticket', 'post_status' => 'private', 'post_author' => $client_id, 'post_title' => $title, 'post_content' => $message, 'comment_status' => 'closed'], true);
     if (is_wp_error($ticket_id)) return $ticket_id;
     update_post_meta($ticket_id, 'ticket_client', $client_id);
@@ -245,6 +350,10 @@ function dxcp_create_ticket($project_id, $title, $message, $priority = 'normal',
         wp_delete_post($ticket_id, true);
         return $file_id;
     }
+    $ticket = get_post($ticket_id);
+    if (function_exists('dxbs_fin_audit')) dxbs_fin_audit('ticket_created', 'ticket', $ticket_id);
+    dxcp_ticket_notify('ticket_created', $ticket, 'created');
+    if (!dxcp_is_admin()) dxcp_ticket_notify('ticket_created', $ticket, 'created', 'owner');
     return $ticket_id;
 }
 
@@ -256,7 +365,10 @@ function dxcp_collaboration_nonce($action, $field = '_wpnonce') {
 
 function dxcp_collaboration_response($result, $record_id = 0, $section = 'support') {
     if (is_wp_error($result)) wp_die(esc_html($result->get_error_message()), 'Unable to save', ['response' => $result->get_error_data()['status'] ?? 400, 'back_link' => true]);
-    $url = $record_id ? dxcp_record_url($record_id) : add_query_arg('section', $section, home_url('/dashboard/'));
+    $from_inbox = dxcp_is_site_owner() && !empty($_POST['dxcp_support_inbox']) && function_exists('dxcp_business_url');
+    $url = $from_inbox
+        ? dxcp_business_url('support', ['ticket_id' => $record_id])
+        : ($record_id ? dxcp_record_url($record_id) : add_query_arg('section', $section, home_url('/dashboard/')));
     wp_safe_redirect(add_query_arg('portal_notice', is_string($result) ? sanitize_key($result) : 'update_saved', $url));
     exit;
 }
@@ -266,7 +378,7 @@ function dxcp_handle_comment() {
     dxcp_collaboration_nonce('dxcp_comment_' . $id);
     $requested_project = absint($_POST['project_id'] ?? 0);
     if ($requested_project && $requested_project !== absint(get_post_meta($id, '_dxcp_project_id', true))) wp_die('This support request does not belong to this project.', '', ['response' => 403]);
-    dxcp_collaboration_response(dxcp_add_comment($id, wp_unslash($_POST['message'] ?? '')), $id);
+    dxcp_collaboration_response(dxcp_add_comment($id, wp_unslash($_POST['message'] ?? ''), 'dxcp_file', !empty($_POST['internal_note'])), $id);
 }
 
 function dxcp_handle_task_status() {
@@ -283,7 +395,8 @@ function dxcp_handle_ticket_status() {
 
 function dxcp_handle_new_ticket() {
     dxcp_collaboration_nonce('dxcp_new_ticket');
-    $result = dxcp_create_ticket(absint($_POST['project_id'] ?? 0), wp_unslash($_POST['title'] ?? ''), wp_unslash($_POST['message'] ?? ''), sanitize_key($_POST['priority'] ?? 'normal'));
+    $project_id = absint(dxcp_is_site_owner() && !empty($_POST['dxcp_support_inbox']) ? ($_POST['linked_project_id'] ?? 0) : ($_POST['project_id'] ?? 0));
+    $result = dxcp_create_ticket($project_id, wp_unslash($_POST['title'] ?? ''), wp_unslash($_POST['message'] ?? ''), sanitize_key($_POST['priority'] ?? 'normal'), 'dxcp_file', dxcp_is_site_owner() ? absint($_POST['client_user_id'] ?? 0) : 0);
     dxcp_collaboration_response(is_wp_error($result) ? $result : 'ticket_created', is_wp_error($result) ? 0 : $result);
 }
 
@@ -359,9 +472,23 @@ add_filter('rest_comment_query', function ($args) {
 }, 10);
 
 add_action('pre_get_comments', function ($query) {
+    $post_id = absint($query->query_vars['post_id'] ?? 0);
+    if ($post_id && is_user_logged_in() && !is_feed() && !defined('REST_REQUEST') && dxcp_collaboration_record($post_id) && dxcp_can_access($post_id)) {
+        if (!dxcp_is_admin()) $query->query_vars['type__not_in'] = array_merge((array) ($query->query_vars['type__not_in'] ?? []), ['dxcp_internal_note']);
+        return;
+    }
+    if (is_admin() && dxcp_is_admin()) return;
+    $query->query_vars['type__not_in'] = array_merge((array) ($query->query_vars['type__not_in'] ?? []), ['dxcp_internal_note']);
     if (is_admin() || (is_user_logged_in() && !is_feed() && !defined('REST_REQUEST'))) return;
     $query->query_vars['post_type'] = array_values(array_diff(get_post_types(['public' => true]), ['ticket', 'dxcp_task', 'dxcp_document', 'dxcp_project']));
 });
+
+add_filter('map_meta_cap', function ($caps, $cap, $user_id, $args) {
+    if ($cap !== 'edit_comment' || !$args) return $caps;
+    $comment = get_comment(absint($args[0]));
+    if ($comment && dxcp_collaboration_record($comment->comment_post_ID) && !dxcp_is_admin($user_id)) return ['do_not_allow'];
+    return $caps;
+}, 10, 4);
 
 add_filter('wp_sitemaps_post_types', function ($types) {
     foreach (['ticket', 'dxcp_task'] as $type) unset($types[$type]);
@@ -433,10 +560,12 @@ add_action('save_post', function ($post_id, $post) {
         $client_id = $project ? absint(get_post_meta($project_id, '_dxcp_client_id', true)) : absint($_POST['dxcp_ticket_client'] ?? 0);
         if ($client_id && get_userdata($client_id)) update_post_meta($post_id, 'ticket_client', $client_id);
         $status = sanitize_key($_POST['dxcp_ticket_status'] ?? 'new');
-        if (array_key_exists($status, dxcp_ticket_statuses())) update_post_meta($post_id, 'ticket_status', $status);
+        if (array_key_exists($status, dxcp_ticket_statuses())) dxcp_ticket_set_status($post, $status);
         if (isset($_POST['dxcp_ticket_priority'])) update_post_meta($post_id, '_dxcp_priority', dxcp_ticket_priority(sanitize_key(wp_unslash($_POST['dxcp_ticket_priority']))));
         $assignee_id = absint($_POST['dxcp_ticket_assignee'] ?? 0);
-        update_post_meta($post_id, 'ticket_assignee', $assignee_id && user_can($assignee_id, 'manage_options') ? $assignee_id : 0);
+        $assignee_id = $assignee_id && user_can($assignee_id, 'manage_options') ? $assignee_id : 0;
+        $previous_assignee = absint(get_post_meta($post_id, 'ticket_assignee', true));
+        if (update_post_meta($post_id, 'ticket_assignee', $assignee_id) && $assignee_id) dxcp_ticket_publish_change($post, 'ticket_assigned', $previous_assignee, $assignee_id);
         $date = sanitize_text_field(wp_unslash($_POST['dxcp_ticket_due_date'] ?? ''));
         update_post_meta($post_id, 'ticket_due_date', preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : '');
         update_post_meta($post_id, 'ticket_last_updated', current_time('mysql'));

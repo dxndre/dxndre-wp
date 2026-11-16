@@ -101,6 +101,14 @@
 <section class="dx-editorial-contact"><p class="dx-eyebrow">Your idea. Our next chapter.</p><h2>Let’s make<br><em>something matter.</em></h2><a class="dx-cta" href="/contact/">Start a conversation ↗</a></section></article><!-- /#post-<?php the_ID(); ?> -->
 
 <nav class="chapter-selector" aria-label="Case study chapters">
+	<?php
+	$type_field = get_field_object( 'project_type' );
+	$type_labels = array_intersect_key( $type_field['choices'] ?? array(), array_flip( (array) ( $type_field['value'] ?? array() ) ) );
+	?>
+	<p class="dx-project-rail-title" aria-hidden="true">
+		<?php if ( $type_labels ) : ?><small class="dx-rail-name"><span><?php echo esc_html( implode( ' · ', $type_labels ) ); ?></span></small><?php endif; ?>
+		<span class="dx-rail-name"><span><?php echo esc_html( get_the_title() ); ?></span></span>
+	</p>
 	<ul>
 	</ul>
 </nav>

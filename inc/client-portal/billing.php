@@ -201,17 +201,17 @@ function dxcp_billing_claim_form() {
     $project_id=absint($_POST['project_id']??0);
     $attempt_key='dxcp_claim_attempts_'.$uid;
     $attempts=(int)get_transient($attempt_key);
-    if($attempts>=10) dxcp_billing_redirect('payments','claim_limited',$project_id);
+    if($attempts>=10) dxcp_billing_redirect('quotations','claim_limited',$project_id);
     set_transient($attempt_key,$attempts+1,15*MINUTE_IN_SECONDS);
     $ref=dxcp_quote_ref(wp_unslash($_POST['quote_ref']??''));
     $token=is_string($_POST['estimate_token']??null)?wp_unslash($_POST['estimate_token']):'';
     if(!$project_id) {
         $created=dxcp_billing_claim_first_project($ref,$token);
-        dxcp_billing_redirect('payments',is_wp_error($created)?'claim_invalid':'quote_linked',is_wp_error($created)?0:$created);
+        dxcp_billing_redirect('quotations',is_wp_error($created)?'claim_invalid':'quote_linked',is_wp_error($created)?0:$created);
     }
     if(!dxcp_project_for_user($project_id) || dxcp_billing_project_owner($project_id)!==$uid) wp_die('Only the assigned client can claim this estimate.','Access denied',['response'=>403]);
     $result=dxcp_billing_claim_quote($project_id,$ref,$token);
-    dxcp_billing_redirect('payments',is_wp_error($result)?'claim_invalid':'quote_linked',$project_id);
+    dxcp_billing_redirect('quotations',is_wp_error($result)?'claim_invalid':'quote_linked',$project_id);
 }
 
 /** Intent is either confirming an indicative brief or accepting an issued final version. */

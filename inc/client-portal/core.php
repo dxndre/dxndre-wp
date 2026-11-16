@@ -27,6 +27,7 @@ function dxcp_is_client_user($uid = 0) {
     if (!$uid || !($user = get_userdata($uid))) return false;
     if (dxcp_is_admin($uid) || in_array('client', (array) $user->roles, true)) return true;
     if (!in_array('subscriber', (array) $user->roles, true)) return false;
+    if (function_exists('dxbs_account_client_id') && dxbs_account_client_id($uid)) return true;
     if (function_exists('dxcp_claimable_estimates') && dxcp_claimable_estimates()) return true;
     return (bool) get_posts([
         'post_type' => 'dxcp_project', 'post_status' => ['publish','private','draft','pending','future'],
@@ -41,13 +42,21 @@ function dxcp_can_access($post_or_id, $uid = 0, $seen = []) {
     $post = get_post($post_or_id);
     if (!$post || in_array($post->post_status, ['trash','auto-draft'], true)) return false;
     if (dxcp_is_admin($uid)) return true;
+    if (in_array($post->post_type, ['dxcp_task', 'dxcp_document'], true) && get_post_meta($post->ID, '_dxcp_internal_only', true)) return false;
     if (!dxcp_is_client_user($uid) || count($seen) > 8 || in_array((int) $post->ID, $seen, true)) return false;
     $seen[] = (int) $post->ID;
     if ($post->post_type === 'dxcp_project') return (int) get_post_meta($post->ID, '_dxcp_client_id', true) === (int) $uid;
     if ($post->post_type === 'ticket') {
-        $client = get_post_meta($post->ID, 'ticket_client', true);
-        if (is_array($client)) $client = $client['ID'] ?? reset($client);
-        return (int) $post->post_author === (int) $uid || (int) $client === (int) $uid;
+        if (dxcp_ticket_client_id($post) !== (int) $uid) return false;
+        $project_id = absint(get_post_meta($post->ID, '_dxcp_project_id', true));
+        return !$project_id || (get_post_type($project_id) === 'dxcp_project' && dxcp_can_access($project_id, $uid, $seen));
+    }
+    if ($post->post_type === 'dxcp_document') {
+        $comment_id = absint(get_post_meta($post->ID, '_dxcp_comment_id', true));
+        $comment = $comment_id ? get_comment($comment_id) : null;
+        if ($comment && $comment->comment_type === 'dxcp_internal_note') return false;
+        $parent_id = absint(get_post_meta($post->ID, '_dxcp_parent_id', true));
+        if ($parent_id) return dxcp_can_access($parent_id, $uid, $seen);
     }
     $project_id = absint(get_post_meta($post->ID, '_dxcp_project_id', true));
     if ($project_id) {
@@ -75,7 +84,7 @@ function dxcp_projects($uid = 0) {
 function dxcp_documents($project_id) {
     if (!dxcp_project_for_user($project_id)) return [];
     $docs = get_posts(['post_type'=>'dxcp_document','post_status'=>['private','publish'],'posts_per_page'=>200,'orderby'=>'date','order'=>'DESC','meta_key'=>'_dxcp_project_id','meta_value'=>absint($project_id)]);
-    return array_values(array_filter($docs, function($doc) { return !absint(get_post_meta($doc->ID, '_dxcp_parent_id', true)); }));
+    return array_values(array_filter($docs, function($doc) { return !absint(get_post_meta($doc->ID, '_dxcp_parent_id', true)) && dxcp_can_access($doc); }));
 }
 
 function dxcp_sessions($project_id) {
@@ -223,10 +232,10 @@ function dxcp_save_onboarding() {
     $project = absint($_POST['project_id'] ?? 0);
     if (!dxcp_is_client_user() || !dxcp_project_for_user($project) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['dxcp_nonce'] ?? '')), 'dxcp_onboarding')) wp_die('Your session has expired. Please return to your dashboard and try again.', 'Invalid request', ['response'=>403]);
     $uid = get_current_user_id();
-    foreach (['business_name'=>160,'project_goals'=>3000,'audience'=>1500] as $key=>$limit) update_post_meta($project, '_dxcp_onboarding_' . $key, mb_substr(sanitize_textarea_field(wp_unslash($_POST[$key] ?? '')),0,$limit));
+    foreach (['business_name'=>160,'project_goals'=>3000,'audience'=>1500] as $key=>$limit) if (isset($_POST[$key])) update_post_meta($project, '_dxcp_onboarding_' . $key, mb_substr(sanitize_textarea_field(wp_unslash($_POST[$key] ?? '')),0,$limit));
     $ready = sanitize_key($_POST['content_ready'] ?? '');
     $contact = sanitize_key($_POST['preferred_contact'] ?? '');
-    update_post_meta($project,'_dxcp_onboarding_content_ready',in_array($ready,['yes','in_progress','no'],true) ? $ready : '');
+    if (isset($_POST['content_ready'])) update_post_meta($project,'_dxcp_onboarding_content_ready',in_array($ready,['yes','in_progress','no'],true) ? $ready : '');
     update_post_meta($project,'_dxcp_onboarding_preferred_contact',in_array($contact,['email','phone'],true) ? $contact : '');
     update_post_meta($project,'_dxcp_onboarding_updated',current_time('mysql',true));
     dxcp_notice_redirect('drive','onboarding_saved',$project);

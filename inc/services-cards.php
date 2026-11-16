@@ -43,3 +43,35 @@ add_filter('render_block_core/post-template', function($html) {
     }
     return substr_replace($html, $training . $additional, $closing, 0);
 });
+
+/** Add current calculator rates to the editorial Services layout. */
+add_filter('the_content', function ($html) {
+    if (!is_page('services') || !in_the_loop() || !is_main_query() || !function_exists('dx_calculator_services')) {
+        return $html;
+    }
+    $prices = array_column(dx_calculator_services(), null, 'key');
+    $service_links = [
+        'design' => 'design',
+        'development' => 'development',
+        'wordpress-development' => 'wp_development',
+        'comprehensive' => 'comprehensive',
+        'retainer' => 'retainer',
+        'one-time-fixes' => 'one_off',
+    ];
+    $price_label = static function ($price, $monthly = false) {
+        $decimals = floor($price) === (float) $price ? 0 : 2;
+        return '<p class="dx-service-starting-price"><small>STARTING FROM</small> £' . esc_html(number_format_i18n($price, $decimals))
+            . ($monthly ? '/month' : '') . '</p>';
+    };
+    $html = preg_replace_callback('~(<div class="dx-service-actions">\s*<a\b[^>]*href="[^"]*/service/([a-z-]+)/?")~', static function ($matches) use ($prices, $service_links, $price_label) {
+        $rate = $prices[$service_links[$matches[2]] ?? ''] ?? null;
+        return $rate ? $price_label($rate['price'], $rate['monthly']) . $matches[1] : $matches[1];
+    }, $html);
+    $html = preg_replace_callback('~(<a\b[^>]*href="[^"]*/service/([a-z-]+)/?"[^>]*>.*?</a>)~s', static function ($matches) use ($service_links, $prices) {
+        $slug = $matches[2];
+        $label = $slug === 'photography' ? 'Photography' : ($prices[$service_links[$slug] ?? '']['title'] ?? '');
+        if (!$label) return $matches[1];
+        return $matches[1] . '<button type="button" class="dx-cta dx-cta--outline" data-basket-service="' . esc_attr($slug) . '" data-basket-label="' . esc_attr($label) . '">Add to basket</button>';
+    }, $html);
+    return preg_replace('~(<a\b[^>]*href="[^"]*/service/photography/?"[^>]*>)(?=.*</article>)~s', $price_label(40) . '$1', $html, 1);
+}, 20);

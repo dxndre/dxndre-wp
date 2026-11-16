@@ -20,6 +20,13 @@ header( 'X-Robots-Tag: noindex, nofollow' );
 
 $uid = get_current_user_id();
 $user = wp_get_current_user();
+$raw_section = $_GET['section'] ?? '';
+$section = is_string( $raw_section ) ? sanitize_key( wp_unslash( $raw_section ) ) : '';
+$is_preview = $is_manager && ( $_GET['portal_preview'] ?? '' ) === '1';
+if ( $is_manager && ! $is_preview && ( in_array( $section, array( '', 'welcome', 'admin', 'business' ), true ) || ! isset( $_GET['section'] ) ) ) {
+	require __DIR__ . '/inc/client-portal/hq-shell.php';
+	return;
+}
 // A Business manager receives no additional client-record permissions.
 $projects = $has_client_access ? ( $is_owner ? get_posts( array( 'post_type'=>'dxcp_project', 'post_status'=>array('publish','private','draft','pending','future'), 'numberposts'=>-1, 'orderby'=>'modified', 'order'=>'DESC' ) ) : array_values( array_filter( dxcp_projects(), static function($item) use ($uid) { return (int)get_post_meta($item->ID,'_dxcp_client_id',true) === (int)$uid; } ) ) ) : array();
 $raw_project = $_GET['project_id'] ?? ( $_GET['project'] ?? 0 );
@@ -35,32 +42,26 @@ $service = $pid ? ( get_post_meta( $pid, '_dxcp_service', true ) ?: 'digital' ) 
 $service_labels = array( 'digital' => 'Digital project', 'fitness' => 'Fitness coaching', 'photography' => 'Photography', 'support' => 'Ongoing support' );
 $service_label = $service_labels[ $service ] ?? 'Client';
 $support_words = function_exists( 'dxcp_support_words' ) ? dxcp_support_words( $service ) : array( 'tickets' => true, 'singular' => 'ticket', 'start' => 'Submit a ticket' );
-$sections = $has_client_access ? array(
-	'welcome' => 'Welcome',
-	'overview' => $is_owner ? 'Project preview' : 'Overview',
-	'journey' => 'Client journey',
-	'tasks' => 'Your to-dos',
-	'drive' => 'Your Drive',
-	'payments' => 'Quotations & payments',
-	'support' => $support_words['tickets'] ? 'Support tickets' : 'Support',
-	'profile' => 'Your details',
-) : array();
-if ( $has_client_access && 'fitness' === $service ) {
-	$sections = array_slice( $sections, 0, 5, true ) + array( 'sessions' => 'Coaching sessions' ) + array_slice( $sections, 5, null, true );
-}
-if ( $is_owner ) {
-	$sections = array_slice($sections,0,1,true) + array('admin'=>'Admin overview') + array_slice($sections,1,null,true);
-}
-if ( $is_manager ) {
-	$sections['business'] = 'Business manager';
+$sections = array(
+	'welcome' => 'My Overview',
+	'overview' => 'My Projects',
+	'quotations' => 'My Quotations',
+	'payments' => 'Invoices & Payments',
+	'drive' => 'Documents & Files',
+	'support' => 'Support',
+	'profile' => 'My Account',
+	'journey' => 'Project journey',
+	'tasks' => 'My to-dos',
+);
+if ( 'fitness' === $service ) {
+	$sections['sessions'] = 'Coaching sessions';
 }
 $sections['help'] = 'Guide & help';
 $home_section = 'welcome';
-$raw_section = $_GET['section'] ?? $home_section;
-$section = is_string( $raw_section ) ? sanitize_key( wp_unslash( $raw_section ) ) : $home_section;
 if ( ! isset( $sections[ $section ] ) ) {
 	$section = $home_section;
 }
+$portal_link = static fn( $key ) => dxcp_portal_url( $key, $pid, $is_preview ? array( 'portal_preview' => 1 ) : array() );
 
 $tasks = $pid ? dxcp_tasks( $pid ) : array();
 $tickets = $has_client_access ? array_values( array_filter( dxcp_tickets(), static function ( $ticket ) use ( $pid ) {
@@ -99,18 +100,18 @@ $notices = array(
 	'invalid_request' => 'We couldn’t save that request. Please check the details and try again.',
 	'save_failed' => 'Your update could not be saved. Please try again.',
 );
-$show_rail = $has_client_access && ! in_array( $section, array('business','admin','welcome'), true );
-$nav_icons = array( 'help' => 'support', 'business' => 'payments' );
+$show_rail = ! $is_preview && 'welcome' !== $section;
+$nav_icons = array( 'help' => 'support', 'quotations' => 'journey' );
 get_header( 'client-portal' );
 ?>
 <div class="dxcp-shell" data-dxcp-shell>
 	<div class="dxcp-sidebar-scrim" data-dxcp-close></div>
 	<aside class="dxcp-sidebar" id="dxcp-sidebar" aria-label="Workspace navigation">
-		<a class="dxcp-brand" href="<?php echo esc_url( dxcp_portal_url( $home_section, $pid ) ); ?>" aria-label="<?php echo esc_attr( $is_owner ? 'DXNDRE Business' : 'DXNDRE client space' ); ?>">dx<span>.</span><small><?php echo $is_owner ? 'BUSINESS' : 'CLIENT SPACE'; ?></small></a>
+		<a class="dxcp-brand" href="<?php echo esc_url( $portal_link( $home_section ) ); ?>" aria-label="DX Client Portal">dx<span>.</span><small>CLIENT PORTAL</small></a>
 		<p class="dxcp-sidebar__label">YOUR WORKSPACE</p>
 		<nav aria-label="Workspace sections">
 			<?php foreach ( $sections as $key => $label ) : ?>
-				<a class="dxcp-nav-link" href="<?php echo esc_url( dxcp_portal_url( $key, $pid ) ); ?>"<?php if ( !in_array($key,array('business','admin','welcome'),true) && !in_array($section,array('business','admin','welcome'),true) ) : ?> data-dxcp-nav="<?php echo esc_attr( $key ); ?>"<?php endif; ?> <?php echo $section === $key ? 'aria-current="page"' : ''; ?>>
+				<a class="dxcp-nav-link" href="<?php echo esc_url( $portal_link( $key ) ); ?>"<?php if ( ! $is_preview && 'welcome' !== $key && 'welcome' !== $section ) : ?> data-dxcp-nav="<?php echo esc_attr( $key ); ?>"<?php endif; ?> <?php echo $section === $key ? 'aria-current="page"' : ''; ?>>
 					<?php echo dxcp_icon( $nav_icons[ $key ] ?? $key ); ?>
 					<span><?php echo esc_html( $label ); ?></span>
 					<?php if ( 'tasks' === $key && count( $tasks ) ) : ?>
@@ -120,7 +121,7 @@ get_header( 'client-portal' );
 			<?php endforeach; ?>
 		</nav>
 		<div class="dxcp-sidebar__bottom">
-			<div class="dxcp-help-card"><span>✦</span><h2>A little help?</h2><p>Your guide to this space.</p><a href="<?php echo esc_url( dxcp_portal_url( 'help', $pid ) ); ?>">Explore the guide <?php echo dxcp_icon( 'arrow' ); ?></a></div>
+			<?php if ( $is_manager ) : ?><a class="dxcp-nav-link" href="<?php echo esc_url( dxcp_business_url() ); ?>"><?php echo dxcp_icon( 'arrow' ); ?> Back to DX Business HQ</a><?php endif; ?>
 			<a class="dxcp-nav-link" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo dxcp_icon( 'external' ); ?> Back to the website</a>
 			<a class="dxcp-nav-link" href="<?php echo esc_url( wp_logout_url( home_url( '/login/' ) ) ); ?>"><?php echo dxcp_icon( 'logout' ); ?> Sign out</a>
 		</div>
@@ -133,15 +134,16 @@ get_header( 'client-portal' );
 			<div class="dxcp-topbar__account">
 				<span class="dxcp-secure"><?php echo dxcp_icon( 'check' ); ?> Private <?php echo $is_owner ? 'business' : 'client'; ?> space</span>
 				<button type="button" class="dxcp-theme-toggle" data-dxcp-theme aria-pressed="false" aria-label="Switch to dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg><span data-dxcp-theme-label>Dark mode</span></button>
-				<a href="<?php echo esc_url( dxcp_portal_url( $is_owner ? 'admin' : 'profile', $pid ) ); ?>" class="dxcp-avatar" aria-label="<?php echo esc_attr( $is_owner ? 'Your admin overview' : 'Your account details' ); ?>"><?php echo esc_html( mb_strtoupper( mb_substr( $first_name, 0, 1 ) ) ); ?></a>
+				<a href="<?php echo esc_url( $portal_link( 'profile' ) ); ?>" class="dxcp-avatar" aria-label="Your account details"><?php echo esc_html( mb_strtoupper( mb_substr( $first_name, 0, 1 ) ) ); ?></a>
 				<button class="dxcp-mobile-toggle" type="button" data-dxcp-menu aria-expanded="false" aria-controls="dxcp-sidebar" aria-label="Open workspace menu"><?php echo dxcp_icon( 'menu' ); ?></button>
 			</div>
 		</header>
 		<div class="dxcp-project-switch">
-			<span><?php echo dxcp_icon( 'business' === $section ? 'payments' : ( 'fitness' === $service ? 'sessions' : 'journey' ) ); ?> <?php echo esc_html( $is_owner && in_array($section,array('business','admin','welcome'),true) ? 'DXNDRE Business' : ('welcome'===$section ? 'Your client space' : $service_label) ); ?></span>
-			<?php if ( $projects && !in_array($section,array('business','admin'),true) ) : ?>
+			<span><?php echo dxcp_icon( 'fitness' === $service ? 'sessions' : 'journey' ); ?> <?php echo esc_html( 'welcome' === $section ? 'Your client portal' : $service_label ); ?></span>
+			<?php if ( $projects ) : ?>
 				<form method="get" action="<?php echo esc_url( home_url( '/dashboard/' ) ); ?>">
 					<input type="hidden" name="section" value="<?php echo esc_attr( $section ); ?>">
+					<?php if ( $is_preview ) : ?><input type="hidden" name="portal_preview" value="1"><?php endif; ?>
 					<label for="dxcp-project">Project</label>
 					<select id="dxcp-project" name="project_id" data-dxcp-project>
 						<?php foreach ( $projects as $item ) : ?><option value="<?php echo absint( $item->ID ); ?>" <?php selected( $pid, $item->ID ); ?>><?php echo esc_html( $item->post_title ); ?></option><?php endforeach; ?>
@@ -152,17 +154,25 @@ get_header( 'client-portal' );
 		</div>
 		<?php if ( isset( $notices[ $notice ] ) ) : ?><div class="dxcp-notice" role="status"><?php echo dxcp_icon( 'check' ); ?><?php echo esc_html( $notices[ $notice ] ); ?></div><?php endif; ?>
 		<?php if ( $pid && get_post_meta( $pid, '_dxcp_demo', true ) && !in_array($section,array('business','admin','welcome'),true) ) : ?><div class="dxcp-notice dxcp-notice--demo" role="note"><?php echo dxcp_icon( 'check' ); ?>Test workspace · Figures, tasks and sessions here are examples. No payment is due and no session is booked.</div><?php endif; ?>
-		<?php if ( $is_owner && !in_array($section,array('business','admin','welcome'),true) ) : ?><div class="dxcp-admin-note">Administrator preview · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=dxcp_project' ) ); ?>">Manage client projects</a></div><?php endif; ?>
+		<?php if ( $is_preview ) : ?>
+			<div class="dxcp-admin-note" role="note">Read-only client portal preview · <a href="<?php echo esc_url( dxcp_business_url() ); ?>">Return to DX Business HQ</a></div>
+		<?php elseif ( $is_manager ) : ?>
+			<div class="dxcp-admin-note">Administrator workspace · <a href="<?php echo esc_url( dxcp_portal_url( 'overview', $pid, array( 'portal_preview' => 1 ) ) ); ?>">Preview the client portal</a></div>
+		<?php endif; ?>
 		<div class="dxcp-content-grid<?php echo $show_rail ? '' : ' dxcp-content-grid--business'; ?>">
 			<div class="dxcp-content">
 				<?php foreach ( $sections as $key => $label ) : ?>
 					<section class="dxcp-view" data-dxcp-view="<?php echo esc_attr( $key ); ?>" aria-label="<?php echo esc_attr( $label ); ?>" <?php echo $key !== $section ? 'hidden' : ''; ?> tabindex="-1">
 						<?php
-						$renderer = 'dxcp_render_' . $key;
-						if ( is_callable( $renderer ) && ( !in_array($key,array('business','admin'),true) || $key === $section ) ) {
-							call_user_func( $renderer, $context );
-						} elseif ( $key === $section ) {
-							dxcp_empty( 'This section is being prepared.', 'Please return to your workspace or contact D’André for help.' );
+						if ( $is_preview ) {
+							if ( $key === $section ) {
+								require __DIR__ . '/inc/client-portal/portal-preview.php';
+							}
+						} else {
+							$renderer = 'dxcp_render_' . $key;
+							if ( is_callable( $renderer ) ) {
+								call_user_func( $renderer, $context );
+							}
 						}
 						?>
 					</section>

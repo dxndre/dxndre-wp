@@ -13,7 +13,7 @@ $photo_orbit_attributes = static function ($attachment_id) {
 $enquiry_service = ['photography' => 'photography', 'one-time-fixes' => 'fixes', 'retainer' => 'support', 'design' => 'design-build', 'comprehensive' => 'design-build', 'wordpress-development' => 'wordpress', 'development' => 'custom-web'][$slug] ?? 'unsure';
 $enquiry_url = add_query_arg('enquiry_service', $enquiry_service, home_url('/start-a-project/'));
 $facts = [
-    'photography' => ['A different perspective', 'People, places & brands', 'Photography', '£40 flat rate', 'Discuss your shoot'],
+    'photography' => ['A different perspective', 'People, places & brands', 'Photography', '£40 photography · optional 4K video +£15', 'Discuss your shoot'],
     'one-time-fixes' => ['Targeted technical support', 'Targeted improvements', 'Existing websites', 'One-off engagement', 'Share your issue'],
     'retainer' => ['Ongoing website support', 'Continuous improvements', 'Existing websites', 'Ongoing engagement', 'Discuss your needs'],
     'design' => ['Considered digital design', 'Interface design', 'New & existing websites', 'Design engagement', 'Share your brief'],
@@ -40,6 +40,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
         <p class="service-lead"><?php echo esc_html(get_the_excerpt()); ?></p>
       <?php endif; ?>
       <div class="service-detail-actions">
+      <button type="button" class="dx-cta dx-cta--outline" data-basket-service="<?php echo esc_attr($slug); ?>" data-basket-label="<?php echo esc_attr(get_the_title()); ?>">Add to basket</button>
         <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_photography ? 'Tell me about your shoot' : ($is_fixes ? 'Tell me about the issue' : 'Tell me about your project'); ?> <span aria-hidden="true">↗</span></a>
         <a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
       </div>
@@ -57,7 +58,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
     <div><p class="service-eyebrow"><?php echo $is_fixes ? 'Start with the problem' : 'Let’s work together'; ?></p>
       <h2 id="service-enquiry-title"><?php echo $is_fixes ? 'Let’s get it<br>working.' : ($is_photography ? 'Let’s capture<br>your story.' : 'Let’s build<br>something meaningful.'); ?></h2>
       <p><?php echo $is_fixes ? 'Tell me what’s happening and I’ll help you find the next step.' : 'Share your brief and we can discuss the next step.'; ?></p>
-      <p class="service-form-hint"><?php echo $is_photography ? 'Share your location, intended use and the kind of images you have in mind.' : 'Include your website URL and any useful details in your message.'; ?></p>
+      <p class="service-form-hint"><?php echo $is_photography ? 'Share your location, the kind of images you have in mind and whether you’d like iPhone videography in 4K at 60 fps (+£15).' : 'Include your website URL and any useful details in your message.'; ?></p>
     </div>
     <div class="service-detail-form">
       <?php

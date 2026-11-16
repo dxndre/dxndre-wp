@@ -2,6 +2,10 @@
 /** Management presentation in the existing workspace; business rules live in DXNDRE Business. */
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/business-operations.php';
+require_once __DIR__ . '/business-insights.php';
+require_once __DIR__ . '/business-communications.php';
+
 function dxcp_business_query( $key, $fallback = '' ) {
 	$value = $_GET[ $key ] ?? $fallback;
 	return is_string( $value ) ? wp_unslash( $value ) : $fallback;
@@ -18,81 +22,11 @@ function dxcp_business_form( $action ) {
 		<?php wp_nonce_field( $action );
 }
 
-function dxcp_render_business( $context ) {
-	if ( ! function_exists( 'dxbs_is_manager' ) || ! dxbs_is_manager() ) {
-		return;
-	}
-	$views = array( 'overview' => 'Overview', 'clients' => 'Clients', 'quotations' => 'Quotations', 'invoices' => 'Invoices', 'payments' => 'Payments', 'receipts' => 'Receipts', 'projects' => 'Projects', 'documents' => 'Documents', 'reports' => 'Reports', 'settings' => 'Settings' );
-	$view = sanitize_key( dxcp_business_query( 'business_view', 'overview' ) );
-	$view = isset( $views[ $view ] ) ? $view : 'overview';
-	?>
-	<div class="dxcp-view-heading">
-		<p class="dxcp-eyebrow">ONE PLACE FOR YOUR BUSINESS</p>
-		<h1>DXNDRE Business</h1>
-		<p>Your clients, services and business details. Connected to the workspace you already use.</p>
-	</div>
-	<nav class="dxbs-subnav" aria-label="Business modules">
-		<?php foreach ( $views as $key => $label ) : ?>
-			<a href="<?php echo esc_url( dxcp_business_url( $key ) ); ?>" <?php echo $key === $view ? 'aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
-		<?php endforeach; ?>
-	</nav>
-	<?php $notice = dxbs_form_notice(); if ( $notice ) : ?>
-		<div class="dxcp-notice<?php echo 'error' === $notice['type'] ? ' dxcp-notice--error' : ''; ?>" role="<?php echo 'error' === $notice['type'] ? 'alert' : 'status'; ?>"><?php echo esc_html( $notice['message'] ); ?></div>
-	<?php endif;
-	switch ( $view ) {
-		case 'clients': dxcp_business_clients(); break;
-		case 'settings': dxcp_business_settings(); break;
-		case 'projects':
-		case 'documents': dxcp_business_existing( $view ); break;
-		case 'overview': dxcp_business_overview(); break;
-		default: dxcp_business_financial( $view );
-	}
-}
-
-function dxcp_business_overview() {
-	$overview = dxbs_overview();
-	$cards = array(
-		array( 'Clients', (string) $overview['client_count'], 'clients', 'Active directory records' ),
-		array( 'Service categories', (string) $overview['category_count'], 'settings', 'Configurable for all your services' ),
-		array( 'Revenue received', dxcp_money( $overview['revenue_received_minor'] ), 'payments', 'Verified Business payments only' ),
-		array( 'Outstanding', dxcp_money( $overview['outstanding_minor'] ), 'invoices', 'Issued Business invoices only' ),
-		array( 'Pending quotations', (string) $overview['pending_quotations'], 'quotations', 'Business quotation records' ),
-		array( 'Overdue invoices', (string) $overview['overdue_invoices'], 'invoices', 'Issued and past their due date' ),
-	);
-	?>
-	<div class="dxcp-stats">
-		<?php foreach ( $cards as $card ) : ?>
-			<a class="dxcp-stat" href="<?php echo esc_url( dxcp_business_url( $card[2] ) ); ?>"><span><small><?php echo esc_html( $card[0] ); ?></small><strong class="dxcp-stat__money"><?php echo esc_html( $card[1] ); ?></strong><small><?php echo esc_html( $card[3] ); ?></small></span><?php echo dxcp_icon( 'arrow' ); ?></a>
-		<?php endforeach; ?>
-	</div>
-	<article class="dxcp-card">
-		<?php dxcp_card_heading( 'YOUR BUSINESS AT A GLANCE', 'Clear records. Confident next steps.' ); ?>
-		<p>Manage clients, issue quotations and invoices, verify bank payments, and keep receipts and documents together. Your existing project workspaces and private Drive remain connected.</p>
-		<p>These figures use stored financial records and bank payments you have explicitly verified. Client transfer reports and illustrative payment schedules are excluded from received revenue.</p>
-		<div class="dxcp-inline"><a class="dxcp-btn dxcp-btn--dark" href="<?php echo esc_url( dxcp_business_url( 'clients', array( 'new_client' => 1 ) ) ); ?>">Add a client <?php echo dxcp_icon( 'plus' ); ?></a><a class="dxcp-btn" href="<?php echo esc_url( dxcp_business_url( 'settings' ) ); ?>">Business settings</a></div>
-	</article>
-	<div class="dxcp-overview-grid">
-		<article class="dxcp-card"><?php dxcp_card_heading( 'RECEIVED', 'Recent payments' ); ?>
-			<?php if ( ! $overview['recent_payments'] ) { dxcp_empty( 'No verified payments yet', 'Your explicitly verified bank payments will appear here.', 'payments' ); } foreach ( $overview['recent_payments'] as $payment ) : ?><div class="dxcp-list-row"><span><strong><?php echo esc_html( $payment['client_name'] ); ?></strong><small><?php echo esc_html( $payment['invoice_number'] . ' · ' . $payment['category_name'] ); ?></small></span><span><strong><?php echo esc_html( dxcp_money( $payment['amount_minor'] ) ); ?></strong><small><?php echo esc_html( $payment['bank_date'] ); ?></small></span></div><?php endforeach; ?>
-		</article>
-		<article class="dxcp-card"><?php dxcp_card_heading( 'COMING UP', 'Payment deadlines' ); ?>
-			<?php if ( ! $overview['upcoming_deadlines'] ) { dxcp_empty( 'No Business deadlines yet', 'Issued invoices and their confirmed payment dates appear here.', 'sessions' ); } foreach ( $overview['upcoming_deadlines'] as $deadline ) : ?><div class="dxcp-list-row"><span><strong><?php echo esc_html( $deadline['number'] ); ?></strong><small><?php echo esc_html( $deadline['client_name'] . ' · ' . $deadline['due_date'] ); ?></small></span><strong><?php echo esc_html( dxcp_money( $deadline['balance_minor'] ) ); ?></strong></div><?php endforeach; ?>
-		</article>
-	</div>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'ACROSS YOUR SERVICES', 'Revenue by category' ); ?>
-		<div class="dxcp-table-wrap"><table class="dxcp-table"><thead><tr><th scope="col">Category</th><th scope="col">Verified revenue received</th></tr></thead><tbody>
-		<?php foreach ( $overview['revenue_by_category'] as $category ) : ?><tr><td><?php echo esc_html( $category['name'] ); ?></td><td><?php echo esc_html( dxcp_money( (int) $category['received_minor'] ) ); ?></td></tr><?php endforeach; ?>
-		</tbody></table></div>
-	</article>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'ACCOUNTABILITY', 'Recent Business changes' ); $rows = dxbs_audit_rows( 10 ); if ( ! $rows ) : ?><p class="dxcp-muted">Saved client, category and settings changes will be recorded here.</p><?php endif; foreach ( $rows as $row ) : ?><div class="dxcp-list-row"><span><strong><?php echo esc_html( ucwords( str_replace( '_', ' ', $row['event'] ) ) ); ?></strong><small><?php echo esc_html( $row['entity_type'] . ( $row['entity_id'] ? ' #' . $row['entity_id'] : '' ) ); ?></small></span><time><?php echo esc_html( get_date_from_gmt( $row['created_at'], 'j M Y · H:i' ) ); ?></time></div><?php endforeach; ?></article>
-	<?php
-}
-
 function dxcp_business_clients() {
 	$search = sanitize_text_field( dxcp_business_query( 'business_search' ) );
 	$category_id = absint( dxcp_business_query( 'category_id', '0' ) );
 	$status = sanitize_key( dxcp_business_query( 'client_status', 'active' ) );
-	$status = in_array( $status, array( 'active', 'archived', 'all' ), true ) ? $status : 'active';
+	$status = isset( dxbs_client_statuses()[ $status ] ) || 'all' === $status ? $status : 'active';
 	$sort = sanitize_key( dxcp_business_query( 'client_sort', 'name' ) );
 	$sort = in_array( $sort, array( 'name', 'created_at', 'updated_at' ), true ) ? $sort : 'name';
 	$page = max( 1, absint( dxcp_business_query( 'business_page', '1' ) ) );
@@ -114,7 +48,7 @@ function dxcp_business_clients() {
 			<div class="dxbs-toolbar">
 				<?php dxcp_field( 'Search clients', 'business_search', $search, 'search' ); ?>
 				<label class="dxcp-field"><span>Service category</span><select name="category_id"><option value="0">All categories</option><?php foreach ( $categories as $category ) : ?><option value="<?php echo absint( $category['id'] ); ?>" <?php selected( $category_id, $category['id'] ); ?>><?php echo esc_html( $category['name'] ); ?></option><?php endforeach; ?></select></label>
-				<label class="dxcp-field"><span>Status</span><select name="client_status"><?php foreach ( array( 'active' => 'Active', 'archived' => 'Archived', 'all' => 'All' ) as $key => $label ) : ?><option value="<?php echo esc_attr( $key ); ?>" <?php selected( $status, $key ); ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select></label>
+				<label class="dxcp-field"><span>Status</span><select name="client_status"><?php foreach ( dxbs_client_statuses() + array( 'all' => 'All' ) as $key => $label ) : ?><option value="<?php echo esc_attr( $key ); ?>" <?php selected( $status, $key ); ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select></label>
 				<label class="dxcp-field"><span>Sort by</span><select name="client_sort"><?php foreach ( array( 'name' => 'Name A–Z', 'created_at' => 'Newest first', 'updated_at' => 'Recently updated' ) as $key => $label ) : ?><option value="<?php echo esc_attr( $key ); ?>" <?php selected( $sort, $key ); ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select></label>
 				<button class="dxcp-btn dxcp-btn--small" type="submit">Apply filters</button>
 			</div>
@@ -150,7 +84,7 @@ function dxcp_business_client_form( $client, $categories ) {
 		<div class="dxcp-form-grid">
 			<?php foreach ( array( 'name' => 'Client or contact name', 'company' => 'Company / business name', 'email' => 'Email', 'phone' => 'Telephone', 'billing_address_1' => 'Billing address', 'billing_address_2' => 'Address line 2', 'billing_city' => 'City', 'billing_region' => 'County / region', 'billing_postcode' => 'Postcode', 'billing_country' => 'Country code (e.g. GB)' ) as $key => $label ) { dxcp_field( $label, 'client[' . $key . ']', $client[ $key ] ?? ( 'billing_country' === $key ? 'GB' : '' ), 'email' === $key ? 'email' : ( 'phone' === $key ? 'tel' : 'text' ), in_array( $key, array( 'name', 'email' ), true ) ); } ?>
 			<label class="dxcp-field"><span>Linked WordPress account (optional)</span><?php wp_dropdown_users( array( 'name' => 'client[wp_user_id]', 'selected' => absint( $client['wp_user_id'] ?? 0 ), 'show_option_none' => 'No account linked', 'option_none_value' => 0, 'show' => 'display_name' ) ); ?></label>
-			<label class="dxcp-field"><span>Status</span><select name="client[status]"><option value="active" <?php selected( $client['status'] ?? 'active', 'active' ); ?>>Active</option><option value="archived" <?php selected( $client['status'] ?? 'active', 'archived' ); ?>>Archived</option></select></label>
+			<?php dxcp_hq_select( 'Status', 'client[status]', dxbs_client_statuses(), $client['status'] ?? 'active' ); ?>
 		</div>
 		<fieldset><legend>Associated services</legend><div class="dxcp-inline"><?php foreach ( $categories as $category ) : ?><label class="dxcp-checkbox"><input type="checkbox" name="client[category_ids][]" value="<?php echo absint( $category['id'] ); ?>" <?php checked( in_array( $category['id'], $client['category_ids'] ?? array(), true ) ); ?>><span><?php echo esc_html( $category['name'] . ( $category['active'] ? '' : ' (archived)' ) ); ?></span></label><?php endforeach; ?></div></fieldset>
 		<label class="dxcp-field"><span>Internal notes · managers only</span><textarea name="client[notes]" rows="4" maxlength="20000"><?php echo esc_textarea( $client['notes'] ?? '' ); ?></textarea></label>
@@ -159,11 +93,35 @@ function dxcp_business_client_form( $client, $categories ) {
 		</form>
 	</article>
 	<?php if ( ! empty( $client['id'] ) ) : ?>
-		<article class="dxcp-card"><?php dxcp_card_heading( 'CONNECTED WORK', 'Projects and financial history' ); ?>
-			<?php $projects = dxcp_is_admin() ? get_posts( array( 'post_type' => 'dxcp_project', 'post_status' => array( 'private', 'publish', 'draft' ), 'posts_per_page' => 100, 'meta_key' => '_dxbs_client_id', 'meta_value' => $client['id'] ) ) : array(); if ( ! dxcp_is_admin() ) : ?><p>A site administrator manages the private projects linked to this record.</p><?php elseif ( ! $projects ) : ?><p>No projects are linked to this directory record yet. Administrators can connect an existing client project using its Business classification fields.</p><?php endif; foreach ( $projects as $project ) : ?><div class="dxcp-list-row"><strong><?php echo esc_html( $project->post_title ); ?></strong><?php if ( dxcp_is_admin() ) : ?><a class="dxcp-text-link" href="<?php echo esc_url( get_edit_post_link( $project->ID ) ); ?>">Manage project</a><?php endif; ?></div><?php endforeach; ?>
-			<div class="dxcp-actions"><?php foreach ( array( 'quotations' => 'Quotations', 'invoices' => 'Invoices & credit notes', 'receipts' => 'Receipts', 'reports' => 'Payment history' ) as $view => $label ) : ?><a class="dxcp-btn dxcp-btn--small" href="<?php echo esc_url( dxcp_business_url( $view, array( 'client_id' => $client['id'] ) ) ); ?>"><?php echo esc_html( $label ); ?> <?php echo dxcp_icon( 'arrow' ); ?></a><?php endforeach; ?></div>
-			<p class="dxcp-muted">Open this client’s quotations, invoices, receipts and verified payment history above. Legacy calculator estimates are imported explicitly as reviewed drafts; legacy payments are not treated as verified funds.</p>
-		</article>
+        <?php $projects = dxcp_hq_projects_for_client( $client ); ?>
+        <article class="dxcp-card">
+            <?php dxcp_card_heading( '', 'Client work and accounts' ); ?>
+            <div class="dxcp-actions">
+                <?php
+                $actions = array(
+                    'projects' => array( 'Create project', array( 'new_project' => 1 ), array( 'active', 'prospect' ) ),
+                    'quotations' => array( 'New quotation', array( 'new_document' => 1 ), array( 'active', 'prospect' ) ),
+                    'invoices' => array( 'New invoice', array( 'new_document' => 1 ), array( 'active' ) ),
+                    'payments' => array( 'Record payment', array(), array_keys( dxbs_client_statuses() ) ),
+                );
+                foreach ( $actions as $view => [ $label, $args, $statuses ] ) :
+                    if ( ! in_array( $client['status'], $statuses, true ) ) continue;
+                    ?>
+                    <a class="dxcp-btn" href="<?php echo esc_url( dxcp_business_url( $view, $args + array( 'client_id' => $client['id'] ) ) ); ?>"><?php echo esc_html( $label ); ?></a>
+                <?php endforeach; ?>
+            </div>
+            <details class="dxcp-disclosure" open><summary>Projects (<?php echo count( $projects ); ?>)</summary>
+                <?php if ( ! $projects ) : ?><p class="dxcp-muted">No linked projects yet.</p><?php endif; ?>
+                <?php foreach ( $projects as $project ) { dxcp_hq_project_row( $project ); } ?>
+            </details>
+            <div class="dxcp-actions">
+                <?php foreach ( array( 'quotations' => 'Quotations', 'invoices' => 'Invoices and credit notes', 'payments' => 'Payments', 'receipts' => 'Receipts' ) as $view => $label ) : ?>
+                    <a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( $view, array( 'client_id' => $client['id'] ) ) ); ?>"><?php echo esc_html( $label ); ?> <?php echo dxcp_icon( 'arrow' ); ?></a>
+                <?php endforeach; ?>
+            </div>
+            <?php dxcp_hq_render_associations( array( 'client' => $client['id'] ), $projects ); ?>
+        </article>
+        <?php dxcp_hq_render_activity( 'client', $client['id'] ); ?>
 	<?php endif;
 }
 
@@ -203,32 +161,15 @@ function dxcp_business_settings() {
 			</details>
 		<?php endforeach; ?>
 	</article>
-	<?php
+	<?php dxcp_business_render_communications();
 }
 
 function dxcp_business_existing( $view ) {
-	$is_project = 'projects' === $view;
-	if ( ! $is_project && function_exists( 'dxcp_business_document_archive' ) ) { dxcp_business_document_archive(); }
-	?>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'YOUR EXISTING WORKFLOW', $is_project ? 'Client projects' : 'Private documents' ); ?>
-		<p><?php echo $is_project ? 'The existing Client projects remain the source of truth for service layout, client access, stages and shared links. There is no second project system to maintain.' : 'Client Drive remains the home for private documents, onboarding and task attachments. Private uploads continue to require account and ownership checks.'; ?></p>
-		<?php if ( dxcp_is_admin() ) : ?><a class="dxcp-btn dxcp-btn--dark" href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . ( $is_project ? 'dxcp_project' : 'dxcp_document' ) ) ); ?>">Manage <?php echo $is_project ? 'projects' : 'documents'; ?> <?php echo dxcp_icon( 'external' ); ?></a><?php else : ?><p class="dxcp-muted">A site administrator manages these project records. A Business role does not automatically grant access to clients’ private project files.</p><?php endif; ?>
-	</article>
-	<?php
-}
-
-function dxcp_business_planned( $view ) {
-	$modules = array(
-		'quotations' => array( 'Phase 2', 'Quotations', 'Drafts, reviewed calculator imports, line items, deposits and expiry dates; immutable issued snapshots and branded PDFs. Existing calculator estimates remain available in each client’s Quotations & payments workspace.' ),
-		'invoices' => array( 'Phase 2', 'Invoices', 'Sequential numbers, deposit and balance invoices, instalments, due dates, partial payments and corrections. No invoice can be issued from this screen yet.' ),
-		'payments' => array( 'Phase 3', 'Bank transfer payments', 'Secure invoice-specific instructions, client payment reports and explicit administrator verification. A client reporting payment will never mark an invoice paid or create revenue by itself.' ),
-		'receipts' => array( 'Phase 4', 'Receipts', 'Receipts generated from verified received payments and their exact allocations, with controlled PDF generation and email delivery.' ),
-		'reports' => array( 'Phase 5', 'Financial reports', 'Searchable reports, category filters, exports and automation based on the verified financial ledger. Legacy demonstration figures will stay separate.' ),
-	);
-	$module = $modules[ $view ];
-	?>
-	<article class="dxcp-card"><?php dxcp_card_heading( $module[0] . ' · PLANNED', $module[1] ); dxcp_badge( 'Not enabled yet' ); ?><p><?php echo esc_html( $module[2] ); ?></p><p>Phase 1 establishes the shared client, service and business records these workflows will use.</p><div class="dxcp-inline"><a class="dxcp-btn" href="<?php echo esc_url( dxcp_business_url( 'clients' ) ); ?>">Manage clients</a><a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'overview' ) ); ?>">Back to Business overview <?php echo dxcp_icon( 'arrow' ); ?></a></div></article>
-	<?php
+    if ( 'projects' === $view ) {
+        dxcp_hq_render_projects();
+    } else {
+        dxcp_hq_render_documents();
+    }
 }
 
 /* Classify existing CMS projects without changing the legacy layout or ownership model. */

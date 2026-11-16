@@ -15,6 +15,12 @@ function dxcp_finance_action( $action, $fields, $label, $confirmation = '', $cla
 }
 
 function dxcp_finance_filters( $view ) {
+	$statuses = array(
+		'quotations' => array( 'draft', 'sent', 'accepted', 'declined', 'expired', 'superseded' ),
+		'invoices'   => array( 'draft', 'issued', 'awaiting_payment', 'partially_paid', 'paid', 'overdue', 'credited', 'void' ),
+		'payments'   => array( 'reported', 'reviewed', 'verified', 'reversed' ),
+		'receipts'   => array( 'issued', 'void' ),
+	);
 	$filters = array(
 		'search' => sanitize_text_field( dxcp_business_query( 'search' ) ),
 		'status' => sanitize_key( dxcp_business_query( 'status' ) ),
@@ -32,7 +38,9 @@ function dxcp_finance_filters( $view ) {
 		<div class="dxbs-toolbar">
 			<?php dxcp_field( 'Search references or clients', 'search', $filters['search'], 'search' ); ?><label class="dxcp-field"><span>Client</span><select name="client_id"><option value="0">All clients</option><?php foreach ( dxbs_clients( array( 'status' => 'all', 'limit' => 200 ) ) as $client ) : ?><option value="<?php echo (int) $client['id']; ?>" <?php selected( $filters['client_id'], $client['id'] ); ?>><?php echo esc_html( $client['name'] ); ?></option><?php endforeach; ?></select></label>
 			<label class="dxcp-field"><span>Service</span><select name="category_id"><option value="0">All services</option><?php foreach ( dxbs_categories( false ) as $category ) : ?><option value="<?php echo (int) $category['id']; ?>" <?php selected( $filters['category_id'], $category['id'] ); ?>><?php echo esc_html( $category['name'] ); ?></option><?php endforeach; ?></select></label>
-			<label class="dxcp-field"><span>Status</span><select name="status"><option value="">All statuses</option><?php foreach ( array( 'draft', 'issued', 'sent', 'accepted', 'awaiting_payment', 'partially_paid', 'paid', 'overdue', 'void' ) as $status ) : ?><option value="<?php echo esc_attr( $status ); ?>" <?php selected( $filters['status'], $status ); ?>><?php echo esc_html( ucwords( str_replace( '_', ' ', $status ) ) ); ?></option><?php endforeach; ?></select></label>
+			<?php if ( isset( $statuses[ $view ] ) ) : ?>
+				<label class="dxcp-field"><span>Status</span><select name="status"><option value="">All statuses</option><?php foreach ( $statuses[ $view ] as $status ) : ?><option value="<?php echo esc_attr( $status ); ?>" <?php selected( $filters['status'], $status ); ?>><?php echo esc_html( ucwords( str_replace( '_', ' ', $status ) ) ); ?></option><?php endforeach; ?></select></label>
+			<?php endif; ?>
 			<?php dxcp_field( 'From', 'from', $filters['from'], 'date' ); dxcp_field( 'To', 'to', $filters['to'], 'date' ); ?>
 			<label class="dxcp-field"><span>Sort by</span><select name="orderby"><?php foreach ( array( 'date' => 'Most recent', 'number' => 'Reference', 'total' => 'Highest value' ) as $key => $label ) : ?><option value="<?php echo esc_attr( $key ); ?>" <?php selected( $filters['orderby'], $key ); ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select></label>
 			<button type="submit" class="dxcp-btn dxcp-btn--small">Apply filters</button>
@@ -51,11 +59,18 @@ function dxcp_business_financial( $view ) {
 	if ( $id ) {
 		$record = dxbs_document( $type, $id );
 		if ( ! $record ) { dxcp_empty( 'Document unavailable', 'Return to the document list and choose an available record.' ); return; }
-		if ( isset( $_GET['edit_document'] ) && 'draft' === $record['status'] && 'receipt' !== $type ) { dxcp_business_document_editor( $type, $record ); }
+		if ( isset( $_GET['edit_document'] ) && 'draft' === $record['status'] && 'receipt' !== $type && empty( $record['quote_id'] ) ) { dxcp_business_document_editor( $type, $record ); }
 		else { dxcp_business_document_detail( $type, $record ); }
 		return;
 	}
-	if ( isset( $_GET['new_document'] ) && in_array( $type, array( 'quote', 'invoice' ), true ) ) { dxcp_business_document_editor( $type ); return; }
+	if ( isset( $_GET['new_document'] ) && in_array( $type, array( 'quote', 'invoice' ), true ) ) {
+		dxcp_business_document_editor( $type, array(), array(
+			'client_id' => absint( dxcp_business_query( 'client_id', '0' ) ),
+			'category_id' => absint( dxcp_business_query( 'category_id', '0' ) ),
+			'project_id' => absint( dxcp_business_query( 'finance_project_id', '0' ) ),
+		) );
+		return;
+	}
 	?>
 	<article class="dxcp-card">
 		<?php dxcp_card_heading( 'CLEAR RECORDS', ucfirst( $view ), 'receipt' === $type ? '' : dxcp_business_url( $view, array( 'new_document' => 1 ) ), 'New ' . ( 'quote' === $type ? 'quotation' : 'invoice' ) ); ?>
@@ -88,11 +103,13 @@ function dxcp_business_document_table( $type, $records ) {
 	<?php
 }
 
-function dxcp_business_party_fields( $data, $nested = true ) {
+function dxcp_business_party_fields( $data, $nested = true, $type = 'quote' ) {
 	$prefix = $nested ? 'document[' : '';
 	$suffix = $nested ? ']' : '';
+	$allowed_statuses = 'quote' === $type ? array( 'active', 'prospect' ) : array( 'active' );
+	$clients = array_filter( dxbs_clients( array( 'status' => 'all', 'limit' => 200 ) ), static fn( $client ) => in_array( $client['status'], $allowed_statuses, true ) );
 	?>
-	<label class="dxcp-field"><span>Client</span><select name="<?php echo esc_attr( $prefix . 'client_id' . $suffix ); ?>" required><option value="">Choose a client</option><?php foreach ( dxbs_clients( array( 'limit' => 200 ) ) as $client ) : ?><option value="<?php echo (int) $client['id']; ?>" <?php selected( $data['client_id'] ?? 0, $client['id'] ); ?>><?php echo esc_html( $client['name'] . ( $client['company'] ? ' · ' . $client['company'] : '' ) ); ?></option><?php endforeach; ?></select></label>
+	<label class="dxcp-field"><span>Client</span><select name="<?php echo esc_attr( $prefix . 'client_id' . $suffix ); ?>" <?php if ( ! $nested ) echo 'required'; ?>><option value=""><?php echo $nested ? 'No client assigned' : 'Choose a client'; ?></option><?php foreach ( $clients as $client ) : ?><option value="<?php echo (int) $client['id']; ?>" <?php selected( $data['client_id'] ?? 0, $client['id'] ); ?>><?php echo esc_html( $client['name'] . ( $client['company'] ? ' · ' . $client['company'] : '' ) ); ?></option><?php endforeach; ?></select></label>
 	<label class="dxcp-field"><span>Service category</span><select name="<?php echo esc_attr( $prefix . 'category_id' . $suffix ); ?>" required><option value="">Choose a service</option><?php foreach ( dxbs_categories() as $category ) : ?><option value="<?php echo (int) $category['id']; ?>" <?php selected( $data['category_id'] ?? 0, $category['id'] ); ?>><?php echo esc_html( $category['name'] ); ?></option><?php endforeach; ?></select></label>
 	<label class="dxcp-field"><span>Related project (optional)</span><select name="<?php echo esc_attr( $prefix . 'project_id' . $suffix ); ?>"><option value="0">No project linked</option><?php foreach ( dxcp_projects() as $project ) : ?><option value="<?php echo (int) $project->ID; ?>" <?php selected( $data['project_id'] ?? 0, $project->ID ); ?>><?php echo esc_html( $project->post_title ); ?></option><?php endforeach; ?></select></label>
 	<?php
@@ -109,11 +126,12 @@ function dxcp_business_line_fields( $index, $line = array() ) {
 	<?php
 }
 
-function dxcp_business_document_editor( $type, $record = array() ) {
+function dxcp_business_document_editor( $type, $record = array(), $defaults = array() ) {
 	$view = 'quote' === $type ? 'quotations' : 'invoices';
 	$draft = $record['draft'] ?? array();
 	$lines = $draft['lines'] ?? ( $record['lines'] ?? array() );
 	$inputs = array_map( 'dxbs_line_to_input', $lines );
+	$party = $record ?: $defaults;
 	while ( count( $inputs ) < 3 ) { $inputs[] = array(); }
 	?>
 	<article class="dxcp-card">
@@ -121,8 +139,13 @@ function dxcp_business_document_editor( $type, $record = array() ) {
 		<p>Save and review the complete document before issuing it. Issued documents preserve their client, business, scope, amounts and terms.</p>
 		<?php dxcp_business_form( 'quote' === $type ? 'dxbs_save_quote' : 'dxbs_save_invoice' ); dxcp_finance_hidden( 'document[id]', $record['id'] ?? 0 ); dxcp_finance_hidden( 'document[version]', $record['version'] ?? 0 ); ?>
 		<div class="dxcp-form-grid">
-			<?php dxcp_field( 'Document title', 'document[title]', $record['title'] ?? '', 'text', true ); dxcp_business_party_fields( $record ); dxcp_field( 'Supply / proposed service date', 'document[supply_date]', $record['supply_date'] ?? wp_date( 'Y-m-d' ), 'date', true ); dxcp_field( 'quote' === $type ? 'Quotation expiry date' : 'Payment due date', 'document[' . ( 'quote' === $type ? 'expires_at' : 'due_date' ) . ']', substr( $record[ 'quote' === $type ? 'expires_at' : 'due_date' ] ?? '', 0, 10 ), 'date', true ); ?>
+			<?php dxcp_field( 'Document title', 'document[title]', $record['title'] ?? '', 'text', true ); dxcp_business_party_fields( $party, true, $type ); dxcp_field( 'Supply / proposed service date', 'document[supply_date]', $record['supply_date'] ?? wp_date( 'Y-m-d' ), 'date', true ); dxcp_field( 'quote' === $type ? 'Quotation expiry date' : 'Payment due date', 'document[' . ( 'quote' === $type ? 'expires_at' : 'due_date' ) . ']', substr( $record[ 'quote' === $type ? 'expires_at' : 'due_date' ] ?? '', 0, 10 ), 'date', true ); ?>
 		</div>
+		<fieldset class="dxcp-form-grid"><legend>Billing details for documents without a client</legend>
+			<?php foreach ( ['name'=>'Recipient name','company'=>'Company','email'=>'Email','billing_address_1'=>'Street address','billing_city'=>'City','billing_postcode'=>'Postcode','billing_country'=>'Country'] as $key => $label ) {
+				dxcp_field( $label, 'document[standalone_recipient][' . $key . ']', $draft['standalone_recipient'][$key] ?? '', $key === 'email' ? 'email' : 'text' );
+			} ?>
+		</fieldset>
 		<fieldset><legend>Line items</legend>
 			<p class="dxcp-muted">Leave unused rows empty. Quantities support three decimal places; prices use pounds and pence. VAT requires a VAT-registered business setting.</p>
 			<div data-dxbs-lines><?php foreach ( $inputs as $index => $line ) { dxcp_business_line_fields( $index, $line ); } ?></div>
@@ -159,24 +182,44 @@ function dxcp_business_document_detail( $type, $record ) {
 	?>
 	<article class="dxcp-card"><?php dxcp_card_heading( strtoupper( $type ), $record['title'] ?? ucfirst( $type ), dxcp_business_url( $view ), 'Back to documents' ); dxcp_business_document_summary( $type, $record ); ?>
 		<div class="dxcp-inline"><a class="dxcp-btn" href="<?php echo esc_url( $record['document_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo empty( $record['issued_at'] ) && ! in_array( $type, array( 'receipt', 'credit' ), true ) ? 'Preview draft PDF' : 'Download PDF'; ?> <?php echo dxcp_icon( 'external' ); ?></a>
-		<?php if ( 'draft' === ( $record['status'] ?? '' ) && in_array( $type, array( 'quote', 'invoice' ), true ) ) : ?><a class="dxcp-btn" href="<?php echo esc_url( dxcp_business_url( $view, array( 'document_id' => $id, 'edit_document' => 1 ) ) ); ?>">Edit draft</a><?php endif; ?></div>
-		<?php if ( 'quote' === $type ) { dxcp_finance_action( 'dxbs_duplicate_quote', array( 'id' => $id ), 'Duplicate into a new draft' ); } ?>
+		<?php if ( 'draft' === ( $record['status'] ?? '' ) && in_array( $type, array( 'quote', 'invoice' ), true ) && empty( $record['quote_id'] ) ) : ?><a class="dxcp-btn" href="<?php echo esc_url( dxcp_business_url( $view, array( 'document_id' => $id, 'edit_document' => 1 ) ) ); ?>">Edit draft</a><?php endif; ?>
+		<?php if ( 'quote' === $type ) :
+			dxcp_finance_action( 'dxbs_duplicate_quote', array( 'id' => $id ), 'Duplicate into a new draft' );
+			if ( in_array( $record['status'], array( 'sent', 'expired' ), true ) ) {
+				dxcp_finance_action( 'dxbs_duplicate_quote', array( 'id' => $id, 'revision' => 1 ), 'Prepare revision' );
+			}
+		endif; ?>
+		</div>
+		<?php if ( ! empty( $record['snapshot']['revises_quote_id'] ) ) : ?><p>Revises <a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'quotations', array( 'document_id' => $record['snapshot']['revises_quote_id'] ) ) ); ?>"><?php echo esc_html( $record['snapshot']['revises_quote_number'] ); ?></a>.</p><?php endif; ?>
 	</article>
 	<?php if ( 'draft' === ( $record['status'] ?? '' ) && in_array( $type, array( 'quote', 'invoice' ), true ) ) : ?>
 		<article class="dxcp-card"><?php dxcp_card_heading( 'REVIEW BEFORE ISSUING', 'Make this document official' ); ?><p>Check the client’s billing identity, service date, line items, price and terms. Issuing assigns the next document number and preserves this version. Complete your legal business details in Settings first.</p>
 			<?php dxcp_business_form( 'dxbs_issue_document' ); foreach ( array( 'type' => $type, 'id' => $id, 'version' => $record['version'] ) as $key => $value ) { dxcp_finance_hidden( $key, $value ); } ?>
 			<label class="dxcp-checkbox"><input type="checkbox" name="confirm_issue" value="1" required><span>I have reviewed this exact document and authorise it to be issued.</span></label><label class="dxcp-checkbox"><input type="checkbox" name="send_email" value="1"><span>Email this document to the client after issuing.</span></label><button type="submit" class="dxcp-btn dxcp-btn--dark">Issue <?php echo 'quote' === $type ? 'quotation' : 'invoice'; ?></button></form>
 		</article>
-	<?php else : ?>
-		<article class="dxcp-card"><?php dxcp_card_heading( 'DELIVERY', 'Send a document copy' ); ?><p>Send the issued PDF to the client address saved on this document. Delivery attempts and failures are recorded; duplicate sends are prevented.</p><?php dxcp_finance_action( 'dxbs_send_document', array( 'type' => $type, 'id' => $id ), 'Email document', array( 'confirm_send', 'Send this document to its saved client email address.' ) ); ?></article>
+	<?php elseif ( ! in_array( $record['status'], array( 'void', 'superseded' ), true ) ) : ?>
+		<article class="dxcp-card"><?php dxcp_card_heading( 'DELIVERY', 'Send a document copy' ); ?>
+			<?php dxcp_business_form( 'dxbs_send_document' ); dxcp_finance_hidden( 'type', $type ); dxcp_finance_hidden( 'id', $id ); ?>
+			<?php dxcp_field( 'Send to email address', 'recipient_email', '', 'email' ); ?>
+			<p>Leave the email blank to use the saved billing address for delivery.</p>
+			<label class="dxcp-checkbox"><input type="checkbox" name="confirm_send" value="1" required><span>I authorise sending this PDF to the selected email address.</span></label>
+			<button class="dxcp-btn" type="submit">Email document</button></form>
+		</article>
 	<?php endif;
-	if ( 'quote' === $type && 'accepted' === ( $record['status'] ?? '' ) ) : ?>
-		<article class="dxcp-card"><?php dxcp_card_heading( 'ACCEPTED SCOPE', 'Create the invoice plan' ); ?><p>Create linked draft invoices for the accepted total. A deposit and final balance share the same project and cannot exceed the agreed value. Review and issue each invoice separately.</p>
+	if ( 'quote' === $type && 'accepted' === ( $record['status'] ?? '' ) && ! empty( $record['converted_at'] ) ) : ?>
+		<article class="dxcp-card"><?php dxcp_card_heading( 'ACCEPTED SCOPE', 'Linked invoices' ); ?>
+			<?php dxcp_business_document_table( 'invoice', dxbs_financial_documents( 'invoice', array( 'quote_id' => $id ) ) ); ?>
+		</article>
+	<?php elseif ( 'quote' === $type && 'accepted' === ( $record['status'] ?? '' ) ) : ?>
+		<article class="dxcp-card"><?php dxcp_card_heading( 'ACCEPTED SCOPE', 'Create the invoice plan' ); ?><p>Create linked draft invoices for the accepted total. A deposit and final balance stay linked to this quotation and cannot exceed the agreed value. Review and issue each invoice separately.</p>
 			<?php dxcp_business_form( 'dxbs_convert_quote' ); dxcp_finance_hidden( 'id', $id ); dxcp_finance_hidden( 'version', $record['version'] ); ?>
 			<div class="dxcp-form-grid"><label class="dxcp-field"><span>Payment plan</span><select name="plan"><option value="full">Full amount</option><option value="deposit_final">Agreed deposit + final balance</option><option value="instalments">Equal instalments</option></select></label><?php dxcp_field( 'Instalment count (if selected)', 'count', '3', 'number' ); dxcp_field( 'First payment due', 'first_due_date', wp_date( 'Y-m-d' ), 'date', true ); ?></div><button type="submit" class="dxcp-btn dxcp-btn--dark">Create draft invoices</button></form>
 		</article>
 	<?php endif;
 	if ( 'invoice' === $type && ! empty( $record['issued_at'] ) && ! in_array( $record['status'], array( 'void', 'cancelled' ), true ) ) : ?>
+		<?php if ( $record['balance_minor'] > 0 ) : ?>
+			<p><a class="dxcp-btn dxcp-btn--dark" href="<?php echo esc_url( dxcp_business_url( 'payments', array( 'invoice_id' => $id ) ) . '#record-payment' ); ?>">Record a bank payment <?php echo dxcp_icon( 'arrow' ); ?></a></p>
+		<?php endif; ?>
 		<article class="dxcp-card"><?php dxcp_card_heading( 'BANK TRANSFER', 'Payment instructions' ); ?>
 			<?php $link = dxbs_invoice_payment_url( $id ); if ( $link && ! is_wp_error( $link ) ) : ?><a class="dxcp-btn" href="<?php echo esc_url( $link ); ?>" target="_blank" rel="noopener noreferrer">View payment instructions <?php echo dxcp_icon( 'external' ); ?></a><?php endif; ?>
 			<p>Create a private link when you want to share this invoice’s transfer instructions. Replacing the link revokes the previous one.</p>
@@ -191,18 +234,52 @@ function dxcp_business_document_detail( $type, $record ) {
 }
 
 function dxcp_business_payment_management() {
+	$client_id = absint( dxcp_business_query( 'client_id', '0' ) );
 	$review = dxbs_payment_review();
+	$selected_invoice = absint( dxcp_business_query( 'invoice_id', '0' ) );
+	$report_id = absint( dxcp_business_query( 'report_id', '0' ) );
+	$selected_report = $report_id && $selected_invoice ? dxbs_payment_records( array( 'invoice_id' => $selected_invoice, 'status' => 'reported' ) ) : array();
+	$report_ids = array_map( 'intval', array_column( $selected_report, 'id' ) );
+	if ( ! in_array( $report_id, $report_ids, true ) ) { $report_id = 0; }
 	if ( $review ) : ?>
-		<article class="dxcp-card"><?php dxcp_card_heading( 'STEP 2 OF 2 · BANK VERIFICATION', 'Confirm the funds have arrived' ); ?><p>Invoice <?php echo esc_html( $review['invoice_number'] ); ?> · <?php echo esc_html( dxcp_money( $review['amount_minor'] ) ); ?> received on <?php echo esc_html( $review['bank_date'] ); ?>.</p><p>Bank reference: <?php echo esc_html( $review['bank_reference'] ?: 'Not supplied' ); ?>. Receipt delivery: <?php echo 'send' === $review['receipt_delivery'] ? 'Generate and email after confirmation' : 'Generate and hold for manual delivery'; ?>.</p>
+		<article class="dxcp-card"><?php dxcp_card_heading( 'STEP 2 OF 2 · BANK VERIFICATION', 'Confirm the funds have arrived' ); ?><p><?php echo esc_html( $review['client_name'] ?? '' ); ?> · Invoice <?php echo esc_html( $review['invoice_number'] ); ?> · <?php echo esc_html( dxcp_money( $review['amount_minor'] ) ); ?> received on <?php echo esc_html( $review['bank_date'] ); ?>.</p><p>Bank reference: <?php echo esc_html( $review['bank_reference'] ?: 'Not supplied' ); ?>. Receipt delivery: <?php echo 'send' === $review['receipt_delivery'] ? 'Generate and email after confirmation' : 'Generate and hold for manual delivery'; ?>.</p>
+			<?php if ( ! empty( $review['report_id'] ) ) : ?><p>This payment will review transfer report #<?php echo (int) $review['report_id']; ?>.</p><?php endif; ?>
+			<?php if ( ! empty( $review['notes'] ) ) : ?><p>Internal note: <?php echo nl2br( esc_html( $review['notes'] ) ); ?></p><?php endif; ?>
 			<?php dxcp_business_form( 'dxbs_verify_payment' ); dxcp_finance_hidden( 'token', $review['token'] ); ?><label class="dxcp-checkbox"><input type="checkbox" name="verified_bank" value="1" required><span>I have checked my actual bank account and verified that these funds have arrived.</span></label><button class="dxcp-btn dxcp-btn--dark" type="submit">Confirm verified payment</button></form>
 		</article>
 	<?php endif; ?>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'STEP 1 OF 2', 'Record a bank payment' ); ?><p>A client’s transfer report is a request for you to check your bank. It never marks an invoice paid or authorises a receipt.</p>
-		<?php dxcp_business_form( 'dxbs_prepare_payment' ); ?><div class="dxcp-form-grid"><label class="dxcp-field"><span>Invoice</span><select name="invoice_id" required><option value="">Choose an outstanding invoice</option><?php foreach ( dxbs_financial_documents( 'invoice', array( 'limit' => 200 ) ) as $invoice ) : if ( empty( $invoice['issued_at'] ) || (int) $invoice['balance_minor'] <= 0 || in_array( $invoice['status'], array( 'void', 'cancelled' ), true ) ) { continue; } ?><option value="<?php echo (int) $invoice['id']; ?>"><?php echo esc_html( $invoice['number'] . ' · ' . $invoice['client_name'] . ' · ' . dxcp_money( $invoice['balance_minor'] ) . ' outstanding' ); ?></option><?php endforeach; ?></select></label><?php dxcp_field( 'Amount actually received (£)', 'amount', '', 'text', true ); dxcp_field( 'Bank payment date', 'bank_date', wp_date( 'Y-m-d' ), 'date', true ); dxcp_field( 'Bank transaction reference (optional)', 'bank_reference' ); ?><label class="dxcp-field"><span>Receipt after verification</span><select name="receipt_delivery"><option value="hold">Generate receipt and hold email</option><option value="send">Generate and email after I confirm</option></select></label></div><label class="dxcp-checkbox"><input type="checkbox" name="allow_duplicate" value="1"><span>If this matches an earlier entry, I confirm it is a separate transfer I can identify in my bank account.</span></label><button class="dxcp-btn dxcp-btn--dark" type="submit">Review payment details</button></form>
+	<article class="dxcp-card" id="record-payment"><?php dxcp_card_heading( 'STEP 1 OF 2', 'Record a bank payment' ); ?>
+		<p>Review the amount against your bank statement before confirming the transfer.</p>
+		<?php if ( $report_id ) : ?><p>Reconciling client transfer report #<?php echo (int) $report_id; ?>. <a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'payments' ) . '#record-payment' ); ?>">Choose another invoice</a></p><?php endif; ?>
+		<?php dxcp_business_form( 'dxbs_prepare_payment' ); ?>
+		<div class="dxcp-form-grid">
+			<?php if ( $report_id ) :
+				dxcp_finance_hidden( 'report_id', $report_id );
+				dxcp_finance_hidden( 'invoice_id', $selected_invoice );
+				$invoice = dxbs_document( 'invoice', $selected_invoice );
+				?>
+				<p><strong><?php echo esc_html( $invoice['number'] ?? '' ); ?></strong> · <?php echo esc_html( $invoice['client_name'] ?? '' ); ?></p>
+			<?php else : ?>
+				<label class="dxcp-field"><span>Invoice and client</span><select name="invoice_id" required>
+					<option value="">Choose an outstanding invoice</option>
+					<?php foreach ( dxbs_financial_documents( 'invoice', array( 'limit' => 200, 'status' => 'outstanding', 'client_id' => $client_id ) ) as $invoice ) : ?>
+						<option value="<?php echo (int) $invoice['id']; ?>" <?php selected( $selected_invoice, $invoice['id'] ); ?>><?php echo esc_html( $invoice['number'] . ' · ' . $invoice['client_name'] . ' · ' . dxcp_money( $invoice['balance_minor'] ) . ' outstanding' ); ?></option>
+					<?php endforeach; ?>
+				</select></label>
+			<?php endif; ?>
+			<?php dxcp_field( 'Amount actually received (£)', 'amount', '', 'text', true ); dxcp_field( 'Bank payment date', 'bank_date', wp_date( 'Y-m-d' ), 'date', true ); dxcp_field( 'Bank transaction reference (optional)', 'bank_reference' ); ?>
+			<label class="dxcp-field"><span>Receipt after verification</span><select name="receipt_delivery"><option value="hold">Generate receipt and hold email</option><option value="send">Generate and email after I confirm</option></select></label>
+		</div>
+		<label class="dxcp-field"><span>Internal payment note (optional)</span><textarea name="notes" maxlength="4000" rows="3"></textarea></label>
+		<label class="dxcp-checkbox"><input type="checkbox" name="allow_duplicate" value="1"><span>If this matches an earlier entry, I confirm it is a separate transfer I can identify in my bank account.</span></label>
+		<button class="dxcp-btn dxcp-btn--dark" type="submit">Review payment details</button></form>
 	</article>
 	<article class="dxcp-card"><?php dxcp_card_heading( 'ACTUAL RECORDS', 'Payment activity' ); $filters = dxcp_finance_filters( 'payments' ); $payments = dxbs_payment_records( $filters ); if ( ! $payments ) { dxcp_empty( 'No matching payment activity', 'Reported transfers and verified payments will appear here.', 'payments' ); } foreach ( $payments as $payment ) : ?>
-		<div class="dxcp-list-row"><span><strong><?php echo esc_html( $payment['invoice_number'] ?? 'Invoice #' . $payment['invoice_id'] ); ?></strong><small><?php echo esc_html( $payment['client_name'] ?? '' ); ?> · <?php echo esc_html( $payment['bank_date'] ?: 'Reported transfer' ); ?></small></span><strong><?php echo esc_html( dxcp_money( $payment['amount_minor'] ) ); ?></strong><?php dxcp_badge( ! empty( $payment['reversed_at'] ) ? 'Reversed' : ucfirst( $payment['status'] ), 'verified' === $payment['status'] && empty( $payment['reversed_at'] ) ? 'green' : '' ); ?></div>
-		<?php if ( 'verified' === $payment['status'] && empty( $payment['reversed_at'] ) ) : ?>
+		<div class="dxcp-list-row"><span><strong><?php echo esc_html( $payment['invoice_number'] ?? 'Invoice #' . $payment['invoice_id'] ); ?></strong><small><?php echo esc_html( $payment['client_name'] ?? '' ); ?> · <?php echo esc_html( $payment['bank_date'] ?: 'Reported transfer' ); ?></small></span><strong><?php echo 'verified' === $payment['status'] ? esc_html( dxcp_money( $payment['amount_minor'] ) ) : 'Amount unconfirmed'; ?></strong><?php dxcp_badge( ! empty( $payment['reversed_at'] ) ? 'Reversed' : ucfirst( $payment['status'] ), 'verified' === $payment['status'] && empty( $payment['reversed_at'] ) ? 'green' : '' ); ?></div>
+		<?php if ( 'reported' === $payment['status'] ) : ?>
+			<p><a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'payments', array( 'invoice_id' => $payment['invoice_id'], 'report_id' => $payment['id'] ) ) . '#record-payment' ); ?>">Review this transfer <?php echo dxcp_icon( 'arrow' ); ?></a></p>
+		<?php elseif ( 'verified' === $payment['status'] && empty( $payment['reversed_at'] ) ) : ?>
+			<?php if ( ! empty( $payment['receipt_id'] ) ) : ?><p><a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'receipts', array( 'document_id' => $payment['receipt_id'] ) ) ); ?>">Open receipt <?php echo dxcp_icon( 'arrow' ); ?></a></p><?php endif; ?>
 			<details class="dxcp-disclosure"><summary>Receipt and correction options</summary><?php dxcp_business_form( 'dxbs_receipt' ); dxcp_finance_hidden( 'payment_id', $payment['id'] ); ?><label class="dxcp-field"><span>Receipt delivery</span><select name="delivery"><option value="hold">Generate and hold</option><option value="send">Generate and email</option></select></label><button type="submit" class="dxcp-btn dxcp-btn--small">Prepare receipt</button></form>
 			<?php dxcp_business_form( 'dxbs_reverse_payment' ); dxcp_finance_hidden( 'payment_id', $payment['id'] ); ?><label class="dxcp-field"><span>Reason for reversing this payment record</span><textarea name="reason" required rows="2" maxlength="4000"></textarea></label><label class="dxcp-checkbox"><input type="checkbox" name="verified_bank" value="1" required><span>I have checked the bank record and authorise this reversal. This does not move money through the bank.</span></label><button type="submit" class="dxcp-btn dxcp-btn--small">Reverse payment record</button></form></details>
 		<?php endif; endforeach; ?>
@@ -218,16 +295,16 @@ function dxcp_business_reports() {
 		<div class="dxcp-overview-grid"><div><h3>Received by month</h3><?php if ( empty( $report['monthly'] ) ) : ?><p class="dxcp-muted">No verified funds in this period.</p><?php endif; foreach ( $report['monthly'] ?? array() as $row ) : ?><div class="dxcp-list-row"><span><?php echo esc_html( $row['month'] ); ?></span><strong><?php echo esc_html( dxcp_money( $row['received_minor'] ) ); ?></strong></div><?php endforeach; ?></div><div><h3>Received by service</h3><?php foreach ( $report['categories'] ?? array() as $row ) : ?><div class="dxcp-list-row"><span><?php echo esc_html( $row['name'] ); ?></span><strong><?php echo esc_html( dxcp_money( $row['received_minor'] ) ); ?></strong></div><?php endforeach; ?></div></div>
 		<details class="dxcp-disclosure"><summary>Export records for bookkeeping</summary><?php dxcp_business_form( 'dxbs_export' ); foreach ( array( 'from', 'to', 'category_id', 'client_id' ) as $key ) { dxcp_finance_hidden( $key, $filters[ $key ] ?? '' ); } ?><label class="dxcp-field"><span>Export</span><select name="report"><option value="payments">Payment history</option><option value="invoices">Invoices</option><option value="quotes">Quotations</option><option value="clients">Client directory</option></select></label><button class="dxcp-btn dxcp-btn--small" type="submit">Download CSV</button></form></details>
 	</article>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'DELIVERY HISTORY', 'Email activity' ); $jobs = dxbs_email_jobs( array( 'limit' => 50 ) ); if ( ! $jobs ) : ?><p class="dxcp-muted">No email activity yet. Documents are sent only when authorised.</p><?php endif; foreach ( $jobs as $job ) : ?><div class="dxcp-list-row"><span><strong><?php echo esc_html( ucwords( str_replace( '_', ' ', $job['template'] ) ) ); ?></strong><small><?php echo esc_html( $job['entity_type'] . ' #' . $job['entity_id'] . ' · ' . $job['created_at'] ); ?></small><?php if ( ! empty( $job['last_error'] ) ) : ?><small><?php echo esc_html( $job['last_error'] ); ?></small><?php endif; ?></span><?php dxcp_badge( ucfirst( $job['status'] ), 'sent' === $job['status'] ? 'green' : '' ); ?></div><?php if ( in_array( $job['status'], array( 'failed', 'held' ), true ) ) { dxcp_finance_action( 'dxbs_retry_email', array( 'job_id' => $job['id'] ), 'Retry authorised delivery', array( 'confirm_send', 'Send this previously authorised email.' ) ); } endforeach; ?>
-	</article>
+    <?php dxcp_hq_operational_reports( $report, $filters ); dxcp_business_communications_notice(); ?>
+    <?php dxcp_business_render_email_activity( dxbs_email_jobs( array( 'limit' => 50 ) ), 'reports' ); ?>
 	<?php
 }
 
 function dxcp_business_document_archive() {
 	if ( ! function_exists( 'dxbs_financial_documents' ) || ! dxbs_is_manager() ) { return; }
 	?>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'YOUR DOCUMENT ARCHIVE', 'Issued financial documents' ); ?><p>Issued PDFs are preserved privately with their original document snapshots. Drafts are marked clearly and remain editable until issued.</p>
-		<?php $filters = dxcp_finance_filters( 'documents' ); foreach ( array( 'quote' => 'Quotations', 'invoice' => 'Invoices', 'receipt' => 'Receipts', 'credit' => 'Credit notes' ) as $type => $label ) : ?><h3><?php echo esc_html( $label ); ?></h3><?php dxcp_business_document_table( $type, dxbs_financial_documents( $type, $filters ) ); endforeach; ?>
+	<article class="dxcp-card"><?php dxcp_card_heading( 'YOUR DOCUMENT ARCHIVE', 'Issued financial documents' ); ?><p>This archive contains issued documents and preserves the original versions privately.</p>
+		<?php $filters = dxcp_finance_filters( 'documents' ); foreach ( array( 'quote' => 'Quotations', 'invoice' => 'Invoices', 'receipt' => 'Receipts', 'credit' => 'Credit notes' ) as $type => $label ) : ?><h3><?php echo esc_html( $label ); ?></h3><?php dxcp_business_document_table( $type, dxbs_financial_documents( $type, $filters + array( 'issued_only' => true ) ) ); endforeach; ?>
 		<a class="dxcp-text-link" href="<?php echo esc_url( dxcp_business_url( 'reports' ) ); ?>">View reports and email delivery history <?php echo dxcp_icon( 'arrow' ); ?></a>
 	</article>
 	<?php
@@ -249,7 +326,7 @@ function dxcp_business_client_records( $c ) {
 }
 
 function dxcp_render_business_client_drive( $c ) {
-	$records = dxcp_business_client_records( $c );
+	$records = array_filter( dxcp_business_client_records( $c ), static fn( $record ) => 'void' !== $record['status'] );
 	if ( ! $records ) { return; }
 	?>
 	<article class="dxcp-card"><?php dxcp_card_heading( 'KEPT TOGETHER', 'Your financial documents' ); ?><div class="dxcp-document-grid">
@@ -263,15 +340,52 @@ function dxcp_render_business_client_payments( $c ) {
 	if ( ! function_exists( 'dxbs_account_client_id' ) || dxbs_is_manager() ) { return; }
 	$client_id = dxbs_account_client_id();
 	if ( ! $client_id ) { return; }
+	$view = $c['finance_view'] ?? '';
 	$types = array( 'quote' => 'Quotations', 'invoice' => 'Invoices', 'receipt' => 'Receipts', 'credit' => 'Credit notes' );
+	if ( 'quotations' === $view ) { $types = array_intersect_key( $types, array( 'quote' => true ) ); }
+	if ( 'payments' === $view ) { unset( $types['quote'] ); }
+	$records = array_filter( dxcp_business_client_records( $c ), static fn( $record ) => isset( $types[ $record['document_type'] ] ) );
+	$notice_key = 'dxbs_client_notice_' . get_current_user_id();
+	$notice = get_transient( $notice_key );
+	if ( $notice ) { delete_transient( $notice_key ); }
 	?>
-	<article class="dxcp-card"><?php dxcp_card_heading( 'YOUR AGREED DOCUMENTS', 'Quotations, invoices & receipts' ); ?>
-		<?php foreach ( $types as $type => $label ) : $records = dxbs_client_documents( $client_id, $type ); $records = array_values( array_filter( $records, static fn( $record ) => empty( $record['project_id'] ) || empty( $c['pid'] ) || (int) $record['project_id'] === (int) $c['pid'] ) ); if ( ! $records ) { continue; } ?><h3><?php echo esc_html( $label ); ?></h3><?php foreach ( $records as $record ) : ?>
-			<div class="dxcp-quotation"><div class="dxcp-inline"><strong><?php echo esc_html( $record['number'] ); ?></strong><?php dxcp_badge( $record['status_label'] ); ?><span><?php echo esc_html( dxcp_money( $record['total_minor'] ?? $record['amount_minor'] ?? 0 ) ); ?></span><a class="dxcp-text-link" href="<?php echo esc_url( $record['document_url'] ); ?>" target="_blank" rel="noopener noreferrer">Review document <?php echo dxcp_icon( 'external' ); ?></a></div>
-				<?php if ( 'quote' === $type && in_array( $record['status'], array( 'issued', 'sent', 'awaiting_acceptance' ), true ) ) : dxcp_form_start( 'dxbs_accept_quote' ); dxcp_finance_hidden( 'id', $record['id'] ); dxcp_finance_hidden( 'version', $record['version'] ); ?><label class="dxcp-checkbox"><input type="checkbox" name="confirmation" value="1" required><span>I have reviewed this exact quotation, including its scope and payment terms, and I accept it.</span></label><button class="dxcp-btn dxcp-btn--dark" type="submit">Accept quotation</button></form><?php endif; ?>
-				<?php if ( 'invoice' === $type ) : ?><p>Outstanding balance: <strong><?php echo esc_html( dxcp_money( $record['balance_minor'] ) ); ?></strong></p><?php if ( (int) $record['balance_minor'] > 0 && function_exists( 'dxbs_invoice_payment_url' ) ) : $url = dxbs_invoice_payment_url( $record['id'] ); if ( $url && ! is_wp_error( $url ) ) : ?><a class="dxcp-btn dxcp-btn--small" href="<?php echo esc_url( $url ); ?>">Bank transfer instructions <?php echo dxcp_icon( 'arrow' ); ?></a><?php endif; endif; endif; ?>
-			</div>
-		<?php endforeach; endforeach; ?>
+	<article class="dxcp-card">
+		<?php dxcp_card_heading( 'YOUR FINANCIAL RECORDS', 'quotations' === $view ? 'Quotations' : 'Invoices and receipts' ); ?>
+		<?php if ( $notice ) : ?><p class="dxcp-notice" role="status"><?php echo esc_html( is_array( $notice ) ? $notice['message'] : $notice ); ?></p><?php endif; ?>
+		<?php if ( ! $records ) : ?><p class="dxcp-muted">Issued documents will appear here when they are ready.</p><?php endif; ?>
+		<?php foreach ( $types as $type => $label ) :
+			$group = array_filter( $records, static fn( $record ) => $record['document_type'] === $type );
+			if ( ! $group ) { continue; }
+			?>
+			<h3><?php echo esc_html( $label ); ?></h3>
+			<?php foreach ( $group as $record ) : ?>
+				<div class="dxcp-quotation">
+					<div class="dxcp-inline">
+						<strong><?php echo esc_html( $record['number'] ); ?></strong>
+						<?php dxcp_badge( $record['status_label'] ); ?>
+						<span><?php echo esc_html( dxcp_money( $record['total_minor'] ?? $record['amount_minor'] ?? 0 ) ); ?></span>
+						<?php if ( 'void' !== $record['status'] ) : ?><a class="dxcp-text-link" href="<?php echo esc_url( $record['document_url'] ); ?>" target="_blank" rel="noopener noreferrer">Review document <?php echo dxcp_icon( 'external' ); ?></a><?php endif; ?>
+					</div>
+					<?php if ( ! empty( $record['title'] ) ) : ?><p><?php echo esc_html( $record['title'] ); ?></p><?php endif; ?>
+					<?php if ( 'quote' === $type && 'sent' === $record['status'] ) : ?>
+						<?php dxcp_form_start( 'dxbs_accept_quote' ); dxcp_finance_hidden( 'id', $record['id'] ); dxcp_finance_hidden( 'version', $record['version'] ); dxcp_finance_hidden( 'finance_view', $view ); ?>
+							<label class="dxcp-checkbox"><input type="checkbox" name="confirmation" value="1" required><span>I have reviewed this exact quotation and accept its scope and payment terms.</span></label>
+							<button class="dxcp-btn dxcp-btn--dark" type="submit">Accept quotation</button>
+						</form>
+						<details class="dxcp-disclosure"><summary>Decline this quotation</summary>
+							<?php dxcp_form_start( 'dxbs_decline_quote' ); dxcp_finance_hidden( 'id', $record['id'] ); dxcp_finance_hidden( 'version', $record['version'] ); dxcp_finance_hidden( 'finance_view', $view ); ?>
+								<label class="dxcp-checkbox"><input type="checkbox" name="confirmation" value="1" required><span>I confirm I want to decline this quotation.</span></label>
+								<button class="dxcp-btn dxcp-btn--small" type="submit">Decline quotation</button>
+							</form>
+						</details>
+					<?php elseif ( 'invoice' === $type ) : ?>
+						<p>Outstanding balance <strong><?php echo esc_html( dxcp_money( $record['balance_minor'] ) ); ?></strong></p>
+						<?php $url = (int) $record['balance_minor'] > 0 ? dxbs_invoice_payment_url( $record['id'] ) : ''; ?>
+						<?php if ( $url ) : ?><a class="dxcp-btn dxcp-btn--small" href="<?php echo esc_url( $url ); ?>">Bank transfer instructions <?php echo dxcp_icon( 'arrow' ); ?></a><?php endif; ?>
+					<?php endif; ?>
+				</div>
+			<?php endforeach; ?>
+		<?php endforeach; ?>
 	</article>
 	<?php
 }

@@ -2651,3 +2651,24 @@ require_once get_template_directory() . '/inc/bus-polls.php';
 require_once get_template_directory() . '/inc/bus-journey-pins.php';
 
 require_once get_template_directory() . '/inc/gym-dashboard.php';
+
+require_once get_theme_file_path( '/inc/dx-command.php' );
+
+add_action( 'init', function () {
+	register_post_type( 'logitdown', array(
+		'labels' => array( 'name' => 'LogItDown', 'singular_name' => 'LogItDown' ),
+		'public' => false,
+		'show_ui' => true,
+		'exclude_from_search' => true,
+		'map_meta_cap' => true,
+		'menu_icon' => 'dashicons-smartphone',
+		'supports' => array( 'title', 'editor', 'thumbnail', 'revisions' ),
+	) );
+} );
+
+add_filter( 'the_content', function ( $content ) {
+	if ( is_page( 'portfolio' ) && in_the_loop() && is_main_query() && get_page_by_path( 'apps' ) ) {
+		$content .= '<section class="dx-app-entry" aria-labelledby="portfolio-apps-title"><div class="dx-app-entry__inner container"><div><h2 id="portfolio-apps-title">Apps</h2><p>A new app is in development.</p><a class="dx-cta dx-cta--outline" href="' . esc_url( home_url( '/apps/' ) ) . '">Coming soon <span aria-hidden="true">↗︎</span></a></div><div class="dx-app-teaser__art" aria-hidden="true"><span></span><span></span><span></span></div></div></section>';
+	}
+	return $content;
+}, 25 );
