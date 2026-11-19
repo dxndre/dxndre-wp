@@ -769,7 +769,7 @@ function initEveningScenes(reduced) {
 		portfolio.querySelector(':scope > img')?.animate([{ opacity: 0, translate: '45px 25px' }, { opacity: 1, translate: '0 0' }], { duration: 1200, delay: 180, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' });
 	}
 
-	const roots = [...document.querySelectorAll('.dx-n118-waitlist,body.single-service .service-detail')];
+	const roots = [...document.querySelectorAll('.dx-n118-waitlist,body.single-service .service-detail:not(.service-detail--photography)')];
 	roots.forEach(root => {
 		if (root.dataset.editorialScenes) return;
 		const sections = [...root.querySelectorAll('.dx-n118-section,.service-detail-section,.service-detail-enquiry')];
@@ -979,7 +979,9 @@ function initEditorialRefinements() {
 					const image = document.createElement('img');
 					image.alt = '';
 					image.decoding = 'async';
-					image.src = layer.dataset.intentSrc;
+					image.src = key === 'buses' && scene.classList.contains('dx-about-interests')
+						? new URL('../assets/img/life-on-network.svg', document.querySelector('link[href*="/themes/dxndre/build/"]').href).href
+						: layer.dataset.intentSrc;
 					layer.append(image);
 					const ready = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
 					requestedImages.set(key, ready.catch(() => false));
@@ -1413,7 +1415,7 @@ function initEditorialRefinements() {
 			const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView([records[0].lat, records[0].lng], 11);
 			maps.push(map);
 			element.classList.add('is-osm-map');
-			const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			const tiles = dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>', maxZoom: 19,
 			}).addTo(map);
 			let tileFailures = 0;
@@ -1669,7 +1671,7 @@ function initEditorialRefinements() {
 			}
 			const L = window.L;
 			const map = L.map(element, {scrollWheelZoom: false, zoomControl: true});
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+			dxMapTiles(L, 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', subdomains: 'abcd', maxZoom: 20,
 			}).addTo(map);
 			const markers = new Map();
@@ -1732,7 +1734,6 @@ function initEditorialRefinements() {
 				form.querySelectorAll('input').forEach((input) => { input.disabled = next.closed || Boolean(next.voted) || !next.configured; });
 				form.querySelector('button').disabled = !next.configured || next.closed || Boolean(next.voted);
 				results.hidden = !next.showResults;
-				card.querySelector('[data-poll-state]').textContent = next.closed ? 'The Final Word' : next.voted ? 'Your Vote Is Counted' : 'Your View';
 				card.querySelector('[data-poll-deadline-label]').textContent = next.closed ? 'Voting Closed' : 'Voting Closes';
 				card.querySelector('[data-poll-results-title]').textContent = next.closed ? 'Final Results' : 'Results So Far';
 				next.options.forEach((option) => {
@@ -2368,10 +2369,13 @@ const { initInstagramProfiles } = (() => {
 				const frame = embed.querySelector("iframe");
 				if (!frame) return;
 				frame.title = `Instagram profile: @${section.dataset.instagramProfile}`;
-				frame.setAttribute("loading", "lazy");
+				frame.inert = true;
 				// The iframe remains the official Instagram UI; a loaded embed can still
 				// show an account's privacy/embedding restriction, so keep the profile link.
-				frame.addEventListener("load", () => setState("loaded"), {
+				frame.addEventListener("load", () => {
+					frame.inert = false;
+					setState("loaded");
+				}, {
 					once: true,
 				});
 				observer.disconnect();
@@ -3245,8 +3249,9 @@ const { initPhotoWatermarks } = (() => {
 		const align = () => {
 			frame = 0;
 			if (!label || !image.naturalWidth || !image.naturalHeight) return;
-			const width = viewport.clientWidth;
-			const height = viewport.clientHeight;
+			const inset = parseFloat(getComputedStyle(viewport).paddingInlineStart) || 0;
+   const width = viewport.clientWidth - 2 * inset;
+   const height = viewport.clientHeight;
 			const fit = Math.min(
 				width / image.naturalWidth,
 				height / image.naturalHeight,
@@ -3255,7 +3260,7 @@ const { initPhotoWatermarks } = (() => {
 			// In fit mode the mark sits on the photograph, including portrait images.
 			// In zoom mode keep the mark visible inside the pan area.
 			label.style.right = `${
-				zoomed ? 12 : Math.max(12, (width - image.naturalWidth * fit) / 2 + 12)
+				inset + (zoomed ? 12 : Math.max(12, (width - image.naturalWidth * fit) / 2 + 12))
 			}px`;
 			label.style.bottom = `${
 				zoomed
@@ -3611,7 +3616,7 @@ function initGymLeague(archive, cards) {
 					mapInstance = window.L.map(mapCanvas, {
 						scrollWheelZoom: false,
 					}).setView([54, -2], 5);
-					const baseTiles = window.L.tileLayer(
+					const baseTiles = dxMapTiles(window.L,
 						"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 						{
 							attribution:
@@ -5896,7 +5901,7 @@ function initGymLeague(archive, cards) {
 				zoomControl: true,
 			});
 
-			L.tileLayer(
+			dxMapTiles(L,
 				"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 				{
 					attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
@@ -6487,7 +6492,7 @@ function initGymLeague(archive, cards) {
 						zoomControl: true,
 					});
 
-					L.tileLayer(
+					dxMapTiles(L,
 						"https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9",
 						{
 							attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
@@ -7436,7 +7441,7 @@ function initGymLeague(archive, cards) {
 					element.classList.add("has-coordinate-map");
 					map = L.map(canvas, {scrollWheelZoom: false, zoomControl: false}).setView(point, 14);
 					L.control.zoom({position: "topright"}).addTo(map);
-					const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+					const tiles = dxMapTiles(L, "https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 						maxZoom: 19,
 						attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
 					});
@@ -8078,10 +8083,55 @@ dxOnPageReady(initHomepageHeroMotion);
 	};
 	clear.addEventListener("click", () => {
 		input.value = "";
-		sync();
+		schedule(0);
 		input.focus();
 	});
-	input.addEventListener("input", sync);
+	let timer;
+ let active;
+ const form = input.form;
+ const results = root.querySelector('.dx-search__results');
+ const emptyTemplate = root.querySelector('template[data-search-empty]');
+ const meta = root.querySelector('.dx-search__meta');
+ function schedule(delay = 250) {
+  sync();
+  clearTimeout(timer);
+  active?.abort();
+  timer = setTimeout(async () => {
+   const controller = new AbortController();
+   active = controller;
+   const url = new URL(form.action);
+   url.searchParams.set('s', input.value.trim());
+   root.setAttribute('aria-busy', 'true');
+   try {
+    if (!input.value.trim() && emptyTemplate) {
+     results.replaceChildren(emptyTemplate.content.cloneNode(true));
+     meta.textContent = 'Explore the site';
+     root.classList.remove('has-no-results');
+     return;
+    }
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok && response.status !== 404) return;
+    const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const next = page.querySelector('.dx-search__results');
+    const nextMeta = page.querySelector('.dx-search__meta');
+    if (!next || !nextMeta || controller.signal.aborted) return;
+    delete form.dataset.searchUnavailable;
+    const motion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (motion) await results.animate([{opacity: 1}, {opacity: 0}], 120).finished;
+    if (controller.signal.aborted) return;
+    results.replaceChildren(...next.childNodes);
+    meta.replaceChildren(...nextMeta.childNodes);
+    root.classList.toggle('has-no-results', !!results.querySelector('.dx-search__empty'));
+    history.replaceState(history.state, '', url);
+    if (motion) results.animate([{opacity: 0}, {opacity: 1}], 220);
+   } catch (error) {
+    if (error.name !== 'AbortError') form.dataset.searchUnavailable = 'true';
+   } finally {
+    if (active === controller) root.removeAttribute('aria-busy');
+   }
+  }, delay);
+ }
+ input.addEventListener('input', () => schedule());
 	window.addEventListener("pageshow", sync);
 	sync();
 })();
@@ -9097,7 +9147,16 @@ window.dxInitBusGallery = (root) => {
 			map = $("#dxb-photo-map");
 		technical.replaceChildren();
 		map.replaceChildren();
-		$("#dxb-bad-photo").hidden = !p.bad;
+		const badPhoto = $("#dxb-bad-photo");
+		badPhoto.hidden = !p.bad;
+		const qualityTip = badPhoto.querySelector('span:last-child');
+		if (qualityTip?.textContent.trim()) {
+			qualityTip.classList.add('dxb-photo-quality-tooltip');
+			qualityTip.id = 'dxb-photo-quality-tooltip';
+			qualityTip.setAttribute('role', 'tooltip');
+			badPhoto.setAttribute('aria-describedby', qualityTip.id);
+			badPhoto.tabIndex = 0;
+		}
 		lightbox.classList.remove("is-zoomed");
 		lightbox.querySelector("#dxb-lightbox-image").style.transform = "";
 		photoImage.setAttribute("aria-pressed", "false");
@@ -9143,6 +9202,20 @@ window.dxInitBusGallery = (root) => {
 			const label = text("p", "📍 " + p.location);
 			label.className = "dx-photo-location";
 			map.append(label);
+		}
+		const registration = p.registration || String(p.vehicle || '').match(/\b[A-Z]{2}\d{2} ?[A-Z]{3}\b/i)?.[0];
+		const fleet = p.fleet || String(p.vehicle || '').split('/')[1]?.trim();
+		if ((registration || fleet) && /^[A-Z0-9]{1,6}$/i.test(p.route || '')) {
+			const destination = new URL(`${p.route.toLowerCase()}/`, DXB.dashboardBase || new URL('/buses/routes/', location.origin));
+			destination.searchParams.set('view', 'pinned');
+			destination.searchParams.set(registration ? 'track' : 'fleet', registration || fleet);
+			if (p.operator) destination.searchParams.set('operator', p.operator);
+			const link = text('a', 'Track this bus', 'dx-photo-location-link dx-photo-track-link');
+			link.href = destination.href;
+			const arrow = text('span', '↗');
+			arrow.setAttribute('aria-hidden', 'true');
+			link.append(arrow);
+			map.append(link);
 		}
 		$("#dxb-lightbox-count").textContent = `${choices.indexOf(photoIndex) + 1} / ${choices.length}`;
 		const singlePhoto = choices.length < 2;
@@ -9572,7 +9645,7 @@ window.dxInitBusGallery = (root) => {
 			getVehicle(reg)
 				.then((v) => {
 					if (summary.isConnected) {
-						fleetLabel.textContent = v.fleet ? "· " + v.fleet : "";
+						fleetLabel.textContent = [v.operator, v.fleet].filter(Boolean).join(" · ");
                         modelLabel.textContent = v.model || "Model unconfirmed";
 						if (v.source) { const link = sourceLink("Full vehicle details ↗", v.source); link.className = "dxb-vehicle-source"; content.append(link); }
 					}
@@ -10463,14 +10536,29 @@ window.dxInitBusGallery = (root) => {
 	}
 	let pinnedMap, pinnedLayer, pinnedTimer;
 	let pinnedMapRequest = 0;
+	const trackingParams = new URLSearchParams(location.search);
+	const trackingRegistration = dxBusRegistration(trackingParams.get('track'));
+	const trackingFleet = dxBusRegistration(trackingParams.get('fleet'));
+	const trackingPhoto = Boolean(trackingRegistration || trackingFleet);
+	async function photoTrackingRegistrations() {
+		if (trackingRegistration) return [trackingRegistration];
+		const running = await request('running/' + encodeURIComponent(current.name));
+		const operator = trackingParams.get('operator')?.toLowerCase();
+		const vehicles = await Promise.allSettled((running.vehicles || []).map(getVehicle));
+		const matches = vehicles.flatMap(({value}) =>
+			value && dxBusRegistration(value.fleet) === trackingFleet &&
+			(!operator || value.operator?.toLowerCase().includes(operator)) ? [value.registration] : []);
+		return matches.length === 1 ? matches : [];
+	}
 	async function refreshPinnedMap() {
 		clearTimeout(pinnedTimer);
 		const host = $('#dxbus-pinned-map');
 		if (!host || host.hidden || tab !== 'pinned' || document.hidden) return;
 		const revision = ++pinnedMapRequest;
 		const status = $('#dxbus-pinned-map-status');
-		const registrations = [...marked];
+		if (!pinnedMap) dxMapLoading(host, true);
 		try {
+			const registrations = trackingPhoto ? await photoTrackingRegistrations() : [...marked];
 			const L = await ensureRouteMap();
 			const points = await Promise.allSettled(registrations.map(async registration => {
 				const data = await request(`vehicle/${encodeURIComponent(registration)}/arrivals`);
@@ -10485,17 +10573,24 @@ window.dxInitBusGallery = (root) => {
 			const firstDraw = !pinnedMap;
 			if (firstDraw) {
 				pinnedMap = L.map(host, {scrollWheelZoom:false}).setView([51.5074,-.1278], 11);
-				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(pinnedMap);
+				dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(pinnedMap);
 				pinnedLayer = L.layerGroup().addTo(pinnedMap);
 			}
 			pinnedLayer.clearLayers();
 			const available = points.flatMap(point => point.value ? [point.value] : []);
-			available.forEach(({position,bus,stop}) => addRouteBusMarker(L, pinnedLayer, position, bus, stop, true));
+			available.forEach(({position,bus,stop}) => {
+				const { marker } = addRouteBusMarker(L, pinnedLayer, position, bus, stop, true);
+				if (trackingPhoto) marker.openTooltip();
+			});
 			pinnedMap.invalidateSize();
 			if ((firstDraw || !host.dataset.hasPins) && available.length) pinnedMap.fitBounds(available.map(point => point.position), {padding:[25,25],maxZoom:14});
 			host.dataset.hasPins = available.length ? 'true' : '';
-			status.textContent = `${available.length} of ${registrations.length} pinned buses plotted at their next predicted stop.`;
+			status.textContent = trackingPhoto
+				? (available.length ? `Route ${available[0].bus.route} · ${available[0].bus.destination || 'In service'} · Next predicted stop: ${available[0].stop.name}`
+					: 'No current stop prediction for this bus.')
+				: `${available.length} of ${registrations.length} pinned buses plotted at their next predicted stop.`;
 		} catch {
+			dxMapLoading(host, false);
 			status.textContent = 'The pinned bus map is temporarily unavailable.';
 		} finally {
 			if (revision === pinnedMapRequest && tab === 'pinned' && !host.hidden) pinnedTimer = setTimeout(refreshPinnedMap, 30000);
@@ -10527,7 +10622,11 @@ window.dxInitBusGallery = (root) => {
 		$$("[role=tabpanel]").forEach(
 			(panel) => (panel.hidden = panel.id !== `panel-${name}`),
 		);
-		if (app) { pinnedMapRequest++; refreshPinnedMap(); }
+		if (app) {
+			pinnedMapRequest++;
+			if (trackingPhoto && name === 'pinned') $('[data-pinned-mode="map"]')?.click();
+			else refreshPinnedMap();
+		}
 		stopArrivals();
 		if (app) {
 			root.dataset.view = viewNames[name] || 'overview';
@@ -12345,7 +12444,7 @@ window.dxInitBusGallery = (root) => {
 				host.replaceChildren();
 				host.classList.add('dxbus-map--osm');
 				const map = L.map(host, { scrollWheelZoom: false, zoomControl: true });
-				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' }).addTo(map);
+				dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' }).addTo(map);
 				state = { map, stops: L.layerGroup().addTo(map), buses: L.layerGroup().addTo(map), identity: '' }; appMaps.set(host, state);
 			}
 			const identity = `${current?.id}:${routeData.direction}:${stops.map((stop) => stop.id).join(',')}`;
@@ -12576,11 +12675,21 @@ window.dxInitBusGallery = (root) => {
 				else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
 			}
 		});
-		$$('[data-tab]').forEach((link) => link.addEventListener('click', () => closeMenu(false)));
-		$$('[data-dxbus-nav]:not([data-tab])').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); activateTab(canonicalTab(link.dataset.dxbusNav)); closeMenu(false); }));
-		$$('[data-dxbus-switch]').forEach((button) => button.addEventListener('click', () => {
-			if (!matchMedia('(min-width: 992px)').matches && !root.classList.contains('is-menu-open')) openMenu(input);
-			else focusRouteInput();
+		const closeMenuAndScroll = () => {
+			const wasOpen = root.classList.contains('is-menu-open');
+			closeMenu(false);
+			if (wasOpen && matchMedia('(max-width: 991.98px)').matches) {
+				requestAnimationFrame(() => $(`#panel-${tab}`)?.scrollIntoView({
+					block: 'start',
+					behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+				}));
+			}
+		};
+		$$('[data-tab]').forEach(link => link.addEventListener('click', closeMenuAndScroll));
+		$$('[data-dxbus-nav]:not([data-tab])').forEach(link => link.addEventListener('click', event => {
+			event.preventDefault();
+			activateTab(canonicalTab(link.dataset.dxbusNav));
+			closeMenuAndScroll();
 		}));
 		window.addEventListener('popstate', () => {
 			const pathRoute = decodeURIComponent(location.pathname.replace(/\/+$/, '').split('/').at(-1)).toUpperCase();
@@ -13535,7 +13644,7 @@ window.dxRenderPhotoMap = (() => {
 			);
 			previous = map;
 			const tileUrl = "https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_49v4_1_6f4e11cc72c4a39104c6f6c9";
-			const baseLayer = window.L.tileLayer(tileUrl.replace("dark_all", "dark_nolabels"), {
+			const baseLayer = dxMapTiles(window.L, tileUrl.replace("dark_all", "dark_nolabels"), {
 				maxZoom: 20,
 				attribution:
 					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -14174,21 +14283,7 @@ dxOnPageReady(() => {
 		});
 		animate();
 	});
-	const delivery = document.querySelector("[data-photo-express]");
-	if (delivery) {
-		const step = delivery.closest('[data-step="photography"]');
-		const update = () => {
-			step.querySelector(".dx-photo-price").textContent = delivery.checked
-				? "£50"
-				: "£40";
-			const link = step.querySelector("[data-photo-book]");
-			link.href =
-				"/start-a-project/?enquiry_service=photography&photo_delivery=" +
-				(delivery.checked ? "express" : "standard");
-		};
-		delivery.addEventListener("change", update);
-		update();
-	}
+
 });
 
 dxOnPageReady(() => {
@@ -15151,7 +15246,7 @@ dxOnPageReady(() => {
 		}
 	}
 	document
-		.querySelectorAll('.service-detail-form button[type="submit"]')
+		.querySelectorAll('.service-detail:not(.service-detail--photography) .service-detail-form button[type="submit"]')
 		.forEach((button) => {
 			if (button.querySelector(".dx-send-icon")) return;
 			const ns = "http://www.w3.org/2000/svg",
@@ -15737,7 +15832,7 @@ dxOnPageReady(() => {
 	const heading = [...document.querySelectorAll('body.home h3')].find(item => item.textContent.includes('Design, Development and Ongoing Support'));
 	heading?.classList.add('dx-home-services-heading');
 	if (!reduced.matches && 'IntersectionObserver' in window) {
-		const steps = [...document.querySelectorAll('.dx-process-card, .process-step, .service-process .service-step, .service-detail-process li')];
+		const steps = [...document.querySelectorAll('.dx-process-card, .process-step, .service-process .service-step, .service-detail-process li, .dx-photo-features > article')];
 		const observer = new IntersectionObserver(entries => entries.forEach(entry => {
 			if (!entry.isIntersecting) return;
 			const index = [...entry.target.parentElement.children].indexOf(entry.target);
@@ -15872,12 +15967,14 @@ dxOnPageReady(() => {
 
 dxOnPageReady(() => {
  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
- const sections = document.querySelectorAll('body.home .what-i-do, .service-detail-enquiry');
+ const sections = document.querySelectorAll('body.home .what-i-do, .service-detail-enquiry, .dx-photo-about');
  const reveal = section => {
   if (!section.classList.contains('dx-service-entry-pending')) return;
   section.classList.remove('dx-service-entry-pending');
   section.animate([{opacity:0,translate:'0 24px'},{opacity:1,translate:'0 0'}],{duration:800,easing:'cubic-bezier(.22,1,.36,1)'});
-  const pieces = section.matches('.what-i-do') ? section.querySelectorAll('.services-tabs .nav-link, .tab-pane.active > *, .dx-mobile-services:not(.is-cinema) > .accordion-item') : section.querySelectorAll('.service-detail-form, .service-detail-enquiry > div:first-child > *');
+  const pieces = section.matches('.what-i-do') ? section.querySelectorAll('.services-tabs .nav-link, .tab-pane.active > *, .dx-mobile-services:not(.is-cinema) > .accordion-item') : section.matches('.dx-photo-about')
+   ? section.querySelectorAll(':scope > p, :scope > h2, .dx-photo-about__copy > p')
+   : section.querySelectorAll('.service-detail-form, .service-detail-enquiry > div:first-child > *');
   [...pieces].forEach((node,index)=>node.animate([{opacity:0,translate:'0 18px'},{opacity:1,translate:'0 0'}],{duration:750,delay:Math.min(index*65,350),fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
   observer.unobserve(section);
  };
@@ -16096,7 +16193,7 @@ if (document.body && document.body.classList.contains("wp-admin")) {
 	};
 	if (mapElement && window.L) {
 		map = L.map(mapElement, {scrollWheelZoom: false});
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20}).addTo(map);
+		dxMapTiles(L, 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20}).addTo(map);
 		const start = [Number.parseFloat(mapElement.dataset.startLat), Number.parseFloat(mapElement.dataset.startLng)];
 		map.setView(validPoint(start) ? start : [51.5074,-.1278], 12);
 		syncMarkers();
@@ -16289,43 +16386,182 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
 	const buttons = [...document.querySelectorAll('[data-basket-service]')];
-	if (!buttons.length) return;
-	let basket = [];
 	const key = 'dx-service-basket';
-	try { const saved = JSON.parse(localStorage.getItem(key)); if (Array.isArray(saved)) basket = saved.filter(item => item && typeof item.slug === 'string' && typeof item.title === 'string'); } catch {}
+	const readBasket = () => {
+		try {
+			const items = JSON.parse(localStorage.getItem(key));
+			return Array.isArray(items) ? items.filter(item => item && typeof item.slug === 'string' && typeof item.title === 'string') : [];
+		} catch { return []; }
+	};
+	let basket = readBasket();
+	if (!buttons.length && (!basket.length || !document.querySelector('.pricing-calculator'))) return;
+	const descriptions = {
+		photography: 'Define your shoot, creative direction and delivery.',
+		development: 'Define your website, functionality and delivery requirements.',
+		design: 'Outline your design brief and the experience you want to create.',
+		'wordpress-development': 'Outline the site and the tools you need to manage it.',
+		comprehensive: 'Plan the scope of your design and development project.',
+		retainer: 'Choose the coverage and turnaround your site needs.',
+		'one-time-fixes': 'Describe the issue and the support you need.',
+	};
+	const servicesUrl = new URL('services/', document.querySelector('link[rel="https://api.w.org/"]')?.href?.replace(/wp-json\/.*$/, '') || location.origin + '/');
+	const configuration = slug => {
+		try { return JSON.parse(sessionStorage.getItem('dxndre-calculator-configuration-v1:' + slug)); }
+		catch { return null; }
+	};
+	const configureUrl = (slug, review = false) => {
+		const url = new URL('../pricing-calculator/', servicesUrl);
+		url.searchParams.set('basket_service', slug);
+		if (review) url.searchParams.set('basket_review', '1');
+		return url.href;
+	};
 	const dialog = document.createElement('dialog');
 	dialog.className = 'dx-service-basket';
-	dialog.setAttribute('aria-label', 'Service basket');
-	dialog.innerHTML = '<header><h2>Basket</h2><form method="dialog"><button autofocus>Close ×</button></form></header><ul></ul>';
+	dialog.setAttribute('aria-labelledby', 'dx-service-basket-title');
+	dialog.innerHTML = `
+		<header>
+			<div><p class="dx-basket-eyebrow">DX. / YOUR PROJECTS</p><h2 id="dx-service-basket-title">Your cart</h2></div>
+			<form method="dialog"><button aria-label="Close cart" autofocus>×</button></form>
+		</header>
+		<div class="dx-basket-content">
+			<div class="dx-basket-progress"><p></p><progress max="100" value="0" aria-label="Service configuration"></progress></div>
+			<ul></ul>
+			<a class="dx-basket-explore">+ Explore more services</a>
+		</div>
+		<footer>
+			<a class="dx-basket-primary"></a>
+			<p>No payment required at this stage.</p>
+		</footer>
+		<p class="visually-hidden" role="status"></p>`;
 	document.body.append(dialog);
 	const opener = document.createElement('button');
 	opener.type = 'button';
-	opener.className = 'dx-basket-open';
+	opener.className = 'dx-basket-open dx-basket-command-style';
+	opener.setAttribute('aria-haspopup', 'dialog');
 	document.body.append(opener);
-	const paint = () => {
-		opener.textContent = `Basket (${basket.length})`;
-		const list = dialog.querySelector('ul');
-		list.replaceChildren();
-		if (!basket.length) { const empty = document.createElement('li'); empty.textContent = 'Your basket is empty.'; list.append(empty); }
-		basket.forEach(({slug,title}) => {
-			const row = document.createElement('li');
-			const label = document.createElement('strong'); label.textContent = title;
-			const configure = document.createElement('a'); configure.textContent = 'Configure estimate ↗';
-			configure.href = '/pricing-calculator/?' + new URLSearchParams({basket_service:slug});
-			const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
-			remove.setAttribute('aria-label', 'Remove ' + title);
-			remove.addEventListener('click', () => { basket = basket.filter(item => item.slug !== slug); save(); dialog.querySelector('header button').focus(); });
-			row.append(label, configure, remove);
-			list.append(row);
-		});
+	const calculatorSession = document.querySelector('body.page-pricing-calculator .calculator-session');
+	if (calculatorSession) {
+		const compactCalculator = window.matchMedia('(max-width: 1199.98px)');
+		const placeBasket = () => (compactCalculator.matches ? calculatorSession : document.body).append(opener);
+		compactCalculator.addEventListener('change', placeBasket);
+		placeBasket();
+	}
+	const list = dialog.querySelector('ul');
+	const primary = dialog.querySelector('.dx-basket-primary');
+	const progress = dialog.querySelector('.dx-basket-progress');
+	const explore = dialog.querySelector('.dx-basket-explore');
+	const announcement = dialog.querySelector('[role="status"]');
+	explore.href = servicesUrl.href;
+	const cards = new Map();
+	const icon = path => {
+		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		svg.setAttribute('viewBox', '0 0 24 24');
+		svg.setAttribute('aria-hidden', 'true');
+		const shape = document.createElementNS(svg.namespaceURI, 'path');
+		shape.setAttribute('d', path);
+		svg.append(shape);
+		return svg;
 	};
-	const save = () => { try { localStorage.setItem(key, JSON.stringify(basket)); } catch {} paint(); };
-	opener.addEventListener('click', () => dialog.showModal());
+	const paint = () => {
+		const cartLabel = document.createElement('span');
+		cartLabel.className = 'dx-cart-label';
+		cartLabel.textContent = `Cart (${basket.length})`;
+		opener.setAttribute('aria-label', `Open cart, ${basket.length} ${basket.length === 1 ? 'service' : 'services'}`);
+		opener.replaceChildren(icon('M2 3h3l3 13h11l3-9H6 M9 21h.01 M18 21h.01'), cartLabel);
+		const selected = new Map(basket.map(item => [item.slug, configuration(item.slug)]));
+		const incomplete = basket.filter(item => !selected.get(item.slug)?.configured);
+		const count = basket.length - incomplete.length;
+		progress.hidden = explore.hidden = !basket.length;
+		const progressText = `${count} of ${basket.length} configured`;
+		progress.querySelector('p').textContent = progressText;
+		const meter = progress.querySelector('progress');
+		meter.value = basket.length ? count / basket.length * 100 : 0;
+		meter.setAttribute('aria-valuetext', progressText);
+		const next = incomplete[0] || basket[0];
+		primary.href = next ? configureUrl(next.slug, !incomplete.length) : servicesUrl.href;
+		primary.textContent = !next ? 'Explore services ↗' : !incomplete.length ? 'Review project enquiry →'
+			: incomplete.length === 1 && selected.get(next.slug) ? 'Continue configuration →' : 'Configure your projects →';
+
+		for (const [slug, card] of cards) {
+			if (!selected.has(slug)) {
+				card.remove();
+				cards.delete(slug);
+			}
+		}
+		list.querySelector('.dx-basket-empty')?.remove();
+		if (!basket.length) {
+			const empty = document.createElement('li');
+			empty.className = 'dx-basket-empty';
+			empty.innerHTML = '<strong>Nothing in your cart yet.</strong><p>Explore the services to start planning your project.</p>';
+			list.append(empty);
+		}
+		for (const {slug, title} of basket) {
+			const saved = selected.get(slug);
+			let card = cards.get(slug);
+			if (!card) {
+				card = document.createElement('li');
+				card.className = 'dx-basket-card';
+				card.innerHTML = '<div class="dx-basket-card-copy"><strong></strong><p></p><small></small><a></a></div><button type="button"></button>';
+				card.prepend(icon(slug === 'photography' ? 'M3 7h4l2-3h6l2 3h4v13H3z M16 13a4 4 0 1 0-8 0 4 4 0 0 0 8 0' : 'M3 5h18v13H3z M3 9h18 M8 21h8'));
+				card.querySelector('strong').textContent = title;
+				const remove = card.querySelector('button');
+				remove.setAttribute('aria-label', 'Remove ' + title);
+				remove.append(icon('M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 10v7 M14 10v7'));
+				remove.addEventListener('click', () => {
+					const index = basket.findIndex(item => item.slug === slug);
+					basket = basket.filter(item => item.slug !== slug);
+					save();
+					const adjacent = basket[Math.min(index, basket.length - 1)];
+					(adjacent ? cards.get(adjacent.slug).querySelector('button') : primary).focus();
+					announcement.textContent = `${title} removed. ${basket.length} services selected.`;
+				});
+				cards.set(slug, card);
+				list.append(card);
+			}
+			const status = saved?.configured ? 'ready' : saved ? 'started' : 'new';
+			if (card.dataset.state !== status && card.dataset.state && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				card.animate([{opacity: 0.6, translate: '0 4px'}, {opacity: 1, translate: '0 0'}], 200);
+			}
+			card.dataset.state = status;
+			card.querySelector('p').textContent = (saved?.configured && saved.summary) || descriptions[slug] || 'Set your project requirements.';
+			card.querySelector('small').textContent = status === 'ready' ? '✓ Ready for review' : status === 'started' ? 'Configuration in progress' : 'Not yet configured';
+			const action = card.querySelector('a');
+			action.textContent = status === 'ready' ? 'Edit requirements ↗' : status === 'started' ? 'Continue configuration ↗' : 'Configure ↗';
+			action.href = configureUrl(slug);
+		}
+	};
+	const save = () => {
+		try { localStorage.setItem(key, JSON.stringify(basket)); } catch {}
+		paint();
+	};
+	let origin;
+	const open = trigger => {
+		origin = trigger;
+		paint();
+		dialog.showModal();
+		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			list.querySelectorAll('.dx-basket-card').forEach((card, index) => {
+				card.animate([{opacity: 0, translate: '0 8px'}, {opacity: 1, translate: '0 0'}],
+					{duration: 280, delay: Math.min(index, 12) * 45, fill: 'backwards', easing: 'ease-out'});
+			});
+		}
+	};
+	dialog.addEventListener('close', () => origin?.focus({preventScroll: true}));
+	opener.addEventListener('click', () => open(opener));
 	buttons.forEach(button => button.addEventListener('click', () => {
 		const {basketService:slug,basketLabel:title} = button.dataset;
-		if (!basket.some(item => item.slug === slug)) { basket.push({slug,title}); save(); }
-		dialog.showModal();
+		const added = !basket.some(item => item.slug === slug);
+		if (added) { basket.push({slug,title}); save(); }
+		open(button);
+		if (added) announcement.textContent = title + ' added to your cart.';
 	}));
+	document.addEventListener('dx-calculator-configuration', paint);
+	window.addEventListener('pageshow', paint);
+	window.addEventListener('storage', event => {
+		if (event.key !== key) return;
+		basket = readBasket();
+		paint();
+	});
 	paint();
 });
 
@@ -16454,7 +16690,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			});
 			return row;
 		}));
-		status.textContent = visible.length ? visible.length + ' results' : 'No results. Try a project name or route number.';
+		status.textContent = visible.length ? visible.length + (visible.length === 1 ? ' result' : ' results') : 'No results. Try a project name or route number.';
 		select(0);
 	};
 
@@ -16521,4 +16757,327 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (dialog.open) close();
 		else open();
 	});
+});
+
+
+function dxMapLoading(host, busy) {
+ if (!host) return;
+ let status = host.querySelector(':scope > .dx-map-loading');
+ if (!status && busy) {
+  status = document.createElement('div');
+  status.className = 'dx-map-loading';
+  status.setAttribute('role', 'status');
+  status.textContent = 'Loading map…';
+  host.append(status);
+ }
+ status?.classList.toggle('is-loading', busy);
+ if (status) status.setAttribute('aria-hidden', String(!busy));
+}
+
+function dxMapTiles(leaflet, url, options) {
+ const layer = leaflet.tileLayer(url, options);
+ const host = () => layer.getContainer()?.closest('.leaflet-container');
+ layer.on('loading', () => dxMapLoading(host(), true));
+ layer.on('load remove', () => dxMapLoading(host(), false));
+ return layer;
+}
+
+function initPrivateProjectChapters() {
+  const section = document.querySelector('.dx-recruiter-edition #private-projects');
+  if (!section) return;
+
+  const chapters = Array.from(section.querySelectorAll('.dx-private-project'));
+  const links = Array.from(section.querySelectorAll('.dx-private-chapters a'));
+  if (!chapters.length) return;
+
+  const palettes = [
+    ['#66512a55', '#25463c55'], ['#59402666', '#33454f66'],
+    ['#54314066', '#503c2455'], ['#244b4d66', '#52492155'],
+    ['#34325066', '#60442d55'], ['#43502e66', '#293d5255'],
+    ['#66383055', '#35454166'], ['#4d354d66', '#2b455555'],
+    ['#52462466', '#33325a55'], ['#28454f66', '#62443255'],
+    ['#55412c66', '#38395255'], ['#2f504166', '#5b393755'],
+  ];
+  links.forEach((link, index) => link.style.setProperty('--chapter-delay', `${Math.min(index, 14) * 32}ms`));
+  const navigation = section.querySelector('.dx-private-chapters');
+  navigation.inert = true;
+  let layer = 'b';
+
+  let frame = 0;
+  let active = -1;
+  function update() {
+    frame = 0;
+    const position = window.innerHeight / 2;
+    const bounds = section.getBoundingClientRect();
+    const next = bounds.top <= position && bounds.bottom > position
+      ? Math.max(0, chapters.findLastIndex((chapter) => chapter.getBoundingClientRect().top <= position))
+      : -1;
+    if (next === active) return;
+    links[active]?.removeAttribute('aria-current');
+    active = next;
+    navigation.inert = active < 0;
+    if (active < 0) {
+      delete section.dataset.chapter;
+      return;
+    }
+    links[active]?.setAttribute('aria-current', 'location');
+    layer = layer === 'a' ? 'b' : 'a';
+    const [primary, secondary] = palettes[active % palettes.length];
+    section.style.setProperty(`--chapter-primary-${layer}`, primary);
+    section.style.setProperty(`--chapter-secondary-${layer}`, secondary);
+    section.dataset.chapter = layer === 'a' ? 'warm' : 'cool';
+  }
+  function scheduleUpdate() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('pageshow', scheduleUpdate);
+  new ResizeObserver(scheduleUpdate).observe(section);
+  scheduleUpdate();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPrivateProjectChapters, { once: true });
+} else {
+  initPrivateProjectChapters();
+}
+
+function initNavLocation() {
+  const label = document.querySelector('[data-nav-section]');
+  const main = document.querySelector('#main, main');
+  if (!label || !main) return;
+
+  const sections = Array.from(main.querySelectorAll('section, .dx-private-project'));
+  const banner = label.closest('[data-nav-location]');
+  const calculator = /pricing calculator/i.test(banner.textContent);
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let frame = 0;
+  let pending = '';
+  let fading = false;
+
+  function update() {
+    frame = 0;
+    const position = window.innerHeight * 0.35;
+    const section = sections.findLast((item) => {
+      const bounds = item.getBoundingClientRect();
+      return bounds.top <= position && bounds.bottom > position &&
+        item.querySelector('h2')?.closest('section, .dx-private-project') === item;
+    });
+    const step = calculator && main.innerText.match(/\bStep \d+ of \d+\s*[·:]\s*[^\n]+/i);
+    const title = (step?.[0] || section?.querySelector('h2')?.innerText || '')
+      .replace(/\s+/g, ' ').replace(/([.!?])(?=[A-Z])/g, '$1 ').trim();
+    pending = title ? ` · ${title}` : '';
+    if (label.textContent === pending || fading) return;
+
+    const paint = () => {
+      label.textContent = pending;
+      label.hidden = !pending;
+    };
+    if (reducedMotion.matches || !banner.closest('.scrolled')) {
+      paint();
+      return;
+    }
+
+    fading = true;
+    const fade = banner.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 105, fill: 'forwards' });
+    fade.onfinish = () => {
+      paint();
+      fade.cancel();
+      fading = false;
+      if (banner.closest('.scrolled')) {
+        banner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 145, easing: 'ease-out' });
+      }
+    };
+  }
+  function scheduleUpdate() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  new ResizeObserver(scheduleUpdate).observe(main);
+  if (calculator) {
+    new MutationObserver(scheduleUpdate).observe(main, { childList: true, characterData: true, subtree: true });
+  }
+  scheduleUpdate();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initNavLocation, { once: true });
+} else {
+  initNavLocation();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const hero = document.querySelector('.dx-about-editorial .dx-about-hero');
+	if (!hero) return;
+
+	const motion = matchMedia('(prefers-reduced-motion: reduce)');
+	let frame = 0;
+	const update = () => {
+		frame = 0;
+		const { top, height } = hero.getBoundingClientRect();
+		const offset = motion.matches ? 0 : Math.min(Math.max(-top, 0), height) * 0.16;
+		hero.style.setProperty('--dx-about-parallax', `${offset}px`);
+	};
+	const schedule = () => {
+		if (!frame) frame = requestAnimationFrame(update);
+	};
+	window.addEventListener('scroll', schedule, { passive: true });
+	window.addEventListener('resize', schedule);
+	motion.addEventListener('change', schedule);
+	update();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const hero = document.querySelector('.dx-n118-waitlist > .dx-page-hero');
+	const art = hero?.querySelector('.dx-page-hero-art');
+	const stylesheet = document.querySelector('link[href*="/themes/dxndre/build/"]');
+	if (art && stylesheet) {
+		art.src = new URL('../assets/img/fitness-repaired.webp', stylesheet.href).href;
+	}
+
+	if (!hero || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	Array.from(hero.children).forEach((element, index) => {
+		element.animate(
+			[{ opacity: 0, translate: '0 16px' }, { opacity: 1, translate: '0 0' }],
+			{ duration: 680, delay: index * 75, easing: 'ease-out', fill: 'backwards' },
+		);
+	});
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const previous = document.querySelector('[data-enquiry-referrer]');
+	if (previous && document.referrer) {
+		const referrer = new URL(document.referrer);
+		const projects = new URL(previous.previousElementSibling.href);
+		if (referrer.origin === location.origin && ![projects.pathname, location.pathname].includes(referrer.pathname)) {
+			previous.href = referrer.href;
+			previous.hidden = false;
+		}
+	}
+
+	if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	const welcome = document.querySelector('.dx-recruiter-welcome');
+	const hero = document.querySelector('.dx-private-gate__copy, body.dx-recruiter-edition .dx-portfolio-hero');
+	const reveal = () => Array.from(hero?.children ?? []).forEach((element, index) => {
+		element.animate(
+			[{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }],
+			{ duration: 650, delay: index * 75, fill: 'backwards', easing: 'ease-out' },
+		);
+	});
+	if (!welcome) {
+		reveal();
+		return;
+	}
+
+	const url = new URL(location.href);
+	url.searchParams.delete('welcome');
+	history.replaceState(history.state, '', url);
+	welcome.hidden = false;
+	welcome.animate([{ opacity: 1, offset: 0 }, { opacity: 1, offset: 0.83 }, { opacity: 0 }], 2600)
+		.finished.then(() => {
+			welcome.remove();
+			reveal();
+		});
+});
+
+document.addEventListener('click', (event) => {
+	const row = event.target.closest('.dxgym-table tbody tr');
+	if (!row || event.target.closest('a, button, input, select, label')) return;
+	const table = row.closest('table');
+	table.querySelector('.is-gym-row-focused')?.classList.remove('is-gym-row-focused');
+	row.classList.add('is-gym-row-focused');
+});
+
+document.addEventListener('click', (event) => {
+	const button = event.target.closest('[data-finder-next], [data-finder-back]');
+	const form = button?.closest('[data-gym-finder] form');
+	if (!form) return;
+	const steps = [...form.querySelectorAll('fieldset')];
+	const index = steps.findIndex(step => !step.hidden);
+	dxGymFinderStep(steps, index + (button.hasAttribute('data-finder-next') ? 1 : -1));
+});
+
+function dxGymFinderStep(steps, index) {
+	steps.forEach((step, position) => { step.hidden = position !== index; });
+	const legend = steps[index].querySelector('legend');
+	legend.tabIndex = -1;
+	legend.focus({ preventScroll: true });
+	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		steps[index].animate([{ opacity: 0, translate: '0 8px' }, { opacity: 1, translate: '0 0' }], 220);
+	}
+}
+
+document.addEventListener('submit', (event) => {
+	const form = event.target.closest('[data-gym-finder] form');
+	if (!form) return;
+	event.preventDefault();
+	const required = [...form.querySelectorAll('[name="essential"]:checked')].map(input => input.value);
+	const weights = [...form.querySelectorAll('select')].map(select => [select.name, Number(select.value)]);
+	const gyms = JSON.parse(form.closest('[data-gym-finder]').dataset.gyms);
+	const matches = gyms.filter(gym => required.every(key => typeof gym.scores[key] === 'number'))
+		.map(gym => ({
+			...gym,
+			match: weights.reduce((sum, [key, weight]) => sum + weight * Number(gym.scores[key] || 0), 0),
+		})).sort((first, second) => second.match - first.match || second.overall - first.overall);
+	const results = form.querySelector('[data-finder-results]');
+	results.replaceChildren();
+	if (!matches.length) results.textContent = 'No reviewed gyms with verified hours match those essential facilities.';
+	matches.slice(0, 3).forEach((gym) => {
+		const row = document.createElement('p');
+		const review = document.createElement('a');
+		review.href = gym.url;
+		review.textContent = gym.name;
+		const hours = document.createElement('a');
+		hours.href = gym.hoursSource;
+		hours.textContent = 'Operator hours';
+		row.append(review, ' · ' + gym.location + ' · Open 24 hours · ', hours);
+		results.append(row);
+	});
+	dxGymFinderStep([...form.querySelectorAll('fieldset')], 2);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const enableFinder = () => document.querySelectorAll('[data-gym-finder] form[hidden]').forEach(form => { form.hidden = false; });
+	enableFinder();
+	const gymContent = document.querySelector('[data-gym-content]');
+	if (gymContent) new MutationObserver(enableFinder).observe(gymContent, { childList: true, subtree: true });
+});
+
+function dxGymDonutExample(event) {
+	const segment = event.target.closest('[data-gym-donut-segment]');
+	if (!segment) return;
+	const tooltip = segment.closest('[data-gym-donut]').querySelector('.dxgym-donut-tooltip');
+	if (!tooltip) return;
+	const show = event.type === 'pointerover' || event.type === 'focusin';
+	if (show) tooltip.textContent = segment.getAttribute('aria-label');
+	tooltip.classList.toggle('is-visible', show);
+}
+
+['pointerover', 'pointerout', 'focusin', 'focusout'].forEach(type => {
+	document.addEventListener(type, dxGymDonutExample);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+	const topic = document.querySelector('.service-detail--photography .service-detail-form select[name="dropdown"]');
+	const placeholder = topic?.querySelector('option[value=""]');
+	if (placeholder) placeholder.textContent = 'What are you getting in touch about?';
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	const cards = document.querySelector('.dx-site-stats dl');
+	if (!cards || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+	const observer = new IntersectionObserver(entries => {
+		if (!entries.some(entry => entry.isIntersecting)) return;
+		Array.from(cards.children).forEach((card, index) => {
+			card.animate(
+				[{ opacity: 0, translate: '0 20px' }, { opacity: 1, translate: '0 0' }],
+				{ duration: 650, delay: index * 75, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' },
+			);
+		});
+		observer.disconnect();
+	}, { threshold: 0.1 });
+	observer.observe(cards);
 });

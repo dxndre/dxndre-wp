@@ -244,6 +244,20 @@ body:has(.dx-book-hero) {
 		.dx-book-hero :is(h1, p) {
 			color: #17252e !important;
 		}
+		.dx-book-widget > p {
+			color: #34434c;
+
+			a {
+				color: #795419;
+				text-decoration: underline;
+				text-underline-offset: 0.2em;
+
+				&:hover {
+					color: #54380e;
+				}
+			}
+		}
+
 		.dx-book-widget .calendly-inline-widget {
 			background: #fff;
 			border: 0;
@@ -256,9 +270,39 @@ body:has(.dx-book-hero) {
 	&:not(.nav-open) #header .navbar-brand img {
 		filter: brightness(0);
 	}
-	&:not(.nav-open) #header .navbar-toggler-line {
-		background: #17252e !important;
+	&:not(.nav-open) #header {
+		#dx-menu-toggle {
+			&::before {
+				background-color: #000 !important;
+			}
+
+			.navbar-toggler-line {
+				background: #000 !important;
+				transition: background-color 350ms ease, transform 350ms ease, opacity 350ms ease;
+			}
+		}
+
+		&.scrolled #dx-menu-toggle .navbar-toggler-line {
+			background: #fff !important;
+		}
 	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		&::after {
+			content: "";
+			position: fixed;
+			inset: 0;
+			z-index: 9999;
+			background: #000;
+			pointer-events: none;
+			animation: dx-book-page-reveal 850ms cubic-bezier(.22, 1, .36, 1) both;
+		}
+	}
+}
+
+@keyframes dx-book-page-reveal {
+	from { opacity: 1; }
+	to { opacity: 0; visibility: hidden; }
 }
 
 body.home #main .dx-mobile-services.is-cinema {
@@ -825,6 +869,63 @@ body.is-frontend #main .dx-secondary-nav {
 
 body.is-frontend {
 	#main {
+		.story-hero .header-content .dx-project-actions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 1rem;
+			margin-block: 1.5rem;
+
+			> :is(.visit, .dx-read-study) {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.75rem;
+				min-height: 52px;
+				width: auto;
+				max-width: 100%;
+				margin: 0;
+				padding: 10px 1.5rem;
+				border: 1px solid #d7ad57;
+				border-radius: 0;
+				font:
+					500 13px/1.4 "Space Grotesk",
+					sans-serif;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				transition:
+					background-color 0.2s ease,
+					border-color 0.2s ease,
+					color 0.2s ease,
+					outline-color var(--dx-focus-duration, 0s) ease;
+			}
+
+			> .dx-read-study {
+				background: #d7ad57;
+				color: #101311;
+
+				&:is(:hover, :focus-visible) {
+					background: #efc777;
+					border-color: #efc777;
+					color: #101311;
+				}
+			}
+
+			> .visit {
+				background: transparent;
+				color: #eac477;
+
+				&:is(:hover, :focus-visible):not(.disabled) {
+					background: #d7ad5720;
+					color: #f2ce84;
+				}
+				&.disabled {
+					border-color: #d7ad5780;
+					color: #d1be96;
+				}
+			}
+		}
+
 		:is(
 				.dx-project-poster > div > .dx-project-poster-action,
 				.story-hero a.dx-read-study
@@ -2971,4 +3072,111 @@ body.dxbus-page {
 /* The enhanced marquee moves the track, so individual galleries stay still. */
 body.is-frontend #main .gallery-track.is-marquee-driven > .wp-block-gallery {
 	animation: none;
+}
+
+body #dxb-lightbox {
+	.dxb-photo-viewport.dx-gallery-ambient {
+		padding-inline: clamp(8px, 1.25vw, 20px);
+	}
+
+	#dxb-old-photo > .dx-media-pill-icon {
+		font-size: 1.6em;
+		line-height: 1;
+	}
+}
+
+#dxb-photo-map > .dx-photo-track-link {
+	display: flex;
+	width: fit-content;
+	margin-block-start: .45rem;
+}
+
+body.dxbus-page .dxbus-app {
+	.dxb-pin-summary .dx-route-badge {
+		vertical-align: middle;
+	}
+
+	#dxbus-pinned-map-status:not([hidden]) {
+		display: table;
+		margin: 0.75rem auto;
+		padding: 0.4rem 0.9rem;
+		background: #171e21;
+		color: #c2d4dc;
+		text-align: center;
+	}
+
+	.dx-map-loading::before {
+		inline-size: 1.75rem;
+		block-size: 1.75rem;
+		box-sizing: border-box;
+	}
+
+	.dxb-small {
+		margin-block-end: 0.5rem;
+	}
+
+	.dxbus-meta > :is(span, a) {
+		font-size: 0.65rem;
+		padding: 0.3rem 0.5rem;
+	}
+}
+
+#recruiterAccessModal .modal-shell {
+	position: relative;
+
+	> .btn-close {
+		position: absolute;
+		inset: 0.75rem 0.75rem auto auto;
+		z-index: 2;
+	}
+}
+
+body.is-frontend #main :is(.dx-polls, .dx-poll-page)::before {
+	background: radial-gradient(ellipse at 15% 42%, #771b2d66, transparent 68%),
+		radial-gradient(ellipse at 93% 23%, #61162155, transparent 62%),
+		#180e11;
+}
+
+body.is-frontend #main .dx-polls-archive {
+	width: min(100% - 2rem, 82rem);
+	padding-block: clamp(8rem, 16vw, 14rem) 5rem;
+
+	h1 {
+		font-size: clamp(3rem, 8vw, 8rem);
+		line-height: 1;
+
+		span {
+			color: #d7ad57;
+		}
+	}
+
+	.dx-polls-grid {
+		margin-top: 3rem;
+
+		@include media-breakpoint-up(md) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@supports (animation-timeline: view()) {
+		.dx-poll-card {
+			animation: dx-poll-entrance linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 75%;
+		}
+	}
+}
+
+@keyframes dx-poll-entrance {
+	from {
+		opacity: 0.12;
+		transform: translateY(1.3rem);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

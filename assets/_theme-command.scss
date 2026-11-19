@@ -9,7 +9,8 @@
 	}
 }
 
-#dx-command-open {
+#dx-command-open,
+body .dx-basket-command-style {
 	position: fixed;
 	z-index: 1050;
 	inset: auto max(1rem, env(safe-area-inset-right))
@@ -51,10 +52,9 @@
 	max-height: 90dvh;
 	overflow: auto;
 	padding: clamp(1rem, 3vw, 2rem);
-	background: radial-gradient(ellipse at top left, #252219, transparent 52%),
-		#101415;
+	background: #111213;
 	color: #f5eee0;
-	border: 1px solid #d7ad5777;
+	border: 1px solid #80766566;
 	box-shadow:
 		0 32px 100px #000c,
 		inset 0 1px #ffffff14;
@@ -134,14 +134,20 @@
 		color: #c4b899;
 	}
 	[data-command-status] {
+		border-top: 1px solid #80766555;
+		padding-top: 0.75rem;
 		margin: 0.75rem 0 0;
-		font-size: 0.85rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-align: center;
+		text-transform: uppercase;
 	}
 
 	.dx-command-grid {
 		display: grid;
 		gap: 1rem;
-		margin-top: 1rem;
+		margin-top: 1.25rem;
 		@include media-breakpoint-up(md) {
 			grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
 		}
@@ -383,4 +389,28 @@ body.dxbus-page {
 }
 body.dxgym-page {
 	--dashboard-pointer: #7ce9ba;
+}
+
+
+body .dx-basket-command-style {
+	display: inline-flex;
+	align-items: center;
+	gap: .45rem;
+	bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 52px);
+
+	svg {
+		width: 1.15rem;
+		height: 1.15rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.7;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	@media (max-width: 48rem) {
+		left: max(1rem, env(safe-area-inset-left));
+		right: auto;
+		bottom: max(1rem, env(safe-area-inset-bottom));
+	}
 }

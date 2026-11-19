@@ -40,32 +40,34 @@
 						$site_status = get_field('site_status'); // live | coming_soon | private
 					?>
 
-					<?php if ( $site_link && $site_status === 'live' ) : ?>
+					<div class="dx-project-actions">
+						<a href="#chapter-1" class="dx-read-study" data-read-study>Read the Case Study <span aria-hidden="true">↓︎</span></a>
+						<?php if ( $site_link && $site_status === 'live' ) : ?>
 
-					<a
-						class="visit"
-						href="<?php echo esc_url( $site_link ); ?>"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						View Live Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
-					</a>
+						<a
+							class="visit"
+							href="<?php echo esc_url( $site_link ); ?>"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							View Live Project <i class="fa-solid fa-arrow-up-right-from-square"></i>
+						</a>
 
-					<?php elseif ( $site_status === 'private' ) : ?>
+						<?php elseif ( $site_status === 'private' ) : ?>
 
-					<span class="visit disabled">
-						Private project <i class="fa-solid fa-lock"></i>
-					</span>
+						<span class="visit disabled">
+							Private project <i class="fa-solid fa-lock"></i>
+						</span>
 
-					<?php else : ?>
+						<?php else : ?>
 
-					<span class="visit disabled">
-						Link coming soon <i class="fa-regular fa-clock"></i>
-					</span>
+						<span class="visit disabled">
+							Link coming soon <i class="fa-regular fa-clock"></i>
+						</span>
 
-					<?php endif; ?>
+						<?php endif; ?>
 
-					<a href="#chapter-1" class="dx-read-study" data-read-study>Read the Case Study <span aria-hidden="true">↓︎</span></a>
+					</div>
 					<?php if ( ! empty( $services ) && is_array( $services ) ) : ?>
 						<ul class="project-services">
 							<?php foreach ( $services as $service ) : ?>

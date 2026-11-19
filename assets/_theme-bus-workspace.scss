@@ -5588,6 +5588,17 @@ body.is-frontend
 	.dx-menu__list
 	> li.menu-item
 	> a[data-menu-area] {
+	transition:
+		color 220ms ease,
+		background-color 220ms ease,
+		border-color 220ms ease,
+		outline-color 220ms ease,
+		box-shadow 220ms ease,
+		translate 320ms ease !important;
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none !important;
+	}
 	&[data-menu-area="buses"] {
 		--dx-menu-accent: #ff4252;
 	}

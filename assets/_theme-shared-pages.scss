@@ -1932,26 +1932,39 @@ body.home #main {
 .dxb-bad-photo[hidden] {
 	display: none !important;
 }
-.dxb-bad-photo {
-	span {
-		display: none;
+.dxb-bad-photo,
+#dxb-old-photo {
+	:is(.dx-photo-age-tooltip, [role="tooltip"], .dxb-photo-quality-tooltip) {
 		position: absolute;
 		z-index: 5;
-		top: 110%;
-		left: 0;
-		width: 230px;
+		inset: calc(100% + .25rem) auto auto 0;
+		width: min(230px, 65vw);
 		padding: 15px;
 		background: #27271e;
-		color: white;
+		color: #fff;
+		border: 0;
 		font-size: 12px;
 		line-height: 1.5;
 		text-align: left;
+		text-transform: none;
+		letter-spacing: normal;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 200ms ease, visibility 0s linear 200ms;
 	}
-	&:hover span,
-	&:focus span {
-		display: block;
+
+	&:is(:hover, :focus-visible) :is(.dx-photo-age-tooltip, [role="tooltip"], .dxb-photo-quality-tooltip) {
+		opacity: 1;
+		visibility: visible;
+		transition-delay: 0s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:is(.dx-photo-age-tooltip, [role="tooltip"], .dxb-photo-quality-tooltip) { transition: none; }
 	}
 }
+
 .dxb {
 	.dxb-fleet-modal {
 		border: 0;

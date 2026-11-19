@@ -6,7 +6,7 @@ $search_term = trim(get_search_query(false));
 $result_count = (int) $wp_query->found_posts;
 $current_page = max(1, (int) get_query_var('paged'));
 ?>
-<section class="dx-search" aria-labelledby="dx-search-title" data-dx-search>
+<section class="dx-search<?php echo $search_term !== '' && !$result_count ? ' has-no-results' : ''; ?>" aria-labelledby="dx-search-title" data-dx-search>
   <div class="container">
     <header class="dx-search__intro">
       <p class="dx-search__eyebrow">A little of everything I do</p>
@@ -19,13 +19,19 @@ $current_page = max(1, (int) get_query_var('paged'));
         <button class="dx-search__submit" type="submit"><span>Search</span><svg class="dx-search__submit-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.75"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
       </form>
     </header>
-    <div class="dx-search__meta">
+    <div class="dx-search__meta" aria-live="polite">
       <p><?php if ($search_term !== '') : ?>
         <?php echo esc_html(sprintf(_n('%s result', '%s results', $result_count, 'dxndre'), number_format_i18n($result_count))); ?> for <strong>“<?php echo esc_html($search_term); ?>”</strong>
       <?php else : ?>Explore the site<?php endif; ?></p>
       <?php if ($result_count) : ?><p>Most relevant first<?php if ($current_page > 1) echo esc_html(' · Page ' . $current_page); ?></p><?php endif; ?>
     </div>
     <div class="dx-search__layout">
+      <template data-search-empty>
+        <div class="dx-search__empty">
+          <h2>Where would you like to go?</h2>
+          <p>Search by a topic, page or interest. Try “Buses”, “About” or “WordPress”.</p>
+        </div>
+      </template>
       <div class="dx-search__results">
         <?php if (have_posts() && $search_term !== '') : ?>
           <?php $result_index = 0; while (have_posts()) : the_post();

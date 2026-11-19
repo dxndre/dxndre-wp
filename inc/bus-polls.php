@@ -193,8 +193,6 @@ function dx_bus_poll_card( $post_id ) {
 	$ends = (int) get_post_meta( $post_id, '_dx_poll_closes', true );
 	?>
 	<article class="dx-poll-card" data-dx-poll data-poll-endpoint="<?php echo esc_url( rest_url( 'dx-buses/v1/poll/' . $post_id ) ); ?>" data-rest-nonce="<?php echo is_user_logged_in() ? esc_attr( wp_create_nonce( 'wp_rest' ) ) : ''; ?>" aria-labelledby="dx-poll-question-<?php echo (int) $post_id; ?>">
-		<?php if ( get_post_meta( $post_id, '_dx_poll_sample', true ) ) : ?><p class="dx-poll-sample"><span aria-hidden="true">✦</span> Sample Poll · For Testing</p><?php endif; ?>
-		<p class="dx-poll-eyebrow"><span data-poll-state><?php echo $record['closed'] ? 'The Final Word' : 'Your View'; ?></span><span aria-hidden="true">↗</span></p>
 		<h3 id="dx-poll-question-<?php echo (int) $post_id; ?>"><a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo esc_html( $record['question'] ); ?></a></h3>
 		<?php $excerpt = get_the_excerpt( $post_id ); if ( $excerpt && ! is_singular( 'dx_bus_poll' ) ) : ?><p><?php echo esc_html( wp_trim_words( $excerpt, 35 ) ); ?></p><?php endif; ?>
 		<p class="dx-poll-deadline"><span data-poll-deadline-label><?php echo $record['closed'] ? 'Voting Closed' : 'Voting Closes'; ?></span> <?php if ( $ends ) : ?><time datetime="<?php echo esc_attr( gmdate( 'c', $ends ) ); ?>"><?php echo esc_html( wp_date( 'j F Y · H:i T', $ends ) ); ?></time><?php else : ?>To be confirmed<?php endif; ?></p>

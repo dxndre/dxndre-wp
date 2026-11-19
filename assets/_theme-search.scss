@@ -490,3 +490,28 @@ body.is-frontend.search .dx-search {
 		padding-right: calc(var(--bs-gutter-x) * 0.5);
 	}
 }
+
+body.is-frontend.search {
+	background: #0b0d0e;
+
+	&::before {
+		content: "";
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		background: var(--dx-search-bg);
+		transition: opacity 350ms ease;
+		pointer-events: none;
+	}
+
+	&:has(.dx-search.has-no-results)::before {
+		opacity: 0;
+	}
+
+	.dx-search__result-link,
+	.dx-search__aside a,
+	.dx-search__empty a {
+		transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease;
+	}
+}

@@ -40,7 +40,7 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
         <p class="service-lead"><?php echo esc_html(get_the_excerpt()); ?></p>
       <?php endif; ?>
       <div class="service-detail-actions">
-      <button type="button" class="dx-cta dx-cta--outline" data-basket-service="<?php echo esc_attr($slug); ?>" data-basket-label="<?php echo esc_attr(get_the_title()); ?>">Add to basket</button>
+      <button type="button" class="dx-cta dx-cta--outline" data-basket-service="<?php echo esc_attr($slug); ?>" data-basket-label="<?php echo esc_attr(get_the_title()); ?>">Add to cart <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 3h3l3 13h11l3-9H6 M9 21h.01 M18 21h.01"/></svg></button>
         <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_photography ? 'Tell me about your shoot' : ($is_fixes ? 'Tell me about the issue' : 'Tell me about your project'); ?> <span aria-hidden="true">↗</span></a>
         <a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
       </div>

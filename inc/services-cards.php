@@ -70,8 +70,8 @@ add_filter('the_content', function ($html) {
     $html = preg_replace_callback('~(<a\b[^>]*href="[^"]*/service/([a-z-]+)/?"[^>]*>.*?</a>)~s', static function ($matches) use ($service_links, $prices) {
         $slug = $matches[2];
         $label = $slug === 'photography' ? 'Photography' : ($prices[$service_links[$slug] ?? '']['title'] ?? '');
-        if (!$label) return $matches[1];
-        return $matches[1] . '<button type="button" class="dx-cta dx-cta--outline" data-basket-service="' . esc_attr($slug) . '" data-basket-label="' . esc_attr($label) . '">Add to basket</button>';
+        if (!$label || stripos($matches[1], 'Explore photography') !== false) return $matches[1];
+        return '<div class="dx-service-cta-pair">' . $matches[1] . '<button type="button" class="dx-cta dx-cta--outline" data-basket-service="' . esc_attr($slug) . '" data-basket-label="' . esc_attr($label) . '">Add to cart <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 3h3l3 13h11l3-9H6 M9 21h.01 M18 21h.01"/></svg></button></div>';
     }, $html);
-    return preg_replace('~(<a\b[^>]*href="[^"]*/service/photography/?"[^>]*>)(?=.*</article>)~s', $price_label(40) . '$1', $html, 1);
+    return preg_replace('~(<div class="dx-service-cta-pair">)(?=<a\b[^>]*href="[^"]*/service/photography/?"[^>]*>)~', $price_label(40) . '$1', $html, 1);
 }, 20);
