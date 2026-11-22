@@ -21,7 +21,7 @@ add_shortcode('dx_recruiter_room',function(){
  ob_start();echo '<div class="dx-private-projects" id="private-projects">';
  if(!$projects)echo '<p>Private case studies are being prepared. Please get in touch to discuss work relevant to your role.</p>';
  if ($projects) {
-  echo '<nav class="dx-private-chapters" aria-labelledby="dx-private-chapters-title"><p class="dx-private-chapters-title" id="dx-private-chapters-title">Private projects</p>';
+  echo '<nav class="dx-private-chapters" aria-labelledby="dx-private-chapters-title"><p class="dx-private-chapters-title" id="dx-private-chapters-title"><svg class="dx-private-title-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect x="4" y="10" width="16" height="12"/><path d="M12 14v4"/></svg>Private projects</p>';
   foreach ($projects as $index => $project) {
    printf('<a href="#%s"><span aria-hidden="true">%02d</span> %s</a>', esc_attr(dx_recruiter_project_anchor($project)), $index + 1, esc_html(get_the_title($project)));
   }
@@ -80,12 +80,27 @@ add_action('template_redirect',function(){
 });
 add_action('wp_body_open', function () {
  if (!dx_recruiter_edition() || ($_GET['welcome'] ?? '') !== '1') return;
- echo '<div class="dx-recruiter-welcome" aria-hidden="true" hidden><span>Recruiter mode</span><span>Private portfolio</span></div>';
+ echo '<div class="dx-recruiter-welcome" aria-hidden="true" style="position:fixed;inset:0;z-index:11000;background:#0b1019"><span>Recruiter mode</span><span>Private portfolio</span></div>';
+ ?>
+ <script>
+ window.dxPageReady = Promise.resolve(window.dxPageReady).then(() => new Promise(resolve => {
+  const run = () => {
+   const welcome = document.querySelector('.dx-recruiter-welcome');
+   const url = new URL(location.href); url.searchParams.delete('welcome'); history.replaceState(history.state, '', url);
+   if (!welcome) { resolve(); return; }
+   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { welcome.remove(); resolve(); return; }
+   welcome.classList.add('is-playing');
+   welcome.animate([{opacity:1,offset:0},{opacity:1,offset:.83},{opacity:0}],2600).finished.then(() => { welcome.remove(); resolve(); });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',run,{once:true}); else run();
+ }));
+ </script>
+ <?php
 });
 add_filter('body_class',function($c){if(dx_recruiter_edition())$c[]='dx-recruiter-edition';if(is_page('recruiter-room'))$c[]='dx-recruiter-room';return $c;});
 add_filter('the_content',function($content){
  if(!dx_recruiter_edition()||!is_main_query()||!in_the_loop())return $content;
- $content=str_replace('<h1>PORTFOLIO.</h1>','<h1>PORTFOLIO.</h1><p class="dx-eyebrow dx-edition-label">RECRUITER / HIRING MANAGER EDITION</p>',$content);
+ $content=str_replace('<h1>PORTFOLIO.</h1>','<h1>PORTFOLIO.<svg class="dx-portfolio-lock" viewBox="0 0 32 40" aria-hidden="true"><path class="dx-portfolio-lock__shackle" d="M8 17V11a8 8 0 0 1 16 0v6"/><rect x="3" y="17" width="26" height="20" rx="3"/><path d="M16 25v5"/></svg></h1><p class="dx-eyebrow dx-edition-label">RECRUITER / HIRING MANAGER EDITION</p>',$content);
  $intro='<section class="dx-recruiter-intro"><p class="dx-eyebrow">For your consideration</p><h2>The full picture.</h2><p>Alongside my public work, this private collection gives recruiters and hiring managers a closer look at my potential — including unpublished explorations and projects that have paused along the way.</p><p>Please keep this work within the hiring process. Sharing relevant examples with a lead developer for a code review or another colleague involved in the hiring decision is welcome; wider circulation or publication is not.</p><a class="dx-cta dx-cta--outline" href="#private-projects">Explore private projects <span aria-hidden="true">↓</span></a></section>';
  $content=str_replace('<div class="wp-block-group portfolio-work"',$intro.do_shortcode('[dx_recruiter_room]').'<div class="wp-block-group portfolio-work"',$content);
  return $content.'<section class="dx-recruiter-cv"><p class="dx-eyebrow">Experience / Skills / Perspective</p><h2>My CV.</h2><p>A closer look at the experience behind the work.</p><a class="dx-cta" href="'.esc_url(home_url('/cv/')).'">Explore my CV ↗</a></section>';

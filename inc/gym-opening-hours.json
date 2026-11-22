@@ -1,0 +1,128 @@
+{
+  "PureGym Shoreditch": {
+    "source": "https://www.puregym.com/gymsandcities/london-shoreditch",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "PureGym Cardiff": {
+    "source": "https://www.puregym.com/city/cardiff/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "PureGym Marylebone": {
+    "source": "https://www.puregym.com/gymsandcities/london-marylebone",
+    "label": "Mon\u2013Fri 06:30\u201322:00 \u00b7 Sat\u2013Sun 08:00\u201320:00",
+    "open24": false,
+    "weekly": [
+      [
+        "06:30",
+        "22:00"
+      ],
+      [
+        "06:30",
+        "22:00"
+      ],
+      [
+        "06:30",
+        "22:00"
+      ],
+      [
+        "06:30",
+        "22:00"
+      ],
+      [
+        "06:30",
+        "22:00"
+      ],
+      [
+        "08:00",
+        "20:00"
+      ],
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "checked": "2026-11-19"
+  },
+  "PureGym Waterloo": {
+    "source": "https://www.puregym.com/gyms/london-waterloo/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "PureGym Park Royal": {
+    "source": "https://www.puregym.com/gyms/london-park-royal/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "PureGym Wembley": {
+    "source": "https://www.puregym.com/gymsandcities/london-wembley",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "The Gym Group West Hampstead": {
+    "source": "https://www.thegymgroup.com/find-a-gym/north-london-gyms/west-hampstead/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "The Gym Group Alperton": {
+    "source": "https://www.thegymgroup.com/find-a-gym/north-london-gyms/alperton",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "The Gym Group Wembley": {
+    "source": "https://www.thegymgroup.com/gym-opening-times/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "OneGym": {
+    "source": "https://www.onegymfitness.com/locations/",
+    "label": "24 hours daily",
+    "open24": true,
+    "weekly": null,
+    "checked": "2026-11-19"
+  },
+  "David Lloyds Chigwell": {
+    "source": "https://www.davidlloyd.co.uk/clubs/chigwell/",
+    "sourceType": "operator",
+    "label": "Not 24-hour \u00b7 check club hours",
+    "open24": false,
+    "weekly": null,
+    "checked": "",
+    "basis": "Official club page checked 2026-11-19; daily schedule not available in public page data"
+  },
+  "David Lloyds Enfield": {
+    "source": "https://www.davidlloyd.co.uk/clubs/enfield/",
+    "sourceType": "operator",
+    "label": "Not 24-hour \u00b7 check club hours",
+    "open24": false,
+    "weekly": null,
+    "checked": "",
+    "basis": "Official club page checked 2026-11-19; daily schedule not available in public page data"
+  },
+  "David Lloyds Colliers Wood": {
+    "source": "https://www.davidlloyd.co.uk/clubs/colliers-wood/",
+    "sourceType": "operator",
+    "label": "Not 24-hour \u00b7 check club hours",
+    "open24": false,
+    "weekly": null,
+    "checked": "",
+    "basis": "Official club page checked 2026-11-19; daily schedule not available in public page data"
+  }
+}

@@ -30,7 +30,9 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
     <?php endif; ?>
     <?php if ($is_photography) : ?><div class="dx-service-slides" aria-hidden="true"><?php foreach ([1698,1696,1690] as $photo_id) echo wp_get_attachment_image($photo_id, 'full', false, array_merge($photo_orbit_attributes($photo_id), ['loading' => 'lazy'])); ?></div><button class="dx-slides-toggle" type="button" aria-pressed="false">Pause slideshow</button><?php endif; ?>
     <div class="service-detail-container service-detail-hero-content">
-      <a class="service-back" href="<?php echo esc_url(home_url('/services/')); ?>"><span aria-hidden="true">←</span> All services</a>
+      <nav class="service-detail-navigation" aria-label="Service navigation"><a class="service-back dx-cta dx-cta--outline" href="<?php echo esc_url(home_url('/services/')); ?>"><span aria-hidden="true">←</span> All services</a>
+      <?php if (($_GET['from-calculator'] ?? '') === '1') : ?><a class="dx-cta dx-cta--outline service-calculator-return" data-return-calculator href="<?php echo esc_url(home_url('/pricing-calculator/')); ?>">← Return to your calculator</a><?php endif; ?>
+      </nav>
       <p class="service-eyebrow"><?php echo esc_html($details[0]); ?></p>
       <h1><?php if ($is_fixes) : ?>One-Time<br>Fixes<?php elseif ($slug === 'wordpress-development') : ?>WordPress<br>Development<?php elseif ($slug === 'development') : ?>Custom Web<br>Development<?php else : the_title(); endif; ?><span aria-hidden="true">.</span></h1>
       <?php if ($is_fixes) : ?>
@@ -39,10 +41,10 @@ $details = $facts[$slug] ?? ['Digital services', 'Your project goals', 'Your web
       <?php elseif (has_excerpt()) : ?>
         <p class="service-lead"><?php echo esc_html(get_the_excerpt()); ?></p>
       <?php endif; ?>
-      <div class="service-detail-actions">
+      <div class="service-detail-actions"><div class="service-primary-actions">
       <button type="button" class="dx-cta dx-cta--outline" data-basket-service="<?php echo esc_attr($slug); ?>" data-basket-label="<?php echo esc_attr(get_the_title()); ?>">Add to cart <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 3h3l3 13h11l3-9H6 M9 21h.01 M18 21h.01"/></svg></button>
         <a class="service-outline-button" href="<?php echo esc_url($enquiry_url); ?>"><?php echo $is_photography ? 'Tell me about your shoot' : ($is_fixes ? 'Tell me about the issue' : 'Tell me about your project'); ?> <span aria-hidden="true">↗</span></a>
-        <a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
+        </div><a class="service-text-link" href="#service-content">Explore what’s covered <span aria-hidden="true">↓</span></a>
       </div>
     </div>
   </header>

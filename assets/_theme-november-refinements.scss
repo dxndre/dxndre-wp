@@ -161,6 +161,7 @@ body.is-frontend #main {
 	span {
 		grid-area: 1 / 1;
 		animation: dx-recruiter-title 1.25s ease both;
+		animation-play-state: paused;
 	}
 
 	span + span {
@@ -272,17 +273,32 @@ body.is-frontend.single-service #main .service-detail--photography {
 }
 
 .dx-photography .dx-photo-about h2 {
-	font-weight: 650;
+	font-weight: 400;
 }
 
 body.is-frontend #main .dx-about-interests[data-intent-scene] {
 	.dx-intent-backdrop [data-intent-art="buses"] img {
-		width: 145%;
+		width: 100%;
 		max-width: none;
-		object-position: 35% 49%;
+		object-fit: contain;
+		object-position: right center;
 	}
 
 	.dx-intent-backdrop [data-intent-art="buses"].is-visible {
 		opacity: 0.8;
 	}
+}
+
+.dx-recruiter-welcome.is-playing span { animation-play-state: running; }
+.dx-portfolio-lock {
+ width: clamp(22px, 3.2vw, 72px);
+ height: auto;
+ margin-inline-start: .12em;
+ vertical-align: .08em;
+ fill: none;
+ stroke: #d7ad57;
+ stroke-width: 2;
+ stroke-linecap: round;
+ stroke-linejoin: round;
+ overflow: visible;
 }

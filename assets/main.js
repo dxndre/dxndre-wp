@@ -1,3 +1,5 @@
+import "./editorial-refinements";
+import "./dx-pulse";
 import "regenerator-runtime/runtime.js";
 import "./main.scss";
 import Collapse from "bootstrap/js/src/collapse";
@@ -5,6 +7,13 @@ import Modal from "bootstrap/js/src/modal";
 import Popover from "bootstrap/js/src/popover";
 import "bootstrap/js/src/dropdown";
 import "bootstrap/js/src/tab";
+
+function dxOnPageReady(callback) {
+	const run = () => Promise.resolve(window.dxPageReady).then(callback);
+	if (document.readyState === "loading")
+		document.addEventListener("DOMContentLoaded", run, { once: true });
+	else run();
+}
 
 // DX_CONSOLIDATED_FRONTEND_BEGIN
 if (document.body && !document.body.classList.contains("wp-admin")) {
@@ -675,7 +684,16 @@ function initOct30Public(reduced) {
 			const style = getComputedStyle(details);
 			const borders = (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
 			const padding = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
-			const to = opening ? details.scrollHeight + borders : summary.getBoundingClientRect().height + borders + padding;
+			let to;
+			if (details.closest('.dx-n118-faq')) {
+				// Measure the actual final layout, including disclosure margins.
+				details.style.height = 'auto';
+				details.open = opening;
+				to = details.getBoundingClientRect().height;
+				details.open = true;
+			} else {
+				to = opening ? details.scrollHeight + borders : summary.getBoundingClientRect().height + borders + padding;
+			}
 			run(details,from,to,commit => {
 				if (commit) details.open = opening;
 				delete details.dataset.dxDisclosureState;
@@ -762,12 +780,18 @@ function initEveningScenes(reduced) {
 		}), { threshold: 0, rootMargin: '0px 0px -3% 0px' });
 		document.querySelectorAll('.dx-contact-aside').forEach(aside => asideObserver.observe(aside));
 	}
+	Promise.resolve(window.dxPageReady).then(() => {
 	const portfolio = document.querySelector('.dx-portfolio-hero');
 	if (portfolio && !reduced.matches) {
 		const background = portfolio.querySelector('.dx-project-slides');
 		background?.animate([{ opacity: 0, scale: '1.06' }, { opacity: 1, scale: '1' }], { duration: 1600, easing: 'cubic-bezier(.22,1,.36,1)' });
-		portfolio.querySelector(':scope > img')?.animate([{ opacity: 0, translate: '45px 25px' }, { opacity: 1, translate: '0 0' }], { duration: 1200, delay: 180, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' });
+		const portrait = portfolio.querySelector(':scope > img');
+		if (portrait && !portrait.dataset.entrancePlayed) {
+			portrait.dataset.entrancePlayed = 'true';
+			portrait.animate([{ opacity: 0, translate: '45px 25px' }, { opacity: 1, translate: '0 0' }], { duration: 1200, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' });
+		}
 	}
+	});
 
 	const roots = [...document.querySelectorAll('.dx-n118-waitlist,body.single-service .service-detail:not(.service-detail--photography)')];
 	roots.forEach(root => {
@@ -777,10 +801,13 @@ function initEveningScenes(reduced) {
 		root.dataset.editorialScenes = 'true';
 		root.classList.add('dx-has-editorial-canvas');
 		const canvas = document.createElement('div');
-		canvas.className = 'dx-editorial-canvas';
+		const serviceScenes = root.matches('.service-detail');
+		canvas.className = 'dx-editorial-canvas' + (serviceScenes ? ' dx-service-scenes' : '');
 		canvas.setAttribute('aria-hidden', 'true');
 		canvas.inert = true;
-		const palette = [['#18313b','#4c3924'],['#353025','#173b3a'],['#2b2343','#174247'],['#173c32','#4a342b'],['#28304a','#413227']];
+		const palette = serviceScenes
+			? [['#40312266','#1932387d'],['#4b255c9c','#22483d8c'],['#514126a8','#213b4b8c'],['#28534791','#3c254f80'],['#263752a1','#4b352880']]
+			: [['#54365966','#244d534d'],['#543f304d','#214b494d'],['#44315466','#2053544d'],['#23483f55','#63402f55'],['#293f594d','#60422f4d']];
 		const photo = root.querySelector('.dx-page-hero-art,.service-detail-art img');
 		const layers = palette.map(([first, second], index) => {
 			const layer = document.createElement('div');
@@ -789,7 +816,7 @@ function initEveningScenes(reduced) {
 			layer.style.setProperty('--scene-second', second);
 			layer.style.setProperty('--scene-x', `${20 + index * 16}%`);
 			layer.style.setProperty('--scene-turn', `${index * 28}deg`);
-			if (photo && index % 2 === 0) {
+			if (photo && !serviceScenes && index % 2 === 0) {
 				const image = document.createElement('img');
 				image.src = photo.currentSrc || photo.src;
 				image.alt = '';
@@ -800,13 +827,24 @@ function initEveningScenes(reduced) {
 			canvas.append(layer);
 			return layer;
 		});
+		const waitlist = !serviceScenes ? root.querySelector('#waitlist') : null;
+		if (waitlist) {
+			const glows = document.createElement('div');
+			glows.className = 'dx-n118-form-glows';
+			canvas.append(glows);
+		}
 		root.prepend(canvas);
 		reveal(sections.filter(section => !section.matches('.service-detail-enquiry')));
 		let frame = 0, activeIndex = -1;
 		const paint = () => {
 			frame = 0;
 			const end = root.getBoundingClientRect();
-			canvas.classList.toggle('is-visible', sections[0].getBoundingClientRect().top < innerHeight * .9 && end.bottom > 0 && end.top < innerHeight);
+			const sceneStart = serviceScenes ? root.querySelector('.service-detail-facts') || sections[0] : root.querySelector('.dx-page-hero') || sections[0];
+			if (waitlist) {
+				const bounds = waitlist.getBoundingClientRect();
+				root.classList.toggle('is-waitlist-focused', bounds.top < innerHeight * .88 && bounds.bottom > innerHeight * .12);
+			}
+			canvas.classList.toggle('is-visible', sceneStart.getBoundingClientRect().top < innerHeight && end.bottom > 0 && end.top < innerHeight);
 			let current = 0;
 			sections.forEach((section, index) => { if (section.getBoundingClientRect().top <= innerHeight * .55) current = index; });
 			if (activeIndex === current) return;
@@ -980,7 +1018,7 @@ function initEditorialRefinements() {
 					image.alt = '';
 					image.decoding = 'async';
 					image.src = key === 'buses' && scene.classList.contains('dx-about-interests')
-						? new URL('../assets/img/life-on-network.svg', document.querySelector('link[href*="/themes/dxndre/build/"]').href).href
+						? new URL('../assets/img/about-network-buses-lossless.webp', document.querySelector('link[href*="/themes/dxndre/build/"]').href).href
 						: layer.dataset.intentSrc;
 					layer.append(image);
 					const ready = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
@@ -1097,7 +1135,7 @@ function initEditorialRefinements() {
 	const content = app.querySelector('[data-gym-content]');
 	const loading = app.querySelector('.dxgym-loading');
 	const notice = app.querySelector('.dxgym-notice');
-	const views = { overview: 'Overview', league: 'League Table', explorer: 'Gym Explorer', compare: 'Compare Gyms', map: 'Map View', reviews: 'Reviews', insights: 'Insights' };
+	const views = { overview: 'Overview', league: 'League Table', explorer: 'Gym Explorer', compare: 'Compare Gyms', finder: 'Find My Gym', map: 'Map View', reviews: 'Reviews', insights: 'Insights' };
 	let controller, requestId = 0, searchTimer, maps = [], moreController, moreObserver;
 	let moreBusy = false;
 	let compare = app.dataset.selected.split(',').map(Number).filter(Number.isSafeInteger).filter(id => id > 0).slice(0, 3);
@@ -1719,6 +1757,7 @@ function initEditorialRefinements() {
 		});
 
 		document.querySelectorAll('[data-dx-poll]').forEach((card) => {
+		if (card.closest('.dx-pulse')) return;
 			if (card.dataset.pollBound) return;
 			card.dataset.pollBound = 'true';
 			const form = card.querySelector('[data-poll-form]');
@@ -3294,12 +3333,6 @@ const { initPhotoWatermarks } = (() => {
 	return { initPhotoWatermarks };
 })();
 
-function dxOnPageReady(callback) {
-	const run = () => Promise.resolve(window.dxPageReady).then(callback);
-	if (document.readyState === "loading")
-		document.addEventListener("DOMContentLoaded", run, { once: true });
-	else run();
-}
 // Overall scores use /10 internally; the five middle bands span 14% each.
 const gymOverallBands = [
 	{
@@ -4256,6 +4289,7 @@ function initGymLeague(archive, cards) {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (
+						entry.target.closest(".dx-pulse") ||
 						entry.target.classList.contains("story-section") ||
 						entry.target.classList.contains("story-hero") ||
 						entry.target.querySelector("[data-gyms-archive]")
@@ -8691,6 +8725,7 @@ dxOnPageReady(initHomepageHeroMotion);
 							currency: "GBP",
 						}).format(quote.total) +
 						(quote.monthly ? " per month" : "") +
+						(quote.monthlyTotal ? " one-off, plus " + new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(quote.monthlyTotal) + " per month" : "") +
 						" (subject to confirming the brief).";
 				if (!form.elements.name.value)
 					form.elements.name.value = quote.name || "";
@@ -9599,7 +9634,9 @@ window.dxInitBusGallery = (root) => {
 		saveList("dxb-recent-routes", recent);
 		renderRecent();
 	}
+	let pinnedArrivalsDialog = null;
 	function renderMarked() {
+		pinnedArrivalsDialog?.close();
 		const box = $("#dxb-marked");
 		const expanded = new Set(
 			Array.from(box.querySelectorAll("details[open]")).map(
@@ -9620,7 +9657,7 @@ window.dxInitBusGallery = (root) => {
 			text("p", "PINNED BUSES", "dxb-pins-heading"),
 			text(
 				"p",
-				"Saved on this browser · expand a bus for its latest arrivals.",
+				"Saved on this browser · open a bus for its latest arrivals.",
 				"dxb-small",
 			),
 		);
@@ -9651,7 +9688,8 @@ window.dxInitBusGallery = (root) => {
 					}
 				})
 				.catch(() => { if (summary.isConnected) modelLabel.textContent = "Vehicle details unavailable"; });
-			summary.append(text("span", "Arrivals +", "dxb-pin-toggle"));
+			summary.append(text("span", app ? "View arrivals ↗" : "Arrivals +", "dxb-pin-toggle"));
+			if (app) summary.setAttribute("aria-haspopup", "dialog");
 			const content = text("div", "", "dxb-pin-content");
 			const actions = text("div", "", "dxb-pin-actions");
 			const refresh = text("button", "Refresh arrivals");
@@ -9677,6 +9715,50 @@ window.dxInitBusGallery = (root) => {
 			item.append(summary, content);
 			let disclosureAnimation = null;
 			summary.addEventListener("click", (e) => {
+				if (app) {
+					e.preventDefault();
+					pinnedArrivalsDialog?.close();
+					const dialog = text('dialog', '', 'dxb-pinned-arrivals-modal');
+					const header = text('header', '', 'dxb-pinned-arrivals-header');
+					const titleGroup = text('div', '', 'dxb-pinned-arrivals-heading');
+					const eyebrow = text('p', 'Live Predictions', 'dxb-pinned-arrivals-eyebrow');
+					const heading = text('h2', formatRegistration(reg));
+					const vehicleSubtitle = text('p', modelLabel.textContent || 'Loading make and model…', 'dxb-pinned-arrivals-model');
+					titleGroup.append(eyebrow, heading, vehicleSubtitle);
+					getVehicle(reg).then(vehicle=>{if(dialog.open)vehicleSubtitle.textContent=vehicle.model || 'Make and model not confirmed';}).catch(()=>{if(dialog.open)vehicleSubtitle.textContent='Make and model temporarily unavailable';});
+					heading.id = 'dxb-pinned-arrivals-title';
+					dialog.setAttribute('aria-labelledby', heading.id);
+					const close = text('button', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close live predictions');
+					header.append(titleGroup, close);
+					const clockLayer = text('div', '', 'dxb-predictions-clock-layer');
+					clockLayer.setAttribute('aria-hidden','true');
+					const clock = text('time', '', 'dxb-predictions-clock'); clockLayer.append(clock);
+					const clockFormat = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+					const tickClock = () => { const now = new Date(); clock.textContent = clockFormat.format(now); clock.dateTime = now.toISOString(); updatePredictionLateness(results); };
+					tickClock();
+					const clockTimer = setInterval(tickClock,1000);
+					dialog.addEventListener('close',()=>clearInterval(clockTimer),{once:true});
+					dialog.append(clockLayer, header, content); root.append(dialog);
+					pinnedArrivalsDialog = dialog;
+					close.addEventListener('click', () => dialog.close());
+					dialog.addEventListener('click', event => {
+						if (event.target !== dialog) return;
+						const r = dialog.getBoundingClientRect();
+						if(event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close();
+					});
+					dialog.addEventListener('close', () => {
+						if(item.isConnected) { item.append(content); summary.focus({preventScroll:true}); }
+						if(pinnedArrivalsDialog === dialog) pinnedArrivalsDialog = null;
+						dialog.remove();
+					}, {once:true});
+					dialog.showModal();
+					const refreshLive = () => { if(dialog.open && !document.hidden)trackVehicle(reg,results,{background:true}); };
+					const predictionTimer = setInterval(refreshLive,30000);
+					document.addEventListener('visibilitychange',refreshLive);
+					dialog.addEventListener('close',()=>{clearInterval(predictionTimer);document.removeEventListener('visibilitychange',refreshLive);results.dataset.request=String(++trackingSequence);results.removeAttribute('aria-busy');},{once:true});
+					trackVehicle(reg, results);
+					return;
+				}
 				if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
 				e.preventDefault();
 				if (disclosureAnimation) return;
@@ -9711,15 +9793,40 @@ window.dxInitBusGallery = (root) => {
 		});
 	}
 	let trackingSequence = 0;
-	async function trackVehicle(reg, box) {
+	const previousVehiclePredictions = new WeakMap();
+	const predictionIdentity = a => [a.route,a.stopId||a.stop,a.destinationId||a.destination,a.direction||'',a.tripId||''].join('|').toLowerCase();
+	function updatePredictionLateness(box) {
+		box.querySelectorAll('[data-prediction-expected]').forEach(cell=>{
+			const overdue=Date.now()>Number(cell.dataset.predictionExpected), delayed=Number(cell.dataset.predictionDelay)>1000;
+			cell.classList.toggle('is-prediction-late',overdue||delayed);
+			cell.title=overdue?'The last predicted arrival time has passed.':delayed?`Later than the previous prediction by ${Math.ceil(Number(cell.dataset.predictionDelay)/1000)} seconds.`:'Current expected arrival';
+		});
+	}
+	async function trackVehicle(reg, box, {background=false} = {}) {
+		if(box.getAttribute('aria-busy')==='true')return;
 		const token = ++trackingSequence;
 		box.dataset.request = String(token);
-		box.replaceChildren(text("p", "Checking " + reg + "…", "dxb-small"));
+		const modal = box.closest('.dxb-pinned-arrivals-modal');
+		modal?.classList.toggle('is-tracking-loading',!background);
+		modal?.setAttribute('aria-busy','true');
+		box.setAttribute('aria-busy','true');
+		const refreshButton = modal?.querySelector('.dxb-pin-actions button');
+		if(refreshButton)refreshButton.disabled=true;
+		if(!background){
+		const loading = text('div','','dxb-tracking-loading');
+		const status = text('div','','dxb-tracking-loading-status'); status.setAttribute('role','status');
+		const spinner = text('span','','dxb-tracking-spinner'); spinner.setAttribute('aria-hidden','true');
+		const message = text('div'); message.append(text('strong','Locating '+formatRegistration(reg)),text('p','Checking current service and live arrival predictions…'));
+		status.append(spinner,message); loading.append(status);
+		const skeleton = text('div','','dxb-tracking-skeleton'); skeleton.setAttribute('aria-hidden','true');
+		for(let i=0;i<4;i++){const row=text('div');for(let j=0;j<4;j++)row.append(text('span'));skeleton.append(row);}
+		loading.append(skeleton);box.replaceChildren(loading);
+		} else { box.querySelector('[data-prediction-refresh-note]')?.remove();box.append(text('small','Refreshing live predictions…','dxb-prediction-refresh-note')); }
 		try {
 			const data = await request(
 				"vehicle/" + encodeURIComponent(reg) + "/arrivals",
 			);
-			if (!box.isConnected || box.dataset.request !== String(token)) return;
+			if (!box.isConnected || box.dataset.request !== String(token) || (modal && !modal.open)) return;
 			box.replaceChildren();
 			const live = data.arrivals.filter(
 				(a) => Date.parse(a.expected) > Date.now() - 15000,
@@ -9733,6 +9840,14 @@ window.dxInitBusGallery = (root) => {
 					),
 				);
 			live.sort((a, b) => Date.parse(a.expected) - Date.parse(b.expected));
+			const previous = previousVehiclePredictions.get(box) || new Map(), nextPredictions=new Map(), occurrences=new Map();
+			const predictionDelays=live.map(arrival=>{
+				const base=predictionIdentity(arrival), occurrence=occurrences.get(base)||0;occurrences.set(base,occurrence+1);
+				const key=base+'|'+occurrence, expected=Date.parse(arrival.expected), prior=previous.get(key);
+				nextPredictions.set(key,expected);
+				return Number.isFinite(prior)?expected-prior:0;
+			});
+			previousVehiclePredictions.set(box,nextPredictions);
 			const badge = (route) => {
 				const el = text("span", route, "dx-route-badge");
 				el.dataset.routeTile = route;
@@ -9762,13 +9877,28 @@ window.dxInitBusGallery = (root) => {
 				head.append(row);
 				table.append(head);
 				const body = text("tbody");
-				live.forEach((a) => {
+				const destinationKey = arrival => String(arrival.route || '').toUpperCase()+'|'+String(arrival.destinationId || arrival.destination || '').trim().toLowerCase().replace(/\s+/g,' ')+'|'+(arrival.direction || '');
+				const changed = (a,b) => !!a?.destination && !!b?.destination && destinationKey(a)!==destinationKey(b);
+				const flag = (kind, destination) => {
+					const badge = text('span',kind==='start'?'Start':'Finish','dxb-trip-flag dxb-trip-flag--'+kind);
+					badge.title = (kind==='start'?'First':'Last')+' prediction in this group towards '+destination;
+					const icon = text('span');icon.setAttribute('aria-hidden','true');
+					icon.innerHTML = kind==='start' ? '<svg viewBox="0 0 20 20" fill="none"><path d="M4 18V2m1 1h11l-3 4 3 4H5" stroke="currentColor" stroke-width="1.6" fill="currentColor"/></svg>' : '<svg viewBox="0 0 20 20"><path d="M4 18V2" stroke="currentColor" stroke-width="1.6"/><path fill="currentColor" d="M5 3h12v9H5z"/><path fill="#111a1c" d="M5 3h3v3H5zm6 0h3v3h-3zM8 6h3v3H8zm6 0h3v3h-3zM5 9h3v3H5zm6 0h3v3h-3z"/></svg>';
+					badge.prepend(icon);return badge;
+				};
+				live.forEach((a,index) => {
+					const starts = index>0 && changed(live[index-1],a);
+					const finishes = index<live.length-1 && changed(a,live[index+1]);
+					if(starts){const divider=text('tr','','dxb-direction-break');const cell=text('td');cell.colSpan=4;cell.append(text('span','↪ Towards '+a.destination));divider.append(cell);body.append(divider);}
 					const row = text("tr"),
 						route = text("td");
 					route.append(badge(a.route));
+					const stop = text('td',a.stop,'dxb-prediction-stop');
+					if(starts)stop.append(flag('start',a.destination));
+					if(finishes)stop.append(flag('finish',a.destination));
 					row.append(
 						route,
-						text("td", a.stop),
+						stop,
 						text("td", a.destination),
 						text(
 							"td",
@@ -9779,22 +9909,30 @@ window.dxInitBusGallery = (root) => {
 							}),
 						),
 					);
+					const expectedCell=row.lastElementChild;expectedCell.dataset.predictionExpected=String(Date.parse(a.expected));expectedCell.dataset.predictionDelay=String(predictionDelays[index]);
 					body.append(row);
 				});
 				table.append(body);
 				box.append(table);
+				if(!background && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+					body.querySelectorAll('tr:not(.dxb-direction-break)').forEach((row,index)=>row.animate([{opacity:0,translate:'0 12px'},{opacity:1,translate:'0 0'}],{duration:520,delay:Math.min(index*65,455),fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
+				}
 			}
 
 			box.append(
 				text(
 					"small",
 					"Checked " +
-						new Date().toLocaleTimeString("en-GB") +
-						" · arrival predictions, not a GPS location",
+						new Date(data.checked || Date.now()).toLocaleTimeString("en-GB",{timeZone:'Europe/London'}) +
+						" · auto-refreshes every 30s · arrival predictions, not a GPS location",
 				),
 			);
+			updatePredictionLateness(box);
 		} catch {
-			if (box.isConnected && box.dataset.request === String(token))
+			if(background && box.isConnected && box.dataset.request===String(token) && box.querySelector('.dxb-pin-table')){
+				box.querySelector('.dxb-prediction-refresh-note')?.remove();
+				const note=text('small','Could not refresh. Showing the last predictions; retrying automatically.','dxb-prediction-refresh-note');note.dataset.predictionRefreshNote='';box.append(note);
+			}else if (box.isConnected && box.dataset.request === String(token))
 				box.replaceChildren(
 					text(
 						"p",
@@ -9802,6 +9940,12 @@ window.dxInitBusGallery = (root) => {
 						"dxb-small",
 					),
 				);
+		} finally {
+			if(box.dataset.request===String(token)){
+				box.removeAttribute('aria-busy');
+				modal?.classList.remove('is-tracking-loading');modal?.removeAttribute('aria-busy');
+				if(refreshButton)refreshButton.disabled=false;
+			}
 		}
 	}
 	const formatRegistration = (reg) =>
@@ -9919,7 +10063,7 @@ window.dxInitBusGallery = (root) => {
 		};
 		dialog.setAttribute(
 			"aria-label",
-			type === "all" ? `All buses tracking on route ${route}` : `${type} deckers tracking on route ${route}`,
+			type === "all" ? `All buses tracking on route ${route}` : type === "vehicle" ? `Bus details on route ${route}` : `${type} deckers tracking on route ${route}`,
 		);
 		const heading = text(
 			"h2",
@@ -10041,7 +10185,11 @@ window.dxInitBusGallery = (root) => {
 			};
 			request("vehicle/" + encodeURIComponent(vehicle.registration) + "/arrivals", arrivalsRequest.signal)
 				.then((data) => {
-					const next = data.arrivals?.find((item) => item.route?.toUpperCase() === String(route).toUpperCase());
+					const next = data.arrivals?.find((item) => item.route?.toUpperCase() === String(route).toUpperCase()) || (type === "vehicle" ? data.arrivals?.[0] : null);
+					if (type === 'vehicle' && next?.route) {
+						heading.textContent = `Bus details on route ${next.route}`;
+						dialog.setAttribute('aria-label', heading.textContent);
+					}
 					updatePosition(next, "No current prediction");
 				})
 				.catch(() => updatePosition(null, "Temporarily unavailable"));
@@ -10534,7 +10682,86 @@ window.dxInitBusGallery = (root) => {
 		});
 		if (former && ["arrivals", "line"].includes(tab)) activateTab("overview");
 	}
-	let pinnedMap, pinnedLayer, pinnedTimer;
+	let pinnedMap, pinnedLayer, pinnedTimer, pinnedLegend, pinnedBounds = [];
+	const fitPinnedRoutes = () => {
+		if (!pinnedMap || !pinnedBounds.length) return;
+		const host = pinnedMap.getContainer(), legend = pinnedLegend?.getContainer();
+		const narrow = host.clientWidth < 600;
+		pinnedMap.fitBounds(window.L.latLngBounds(pinnedBounds), {paddingTopLeft:[36,36],paddingBottomRight:[narrow?36:(legend?.offsetWidth || 220)+24,(legend?.offsetHeight || 80)+90],maxZoom:13,animate:false});
+	};
+	const pinnedRouteColors = new Map();
+	let pinnedStopLayer, pinnedStops = new Map(), pinnedArrowRoutes = [], pinnedArrowFrame = 0, pinnedArrowLast = 0;
+	const pinnedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	const pinnedStopsZoom = 14;
+	function pinnedTint(hex, mix) {
+		const rgb=hex.replace('#','').match(/../g).map(value=>parseInt(value,16));
+		return '#'+rgb.map(value=>Math.round(mix>0?value+(255-value)*mix:value*(1+mix)).toString(16).padStart(2,'0')).join('');
+	}
+	function projectPinnedArrows() {
+		if(!pinnedMap)return;
+		pinnedArrowRoutes.forEach(route=>{
+			route.projected=route.points.map(point=>pinnedMap.project(point));route.lengths=[0];
+			for(let i=1;i<route.projected.length;i++)route.lengths.push(route.lengths[i-1]+route.projected[i].distanceTo(route.projected[i-1]));
+			route.total=route.lengths.at(-1);
+			if(route.gradient && route.path){const box=route.path.getBBox();route.gradient.setAttribute('x1',box.x);route.gradient.setAttribute('y1',box.y);route.gradient.setAttribute('x2',box.x+Math.max(1,box.width));route.gradient.setAttribute('y2',box.y+Math.max(1,box.height));}
+		});
+	}
+	function paintPinnedArrows(elapsed=0) {
+		pinnedArrowRoutes.forEach(route=>{
+			if(!route.total)return;
+			route.travel=(route.travel+elapsed*7)%route.total;
+			route.markers.forEach((marker,index)=>{
+				const distance=((index+.5)/route.markers.length*route.total+route.travel)%route.total;
+				let segment=1;while(segment<route.lengths.length-1 && route.lengths[segment]<distance)segment++;
+				const a=route.projected[segment-1],b=route.projected[segment],span=route.lengths[segment]-route.lengths[segment-1];
+				const fraction=span?(distance-route.lengths[segment-1])/span:0;
+				marker.setLatLng(pinnedMap.unproject([a.x+(b.x-a.x)*fraction,a.y+(b.y-a.y)*fraction]));
+				const svg=marker.getElement()?.querySelector('svg');if(svg)svg.style.transform=`rotate(${Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI}deg)`;
+			});
+		});
+	}
+	function animatePinnedArrows(now) {
+		pinnedArrowFrame=0;
+		const host=pinnedMap?.getContainer();
+		if(!host || host.hidden || tab!=='pinned' || document.hidden || pinnedMotion.matches){pinnedArrowLast=0;return;}
+		if(!pinnedArrowLast || now-pinnedArrowLast>=32){const elapsed=pinnedArrowLast?Math.min(.15,(now-pinnedArrowLast)/1000):0;pinnedArrowLast=now;paintPinnedArrows(elapsed);}
+		pinnedArrowFrame=requestAnimationFrame(animatePinnedArrows);
+	}
+	function startPinnedArrows() {if(!pinnedArrowFrame && !pinnedMotion.matches)pinnedArrowFrame=requestAnimationFrame(animatePinnedArrows);}
+	function renderPinnedStops() {
+		if(!pinnedMap || !pinnedStopLayer)return;
+		pinnedStopLayer.clearLayers();
+		const host=pinnedMap.getContainer(), zoomed=pinnedMap.getZoom()>=pinnedStopsZoom;
+		host.dataset.stopPinsVisible=String(zoomed);
+		const note=pinnedLegend?.getContainer().querySelector('.dxbus-pinned-stop-key');
+		if(note)note.textContent=zoomed?'● Shared stop · multiple tracked routes':'Zoom in for bus stops';
+		if(!zoomed)return;
+		const L=window.L,bounds=pinnedMap.getBounds().pad(.15);
+		for(const stop of pinnedStops.values()){
+			if(!bounds.contains([stop.lat,stop.lon]))continue;
+			const routes=[...stop.routes].sort(),shared=routes.length>1,color=shared?'#c6b3ff':pinnedRouteColors.get(routes[0]);
+			const icon=L.divIcon({className:'dxbus-pinned-stop'+(shared?' is-shared':''),iconSize:[20,26],iconAnchor:[10,24],html:`<svg viewBox="0 0 20 26" aria-hidden="true" style="color:${color}"><path d="M10 24S2 14 2 10a8 8 0 1 1 16 0c0 4-8 14-8 14z" fill="#0d171b" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="10" r="${shared?4:2.5}" fill="currentColor"/>${shared?'<circle cx="10" cy="10" r="1.4" fill="#fff"/>':''}</svg>`});
+			const marker=L.marker([stop.lat,stop.lon],{icon,zIndexOffset:shared?150:-200,title:stop.name+' · '+routes.join(', '),keyboard:true}).addTo(pinnedStopLayer);
+			const stopContent = () => {
+				const content=text('div','','dxbus-stop-tooltip-content');content.append(text('strong',stop.name));
+				if(shared)content.append(text('small','Shared stop','dxbus-stop-tooltip-shared'));
+				const tiles=text('div','','dxbus-stop-route-tiles');
+				routes.sort().forEach(route=>{const tile=text('span',route,'dx-route-badge');tile.dataset.routeTile=route;dxBusPaintDirectoryTile(tile,route);tiles.append(tile);});
+				content.append(tiles);return content;
+			};
+			marker.bindPopup(stopContent(),{className:'dxbus-stop-popup'});marker.bindTooltip(stopContent(),{direction:'top',className:'dxbus-stop-tooltip',opacity:1});
+			dxBusAnimateMapTooltip(marker);
+			const popup=marker.getPopup(), nativeRemove=popup.remove.bind(popup), nativeOpen=popup.openOn.bind(popup);let closingPopup;
+			const showPopup=()=>{const el=popup.getElement();if(el){el.classList.remove('is-stop-closing');el.classList.add('is-stop-visible');}};
+			popup.on('add',()=>{clearTimeout(closingPopup);if(pinnedMotion.matches)showPopup();else requestAnimationFrame(showPopup);});
+			popup.openOn=function(map){clearTimeout(closingPopup);const result=nativeOpen(map);if(popup.getElement()?.classList.contains('is-stop-closing'))showPopup();return result;};
+			popup.remove=function(){clearTimeout(closingPopup);const el=popup.getElement();if(!el || pinnedMotion.matches)return nativeRemove();el.classList.remove('is-stop-visible');el.classList.add('is-stop-closing');closingPopup=setTimeout(()=>{popup.getElement()?.classList.remove('is-stop-closing');nativeRemove();},240);return popup;};
+			marker.on('remove',()=>{clearTimeout(closingPopup);nativeRemove();});
+		}
+	}
+	document.addEventListener('visibilitychange',startPinnedArrows);
+	pinnedMotion.addEventListener('change',()=>{if(pinnedMotion.matches){cancelAnimationFrame(pinnedArrowFrame);pinnedArrowFrame=0;pinnedArrowLast=0;}else startPinnedArrows();});
+
 	let pinnedMapRequest = 0;
 	const trackingParams = new URLSearchParams(location.search);
 	const trackingRegistration = dxBusRegistration(trackingParams.get('track'));
@@ -10565,25 +10792,100 @@ window.dxInitBusGallery = (root) => {
 				const next = data.arrivals.find(arrival => arrival.stopId && Date.parse(arrival.expected) > Date.now() - 15000);
 				if (!next || !/^[A-Z0-9]{1,6}$/i.test(next.route)) return null;
 				const sequences = await Promise.allSettled(['inbound','outbound'].map(direction => request(`route/${encodeURIComponent(next.route)}?direction=${direction}`)));
-				const stop = sequences.flatMap(sequence => sequence.value?.stops || []).find(stop => stop.id === next.stopId);
+				const candidates = sequences.flatMap(sequence => sequence.status === 'fulfilled' && sequence.value?.stops?.some(stop => stop.id === next.stopId) ? [sequence.value] : []);
+				const routeData = candidates.find(sequence => next.direction && sequence.direction === next.direction)
+					|| candidates.find(sequence => next.destinationId && sequence.stops.at(-1)?.id === next.destinationId)
+					|| (candidates.length === 1 ? candidates[0] : null);
+				const stop = (routeData?.stops || candidates.flatMap(sequence => sequence.stops)).find(stop => stop.id === next.stopId);
 				if (stop?.lat == null || stop.lon == null || !Number.isFinite(+stop.lat) || !Number.isFinite(+stop.lon)) return null;
-				return {position:[+stop.lat,+stop.lon], bus:{...next, registration}, stop};
+				return {position:[+stop.lat,+stop.lon], bus:{...next, registration}, stop, routeData};
 			}));
 			if (revision !== pinnedMapRequest || tab !== 'pinned' || host.hidden) return;
 			const firstDraw = !pinnedMap;
 			if (firstDraw) {
 				pinnedMap = L.map(host, {scrollWheelZoom:false}).setView([51.5074,-.1278], 11);
+				pinnedMap.on('resize', fitPinnedRoutes);
+				addMapFullscreen(L,pinnedMap,host);
 				dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(pinnedMap);
 				pinnedLayer = L.layerGroup().addTo(pinnedMap);
+				pinnedStopLayer=L.layerGroup().addTo(pinnedMap);
+				pinnedMap.on('zoomend',()=>{projectPinnedArrows();paintPinnedArrows();renderPinnedStops();});
+				pinnedMap.on('moveend',renderPinnedStops);
 			}
-			pinnedLayer.clearLayers();
+			pinnedLayer.clearLayers();pinnedStopLayer.clearLayers();pinnedStops=new Map();pinnedArrowRoutes=[];
+			host.querySelector('defs[data-pinned-gradients]')?.remove();
 			const available = points.flatMap(point => point.value ? [point.value] : []);
-			available.forEach(({position,bus,stop}) => {
-				const { marker } = addRouteBusMarker(L, pinnedLayer, position, bus, stop, true);
+			const routes = new Map(), bounds = available.map(point => point.position);
+			const palette = ['#f0c66b','#61d7ec','#ed87bd','#98dc7b','#a7a0ff','#ff9369','#f2ec83','#76d7ba','#b6caff','#dcaaed','#decbac','#f58e94'];
+			available.map(point => point.bus.route.toUpperCase()).sort().forEach(route => {
+				if (!pinnedRouteColors.has(route)) pinnedRouteColors.set(route, palette[pinnedRouteColors.size % palette.length]);
+			});
+			available.forEach(({bus,routeData}) => {
+				if (routeData) routes.set(`${bus.route.toUpperCase()}:${routeData.direction}`, {route:bus.route.toUpperCase(), destination:bus.destination || routeData.stops.at(-1)?.name || '', data:routeData});
+			});
+			let gradientIndex=0;
+			for (const {route,destination,data} of [...routes.values()].flatMap(entry=>busRoutePaths(entry.data).map(path=>({...entry,data:{...entry.data,paths:[path]}})))) {
+				const color = pinnedRouteColors.get(route);
+				const points = busRoutePaths(data).sort((a,b)=>b.length-a.length)[0] || [];
+				bounds.push(...points);
+				if (points.length < 2) continue;
+				L.polyline(points, {color:'#071015',weight:8,opacity:.85,interactive:false}).addTo(pinnedLayer);
+				const line=L.polyline(points, {color,weight:4,opacity:.98,className:'dxbus-pinned-route-line'}).addTo(pinnedLayer).bindTooltip(`Route ${route} · Towards ${destination}`,{className:'dxbus-stop-tooltip',opacity:1});
+				dxBusAnimateMapTooltip(line);
+				const path=line.getElement(),svg=path?.ownerSVGElement;let lineGradient;
+				if(svg){
+					const ns='http://www.w3.org/2000/svg';let defs=svg.querySelector('defs[data-pinned-gradients]');
+					if(!defs){defs=document.createElementNS(ns,'defs');defs.dataset.pinnedGradients='';svg.prepend(defs);}
+					const gradient=document.createElementNS(ns,'linearGradient'),id=`dxbus-gradient-${revision}-${gradientIndex++}`;
+					lineGradient=gradient;gradient.setAttribute('gradientUnits','userSpaceOnUse');gradient.id=id;gradient.setAttribute('x1','0%');gradient.setAttribute('y1','0%');gradient.setAttribute('x2','100%');gradient.setAttribute('y2','100%');
+					for(const [offset,tint] of [['0%',-.25],['38%',.28],['65%',0],['100%',-.18]]){const stop=document.createElementNS(ns,'stop');stop.setAttribute('offset',offset);stop.setAttribute('stop-color',pinnedTint(color,tint));gradient.append(stop);}
+					defs.append(gradient);path.setAttribute('stroke',`url(#${id})`);
+				}
+				data.stops.forEach(stop=>{
+					if(stop.lat==null || stop.lon==null || !Number.isFinite(+stop.lat) || !Number.isFinite(+stop.lon))return;
+					const key=stop.id || `${stop.lat},${stop.lon}`;if(!pinnedStops.has(key))pinnedStops.set(key,{...stop,routes:new Set()});pinnedStops.get(key).routes.add(route);
+				});
+				const arrowRoute={points,markers:[],travel:0,path,gradient:lineGradient};pinnedArrowRoutes.push(arrowRoute);
+				const stride = Math.max(1,Math.ceil((points.length-1)/10));
+				for (let i = 0; i < points.length - 1; i += stride) {
+					const a = pinnedMap.project(points[i]), b = pinnedMap.project(points[i+1]);
+					if (a.distanceTo(b) < 1) continue;
+					const angle = Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
+					const midpoint = [(points[i][0]+points[i+1][0])/2,(points[i][1]+points[i+1][1])/2];
+					const icon = L.divIcon({className:'dxbus-pinned-direction',iconSize:[20,20],iconAnchor:[10,10],html:`<svg viewBox="0 0 20 20" aria-hidden="true" style="color:${color};transform:rotate(${angle}deg)"><path d="M6 4l7 6-7 6" fill="none" stroke="#071015" stroke-width="6"/><path d="M6 4l7 6-7 6" fill="none" stroke="currentColor" stroke-width="3"/></svg>`});
+					arrowRoute.markers.push(L.marker(midpoint,{icon,interactive:false,keyboard:false,zIndexOffset:-500}).addTo(pinnedLayer));
+				}
+			}
+			host.classList.toggle('has-route-colored-buses',available.length>1);
+			const busMarkers=[];
+			available.forEach(({position,bus,stop,routeData}) => {
+				const entry = addRouteBusMarker(L, pinnedLayer, position, bus, stop, true);
+				entry.paths=routeData?busRoutePaths(routeData):[];busMarkers.push(entry);const {marker}=entry;
+				marker.getElement()?.style.setProperty('--pinned-route-color',pinnedRouteColors.get(bus.route.toUpperCase()));
 				if (trackingPhoto) marker.openTooltip();
 			});
+			spaceBusMarkers(pinnedMap,busMarkers);
+			if (!pinnedLegend) {
+				pinnedLegend = L.control({position:'bottomright'});
+				pinnedLegend.onAdd = () => { const legend = L.DomUtil.create('div','dxbus-pinned-map-legend'); legend.setAttribute('aria-label','Pinned bus routes'); L.DomEvent.disableClickPropagation(legend); L.DomEvent.disableScrollPropagation(legend); return legend; };
+				pinnedLegend.addTo(pinnedMap);
+			}
+			const legend = pinnedLegend.getContainer(); legend.replaceChildren(); legend.hidden = !available.length;
+			legend.append(text('strong','Pinned routes'));
+			for (const route of [...new Set(available.map(point=>point.bus.route.toUpperCase()))].sort()) {
+				const row = text('div','','dxbus-pinned-legend-route'); const swatch = text('span','','dxbus-pinned-legend-swatch'); swatch.style.background = `linear-gradient(120deg,${pinnedTint(pinnedRouteColors.get(route),-.25)},${pinnedTint(pinnedRouteColors.get(route),.28)},${pinnedRouteColors.get(route)})`; swatch.setAttribute('aria-hidden','true');
+				const labels = [...routes.values()].filter(entry=>entry.route===route).map(entry=>'→ '+entry.destination);
+				row.append(swatch,text('span',`Route ${route}` + (labels.length?' · '+labels.join(' / '):' · Direction unavailable'))); legend.append(row);
+			}
+			legend.append(text('small','','dxbus-pinned-stop-key'));
+			projectPinnedArrows();paintPinnedArrows();startPinnedArrows();renderPinnedStops();
 			pinnedMap.invalidateSize();
-			if ((firstDraw || !host.dataset.hasPins) && available.length) pinnedMap.fitBounds(available.map(point => point.position), {padding:[25,25],maxZoom:14});
+			const identity = [...routes.keys()].sort().join(',')+'|'+available.map(point=>point.bus.registration).sort().join(',');
+			if (bounds.length && (firstDraw || host.dataset.routeBounds !== identity)) {
+				pinnedBounds = bounds;
+				fitPinnedRoutes();
+				host.dataset.routeBounds = identity;
+			}
 			host.dataset.hasPins = available.length ? 'true' : '';
 			status.textContent = trackingPhoto
 				? (available.length ? `Route ${available[0].bus.route} · ${available[0].bus.destination || 'In service'} · Next predicted stop: ${available[0].stop.name}`
@@ -12290,7 +12592,7 @@ window.dxInitBusGallery = (root) => {
 		return vehicleCache.get(reg);
 	}
 	function openAppVehicle(reg, context = {}) {
-		openFleet('vehicle', [{ ...context, registration: reg }], current?.name, true);
+		openFleet('vehicle', [{ ...context, registration: reg }], context.route || current?.name, true);
 	}
 	function openAppAllVehicles() {
 		if (!current || current.archive) return;
@@ -12408,6 +12710,91 @@ window.dxInitBusGallery = (root) => {
 			}
 		}).catch((error) => { leafletReady = null; throw error; });
 	}
+	function addMapFullscreen(L, map, host) {
+		if (host.dataset.fullscreenControl) return;
+		host.dataset.fullscreenControl = 'true';
+		let fallback, placeholder;
+		const control = L.control({position:'topright'});
+		const expanded = () => document.fullscreenElement === host || !!fallback?.open;
+		const resized = () => requestAnimationFrame(() => { map.invalidateSize({pan:false}); if (map === pinnedMap) fitPinnedRoutes(); });
+		control.onAdd = () => {
+			const button = L.DomUtil.create('button','dxbus-map-fullscreen'); button.type = 'button';
+			button.setAttribute('aria-controls',host.id);
+			const label = text('span','Full Screen');
+			const icon = text('span','','dxbus-map-fullscreen-icon'); icon.setAttribute('aria-hidden','true');
+			icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg>';
+			button.append(label,icon);
+			const sync = () => { const open = expanded(); label.textContent = open ? 'Exit Full Screen' : 'Full Screen'; button.setAttribute('aria-expanded',String(open)); button.setAttribute('aria-label',open?'Exit full screen map':'Open full screen map'); resized(); };
+			L.DomEvent.disableClickPropagation(button); L.DomEvent.disableScrollPropagation(button);
+			const openFallback = () => {
+				placeholder = document.createComment('map position'); host.before(placeholder);
+				fallback = text('dialog','','dxbus-map-fullscreen-dialog'); fallback.setAttribute('aria-label','Full screen bus map');
+				root.append(fallback); fallback.append(host);
+				fallback.addEventListener('close',()=>{ placeholder.replaceWith(host); fallback.remove(); fallback=null; sync(); button.focus({preventScroll:true}); },{once:true});
+				fallback.showModal(); sync();
+			};
+			button.addEventListener('click',async()=>{
+				if(fallback?.open){fallback.close();return;}
+				if(document.fullscreenElement===host){await document.exitFullscreen();return;}
+				if(host.requestFullscreen){try{await host.requestFullscreen();}catch{openFallback();}}
+				else openFallback();
+			});
+			document.addEventListener('fullscreenchange',sync); sync();
+			return button;
+		};
+		control.addTo(map);
+	}
+	function busRoutePaths(data) {
+		const paths=(data.paths||[]).filter(path=>Array.isArray(path)&&path.length>1&&path.every(point=>Array.isArray(point)&&point.length>=2&&point.every(Number.isFinite)));
+		if(paths.length)return paths;
+		const points=(data.stops||[]).filter(stop=>stop.lat!=null&&stop.lon!=null&&Number.isFinite(+stop.lat)&&Number.isFinite(+stop.lon)).map(stop=>[+stop.lat,+stop.lon]);
+		if(points.length<3)return [points];
+		// Round only the corners of the stop-to-stop fallback; never invent a road path.
+		const rounded=[points[0]];
+		for(let i=1;i<points.length-1;i++){
+			const a=points[i-1],b=points[i],c=points[i+1];
+			const start=b.map((value,j)=>value+(a[j]-value)*.12),end=b.map((value,j)=>value+(c[j]-value)*.12);
+			for(let step=0;step<=6;step++){const t=step/6;rounded.push(b.map((value,j)=>(1-t)*(1-t)*start[j]+2*(1-t)*t*value+t*t*end[j]));}
+		}
+		return [[...rounded,points.at(-1)]];
+	}
+	function spaceBusMarkers(map, markers) {
+		const layout=()=>{
+			const placed=[];
+			markers.forEach(({marker,anchor,paths=[]})=>{
+				const origin=map.latLngToLayerPoint(anchor);
+				let nearest=null;
+				for(const path of paths){
+					const points=path.map(point=>map.latLngToLayerPoint(point));let distance=0;
+					for(let i=1;i<points.length;i++){
+						const a=points[i-1],b=points[i],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+						if(!length)continue;
+						const t=Math.max(0,Math.min(1,((origin.x-a.x)*dx+(origin.y-a.y)*dy)/(length*length)));
+						const point=a.add([dx*t,dy*t]),error=origin.distanceTo(point);
+						if(!nearest||error<nearest.error)nearest={points,error,along:distance+t*length};
+						distance+=length;
+					}
+				}
+				let point=origin;
+				if(nearest){
+					const segments=[];let total=0;
+					for(let i=1;i<nearest.points.length;i++){const a=nearest.points[i-1],b=nearest.points[i],length=a.distanceTo(b);if(length){segments.push({a,b,start:total,length});total+=length;}}
+					const at=distance=>{distance=Math.max(0,Math.min(total,distance));const segment=segments.find(row=>distance<=row.start+row.length)||segments.at(-1);const t=(distance-segment.start)/segment.length;return segment.a.add([(segment.b.x-segment.a.x)*t,(segment.b.y-segment.a.y)*t]);};
+					let best=Infinity;
+					// Keep the marker on its own direction's path while separating nearby icons along it.
+					for(const offset of [0,36,-36,72,-72,108,-108,144,-144,180,-180,216,-216]){
+						const candidate=at(nearest.along+offset);
+						const overlap=placed.reduce((sum,other)=>sum+Math.max(0,64-Math.abs(other.x-candidate.x))*Math.max(0,36-Math.abs(other.y-candidate.y)),0);
+						const score=overlap*1000+Math.abs(offset);
+						if(score<best){best=score;point=candidate;}
+						if(!overlap)break;
+					}
+				}
+				placed.push(point);marker.setLatLng(map.layerPointToLatLng(point));
+			});
+		};
+		map.off('zoomend',map._dxBusLayout);map._dxBusLayout=layout;map.on('zoomend',layout);layout();
+	}
 	function addRouteBusMarker(L, layer, position, bus, stop, showRoute = false) {
 		const marker = L.marker(position, { icon: L.divIcon({ className: 'dxbus-map-bus' + (marked.includes(dxBusRegistration(bus.registration)) ? ' is-pinned' : ''), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="17" rx="3"/><path d="M5 10h14M8 20v2m8-2v2M8 15h1m6 0h1"/></svg>', iconSize: [28, 28], iconAnchor: [14, 14] }), title: `${formatRegistration(bus.registration)} · next predicted stop ${stop.name}, not GPS`, keyboard: true }).addTo(layer);
 		if (showRoute && bus.route) {
@@ -12429,46 +12816,66 @@ window.dxInitBusGallery = (root) => {
                     marker.getElement()?.setAttribute('aria-label', formatRegistration(bus.registration) + ' · ' + model.textContent + ' · next predicted stop ' + stop.name);
                 }).catch(() => { model.textContent = 'Make and model unavailable'; });
                 marker.on('click', () => openAppVehicle(bus.registration, bus));
-		return { marker, registration: bus.registration, badge: pinnedBadge };
+		return { marker, anchor: position, registration: bus.registration, badge: pinnedBadge };
 	}
 	async function renderRouteMap(host, routeData = current, positions = latestRoutePositions) {
 		if (!host || !routeData || host.hidden) return;
 		const token = sequence;
-		const stops = (routeData.stops || []).filter((stop) => Number.isFinite(Number(stop.lat)) && Number.isFinite(Number(stop.lon)) && stop.lat != null && stop.lon != null);
-		if (!stops.length) { if (!appMaps.has(host)) host.replaceChildren(text('p', 'Geographic stop coordinates are unavailable. Use the ordered stop list.', 'dxbus-widget-empty')); return; }
 		try {
+			let directions = appRouteSequences.filter(row => row.stops?.length && (!row.id || row.id === current?.id));
+			if(!directions.length){
+				const fetched=await Promise.allSettled(['inbound','outbound'].map(direction=>direction===routeData.direction?Promise.resolve(routeData):request(`route/${encodeURIComponent(current.id)}?direction=${direction}`)));
+				if(token!==sequence || !host.isConnected)return;
+				directions=fetched.flatMap(result=>result.status==='fulfilled' && result.value?.stops?.length?[result.value]:[]);
+				appRouteSequences=directions;
+			}
+			const validStop=stop=>stop.lat!=null && stop.lon!=null && Number.isFinite(Number(stop.lat)) && Number.isFinite(Number(stop.lon));
+			const stops=directions.flatMap(row=>row.stops||[]).filter(validStop);
+			if(!stops.length){if(!appMaps.has(host))host.replaceChildren(text('p','Geographic stop coordinates are unavailable. Use the ordered stop list.','dxbus-widget-empty'));return;}
 			const L = await ensureRouteMap();
 			if (token !== sequence || !host.isConnected) return;
 			let state = appMaps.get(host);
 			if (!state) {
-				host.replaceChildren();
-				host.classList.add('dxbus-map--osm');
+				host.replaceChildren();host.classList.add('dxbus-map--osm');
 				const map = L.map(host, { scrollWheelZoom: false, zoomControl: true });
+				addMapFullscreen(L,map,host);
 				dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' }).addTo(map);
-				state = { map, stops: L.layerGroup().addTo(map), buses: L.layerGroup().addTo(map), identity: '' }; appMaps.set(host, state);
+				const badgeControl=L.control({position:'topleft'});let routeBadge;
+				badgeControl.onAdd=()=>{const box=L.DomUtil.create('div','dxbus-map-route-control');routeBadge=document.createElement('span');routeBadge.className='dxbus-route-badge dxbus-map-route-badge';box.append(routeBadge);L.DomEvent.disableClickPropagation(box);return box;};badgeControl.addTo(map);
+				state = { map, routeBadge, stops: L.layerGroup().addTo(map), buses: L.layerGroup().addTo(map), identity: '' }; appMaps.set(host, state);
 			}
-			const identity = `${current?.id}:${routeData.direction}:${stops.map((stop) => stop.id).join(',')}`;
+			const heroBadge=root.querySelector('#dxb-route-number');
+			if(heroBadge){state.routeBadge.replaceChildren(...[...heroBadge.childNodes].map(node=>node.cloneNode(true)));state.routeBadge.dataset.serviceType=heroBadge.dataset.serviceType||root.dataset.serviceType;}else dxBusPaintDirectoryTile(state.routeBadge,current.name||current.id);
+			state.routeBadge.setAttribute('aria-label','Route '+(current.name||current.id));
+			const identity = current.id+':'+directions.map(row=>row.direction+':'+row.stops.map(stop=>stop.id).join(',')).join('|');
 			const color = getComputedStyle(root).getPropertyValue('--dxbus-route').trim() || (/^N/i.test(current?.name || '') ? '#c6e8f5' : '#e52d36');
 			if (state.identity !== identity) {
 				state.stops.clearLayers();
-				const points = stops.map((stop) => [Number(stop.lat), Number(stop.lon)]);
-				L.polyline(points, { color, weight: 4, opacity: .85 }).addTo(state.stops);
-				stops.forEach((stop, i) => {
-					const marker = L.circleMarker([Number(stop.lat), Number(stop.lon)], { radius: i === 0 || i === stops.length - 1 ? 6 : 3, color, weight: 2, fillColor: '#101212', fillOpacity: 1 }).addTo(state.stops);
-					const popup = text('div', '', 'dxbus-map-popup'); popup.append(text('strong', stop.name));
-					const button = text('button', 'View live arrivals', 'dxbus-stop-select'); button.type = 'button'; button.addEventListener('click', () => selectAppStop(stop.id, routeData.direction)); popup.append(button); marker.bindPopup(popup);
+				directions.forEach((route,index)=>{
+					const routeStops=route.stops.filter(validStop),points=routeStops.map(stop=>[+stop.lat,+stop.lon]);
+					const directionColor=route.direction==='outbound'?'#ff8992':'#ed2939';
+					busRoutePaths(route).forEach(path=>{if(path.length>1){const line=L.polyline(path,{color:directionColor,weight:4,opacity:.95,lineCap:'round',lineJoin:'round',smoothFactor:.4,className:'dxbus-route-direction-line'}).addTo(state.stops).bindTooltip(route.direction==='outbound'?'Outbound':'Inbound',{className:'dxbus-stop-tooltip',opacity:1});dxBusAnimateMapTooltip(line);}});
+					routeStops.forEach((stop,i)=>{
+						const marker=L.circleMarker([+stop.lat,+stop.lon],{radius:i===0||i===routeStops.length-1?6:3,color:directionColor,weight:2,fillColor:'#101212',fillOpacity:1}).addTo(state.stops);
+						const popup=text('div','','dxbus-map-popup');popup.append(text('strong',stop.name));
+						const button=text('button','View live arrivals','dxbus-stop-select');button.type='button';button.addEventListener('click',()=>selectAppStop(stop.id,route.direction));popup.append(button);marker.bindPopup(popup);
+					});
 				});
-				state.map.fitBounds(L.latLngBounds(points), { padding: [22, 22], maxZoom: 13 }); state.identity = identity;
+				state.map.fitBounds(L.latLngBounds(stops.map(stop=>[+stop.lat,+stop.lon])),{padding:[28,28],maxZoom:13});state.identity=identity;
 			}
-			state.buses.clearLayers();
-			state.pinMarkers = [];
-			(positions?.vehicles || []).forEach((bus) => {
-				if (bus.direction && bus.direction !== routeData.direction) return;
-				const stop = stops.find((item) => item.id === bus.stopId);
-				if (!stop || Date.parse(bus.expected) < Date.now() - 15000) return;
-				state.pinMarkers.push(addRouteBusMarker(L, state.buses, [Number(stop.lat), Number(stop.lon)], bus, stop));
+			state.buses.clearLayers();state.pinMarkers=[];
+			const plotted=new Set();
+			(positions?.vehicles || []).forEach(bus=>{
+				if(plotted.has(bus.registration) || Date.parse(bus.expected)<Date.now()-15000)return;
+				const route=directions.find(row=>row.direction===bus.direction && row.stops.some(stop=>stop.id===bus.stopId)) || directions.find(row=>row.stops.some(stop=>stop.id===bus.stopId));
+				const stop=route?.stops.find(stop=>stop.id===bus.stopId);
+				if(!stop || !validStop(stop))return;
+				plotted.add(bus.registration);
+				const entry=addRouteBusMarker(L,state.buses,[+stop.lat,+stop.lon],bus,stop);entry.paths=busRoutePaths(route);state.pinMarkers.push(entry);
 			});
-			requestAnimationFrame(() => state.map.invalidateSize());
+			spaceBusMarkers(state.map,state.pinMarkers);
+			host.dataset.plottedBuses=String(plotted.size);host.dataset.routeDirections=String(directions.length);
+			requestAnimationFrame(()=>state.map.invalidateSize());
 		} catch { if (!appMaps.has(host)) host.replaceChildren(text('p', 'The map is temporarily unavailable. The stop list and live arrivals remain available.', 'dxbus-widget-empty')); }
 	}
 	function applyAppMapMode(kind, mode) {
@@ -12536,6 +12943,8 @@ window.dxInitBusGallery = (root) => {
 	function startAppPolling() {
 		stopAppPolling(); latestRoutePositions = null; latestRunning = null; appPollFailures = 0;
 		if (!app) return;
+		const withdrawn = current?.profile?.listingType === 'former' || current?.profile?.badgeType === 'former';
+		root.querySelectorAll('.dxbus-stats, .dxbus-stat-notes').forEach(panel => { panel.hidden = withdrawn; });
 		if (current?.liveFeedPending) {
 			['total', 'single', 'double', 'refresh'].forEach(name => setAppStat(name, '—'));
 			setAppStatus('Route is in service. TfL predictions are currently unavailable.');
@@ -12623,8 +13032,8 @@ window.dxInitBusGallery = (root) => {
 	function initAppControls() {
 		if (!app) return;
 		root.dataset.appReady = 'true'; updatePinnedCount();
-		$$('.dxbus-card--map .dxbus-small').forEach((note) => { note.textContent = 'Lines connect published stops rather than an exact road path. Vehicle markers show the next predicted stop, not live GPS.'; });
-		const explorerNote = $('#panel-line .dxbus-view__head p:last-child'); if (explorerNote) explorerNote.textContent = 'Explore published stops in either direction. Map lines connect stops rather than following the exact road path. Vehicle markers show the next predicted stop, not live GPS.';
+		$$('.dxbus-card--map .dxbus-small').forEach((note) => { note.textContent = 'Lines follow published route paths where available, with an approximate fallback. Vehicle markers show the next predicted stop, not live GPS.'; });
+		const explorerNote = $('#panel-line .dxbus-view__head p:last-child'); if (explorerNote) explorerNote.textContent = 'Explore published stops in either direction. Map lines follow published route paths where available, with an approximate fallback. Vehicle markers show the next predicted stop, not live GPS.';
 		if ($('#dxbus-overview-arrivals') && !$('#dxbus-overview-arrivals-note')) { const note = text('p', 'Next predicted stop for each vehicle · not a GPS position', 'dxbus-source-note'); note.id = 'dxbus-overview-arrivals-note'; $('#dxbus-overview-arrivals').after(note); }
 		['total','single','double'].forEach((type) => { const card = $('.dxbus-stat--' + type); if (!card) return; card.setAttribute('role', 'button'); card.tabIndex = 0; card.setAttribute('aria-label', type === 'total' ? 'View all buses tracking on this route' : 'View confirmed ' + type + '-decker vehicles'); card.addEventListener('click', () => type === 'total' ? openAppAllVehicles() : openFleet(type, appFleet[type], current?.name)); card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); } }); });
 		window.addEventListener('storage', (event) => {
@@ -13584,7 +13993,7 @@ dxOnPageReady(() => {
 		if (seen.has(section)) return;
 		seen.add(section);
 		// These components already reveal their own sections or content.
-		if (section.closest('.gym-review-editorial, .dx-contact-aside, .service-detail-enquiry, body.home .what-i-do') ||
+		if (section.closest('.dx-instagram, #fitness-story, .dx-pulse, .gym-review-editorial, .dx-contact-aside, .service-detail-enquiry, .calculator-experience, .pricing-calculator, body.home .what-i-do') ||
 			section.matches('.dx-n118-waitlist .dx-n118-section, .service-detail .service-detail-section')) return;
 		if (section.getBoundingClientRect().top < innerHeight) return;
 		section.classList.add("dx-section-pending");
@@ -15902,7 +16311,22 @@ dxOnPageReady(initEditorialRefinements);
 dxOnPageReady(() => {
 	const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 	const intro = [...document.querySelectorAll('body.home section.text-image')].find(section => /A little introduction/i.test(section.textContent));
-	if (intro) intro.classList.add('dx-home-introduction');
+	if (intro) {
+		intro.classList.add('dx-home-introduction');
+		const portrait = intro.querySelector('img');
+		if (portrait && !reduced.matches && 'IntersectionObserver' in window) {
+			portrait.style.opacity = '0';
+			const observer = new IntersectionObserver(entries => {
+				if (!entries.some(entry => entry.isIntersecting)) return;
+				observer.disconnect();
+				portrait.style.removeProperty('opacity');
+				portrait.dataset.entrancePlayed = 'true';
+				portrait.animate([{opacity:0,translate:'32px 24px'},{opacity:1,translate:'0 0'}],{duration:1100,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+			},{threshold:.12});
+			observer.observe(intro);
+			reduced.addEventListener('change', () => { if (reduced.matches) { observer.disconnect(); portrait.style.removeProperty('opacity'); portrait.getAnimations().forEach(a=>a.finish()); } });
+		}
+	}
 	const promo = document.querySelector('body.home .dx-fitness-promo');
 	if (promo) {
 		const first = promo.querySelector('a[href*="fitness"]:not(.dx-gym-league-link)');
@@ -16394,7 +16818,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		} catch { return []; }
 	};
 	let basket = readBasket();
-	if (!buttons.length && (!basket.length || !document.querySelector('.pricing-calculator'))) return;
+	if (!buttons.length && !document.querySelector('.pricing-calculator')) return;
 	const descriptions = {
 		photography: 'Define your shoot, creative direction and delivery.',
 		development: 'Define your website, functionality and delivery requirements.',
@@ -16478,7 +16902,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		meter.value = basket.length ? count / basket.length * 100 : 0;
 		meter.setAttribute('aria-valuetext', progressText);
 		const next = incomplete[0] || basket[0];
+		let projects;try{projects=JSON.parse(sessionStorage.getItem('dx-calculator-projects-v1'))||{};}catch{projects={};}
+		const group=slug=>projects.mode==='different' ? projects.groups?.[slug]?.trim() : 'Project 1';
+		const hasOverlap=basket.some(item=>['design','comprehensive'].includes(item.slug) && basket.some(other=>['development','wordpress-development'].includes(other.slug) && group(item.slug) && group(item.slug)===group(other.slug)));
+		let advice=dialog.querySelector('[data-cart-package-advice]');if(!advice){advice=document.createElement('p');advice.dataset.cartPackageAdvice='';progress.after(advice);}
+		advice.hidden=!hasOverlap;advice.textContent='Design and Development for the same project? Consider Comprehensive to bring both stages together. You can assign separate projects in the calculator.';
 		primary.href = next ? configureUrl(next.slug, !incomplete.length) : servicesUrl.href;
+		if(hasOverlap){const url=new URL('../pricing-calculator/',servicesUrl);url.searchParams.set('basket_select','1');primary.href=url.href;}
 		primary.textContent = !next ? 'Explore services ↗' : !incomplete.length ? 'Review project enquiry →'
 			: incomplete.length === 1 && selected.get(next.slug) ? 'Continue configuration →' : 'Configure your projects →';
 
@@ -16524,7 +16954,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			card.dataset.state = status;
 			card.querySelector('p').textContent = (saved?.configured && saved.summary) || descriptions[slug] || 'Set your project requirements.';
-			card.querySelector('small').textContent = status === 'ready' ? '✓ Ready for review' : status === 'started' ? 'Configuration in progress' : 'Not yet configured';
+			card.querySelector('small').textContent = (status === 'ready' ? '✓ Ready for review' : status === 'started' ? 'Configuration in progress' : 'Not yet configured') + (Number.isFinite(saved?.total) ? ' · '+new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(saved.total)+(slug==='retainer'?' / month':'') : '');
 			const action = card.querySelector('a');
 			action.textContent = status === 'ready' ? 'Edit requirements ↗' : status === 'started' ? 'Continue configuration ↗' : 'Configure ↗';
 			action.href = configureUrl(slug);
@@ -16532,6 +16962,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 	const save = () => {
 		try { localStorage.setItem(key, JSON.stringify(basket)); } catch {}
+		document.dispatchEvent(new Event('dx-service-basket-change'));
 		paint();
 	};
 	let origin;
@@ -16556,6 +16987,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (added) announcement.textContent = title + ' added to your cart.';
 	}));
 	document.addEventListener('dx-calculator-configuration', paint);
+	document.addEventListener('dx-service-basket-change',()=>{basket=readBasket();paint();});
 	window.addEventListener('pageshow', paint);
 	window.addEventListener('storage', event => {
 		if (event.key !== key) return;
@@ -16957,29 +17389,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-	const welcome = document.querySelector('.dx-recruiter-welcome');
-	const hero = document.querySelector('.dx-private-gate__copy, body.dx-recruiter-edition .dx-portfolio-hero');
-	const reveal = () => Array.from(hero?.children ?? []).forEach((element, index) => {
-		element.animate(
-			[{ opacity: 0, translate: '0 14px' }, { opacity: 1, translate: '0 0' }],
-			{ duration: 650, delay: index * 75, fill: 'backwards', easing: 'ease-out' },
-		);
+	Promise.resolve(window.dxPageReady).then(() => {
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const hero = document.querySelector('.dx-private-gate__copy');
+		Array.from(hero?.children ?? []).forEach((element, index) => element.animate(
+			[{opacity:0,translate:'0 14px'},{opacity:1,translate:'0 0'}],
+			{duration:650,delay:index*75,fill:'backwards',easing:'ease-out'}
+		));
+		const lock = document.querySelector('.dx-portfolio-lock');
+		lock?.animate([{opacity:0,translate:'0 12px',scale:'.85'},{opacity:1,translate:'0 0',scale:'1'}],{duration:900,delay:250,fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'});
+		lock?.querySelector('path')?.animate([{transform:'translateY(-5px)'},{transform:'translateY(0)'}],{duration:800,delay:450,fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'});
 	});
-	if (!welcome) {
-		reveal();
-		return;
-	}
-
-	const url = new URL(location.href);
-	url.searchParams.delete('welcome');
-	history.replaceState(history.state, '', url);
-	welcome.hidden = false;
-	welcome.animate([{ opacity: 1, offset: 0 }, { opacity: 1, offset: 0.83 }, { opacity: 0 }], 2600)
-		.finished.then(() => {
-			welcome.remove();
-			reveal();
-		});
 });
 
 document.addEventListener('click', (event) => {
@@ -17000,6 +17420,28 @@ document.addEventListener('click', (event) => {
 });
 
 function dxGymFinderStep(steps, index) {
+ if (index === 1) {
+  const required = new Set([...steps[0].querySelectorAll('[name="essential"]:checked')].map(input=>input.value));
+  const root = steps[1].querySelector('[data-finder-priorities]');
+  if (!root.dataset.grouped) {
+   root.dataset.grouped='true'; root.classList.remove('dxgym-finder-options');
+   const labels=[...root.children];
+   for (const [key,title] of [['essential','Your essential amenities'],['other','Other amenities']]) {
+    const section=document.createElement('section'); section.className='dxgym-priority-section'; section.dataset.priorityGroup=key;
+    const heading=document.createElement('h3'); heading.textContent=title;
+    const grid=document.createElement('div'); grid.className='dxgym-finder-options'; section.append(heading,grid);root.append(section);
+   }
+   labels.forEach(label=>root.querySelector('[data-priority-group="other"] .dxgym-finder-options').append(label));
+   root.append(steps[1].querySelector('[data-finder-padel] label'));
+  }
+  root.querySelectorAll('label[data-amenity]').forEach(label=> {
+   const key=label.dataset.amenity;
+   label.hidden=key==='padel'&&!required.has(key);
+   root.querySelector(`[data-priority-group="${required.has(key)?'essential':'other'}"] .dxgym-finder-options`).append(label);
+  });
+  root.querySelector('[data-priority-group="essential"]').hidden=required.size===0;
+ }
+
 	steps.forEach((step, position) => { step.hidden = position !== index; });
 	const legend = steps[index].querySelector('legend');
 	legend.tabIndex = -1;
@@ -17009,6 +17451,19 @@ function dxGymFinderStep(steps, index) {
 	}
 }
 
+function dxGymTodayHours(hours, date = new Date()) {
+ if (hours?.open24 === true) return 'Today: Open 24 hours';
+ const day = new Intl.DateTimeFormat('en-GB', {weekday:'short', timeZone:'Europe/London'}).format(date);
+ const index = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(day);
+ const today = hours?.weekly?.[index];
+ return Array.isArray(today) ? `Today: ${today[0]}–${today[1]}` : hours?.sourceType === 'operator' && hours?.open24 === false ? 'Today: Check club hours' : 'Today: Hours not yet verified';
+}
+function dxGymRefreshTodayHours() {
+ document.querySelectorAll('.dxgym-match-hours[data-hours]').forEach(pill => { pill.textContent = dxGymTodayHours(JSON.parse(pill.dataset.hours)); });
+}
+setInterval(dxGymRefreshTodayHours, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) dxGymRefreshTodayHours(); });
+
 document.addEventListener('submit', (event) => {
 	const form = event.target.closest('[data-gym-finder] form');
 	if (!form) return;
@@ -17016,26 +17471,52 @@ document.addEventListener('submit', (event) => {
 	const required = [...form.querySelectorAll('[name="essential"]:checked')].map(input => input.value);
 	const weights = [...form.querySelectorAll('select')].map(select => [select.name, Number(select.value)]);
 	const gyms = JSON.parse(form.closest('[data-gym-finder]').dataset.gyms);
-	const matches = gyms.filter(gym => required.every(key => typeof gym.scores[key] === 'number'))
-		.map(gym => ({
-			...gym,
-			match: weights.reduce((sum, [key, weight]) => sum + weight * Number(gym.scores[key] || 0), 0),
-		})).sort((first, second) => second.match - first.match || second.overall - first.overall);
+	const mustHave = [...new Set([...required, ...weights.filter(([, weight]) => weight === 3).map(([key]) => key)])];
+	const isAssessed = value => typeof value === 'number' && Number.isFinite(value);
+	const priorities = weights.filter(([, weight]) => weight > 0);
+	const totalWeight = priorities.reduce((sum, [, weight]) => sum + weight, 0);
+	const matches = gyms.filter(gym => mustHave.every(key => key === 'padel' ? gym.padel === 'available' : isAssessed(gym.scores[key])))
+		.map(gym => {
+			const assessedWeight = priorities.reduce((sum, [key, weight]) => sum + (isAssessed(gym.scores[key]) ? weight : 0), 0);
+			const sum = priorities.reduce((sum, [key, weight]) => sum + (isAssessed(gym.scores[key]) ? weight * gym.scores[key] : 0), 0);
+			// This is a conservative suitability score, not a replacement for the gym's review rating.
+			// Missing/unavailable amenities cannot improve a match by shrinking its denominator.
+			return { ...gym, match: totalWeight ? sum / totalWeight : Number(gym.overall || 0) / 10, coverage: totalWeight ? assessedWeight / totalWeight : 1 };
+		}).sort((first, second) => second.match - first.match || second.coverage - first.coverage || second.overall - first.overall);
 	const results = form.querySelector('[data-finder-results]');
 	results.replaceChildren();
-	if (!matches.length) results.textContent = 'No reviewed gyms with verified hours match those essential facilities.';
-	matches.slice(0, 3).forEach((gym) => {
-		const row = document.createElement('p');
-		const review = document.createElement('a');
-		review.href = gym.url;
-		review.textContent = gym.name;
-		const hours = document.createElement('a');
-		hours.href = gym.hoursSource;
-		hours.textContent = 'Operator hours';
-		row.append(review, ' · ' + gym.location + ' · Open 24 hours · ', hours);
-		results.append(row);
-	});
+	const note = document.createElement('p');
+	note.textContent = !matches.length
+		? 'No reviewed gyms have assessed ratings for every essential or very important amenity. Try adjusting your priorities.'
+		: 'Ranked using all your selected priorities. Essential and very important amenities must have an assessed rating. Unavailable or unassessed priorities cannot boost a match; check today’s hours before travelling.';
+	results.append(note);
+	const grid = document.createElement('div'); grid.className = 'dxgym-match-grid'; results.append(grid);
+ matches.slice(0, 3).forEach((gym, index) => {
+  const card = document.createElement('article'); card.className = 'dxgym-match-card';
+  const image = document.createElement('img');
+  const placeholder = form.closest('[data-gym-finder]').dataset.placeholder;
+  image.src = gym.image || placeholder; image.alt=''; image.loading='lazy';
+  image.classList.toggle('is-placeholder', !gym.image);
+  image.addEventListener('error', () => { if (!image.classList.contains('is-placeholder')) { image.classList.add('is-placeholder'); image.src=placeholder; } });
+  card.append(image);
+  const copy = document.createElement('div'); copy.className='dxgym-match-card__copy';
+  const rank=document.createElement('p'); rank.className='dxgym-eyebrow'; rank.textContent='Match '+String(index+1).padStart(2,'0');
+  const title=document.createElement('h3'); const review=document.createElement('a'); review.href=gym.url; review.textContent=gym.name; title.append(review);
+  const location=document.createElement('p'); location.className='dxgym-match-location';
+  location.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  const locationText=document.createElement('span'); locationText.textContent=gym.location; location.append(locationText);
+  const hours=document.createElement('p'); hours.className='dxgym-match-hours'; hours.dataset.hours=JSON.stringify(gym.hours || {}); hours.textContent=dxGymTodayHours(gym.hours); hours.title='Regular hours, Europe/London. Holiday hours and facility access may differ.';
+  const score=document.createElement('p'); score.className='dxgym-match-score'; score.textContent='Priority match: '+gym.match.toFixed(1)+' / 10'; card.append(score);
+  const links=document.createElement('div'); links.className='dxgym-match-links';
+  if (gym.hours?.source) { const source=document.createElement('a'); source.href=gym.hours.source; source.target='_blank'; source.rel='noopener'; source.textContent=gym.hours.sourceType === 'directory' ? 'Hours source ↗' : 'Operator hours ↗'; links.append(source); }
+  const google=document.createElement('a'); google.href=gym.hours.google; google.target='_blank'; google.rel='noopener'; google.textContent='Check on Google ↗'; links.append(google);
+  const directions=document.createElement('a'); directions.className='dxgym-match-directions'; directions.href='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(gym.name+' '+gym.location); directions.target='_blank'; directions.rel='noopener'; directions.textContent='Get Directions ↗'; links.prepend(directions);
+  const heading=document.createElement('div'); heading.className='dxgym-match-heading'; heading.append(title,hours);
+  copy.append(rank,heading,location,links); card.append(copy); grid.append(card);
+ });
+
 	dxGymFinderStep([...form.querySelectorAll('fieldset')], 2);
+ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.querySelectorAll('article').forEach((card,index)=>card.animate([{opacity:0,translate:'0 18px'},{opacity:1,translate:'0 0'}],{duration:650,delay:90+index*100,fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17066,18 +17547,80 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-	const cards = document.querySelector('.dx-site-stats dl');
-	if (!cards || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
-	const observer = new IntersectionObserver(entries => {
-		if (!entries.some(entry => entry.isIntersecting)) return;
-		Array.from(cards.children).forEach((card, index) => {
-			card.animate(
-				[{ opacity: 0, translate: '0 20px' }, { opacity: 1, translate: '0 0' }],
-				{ duration: 650, delay: index * 75, fill: 'backwards', easing: 'cubic-bezier(.22,1,.36,1)' },
-			);
-		});
-		observer.disconnect();
-	}, { threshold: 0.1 });
-	observer.observe(cards);
+dxOnPageReady(() => {
+ const root=document.querySelector('.dx-site-stats'); if(!root)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const title=root.querySelector('h1');
+ if(title&&!reduced.matches)title.animate([{opacity:0,translate:'0 65px',clipPath:'inset(100% 0 0)'},{opacity:1,translate:'0 0',clipPath:'inset(0 0 0)'}],{duration:1100,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+ let frame=0;
+ const paint=()=>{frame=0; root.style.setProperty('--stats-title-shift',reduced.matches?'0px':Math.min(240,Math.max(0,-root.getBoundingClientRect().top)*.16)+'px');};
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(paint);};
+ addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduced.addEventListener('change',schedule);paint();
+ if(reduced.matches||!('IntersectionObserver' in window))return;
+ const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(!entry.isIntersecting)return;observer.unobserve(entry.target);
+  const card=entry.target;card.dataset.revealed='true';
+  card.animate([{opacity:0,translate:'0 24px'},{opacity:1,translate:'0 0'}],{duration:800,easing:'cubic-bezier(.22,1,.36,1)'});
+  const number=card.querySelector('[data-stat-count]');if(!number)return;
+  const target=Number(number.dataset.statCount), span=number.querySelector('span'),start=performance.now();
+  const tick=now=>{const progress=reduced.matches?1:Math.min(1,(now-start)/1050);span.textContent=new Intl.NumberFormat('en-GB').format(Math.round(target*(1-Math.pow(1-progress,3))));if(progress<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+ }),{threshold:.2});
+ root.querySelectorAll('dl>div, figure').forEach(card=>observer.observe(card));
+});
+
+// Return to the live calculator when the full service was opened from its detail pane.
+document.addEventListener('click', event => {
+ const link = event.target.closest('[data-return-calculator]');
+ if (!link) return;
+ try {
+  if (window.opener && !window.opener.closed && window.opener.location.origin === location.origin && window.opener.location.pathname.includes('/pricing-calculator')) {
+   event.preventDefault();
+   window.opener.focus();
+   window.close();
+  }
+ } catch (_) { /* The normal link restores the saved calculator if its original tab is unavailable. */ }
+});
+
+// One entrance for each Gym League hero, including dashboard navigation updates.
+(() => {
+ const entered = new WeakSet();
+ const reveal = () => {
+  const hero = document.querySelector('.dxgym-hero');
+  if (!hero || entered.has(hero)) return;
+  entered.add(hero);
+  hero.dataset.entrancePlayed = 'true';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const easing = 'cubic-bezier(.22,1,.36,1)';
+  hero.querySelector('.dxgym-hero-slideshow')?.animate(
+   [{opacity:0,scale:'1.035'},{opacity:1,scale:'1'}],
+   {duration:1400,easing,fill:'backwards'}
+  );
+  [...hero.children].filter(el => el.matches('p,h1,.dxgym-hero-caption,.dxgym-slideshow-controls')).forEach((el,index) => {
+   el.animate([{opacity:0,translate:'0 20px'},{opacity:1,translate:'0 0'}],
+    {duration:850,delay:140+index*85,easing,fill:'backwards'});
+  });
+ };
+ dxOnPageReady(reveal);
+ document.addEventListener('dxgym:rendered', () => Promise.resolve(window.dxPageReady).then(reveal));
+})();
+
+// Let the content move freely against a nearly stationary page atmosphere.
+dxOnPageReady(()=>{
+ const enquiry=document.querySelector('.enquiry-layout'),contact=document.querySelector('.dx-contact-page');
+ if(enquiry){document.body.classList.add('dx-enquiry-atmosphere');}
+ if(contact)document.body.classList.add('dx-contact-atmosphere');
+ if(enquiry||contact){
+  const atmosphere=document.createElement('div');atmosphere.className='dx-page-atmosphere';atmosphere.setAttribute('aria-hidden','true');document.body.prepend(atmosphere);
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');let queued=false;
+  const paint=()=>{queued=false;atmosphere.style.translate=`0 ${reduced.matches?0:-Math.min(scrollY*.035,90)}px`;};
+  const schedule=()=>{if(!queued){queued=true;requestAnimationFrame(paint);}};
+  addEventListener('scroll',schedule,{passive:true});reduced.addEventListener('change',schedule);paint();
+ }
+ const menu=document.querySelector('.dx-menu__content');
+ if(menu){
+  menu.querySelectorAll('a[href]').forEach(link=>{if(new URL(link.href,location.href).pathname==='/buses/'&&location.pathname.startsWith('/buses')){link.classList.add('is-current-buses');link.setAttribute('aria-current','page');}});
+  const inner=menu.closest('.dx-menu__inner');const size=()=>{if(inner)inner.classList.toggle('dx-menu-can-center',inner.scrollHeight<=inner.clientHeight+2&&menu.scrollHeight<innerHeight-180);};
+  new ResizeObserver(size).observe(menu);addEventListener('resize',size);size();
+ }
 });

@@ -1961,3 +1961,316 @@ body.page-pricing-calculator #main .calculator-experience {
 	.dx-basket-open { min-width: 44px; min-height: 44px; justify-content: center; gap: 0; }
 	.dx-basket-open > svg { flex-shrink: 0; width: 22px; height: 22px; }
 }
+
+// Service artwork bleeds into the desktop details pane without sitting behind the copy.
+.calculator-sheet__art { display: none; }
+@media (min-width: 1200px) {
+ body.page-pricing-calculator .calculator-sheet.calculator-sheet--service {
+  position: fixed;
+  isolation: isolate;
+  overflow: auto;
+  width: min(80rem, calc(100vw - 8rem)) !important;
+  max-width: none !important;
+  padding: clamp(3rem, 5vw, 5rem) !important;
+  min-height: 26rem;
+  .calculator-sheet__art {
+   display: block;
+   position: absolute;
+   z-index: -1;
+   inset: 0 0 0 auto;
+   width: 55%;
+   height: 100%;
+   object-fit: cover;
+   object-position: center;
+   opacity: .65;
+   mask-image: linear-gradient(to right, transparent, #000 85%);
+   pointer-events: none;
+  }
+  [data-sheet-content] { position: relative; width: 72%; }
+  .calculator-sheet__header { position: relative; margin-bottom: 1.5rem !important; }
+  .calculator-sheet__header h2 { max-width: 72%; }
+ }
+}
+
+body.page-pricing-calculator .pricing-calculator .summary-price .price,
+body.page-pricing-calculator [data-estimate-breakdown] .price {
+ font-weight: 400 !important;
+ font-variant-numeric: tabular-nums;
+}
+
+body.page-pricing-calculator .calculator-sheet.calculator-sheet--service {
+ .calculator-sheet__header h2 {
+  font-size: clamp(2rem, 4vw, 4rem) !important;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+ }
+ .calculator-dialog-close {
+  background: #111312 !important;
+  color: #ffe1a0 !important;
+  border: 1px solid #efd297 !important;
+  box-shadow: 0 4px 22px #0009;
+  outline-offset: 4px;
+  &:hover { background: #efd297 !important; color: #111312 !important; }
+ }
+ .calculator-sheet__service-link { margin-top: 2rem; }
+}
+.service-calculator-return { margin-block: 1.25rem 2rem; }
+@media (min-width:1200px) {
+ body.page-pricing-calculator .calculator-sheet.calculator-sheet--service {
+  .calculator-sheet__header { align-items: flex-start; gap: 2rem; }
+  .calculator-sheet__header h2 { max-width: 75%; }
+  .calculator-dialog-close { width: 3.5rem !important; height: 3.5rem !important; flex: 0 0 3.5rem; }
+ }
+}
+
+body.page-pricing-calculator .calculator-sheet.calculator-sheet--service {
+ border-radius: 0 !important;
+ .calculator-sheet__eyebrow {
+  position: relative;
+  color: #d7ad57;
+  margin: 0 0 1.25rem;
+  font-size: .75rem;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+ }
+}
+body.single-service .service-detail-navigation {
+ display: flex;
+ align-items: stretch;
+ flex-wrap: wrap;
+ gap: 1rem;
+ margin-bottom: 2rem;
+ .service-back, .service-calculator-return {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  min-height: 3.5rem;
+  padding: 1rem 1.5rem;
+ }
+}
+body.single-service .service-primary-actions {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ align-items: stretch;
+ gap: 1.25rem;
+ width: min(100%, 60rem);
+ > :is(button, a) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100% !important;
+  height: 100%;
+  min-height: 3.75rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: center;
+  box-sizing: border-box;
+ }
+}
+@media (max-width: 575.98px) {
+ body.single-service .service-primary-actions { grid-template-columns: 1fr; }
+ body.single-service .service-detail-navigation > a { width: 100%; }
+}
+
+// Service chapters share the gym reviews' full-viewport, softly blended colour scenes.
+body.is-frontend.single-service #main .dx-has-editorial-canvas .dx-editorial-canvas.dx-service-scenes {
+ background: #080b09;
+ transition: opacity 1.2s ease;
+ .dx-editorial-canvas__layer {
+  background:
+   radial-gradient(ellipse at 85% 22%, var(--scene-first), transparent 62%),
+   radial-gradient(ellipse at 10% 82%, var(--scene-second), transparent 58%),
+   #080b09;
+  transition: opacity 1.4s cubic-bezier(.22,1,.36,1);
+  &::before, &::after { content: none; display: none; }
+ }
+ &::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #080b0940, transparent 24% 76%, #080b0950);
+  pointer-events: none;
+ }
+}
+@media (prefers-reduced-motion: reduce) {
+ body.is-frontend.single-service #main .dx-has-editorial-canvas .dx-editorial-canvas.dx-service-scenes,
+ body.is-frontend.single-service #main .dx-has-editorial-canvas .dx-service-scenes .dx-editorial-canvas__layer { transition: none; }
+}
+
+// Let the shared scene continue beneath the facts, fading out the hero's solid base.
+body.is-frontend.single-service #main .service-detail.dx-has-editorial-canvas {
+ .service-detail-facts {
+  position: relative;
+  background: linear-gradient(180deg, var(--service-blend, #080808) 0%, transparent 100%) !important;
+  border: 0;
+ }
+ .service-detail-body { background: transparent !important; }
+}
+
+body.is-frontend.single-service #main {
+ .service-detail-navigation .service-back:is(:hover, :focus-visible, :active) {
+  color: #111312 !important;
+  span { color: inherit !important; }
+ }
+ .service-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
+  gap: 1rem;
+  > :is(button, a) {
+   flex: 0 1 auto;
+   width: auto !important;
+   min-width: 0;
+   min-height: 3.75rem;
+   height: 3.75rem !important;
+  }
+ }
+ .service-detail-form .ff-btn-submit::after { content: none !important; display: none !important; }
+}
+@media (max-width:575.98px) {
+ body.is-frontend.single-service #main .service-primary-actions { width: 100%; > :is(button,a) { flex-basis:100%; } }
+}
+
+body.is-frontend .dxgym-finder .dxgym-finder-options select {
+ padding: .75rem 2.75rem .75rem .9rem !important;
+ font-size: .9rem !important;
+ line-height: 1.45;
+ min-height: 44px;
+ width: 100%;
+ box-sizing: border-box;
+ background-position: right .85rem center;
+}
+
+.dxgym-finder {
+ fieldset { border:0; min-width:0; padding:0; margin:1.5rem 0 0; }
+ legend { font-size:clamp(1.5rem,2.3vw,2.5rem); font-weight:400; letter-spacing:-.035em; margin-bottom:1.25rem; }
+ [data-finder-results] > p { margin-bottom:1.5rem; max-width:65rem; }
+ [data-finder-results] + button { margin-top:1.5rem; }
+}
+.dxgym-match-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.25rem; }
+.dxgym-match-card {
+ min-width:0;
+ overflow:hidden;
+ border:1px solid #d7ad5740;
+ background:color-mix(in srgb,currentColor 4%,transparent);
+ > img { width:100%; height:12rem; object-fit:cover; display:block; }
+ &__copy { padding:clamp(1.25rem,2vw,2rem); }
+ h3 { font-size:clamp(1.3rem,2vw,2rem); line-height:1.15; letter-spacing:-.035em; margin:.75rem 0; }
+ h3 a { color:inherit; }
+ p { line-height:1.6; }
+ .dxgym-match-hours { color:#d7ad57; font-weight:500; }
+}
+.dxgym-match-links { display:flex; flex-wrap:wrap; gap:.65rem 1rem; margin-top:1.25rem; a { text-underline-offset:.25em; } }
+.dxgym-hours-reference { margin-top:1.5rem; summary { font-size:1.15rem; font-weight:500; cursor:pointer; } p { margin-top:1rem; } }
+.dxgym-hours-scroll { overflow-x:auto; table { width:100%; min-width:38rem; border-collapse:collapse; } th,td { padding:1rem; text-align:left; border-bottom:1px solid #81988f40; font-size:.9rem; } }
+@media(max-width:1199.98px) { .dxgym-match-grid { grid-template-columns:1fr; } .dxgym-match-card { display:grid; grid-template-columns:minmax(8rem,30%) 1fr; >img { height:100%; min-height:14rem; } } }
+@media(max-width:575.98px) { .dxgym-match-card { display:block; >img { height:11rem; min-height:0; } } }
+.dxgym-mobile-nav { overflow-x:auto; }
+
+// Photo edges fade into the same themed surface as the other dashboard cards.
+.dxgym-app .dxgym-match-card {
+ background: var(--gym-panel);
+ border-color: var(--gym-border, #81988f40);
+ > img { mask-image:linear-gradient(to bottom,#000 60%,transparent 100%); }
+ > img.is-placeholder { object-fit:contain; padding:1.25rem; background:var(--gym-panel-alt); }
+ .dxgym-match-card__copy { background:transparent; padding-top:.75rem; }
+ .dxgym-match-location { display:flex; align-items:flex-start; gap:.5rem; }
+ .dxgym-match-location svg { flex:0 0 1.1rem; width:1.1rem; height:1.1rem; margin-top:.2em; color:var(--gym-accent,#d7ad57); }
+ .dxgym-match-hours {
+  display:inline-flex; align-items:center;
+  max-width:100%; padding:.45rem .8rem;
+  border:1px solid #d7ad5766; border-radius:999px !important;
+  background:color-mix(in srgb,#d7ad57 9%,transparent);
+  color:var(--gym-accent,#d7ad57); font-size:.8rem; line-height:1.4; font-weight:500;
+ }
+ .dxgym-match-directions { flex-basis:100%; font-weight:500; }
+}
+@media (min-width:576px) and (max-width:1199.98px) {
+ .dxgym-app .dxgym-match-card > img { mask-image:linear-gradient(to right,#000 65%,transparent); }
+ .dxgym-app .dxgym-match-card .dxgym-match-card__copy { padding-top:1.25rem; }
+}
+
+.dxgym-app .dxgym-match-card {
+ position:relative;
+ > img.is-placeholder { object-fit:cover; padding:0; }
+ .dxgym-match-score {
+  position:absolute; z-index:1; top:.85rem; left:.85rem;
+  max-width:calc(100% - 1.7rem); margin:0;
+  padding:.5rem .7rem;
+  background:#0b1010f2; color:#ffe3a3;
+  border:1px solid #d7ad5780;
+  box-shadow:0 3px 14px #0006;
+  font-size:.75rem; font-weight:500; line-height:1.4;
+  font-variant-numeric:tabular-nums;
+ }
+ .dxgym-match-links {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem;
+  a {
+   display:flex; align-items:center; justify-content:center;
+   min-height:44px; padding:.65rem .75rem;
+   border:1px solid color-mix(in srgb,currentColor 25%,transparent);
+   color:inherit; text-decoration:none; text-align:center;
+   font-size:.8rem; line-height:1.4;
+   transition:background .22s ease,color .22s ease,border-color .22s ease;
+   &:hover { background:#efd297; border-color:#efd297; color:#111312; }
+   &:focus-visible { outline:2px solid #efd297; outline-offset:3px; }
+  }
+  .dxgym-match-directions { grid-column:1/-1; background:#d7ad5714; border-color:#d7ad5766; font-weight:500; }
+ }
+}
+@media (min-width:576px) and (max-width:1199.98px) {
+ .dxgym-app .dxgym-match-card .dxgym-match-score { max-width:calc(30% - 1.7rem); }
+}
+
+.dxgym-app .dxgym-match-card {
+ .dxgym-match-heading {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:.7rem; margin:.75rem 0;
+  h3 { flex:1 1 0; min-width:0; margin:0; }
+  .dxgym-match-hours { flex:0 1 auto; margin:0; font-size:.72rem; padding:.4rem .65rem; }
+ }
+}
+@media (max-width:359.98px) {
+ .dxgym-app .dxgym-match-card .dxgym-match-heading { flex-wrap:wrap; h3 { flex-basis:100%; } }
+}
+
+.dxgym-app {
+ .dxgym-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:.7rem; padding:clamp(2rem,4vw,4rem); text-align:center;
+  >h2, >p { width:100%; max-width:40rem; margin:0 auto !important; }
+  >p { font-size:.95rem !important; line-height:1.55 !important; }
+ }
+ .dxgym-finder {
+  >h2 { max-width:42rem; margin-bottom:.7rem; }
+  >p, fieldset>p, [data-finder-results]>p { max-width:65ch; font-size:.95rem !important; line-height:1.55 !important; margin-top:0; }
+  legend { max-width:48rem; margin-bottom:1rem; line-height:1.2; }
+  .dxgym-priority-section { margin:1.5rem 0; }
+  .dxgym-priority-section h3 { font-size:.85rem; font-weight:500; text-transform:uppercase; letter-spacing:.1em; margin:0 0 .75rem; }
+  .dxgym-finder-options { grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap:.75rem; }
+  label:has([name="essential"]) {
+   cursor:pointer; padding:1rem; min-height:3.5rem; border:1px solid var(--gym-border,#81988f40); gap:.75rem;
+   transition:background .22s ease,border-color .22s ease,color .22s ease;
+   &:hover { border-color:#d7ad5780; }
+   &:has(:checked) { background:#d7ad5718; border-color:#d7ad57; }
+   &:has(:focus-visible) { outline:2px solid #efd297; outline-offset:3px; }
+  }
+  input[name="essential"] {
+   appearance:none; flex:0 0 1.2rem; width:1.2rem; height:1.2rem; margin:0; position:relative;
+   border:1px solid currentColor; background:transparent; cursor:pointer;
+   transition:background .2s ease,border-color .2s ease;
+   &::after { content:''; position:absolute; width:.35rem; height:.65rem; left:.37rem; top:.15rem; border:solid #111312; border-width:0 2px 2px 0; transform:rotate(45deg) scale(.5); opacity:0; transition:opacity .2s ease,transform .2s ease; }
+   &:checked { background:#d7ad57; border-color:#d7ad57; &::after { opacity:1; transform:rotate(45deg) scale(1); } }
+  }
+  [data-amenity="padel"] span { font-size:.8rem; line-height:1.4; }
+  label[hidden], section[hidden] { display:none !important; }
+ }
+}
+@media(prefers-reduced-motion:reduce) { .dxgym-app .dxgym-finder input[name="essential"], .dxgym-app .dxgym-finder input[name="essential"]::after, .dxgym-app .dxgym-finder label { transition:none; } }

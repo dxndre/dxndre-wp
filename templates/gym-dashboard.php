@@ -5,7 +5,7 @@ $data = dxgym_data();
 $state = dxgym_state();
 $theme_cookie = isset($_COOKIE['dxgym_theme']) && is_string($_COOKIE['dxgym_theme']) ? wp_unslash($_COOKIE['dxgym_theme']) : '';
 $gym_theme = in_array($theme_cookie,['light','dark'],true) ? $theme_cookie : 'dark';
-$navigation = ['overview'=>'Overview','league'=>'League Table','explorer'=>'Gym Explorer','compare'=>'Compare Gyms','map'=>'Map View','reviews'=>'Reviews','insights'=>'Insights'];
+$navigation = ['overview'=>'Overview','league'=>'League Table','explorer'=>'Gym Explorer','compare'=>'Compare Gyms','finder'=>'Find My Gym','map'=>'Map View','reviews'=>'Reviews','insights'=>'Insights'];
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?> data-dxgym-theme="<?php echo esc_attr($gym_theme); ?>">
@@ -34,7 +34,7 @@ $navigation = ['overview'=>'Overview','league'=>'League Table','explorer'=>'Gym 
 		<div class="dxgym-content" id="dxgym-content" data-gym-content><?php echo dxgym_view($data,$state); ?></div>
 	</main>
 	<dialog class="dxgym-share-dialog" data-gym-share-dialog aria-labelledby="dxgym-share-title"><button class="dxgym-share-close" type="button" data-gym-share-close aria-label="Close comparison sharing"><?php echo dxgym_icon('close'); ?></button><p class="dxgym-eyebrow">Good Things Are Worth Sharing</p><h2 id="dxgym-share-title">Share Your Line-up.</h2><p data-gym-share-summary></p><label for="dxgym-share-url">Comparison Link</label><div class="dxgym-share-url-row"><input id="dxgym-share-url" data-gym-share-url type="url" readonly spellcheck="false"><button class="dxgym-button" type="button" data-gym-share-copy>Copy Link <?php echo dxgym_icon('share'); ?></button></div><p class="dxgym-share-copy-status" data-gym-share-status role="status"></p><p class="dxgym-muted">The link opens these selected gyms together. Their latest recorded scores always come from the original reviews.</p></dialog>
-	<nav class="dxgym-mobile-nav" aria-label="Quick gym navigation"><?php foreach(['overview'=>'Overview','league'=>'League','explorer'=>'Explore','compare'=>'Compare','map'=>'Map']as$key=>$label): ?><a data-gym-nav data-gym-view="<?php echo esc_attr($key); ?>" href="<?php echo esc_url(dxgym_url(['view'=>$key])); ?>" <?php echo $state['view']===$key?'aria-current="page"':''; ?>><?php echo dxgym_icon($key); ?><span><?php echo esc_html($label); ?></span></a><?php endforeach; ?></nav>
+	<nav class="dxgym-mobile-nav" aria-label="Quick gym navigation"><?php foreach(['overview'=>'Overview','league'=>'League','explorer'=>'Explore','compare'=>'Compare','finder'=>'Find My Gym','map'=>'Map']as$key=>$label): ?><a data-gym-nav data-gym-view="<?php echo esc_attr($key); ?>" href="<?php echo esc_url(dxgym_url(['view'=>$key])); ?>" <?php echo $state['view']===$key?'aria-current="page"':''; ?>><?php echo dxgym_icon($key); ?><span><?php echo esc_html($label); ?></span></a><?php endforeach; ?></nav>
 </div>
 <div class="dxgym-site-footer"><?php get_template_part('inc/site-footer'); ?></div>
 <?php wp_footer(); ?>
