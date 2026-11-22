@@ -1,0 +1,41 @@
+{
+	"extends": "stylelint-config-standard-scss",
+	"customSyntax": "postcss-scss",
+	"ignoreFiles": [
+		"build/**",
+		"node_modules/**"
+	],
+	"defaultSeverity": "warning",
+	"rules": {
+		"selector-max-specificity": "0,5,2",
+		"selector-max-compound-selectors": 6,
+		"max-nesting-depth": [
+			4,
+			{
+				"ignore": [
+					"blockless-at-rules"
+				]
+			}
+		],
+		"indentation": null,
+		"rule-empty-line-before": null,
+		"at-rule-empty-line-before": null,
+		"declaration-empty-line-before": null,
+		"declaration-colon-newline-after": null,
+		"comment-whitespace-inside": null,
+		"comment-empty-line-before": null,
+		"selector-descendant-combinator-no-non-space": null,
+		"selector-combinator-space-before": null,
+		"max-line-length": null,
+		"no-descending-specificity": null,
+		"declaration-block-no-duplicate-properties": [
+			true,
+			{
+				"ignore": [
+					"consecutive-duplicates-with-different-values"
+				]
+			}
+		],
+		"declaration-no-important": true
+	}
+}

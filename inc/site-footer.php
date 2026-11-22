@@ -13,7 +13,8 @@ defined( 'ABSPATH' ) || exit;
 
 							if ( ! empty( $header_logo ) ) :
 						?>
-							<img src="<?php echo esc_url( $header_logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
+							<?php $logo_size = wp_get_attachment_metadata( attachment_url_to_postid( $header_logo ) ); ?>
+							<img src="<?php echo esc_url( $header_logo ); ?>"<?php if ( ! empty( $logo_size['width'] ) && ! empty( $logo_size['height'] ) ) : ?> width="<?php echo (int) $logo_size['width']; ?>" height="<?php echo (int) $logo_size['height']; ?>"<?php endif; ?> alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
 						<?php
 							else :
 								echo esc_attr( get_bloginfo( 'name', 'display' ) );
@@ -25,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 				<!-- Footer Columns -->
 				<div class="site-footer-columns">
 
-				<nav class="site-footer-column" aria-label="Web & Digital"><h4 class="site-footer-heading">Web & Digital</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/portfolio/')); ?>">Selected Work</a></li><li><a href="<?php echo esc_url(home_url('/services/#digital-services')); ?>">Digital Services</a></li><li><a href="<?php echo esc_url(home_url('/pricing-calculator/')); ?>">Pricing Calculator</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/')); ?>">Start A Project</a></li></ul></nav>
+				<nav class="site-footer-column" aria-label="Web & Digital"><h4 class="site-footer-heading">Web & Digital</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/portfolio/')); ?>">Selected Work</a></li><li><a href="<?php echo esc_url(home_url('/services/#digital-services')); ?>">Digital Services</a></li><li><a href="<?php echo esc_url(home_url('/pricing-calculator/')); ?>">Pricing Calculator</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/')); ?>">Start A Project</a></li><li><a href="<?php echo esc_url(home_url('/book-a-call/')); ?>">Book a Call</a></li></ul></nav>
 				<nav class="site-footer-column" aria-label="N118 Fitness"><h4 class="site-footer-heading">N118 Fitness</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/n118-fitness/')); ?>">Discover N118 Fitness</a></li><li><a href="<?php echo esc_url(home_url('/fitness/')); ?>">Fitness & Gym Reviews</a></li><li><a href="<?php echo esc_url(home_url('/fitness/gyms/?view=league')); ?>">The Gym League</a></li><li><a href="<?php echo esc_url(home_url('/fitness/#fitness-story')); ?>">My Fitness Story</a></li><li><a href="<?php echo esc_url(home_url('/fitness/n118-fitness/')); ?>">Coaching Waitlist</a></li></ul></nav>
 				<nav class="site-footer-column" aria-label="Photography"><h4 class="site-footer-heading">Photography</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/photography/')); ?>">Photography Archive</a></li><li><a href="<?php echo esc_url(home_url('/service/photography/')); ?>">Photography Services</a></li><li><a href="<?php echo esc_url(home_url('/start-a-project/?enquiry_service=photography')); ?>">Discuss A Shoot</a></li></ul></nav>
 				<nav class="site-footer-column" aria-label="More About Me"><h4 class="site-footer-heading">More About Me</h4><ul class="site-footer-list"><li><a href="<?php echo esc_url(home_url('/about/')); ?>">About Me</a></li><li><a href="<?php echo esc_url(home_url('/buses/')); ?>">London Buses</a></li><li><a href="<?php echo esc_url(home_url('/cv/')); ?>">My CV</a></li><li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact & Enquiries</a></li><li><a href="<?php echo esc_url(home_url('/faq/')); ?>">FAQs</a></li></ul></nav>
@@ -59,6 +60,10 @@ defined( 'ABSPATH' ) || exit;
 					<a href="<?php echo esc_url( site_url('/privacy-policy/') ); ?>">
 					Privacy Policy
 					</a>
+					<?php $stats_page = get_page_by_path( 'stats' ); ?>
+					<?php if ( $stats_page && 'publish' === $stats_page->post_status ) : ?>
+						<a href="<?php echo esc_url( get_permalink( $stats_page ) ); ?>">Stats</a>
+					<?php endif; ?>
 					<a href="<?php echo esc_url( site_url('/terms-of-service/') ); ?>">
 					Terms Of Service
 					</a>

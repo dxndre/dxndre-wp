@@ -11,11 +11,16 @@
 	},
 	"scripts": {
 		"start": "wp-scripts start --webpack-src-dir=assets",
-		"build": "wp-scripts build --webpack-src-dir=assets",
+		"build": "wp-scripts build --webpack-src-dir=assets && node scripts/site-stats.cjs",
 		"deploy": "bash deploy/deploy.sh",
 		"deploy:dry": "bash deploy/deploy.sh --dry-run",
 		"pull": "bash deploy/pull-live.sh",
-		"wp": "bash deploy/menu.sh"
+		"wp": "bash deploy/menu.sh",
+		"lint:scss": "stylelint \"assets/**/*.scss\"",
+		"lint:scss:fix": "npm run lint:scss -- --fix",
+		"format:scss": "prettier --write \"assets/**/*.scss\"",
+		"format:scss:check": "prettier --check \"assets/**/*.scss\"",
+		"check:scss": "npm run format:scss:check && npm run lint:scss && npm run build"
 	},
 	"browserslist": [
 		"last 2 versions"
@@ -28,6 +33,10 @@
 	"devDependencies": {
 		"@wordpress/scripts": "^27.7.0",
 		"path": "^0.12.7",
+		"postcss-scss": "4.0.9",
+		"prettier": "3.0.3",
+		"stylelint": "14.16.1",
+		"stylelint-config-standard-scss": "6.1.0",
 		"webpack-remove-empty-scripts": "^1.0.4"
 	},
 	"main": "webpack.config.js",

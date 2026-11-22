@@ -33,13 +33,27 @@
 
 						if ( ! empty( $header_logo ) ) :
 					?>
-						<img src="<?php echo esc_url( $header_logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
+						<?php $logo_size = wp_get_attachment_metadata( attachment_url_to_postid( $header_logo ) ); ?>
+						<img src="<?php echo esc_url( $header_logo ); ?>"<?php if ( ! empty( $logo_size['width'] ) && ! empty( $logo_size['height'] ) ) : ?> width="<?php echo (int) $logo_size['width']; ?>" height="<?php echo (int) $logo_size['height']; ?>"<?php endif; ?> alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" />
 					<?php
 						else :
 							echo esc_attr( get_bloginfo( 'name', 'display' ) );
 						endif;
 					?>
 				</a>
+				<?php
+				$location_title = is_front_page() ? 'Home' : ( is_search() ? 'Search' : ( is_404() ? 'Page not found' : wp_get_document_title() ) );
+				if ( is_singular() && ! is_front_page() ) {
+					$location_title = get_the_title( get_queried_object_id() );
+				}
+				if ( is_page( 'portfolio' ) ) {
+					$location_title = function_exists( 'dx_recruiter_edition' ) && dx_recruiter_edition()
+						? 'Private Portfolio' : 'Public Portfolio';
+				}
+				?>
+				<div class="dx-nav-location" data-nav-location>
+					<span>You’re on <span aria-hidden="true">·</span> <?php echo esc_html( $location_title ); ?><span data-nav-section hidden></span></span>
+				</div>
 				<div class="dxndre-nav-right">
 <span class="dx-menu-label" aria-hidden="true"><span class="dx-close-label">CLOSE </span>MENU</span>
 					<button id="dx-menu-toggle" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php esc_attr_e( 'Toggle navigation', 'dxndre' ); ?>">

@@ -42,15 +42,6 @@ add_shortcode('dx_home_paths', function () {
 	<?php return ob_get_clean();
 });
 
-// Preload the one compiled entry; homepage ordering itself is read from main.js
-// and printed immediately after the actual content by page-homepage.php.
-add_action('wp_head', function () {
-	if (!is_front_page()) return;
-	$asset = include get_theme_file_path('build/index.asset.php');
-	echo '<link rel="preload" as="script" href="' . esc_url(add_query_arg('ver', $asset['version'], get_theme_file_uri('/build/index.js'))) . '">' . "\n";
-}, 3);
-
-
 // Serve the traced illustrations before rendering, preserving the original media records.
 add_filter('the_content', function ($content) {
 	if (is_admin() || !is_page('about') || !str_contains($content, 'dx-persona-card') || !class_exists('WP_HTML_Tag_Processor')) return $content;
@@ -114,7 +105,7 @@ add_filter('render_block', function ($html, $block) {
 	$tags = new WP_HTML_Tag_Processor($html);
 	if ($tags->next_tag(['tag_name' => 'IMG'])) {
 		$tags->set_attribute('src', get_theme_file_uri('/assets/img/home-hero-portrait-4k.webp'));
-		$tags->set_attribute('srcset', get_theme_file_uri('/assets/img/home-hero-portrait-mobile.webp') . ' 1280w, ' . get_theme_file_uri('/assets/img/home-hero-portrait-4k.webp') . ' 3840w');
+		$tags->set_attribute('srcset', get_theme_file_uri('/assets/img/home-hero-portrait-768.webp') . ' 768w, ' . get_theme_file_uri('/assets/img/home-hero-portrait-mobile.webp') . ' 1280w, ' . get_theme_file_uri('/assets/img/home-hero-portrait-1920.webp') . ' 1920w, ' . get_theme_file_uri('/assets/img/home-hero-portrait-4k.webp') . ' 3840w');
 		$tags->set_attribute('sizes', '100vw');
 		$tags->set_attribute('width', '3840');
 		$tags->set_attribute('height', '2480');

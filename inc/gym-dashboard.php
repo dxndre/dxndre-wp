@@ -64,7 +64,6 @@ add_action('wp_enqueue_scripts', function () {
 	$quick = is_singular() && has_shortcode((string) get_post_field('post_content',get_queried_object_id()),'dx_gym_table');
 	if (!$dashboard && !$quick) return;
 	if ($dashboard) {
-		wp_enqueue_style('dxgym-outfit-thin','https://fonts.googleapis.com/css2?family=Outfit:wght@200&display=swap',[],null);
 		wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4');
 		wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true);
 	}
@@ -91,7 +90,7 @@ add_action('acf/init', function () {
 });
 
 function dxgym_clear_cache($id = 0) {
-	if (!$id || in_array(get_post_type($id), ['gym-review','attachment'], true)) delete_transient('dxgym_records_v2');
+	if (!$id || in_array(get_post_type($id), ['gym-review','attachment'], true)) delete_transient('dxgym_records_v3');
 }
 add_action('save_post_gym-review', 'dxgym_clear_cache', 30);
 add_action('acf/save_post', 'dxgym_clear_cache', 30);
@@ -103,7 +102,7 @@ add_action('deleted_post_meta', function ($meta_id, $post_id) { if (get_post_typ
 
 /** Compact summaries only: full editorial content remains at its original URL. */
 function dxgym_data() {
-	$cached = get_transient('dxgym_records_v2');
+	$cached = get_transient('dxgym_records_v3');
 	if (is_array($cached)) return $cached;
 	$posts = get_posts(['post_type'=>'gym-review','post_status'=>'publish','numberposts'=>-1,'orderby'=>'date','order'=>'DESC']);
 	$groups = [];
@@ -145,6 +144,8 @@ function dxgym_data() {
 				'open24'=>get_field('gym_open_24_hours',$id) === 'yes',
 				'padel'=>dxgym_padel_status($id),
 			];
+			$hours = dxgym_hours($record);
+			if ($hours['open24'] !== null) $record['open24'] = $hours['open24'];
 			$reviews[] = $record;
 			if ($index === 0) $records[] = $record;
 		}
@@ -154,7 +155,7 @@ function dxgym_data() {
 	unset($record);
 	usort($reviews, function ($a,$b) { return strcmp($b['dateISO'] ?: $b['publishedISO'], $a['dateISO'] ?: $a['publishedISO']) ?: ($b['id'] <=> $a['id']); });
 	$data = ['gyms'=>$records,'reviews'=>$reviews,'visits'=>count($posts)];
-	set_transient('dxgym_records_v2',$data,HOUR_IN_SECONDS);
+	set_transient('dxgym_records_v3',$data,HOUR_IN_SECONDS);
 	return $data;
 }
 
@@ -163,7 +164,7 @@ function dxgym_state($request = null) {
 		$value = $request ? $request->get_param($key) : ($_GET[$key] ?? $fallback);
 		return is_scalar($value) ? sanitize_text_field(wp_unslash((string)$value)) : $fallback;
 	};
-	$views = ['overview','league','explorer','compare','map','reviews','insights'];
+	$views = ['overview','league','explorer','compare','finder','map','reviews','insights'];
 	$view = $get('view','overview'); if (!in_array($view,$views,true)) $view='overview';
 	$known_ids = array_fill_keys(array_column(dxgym_data()['gyms'],'id'),true);
 	$compare = array_slice(array_values(array_filter(array_unique(array_map('absint',explode(',',$get('compare')))),static function($id)use($known_ids){return isset($known_ids[$id]);})),0,3);
@@ -196,6 +197,7 @@ function dxgym_filtered($records,$state) {
 
 function dxgym_icon($name) {
 	$paths = [
+		'finder'=>'<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6m-3-3v6"/>',
 		'overview'=>'<path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/>',
 		'league'=>'<path d="M4 6h16M4 12h16M4 18h16M8 4v4m8 2v4m-5 2v4"/>',
 		'explorer'=>'<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/>',
@@ -330,10 +332,10 @@ function dxgym_threshold_explorer($gyms) {
 }
 
 /** Distribution counts stay in their existing five ranges; missing ratings are separate. */
-function dxgym_distribution_chart($distribution,$scored_count,$average,$missing=0) {
+function dxgym_distribution_chart($distribution,$scored_count,$average,$missing=0,$examples=[]) {
 	$colors=['85–100%'=>dxgym_band(85)['color'],'71–84.9%'=>dxgym_band(71)['color'],'57–70.9%'=>dxgym_band(57)['color'],'43–56.9%'=>dxgym_band(43)['color'],'Below 43%'=>dxgym_band(42.9)['color']];
 	$offset=0;
-	ob_start(); ?><figure class="dxgym-distribution-chart" data-gym-donut><div class="dxgym-donut-visual"><svg viewBox="0 0 240 240" role="img" aria-label="<?php echo esc_attr('Score distribution across '.$scored_count.' assessed gyms. '.$missing.' gyms not assessed. See the legend for exact counts.'); ?>"><circle class="dxgym-donut-track" cx="120" cy="120" r="86" fill="none" stroke-width="26"/><?php foreach($distribution as$label=>$count):$percent=$scored_count?round($count/$scored_count*100,4):0;if(!$count)continue; ?><circle class="dxgym-donut-segment" data-gym-donut-segment cx="120" cy="120" r="86" fill="none" stroke="<?php echo esc_attr($colors[$label]); ?>" stroke-width="26" pathLength="100" stroke-dasharray="<?php echo esc_attr($percent.' '.(100-$percent)); ?>" stroke-dashoffset="<?php echo esc_attr(-$offset); ?>" transform="rotate(-90 120 120)"/><?php $offset+=$percent; endforeach; ?></svg><div class="dxgym-donut-centre"><strong><?php echo $average!==null?esc_html(number_format_i18n($average,1)).'%':'—'; ?></strong><span>Average Score</span></div></div><figcaption><p><?php echo esc_html($scored_count.' assessed gyms · '.$missing.' not assessed'); ?></p><ul class="dxgym-donut-legend"><?php foreach($distribution as$label=>$count): ?><li><span class="dxgym-donut-swatch" style="--slice-color:<?php echo esc_attr($colors[$label]); ?>" aria-hidden="true"></span><span><?php echo esc_html($label); ?></span><strong><?php echo esc_html($count); ?></strong><small><?php echo $scored_count?esc_html(number_format_i18n($count/$scored_count*100,1)).'%':'—'; ?></small></li><?php endforeach; ?><?php if($missing): ?><li class="dxgym-donut-missing"><span class="dxgym-donut-swatch" aria-hidden="true"></span><span>Not Assessed</span><strong><?php echo esc_html($missing); ?></strong><small>Excluded</small></li><?php endif; ?></ul></figcaption></figure><?php return ob_get_clean();
+	ob_start(); ?><figure class="dxgym-distribution-chart" data-gym-donut><div class="dxgym-donut-visual"><svg viewBox="0 0 240 240" role="img" aria-label="<?php echo esc_attr('Score distribution across '.$scored_count.' assessed gyms. '.$missing.' gyms not assessed. See the legend for exact counts.'); ?>"><circle class="dxgym-donut-track" cx="120" cy="120" r="86" fill="none" stroke-width="26"/><?php foreach($distribution as$label=>$count):$percent=$scored_count?round($count/$scored_count*100,4):0;if(!$count)continue; ?><circle class="dxgym-donut-segment" data-gym-donut-segment tabindex="0" role="img" aria-label="<?php echo esc_attr($label.': '.implode(', ', $examples[$label] ?? [])); ?>" cx="120" cy="120" r="86" fill="none" stroke="<?php echo esc_attr($colors[$label]); ?>" stroke-width="26" pathLength="100" stroke-dasharray="<?php echo esc_attr($percent.' '.(100-$percent)); ?>" stroke-dashoffset="<?php echo esc_attr(-$offset); ?>" transform="rotate(-90 120 120)"/><?php $offset+=$percent; endforeach; ?></svg><div class="dxgym-donut-tooltip" aria-hidden="true"></div><div class="dxgym-donut-centre"><strong><?php echo $average!==null?esc_html(number_format_i18n($average,1)).'%':'—'; ?></strong><span>Average Score</span></div></div><figcaption><p><?php echo esc_html($scored_count.' assessed gyms · '.$missing.' not assessed'); ?></p><ul class="dxgym-donut-legend"><?php foreach($distribution as$label=>$count): ?><li><span class="dxgym-donut-swatch" style="--slice-color:<?php echo esc_attr($colors[$label]); ?>" aria-hidden="true"></span><span><?php echo esc_html($label); ?></span><strong><?php echo esc_html($count); ?></strong><small><?php echo $scored_count?esc_html(number_format_i18n($count/$scored_count*100,1)).'%':'—'; ?></small></li><?php endforeach; ?><?php if($missing): ?><li class="dxgym-donut-missing"><span class="dxgym-donut-swatch" aria-hidden="true"></span><span>Not Assessed</span><strong><?php echo esc_html($missing); ?></strong><small>Excluded</small></li><?php endif; ?></ul></figcaption></figure><?php return ob_get_clean();
 }
 
 function dxgym_filters($data,$state) {
@@ -410,8 +412,8 @@ function dxgym_view($data,$state) {
 		$hero_photos[]=['image'=>$gym['image'],'name'=>$gym['name'],'url'=>$gym['url'],'branch'=>$gym['root']];
 	}
 	$filtered=dxgym_filtered($view==='reviews'?$data['reviews']:$gyms,$state);
-	$titles=['overview'=>'The Gym League.','league'=>'League Table.','explorer'=>'Explore Gyms.','compare'=>'Compare Gyms.','map'=>'Gym Locations.','reviews'=>'Every Visit, Reviewed.','insights'=>'Beyond the Score.'];
-	$descriptions=['overview'=>'Every gym. Every visit. Ranked.','league'=>'All reviewed gyms, ranked by their latest assessed visit.','explorer'=>'Find your next place to train, recharge or try something different.','compare'=>'One shared scoring system. Up to three gyms, side by side.','map'=>'A personal map of gyms I’ve actually visited.','reviews'=>'The notes, photographs and experiences behind the numbers.','insights'=>'Patterns from the visits recorded in this league.'];
+	$titles=['overview'=>'The Gym League.','league'=>'League Table.','explorer'=>'Explore Gyms.','compare'=>'Compare Gyms.','finder'=>'Find Your Gym.','map'=>'Gym Locations.','reviews'=>'Every Visit, Reviewed.','insights'=>'Beyond the Score.'];
+	$descriptions=['overview'=>'Every gym. Every visit. Ranked.','league'=>'All reviewed gyms, ranked by their latest assessed visit.','explorer'=>'Find your next place to train, recharge or try something different.','compare'=>'One shared scoring system. Up to three gyms, side by side.','finder'=>'Your priorities. Your next place to train.','map'=>'A personal map of gyms I’ve actually visited.','reviews'=>'The notes, photographs and experiences behind the numbers.','insights'=>'Patterns from the visits recorded in this league.'];
 	ob_start(); ?>
 	<header class="dxgym-hero <?php echo $view==='overview'?'dxgym-hero--overview':''; ?>">
 	<?php if($hero_photos): ?><div class="dxgym-hero-slideshow" data-gym-slideshow aria-hidden="true"><div class="dxgym-hero-slide is-active" style="background-image:url('<?php echo esc_url($hero_photos[0]['image']); ?>')"></div><div class="dxgym-hero-slide"></div><script type="application/json" class="dxgym-slideshow-data"><?php echo wp_json_encode($hero_photos,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?></script></div><?php endif; ?>
@@ -441,6 +443,7 @@ function dxgym_view($data,$state) {
 		<section class="dxgym-panel"><?php echo dxgym_panel_heading('Score Breakdown','insights','View insights'); ?><p class="dxgym-muted"><?php echo !empty($gyms[0])?esc_html($gyms[0]['name']):'No gym records yet'; ?></p><?php echo dxgym_radar($gyms); ?></section>
 		<section class="dxgym-panel"><?php echo dxgym_panel_heading('Recent Reviews','reviews'); ?><div class="dxgym-recent-list"><?php foreach(array_slice($data['reviews'],0,3)as$gym): ?><a href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym,true); ?><div><h3><?php echo esc_html($gym['name']); ?></h3><time><?php echo esc_html($gym['date']?:$gym['published']); ?></time><p><?php echo esc_html(wp_trim_words($gym['excerpt'],11)); ?></p></div><?php echo dxgym_score($gym['overall'],true); ?></a><?php endforeach; ?></div></section></div>
 		<section class="dxgym-panel dxgym-find"><div><p class="dxgym-eyebrow">Your next session starts here</p><h2>Find Your Next Gym.</h2><p>Search the places I’ve trained, with first-hand scores and honest notes.</p></div><form method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-filters><input type="hidden" name="view" value="explorer"><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Search gyms</span><input name="q" type="search" placeholder="Gyms, locations or chains…"></label><button class="dxgym-button">Search <?php echo dxgym_icon('arrow'); ?></button></form></section>
+		<section class="dxgym-panel"><h2>Which gym should I go to?</h2><p>Match reviewed gyms to the facilities that matter to you.</p><a class="dxgym-button" data-gym-nav href="<?php echo esc_url(dxgym_url(['view'=>'finder'])); ?>">Find my gym <?php echo dxgym_icon('explorer'); ?></a></section>
 		<div class="dxgym-overview-bottom"><section class="dxgym-panel"><?php echo dxgym_panel_heading('Gym Locations','map','Open map'); echo dxgym_map($gyms,true); ?></section><section class="dxgym-panel"><?php echo dxgym_panel_heading('League Insights','insights'); ?><div class="dxgym-insight-list"><p><strong><?php echo $average!==null?esc_html(number_format_i18n($average,1)).'%':'—'; ?></strong><span>Average latest-visit score</span></p><p><strong><?php echo count(array_filter($gyms,static function($g){return is_numeric($g['overall'])&&$g['overall']>=80;})); ?></strong><span>Gyms rated at least 80%</span></p><p><strong><?php echo count(array_filter($gyms,static function($g){return $g['visits']>1;})); ?></strong><span>Gyms with recorded return visits</span></p></div><small>My personal visits, not a representative survey of every gym.</small></section><section class="dxgym-panel dxgym-story-link"><p class="dxgym-eyebrow">From the diary</p><h2>The Journey Behind the Visits.</h2><p>From my first gym visit to N118 Fitness — the progress, setbacks and people behind the league.</p><a class="dxgym-button" href="<?php echo esc_url(home_url('/fitness/#fitness-story')); ?>">Read My Gym Story <?php echo dxgym_icon('arrow'); ?></a></section></div>
 	<?php elseif(in_array($view,['league','explorer','reviews','map'],true)):
 		echo dxgym_filters($data,$state);
@@ -503,11 +506,12 @@ function dxgym_view($data,$state) {
 		<div class="dxgym-compare-toolbar"><p><?php echo count($selected); ?> of 3 gyms selected</p><div class="dxgym-comparison-actions"><button class="dxgym-button dxgym-share-comparison" type="button" data-gym-share <?php disabled(!$selected); ?>><?php echo dxgym_icon('share'); ?> Share Comparison</button><a class="dxgym-button dxgym-clear-comparison" data-gym-nav href="<?php echo esc_url(dxgym_url(['view'=>'compare','compare'=>''])); ?>"><?php echo dxgym_icon('close'); ?> Clear Comparison</a></div></div>
 		<?php if($selected): ?><div class="dxgym-comparison" style="--compare-count:<?php echo count($selected); ?>"><?php foreach($selected as$gym): ?><article class="dxgym-panel dxgym-compare-card" data-gym-record="<?php echo esc_attr($gym['id']); ?>"><a class="dxgym-compare-visual" href="<?php echo esc_url($gym['url']); ?>"><?php echo dxgym_image($gym); ?><div class="dxgym-compare-visual__caption"><h2><?php echo esc_html($gym['name']); ?></h2><p><?php echo esc_html($gym['location']); ?></p><?php echo dxgym_score($gym['overall'],true); ?></div></a><?php echo dxgym_compare_link($gym,$state); ?><label class="dxgym-replace"><span>Replace gym</span><select data-compare-replace="<?php echo esc_attr($gym['id']); ?>" aria-label="Replace <?php echo esc_attr($gym['name']); ?>"><?php foreach($gyms as$option):if(in_array($option['id'],$state['compare'],true)&&$option['id']!==$gym['id'])continue; ?><option value="<?php echo esc_attr($option['id']); ?>" <?php selected($gym['id'],$option['id']); ?>><?php echo esc_html($option['name']); ?></option><?php endforeach; ?></select></label><dl class="dxgym-compare-scores"><?php foreach(dxgym_categories()as$key=>$category):$numbers=array_filter(array_column(array_column($selected,'scores'),$key),'is_numeric');$value=$gym['scores'][$key];$best=is_numeric($value)&&$numbers&&$value===max($numbers); ?><div<?php echo $best?' class="is-category-best"':''; ?>><dt><?php echo esc_html($category[0]); ?><?php if($best&&count($selected)>1): ?><span class="screen-reader-text"> — joint or highest selected score</span><?php endif; ?></dt><dd><?php echo dxgym_score($value); ?><span class="dxgym-bar" aria-hidden="true"><i data-gym-score-key="<?php echo esc_attr('compare-'.$gym['id'].'-'.$key); ?>" style="width:<?php echo is_numeric($value)?esc_attr($value*10):'0'; ?>%;--score-color:<?php echo esc_attr(dxgym_band(is_numeric($value)?$value*10:null)['color']); ?>"></i></span></dd></div><?php endforeach; ?></dl><?php echo dxgym_amenities($gym); ?><a class="dxgym-button" href="<?php echo esc_url($gym['url']); ?>">View Full Review <?php echo dxgym_icon('arrow'); ?></a></article><?php endforeach; ?></div><?php else: ?><div class="dxgym-empty"><h2>Start With a Gym You Know.</h2><p>Search below, then add up to three gyms to see their recorded scores together.</p></div><?php endif; ?>
 		<section class="dxgym-panel"><h2><?php echo count($selected)===3?'Change Your Line-up.':'Add a Gym to Compare.'; ?></h2><form class="dxgym-compare-search" method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-filters><input type="hidden" name="view" value="compare"><input type="hidden" name="sort" value="<?php echo esc_attr($state['sort']); ?>"><input type="hidden" name="compare" value="<?php echo esc_attr(implode(',',$state['compare'])); ?>"><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a gym to compare</span><input name="q" type="search" value="<?php echo esc_attr($state['q']); ?>" placeholder="Search gym, chain or location…"></label><button class="dxgym-button">Find gyms</button></form><div class="dxgym-results-heading"><?php echo dxgym_listing_summary($compare_total,$state); ?><p class="dxgym-results-count" role="status"><?php echo $compare_total?esc_html('Showing '.(($state['page']-1)*$compare_size+1).'–'.min($compare_total,$state['page']*$compare_size).' of '.$compare_total.' gyms'):'No matching gyms'; ?></p></div><div class="dxgym-compare-options"><?php foreach(array_slice($filtered,($state['page']-1)*$compare_size,$compare_size)as$gym): ?><div><a href="<?php echo esc_url($gym['url']); ?>"><?php echo esc_html($gym['name']); ?></a><?php echo dxgym_score($gym['overall'],true); echo dxgym_compare_link($gym,$state); ?></div><?php endforeach; ?></div><?php if(!$filtered)echo dxgym_empty(); echo dxgym_incremental($compare_total,$state,$compare_size); echo dxgym_pagination($compare_total,$state,$compare_size); ?><p class="dxgym-muted">Category values are out of 10. Overall scores are weighted percentages. Missing ratings remain unassessed.</p></section>
+	<?php elseif($view==='finder'): dxgym_finder($gyms); ?>
 	<?php elseif($view==='insights'):
-		$scored=array_values(array_filter($gyms,static function($g){return is_numeric($g['overall']);}));$chains=[];$distribution=['85–100%'=>0,'71–84.9%'=>0,'57–70.9%'=>0,'43–56.9%'=>0,'Below 43%'=>0];
-		foreach($gyms as$gym){$key=$gym['chain']?:'Other / unspecified';$chains[$key][]=$gym['overall'];if(!is_numeric($gym['overall']))continue;$score=$gym['overall'];$bucket=$score>=85?'85–100%':($score>=71?'71–84.9%':($score>=57?'57–70.9%':($score>=43?'43–56.9%':'Below 43%')));$distribution[$bucket]++;}
+		$scored=array_values(array_filter($gyms,static function($g){return is_numeric($g['overall']);}));$chains=[];$examples=[];$distribution=['85–100%'=>0,'71–84.9%'=>0,'57–70.9%'=>0,'43–56.9%'=>0,'Below 43%'=>0];
+		foreach($gyms as$gym){$key=$gym['chain']?:'Other / unspecified';$chains[$key][]=$gym['overall'];if(!is_numeric($gym['overall']))continue;$score=$gym['overall'];$bucket=$score>=85?'85–100%':($score>=71?'71–84.9%':($score>=57?'57–70.9%':($score>=43?'43–56.9%':'Below 43%')));$distribution[$bucket]++;if (count($examples[$bucket] ?? []) < 3) $examples[$bucket][] = $gym['name'];}
 		?>
-		<div class="dxgym-insights-grid"><section class="dxgym-panel"><h2>How the League Scores.</h2><?php echo dxgym_distribution_chart($distribution,count($scored),$scored?array_sum(array_column($scored,'overall'))/count($scored):null,count($gyms)-count($scored)); ?></section>
+		<div class="dxgym-insights-grid"><section class="dxgym-panel"><h2>How the League Scores.</h2><?php echo dxgym_distribution_chart($distribution,count($scored),$scored?array_sum(array_column($scored,'overall'))/count($scored):null,count($gyms)-count($scored),$examples); ?></section>
 		<section class="dxgym-panel"><h2>Category Averages.</h2><p class="dxgym-muted">Only assessed categories contribute.</p><dl class="dxgym-category-averages"><?php foreach(dxgym_categories()as$key=>$category):$scores=array_filter(array_column(array_column($gyms,'scores'),$key),'is_numeric');$average=$scores?round(array_sum($scores)/count($scores),1):null; ?><div><dt><?php echo esc_html($category[0]); ?><small><?php echo count($scores); ?> assessed</small></dt><dd><?php echo dxgym_score($average); ?><span class="dxgym-bar"><i data-gym-score-key="<?php echo esc_attr('average-'.$key); ?>" style="width:<?php echo $average!==null?esc_attr($average*10):0; ?>%"></i></span></dd></div><?php endforeach; ?></dl></section>
 		<section class="dxgym-panel"><h2>Chain by Chain.</h2><p class="dxgym-muted">Sample sizes matter — these are my visits, not a chain-wide verdict.</p><table class="dxgym-chain-table"><thead><tr><th>Chain</th><th>Gyms</th><th>Average</th></tr></thead><tbody><?php uasort($chains,static function($a,$b){return count($b)<=>count($a);});foreach($chains as$chain=>$scores):$numbers=array_filter($scores,'is_numeric'); ?><tr><th scope="row"><?php echo esc_html($chain); ?></th><td><?php echo count($scores); ?></td><td><?php echo dxgym_score($numbers?round(array_sum($numbers)/count($numbers),1):null,true); ?></td></tr><?php endforeach; ?></tbody></table></section>
 		<section class="dxgym-panel"><h2>Standouts in Each Category.</h2><div class="dxgym-winners"><?php foreach(dxgym_categories()as$key=>$category):$assessed=array_filter($gyms,static function($g)use($key){return is_numeric($g['scores'][$key]);});usort($assessed,static function($a,$b)use($key){return$b['scores'][$key]<=>$a['scores'][$key];});$winner=$assessed?reset($assessed):null; ?><div><p class="dxgym-eyebrow"><?php echo esc_html($category[0]); ?></p><?php if($winner): ?><a href="<?php echo esc_url($winner['url']); ?>"><?php echo esc_html($winner['name']); ?></a><?php echo dxgym_score($winner['scores'][$key]);$tied=count(array_filter($assessed,static function($g)use($winner,$key){return $g['scores'][$key]===$winner['scores'][$key];}));if($tied>1): ?><small>Joint highest across <?php echo esc_html($tied); ?> gyms</small><?php endif;else: ?><p>Not assessed yet</p><?php endif; ?></div><?php endforeach; ?></div></section></div>
@@ -536,7 +540,66 @@ function dxgym_quick_cards($gyms) {
 	ob_start(); ?><div class="dxgym-quick-grid"><?php foreach($gyms as$index=>$gym): ?><a href="<?php echo esc_url($gym['url']); ?>" class="dxgym-quick-card"><?php echo dxgym_image($gym); ?><span class="dxgym-rank"><?php echo str_pad($gym['rank']??($index+1),2,'0',STR_PAD_LEFT); ?></span><div class="dxgym-quick-card-details"><h3><?php echo esc_html($gym['name']); ?></h3><p><?php echo esc_html($gym['location']); ?></p><?php echo dxgym_score($gym['overall'],true); ?><span class="dxgym-quick-review">Read the Review <span aria-hidden="true">↗</span></span></div></a><?php endforeach; ?></div><?php return ob_get_clean();
 }
 function dxgym_quick_rankings($atts=[]) {
-	$atts=shortcode_atts(['chain'=>''],$atts,'dx_gym_table');$data=dxgym_data();$gyms=$data['gyms'];if($atts['chain'])$gyms=array_values(array_filter($gyms,static function($g)use($atts){return$g['chainKey']===$atts['chain'];}));
-	ob_start(); ?><section class="dxgym-quick" aria-label="Quick gym rankings" data-gym-preview data-api="<?php echo esc_url(rest_url('dxndre/v1/gym-dashboard')); ?>" data-chain="<?php echo esc_attr($atts['chain']); ?>"><div class="dxgym-quick-heading"><div><p class="dxgym-eyebrow">Quick Gym Rankings</p><h2>The Gym League.</h2><p>Every gym. Every visit. Ranked.</p></div><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><form method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-quick-form><input type="hidden" name="view" value="explorer"><?php if($atts['chain']): ?><input type="hidden" name="chain" value="<?php echo esc_attr($atts['chain']); ?>"><?php endif; ?><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a reviewed gym</span><input type="search" name="q" autocomplete="off" placeholder="Find a gym, location or chain…"></label><button class="dxgym-button">Find Your Next Gym <?php echo dxgym_icon('arrow'); ?></button></form><p class="dxgym-quick-status" data-gym-quick-status role="status"></p><div data-gym-quick-results><?php echo dxgym_quick_cards(array_slice($gyms,0,3)); ?></div></section><?php return ob_get_clean();
+	$atts=shortcode_atts(['chain'=>'','integrated'=>''] ,$atts,'dx_gym_table');$data=dxgym_data();$gyms=$data['gyms'];if($atts['chain'])$gyms=array_values(array_filter($gyms,static function($g)use($atts){return$g['chainKey']===$atts['chain'];}));
+	$integrated = $atts['integrated'] === '1';
+	ob_start(); ?><section class="dxgym-quick" aria-label="Quick gym rankings" data-gym-preview data-api="<?php echo esc_url(rest_url('dxndre/v1/gym-dashboard')); ?>" data-chain="<?php echo esc_attr($atts['chain']); ?>"><?php if (!$integrated): ?><div class="dxgym-quick-heading"><div><p class="dxgym-eyebrow">Quick Gym Rankings</p><h2>The Gym League.</h2><p>Every gym. Every visit. Ranked.</p></div><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?><form method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-quick-form><input type="hidden" name="view" value="explorer"><?php if($atts['chain']): ?><input type="hidden" name="chain" value="<?php echo esc_attr($atts['chain']); ?>"><?php endif; ?><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a reviewed gym</span><input type="search" name="q" autocomplete="off" placeholder="Find a gym, location or chain…"></label><button class="dxgym-button">Find Your Next Gym <?php echo dxgym_icon('arrow'); ?></button></form><p class="dxgym-quick-status" data-gym-quick-status role="status"></p><div data-gym-quick-results><?php echo dxgym_quick_cards(array_slice($gyms,0,3)); ?></div><?php if ($integrated): ?><div class="dxgym-quick-footer"><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?></section><?php return ob_get_clean();
 }
 add_action('init',function(){add_shortcode('dx_gym_table','dxgym_quick_rankings');},20);
+
+/** Opening-hour facts are separate from source links: a URL never implies 24-hour access. */
+function dxgym_hours($gym) {
+ static $records;
+ if ($records === null) $records = json_decode(file_get_contents(__DIR__.'/gym-opening-hours.json'), true) ?: [];
+ $hours = $records[$gym['name']] ?? ['source'=>'', 'label'=>'Hours not yet verified', 'open24'=>null, 'weekly'=>null, 'checked'=>''];
+ if (stripos($gym['name'], 'David Lloyd') !== false && !isset($records[$gym['name']])) {
+  $branch = trim(preg_replace('/^David Lloyds?\s*/i', '', $gym['name']));
+  $hours = ['source'=>'https://www.davidlloyd.co.uk/clubs/'.sanitize_title($branch).'/', 'label'=>'Not 24-hour · check branch hours', 'open24'=>false, 'weekly'=>null, 'checked'=>'', 'basis'=>'Owner-confirmed: not a 24-hour chain; exact schedule unverified'];
+ }
+ $hours['google'] = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($gym['name'].' '.$gym['location'].' opening hours');
+ return $hours;
+}
+function dxgym_finder($gyms) {
+ $open = [];
+ foreach ($gyms as $gym) $open[] = array_intersect_key($gym,array_flip(['name','location','scores','overall','url','image','padel'])) + ['hours'=>dxgym_hours($gym)];
+	?>
+	<section class="dxgym-panel dxgym-finder" aria-labelledby="dxgym-finder-title" data-gym-finder data-placeholder="<?php echo esc_url(get_theme_file_uri('assets/img/gym-placeholder.svg')); ?>" data-gyms="<?php echo esc_attr(wp_json_encode($open)); ?>">
+		<h2 id="dxgym-finder-title">Which gym should I go to?</h2>
+		<p>Find a reviewed gym that matches your priorities. Matches are ranked by your amenity priorities, with opening information shown separately. Hours and facility access can change on holidays.</p>
+		<noscript><p>Enable JavaScript to use the gym finder.</p></noscript>
+		<form hidden>
+			<fieldset>
+				<legend>1. Which facilities are essential?</legend>
+				<div class="dxgym-finder-options">
+					<?php foreach (array_merge(dxgym_categories(), ['padel'=>['Padel']]) as $key => $category) : if ($key === 'clean') continue; ?>
+						<label><input type="checkbox" name="essential" value="<?php echo esc_attr($key); ?>"> <?php echo esc_html($key === 'cafe' ? 'Café / Workspace' : $category[0]); ?></label>
+					<?php endforeach; ?>
+				</div>
+				<button class="dxgym-button" type="button" data-finder-next>Continue</button>
+			</fieldset>
+			<fieldset hidden>
+				<legend>2. How much does each amenity matter?</legend><p>Very important amenities must have an assessed rating to qualify. Every other selected priority contributes to your match score.</p>
+				<div data-finder-priorities class="dxgym-finder-options">
+					<?php foreach (dxgym_categories() as $key => $category) : ?>
+						<label data-amenity="<?php echo esc_attr($key); ?>"><?php echo esc_html($key === 'cafe' ? 'Café / Workspace' : $category[0]); ?>
+							<select name="<?php echo esc_attr($key); ?>">
+								<option value="0">Doesn’t matter</option>
+								<option value="1" selected>Somewhat important</option>
+								<option value="3">Very important</option>
+							</select>
+						</label>
+					<?php endforeach; ?>
+				</div>
+				<div data-finder-padel hidden><label data-amenity="padel">Padel <span>Required court availability · not numerically rated</span></label></div>
+				<button class="dxgym-button" type="button" data-finder-back>Back</button>
+				<button class="dxgym-button" type="submit">Find matching gyms</button>
+			</fieldset>
+			<fieldset hidden>
+				<legend>3. Your matches</legend>
+				<div data-finder-results aria-live="polite"></div>
+				<button class="dxgym-button" type="button" data-finder-back>Edit priorities</button>
+			</fieldset>
+		</form>
+	</section>
+ <details class="dxgym-panel dxgym-hours-reference"><summary>Opening-hours reference</summary><p>Operator and directory sources checked 19 November 2026 where recorded. Exact schedules are not yet verified for every branch. Google links open a branch lookup, not a verified hours record.</p><div class="dxgym-hours-scroll"><table><thead><tr><th>Gym</th><th>Regular opening</th><th>Reference</th></tr></thead><tbody><?php foreach ($gyms as $gym): $hours=dxgym_hours($gym); ?><tr><th scope="row"><?php echo esc_html($gym['name']); ?></th><td><?php echo esc_html($hours['label']); ?></td><td><?php if($hours['source']): ?><a target="_blank" rel="noopener" href="<?php echo esc_url($hours['source']); ?>">Operator</a> · <?php endif; ?><a target="_blank" rel="noopener" href="<?php echo esc_url($hours['google']); ?>">Google Maps</a></td></tr><?php endforeach; ?></tbody></table></div></details>
+	<?php
+}

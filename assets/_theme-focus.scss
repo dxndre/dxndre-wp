@@ -1,0 +1,58 @@
+:root {
+	--dx-focus-color: #eac477;
+}
+
+html:is([data-dxcp-theme="light"], [data-dxgym-theme="light"]),
+body.proposal.is-light {
+	--dx-focus-color: #785414;
+}
+
+// Keep the keyboard ring visible where older components suppress outlines.
+:is(
+		:focus-visible,
+		input:focus,
+		textarea:focus,
+		select:focus,
+		[contenteditable="true"]:focus
+	) {
+	outline: 2px solid var(--dx-focus-color) !important;
+	outline-offset: 3px;
+}
+
+// Composite search fields use their existing border to show focus within.
+:is(.dxbus-sidebar__search, .dxgym-search):focus-within {
+	border-color: var(--dx-focus-color);
+}
+
+@media (forced-colors: active) {
+	:root,
+	html:is([data-dxcp-theme="light"], [data-dxgym-theme="light"]),
+	body.proposal.is-light {
+		--dx-focus-color: Highlight;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+	:root {
+		--dx-focus-duration: 160ms;
+	}
+
+	:where(
+			a[href],
+			button,
+			input,
+			select,
+			textarea,
+			summary,
+			[tabindex],
+			[contenteditable="true"]
+		) {
+		outline: 2px solid transparent;
+		outline-offset: 3px;
+		transition: outline-color 160ms ease;
+	}
+
+	:where(.dxbus-sidebar__search, .dxgym-search) {
+		transition: border-color 160ms ease;
+	}
+}

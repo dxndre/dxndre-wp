@@ -28,6 +28,7 @@ add_action( 'init', function () {
 		'has_archive' => 'buses/polls', 'rewrite' => array( 'slug' => 'buses/polls', 'with_front' => false ),
 		'capability_type' => 'post', 'map_meta_cap' => true,
 	) );
+	register_taxonomy( 'dx_poll_category', 'dx_bus_poll', array( 'label' => 'Poll categories', 'public' => false, 'show_ui' => true, 'show_admin_column' => true, 'hierarchical' => true ) );
 	dx_bus_polls_install();
 } );
 
@@ -57,6 +58,10 @@ add_action( 'add_meta_boxes_dx_bus_poll', function () {
 		echo '<p><label><strong>Answer choices</strong> (2–8, one per line)<br><textarea class="widefat" name="dx_poll_options" rows="8" ' . ( $total ? 'readonly' : '' ) . '>' . esc_textarea( implode( "\n", array_column( $options, 'label' ) ) ) . '</textarea></label></p>';
 		if ( $total ) { echo '<p><strong>' . esc_html( $total ) . ' votes recorded.</strong> Answer choices are locked once voting begins so earlier votes keep their meaning.</p>'; }
 		echo '<p><label><strong>Closes</strong> (' . esc_html( wp_timezone_string() ) . ')<br><input type="datetime-local" name="dx_poll_closes" required value="' . esc_attr( $ends ? wp_date( 'Y-m-d\TH:i', $ends ) : '' ) . '"></label></p>';
+		$opens = (int) get_post_meta( $post->ID, '_dx_poll_opens', true );
+		echo '<p><label>Opens (optional)<br><input type="datetime-local" name="dx_poll_opens" value="' . esc_attr( $opens ? wp_date( 'Y-m-d\TH:i', $opens ) : '' ) . '"></label></p>';
+		echo '<p><label><input type="checkbox" name="dx_poll_featured" value="1" ' . checked( get_post_meta( $post->ID, '_dx_poll_featured', true ), '1', false ) . '> Featured debate</label></p>';
+		echo '<p><label>Results visibility <select name="dx_poll_visibility"><option value="after_vote">After voting or closing</option><option value="always" ' . selected( get_post_meta( $post->ID, '_dx_poll_visibility', true ), 'always', false ) . '>Always visible</option></select></label></p>';
 		echo '<p class="description">A closing time and at least two distinct choices are required for voting. One vote per signed-in account, or per browser for guests. Guest votes are not identity-verified; clearing cookies or using another browser can bypass that limit. No names, email addresses or raw IP addresses are stored with votes.</p>';
 	}, 'dx_bus_poll', 'normal', 'high' );
 } );
@@ -70,6 +75,12 @@ add_action( 'save_post_dx_bus_poll', function ( $post_id ) {
 		set_transient( 'dx_poll_error_' . get_current_user_id(), 'The poll needs a valid closing date/time and 2–8 different answer choices. Existing voting settings have been kept.', MINUTE_IN_SECONDS );
 		return;
 	}
+	$open_input = sanitize_text_field( wp_unslash( $_POST['dx_poll_opens'] ?? '' ) );
+	$opens = $open_input ? dx_bus_poll_close_time( $open_input ) : 0;
+	if ( $open_input && ( ! $opens || $opens >= $ends ) ) {
+		set_transient( 'dx_poll_error_' . get_current_user_id(), 'The opening time must be valid and earlier than the closing time.', MINUTE_IN_SECONDS );
+		return;
+	}
 	if ( ! dx_bus_poll_total( $post_id ) ) {
 		$existing = dx_bus_poll_options( $post_id );
 		$options = array();
@@ -78,6 +89,9 @@ add_action( 'save_post_dx_bus_poll', function ( $post_id ) {
 		}
 		update_post_meta( $post_id, '_dx_poll_options', $options );
 	}
+	update_post_meta( $post_id, '_dx_poll_opens', $opens );
+	update_post_meta( $post_id, '_dx_poll_featured', empty( $_POST['dx_poll_featured'] ) ? '0' : '1' );
+	update_post_meta( $post_id, '_dx_poll_visibility', ( $_POST['dx_poll_visibility'] ?? '' ) === 'always' ? 'always' : 'after_vote' );
 	update_post_meta( $post_id, '_dx_poll_closes', $ends );
 } );
 
@@ -116,6 +130,8 @@ function dx_bus_poll_record( $post_id, $identity = '' ) {
 	$options = dx_bus_poll_options( $post_id );
 	$configured = $ends > 0 && count( $options ) >= 2 && count( $options ) <= 8;
 	$closed = $configured && $ends <= time();
+	$opens = (int) get_post_meta( $post_id, '_dx_poll_opens', true );
+	$scheduled = $configured && $opens > time();
 	global $wpdb;
 	$table = $wpdb->prefix . 'dx_bus_poll_votes';
 	$voted = $identity ? (string) $wpdb->get_var( $wpdb->prepare( "SELECT option_key FROM $table WHERE poll_id=%d AND voter_hash=%s", $post_id, $identity ) ) : '';
@@ -126,7 +142,9 @@ function dx_bus_poll_record( $post_id, $identity = '' ) {
 		$option['votes'] = $count; $option['percent'] = $total ? round( $count / $total * 100, 1 ) : 0;
 	}
 	unset( $option );
-	return array( 'id' => (int) $post_id, 'question' => get_the_title( $post_id ), 'configured' => $configured, 'closed' => $closed, 'closesAt' => $ends ? gmdate( 'c', $ends ) : '', 'total' => $total, 'voted' => $voted, 'options' => $options, 'showResults' => $closed || (bool) $voted, 'token' => $identity ? wp_create_nonce( 'dx_poll_vote_' . $post_id . '_' . $identity ) : '' );
+	$show_results = $closed || (bool) $voted || 'always' === get_post_meta( $post_id, '_dx_poll_visibility', true );
+	if ( ! $show_results ) { foreach ( $options as &$option ) { unset( $option['votes'], $option['percent'] ); } unset( $option ); }
+	return array( 'scheduled' => $scheduled, 'opensAt' => $opens ? gmdate( 'c', $opens ) : '', 'id' => (int) $post_id, 'question' => get_the_title( $post_id ), 'configured' => $configured, 'closed' => $closed, 'closesAt' => $ends ? gmdate( 'c', $ends ) : '', 'total' => $total, 'voted' => $voted, 'options' => $options, 'showResults' => $show_results, 'token' => $identity ? wp_create_nonce( 'dx_poll_vote_' . $post_id . '_' . $identity ) : '' );
 }
 
 function dx_bus_poll_response( $data, $status = 200 ) {
@@ -144,7 +162,7 @@ function dx_bus_poll_vote( WP_REST_Request $request ) {
 	if ( $origin && ( wp_parse_url( $origin, PHP_URL_HOST ) !== wp_parse_url( home_url(), PHP_URL_HOST ) || wp_parse_url( $origin, PHP_URL_PORT ) !== wp_parse_url( home_url(), PHP_URL_PORT ) ) ) { return new WP_Error( 'poll_origin', 'Please vote from the original website.', array( 'status' => 403 ) ); }
 	$record = dx_bus_poll_record( $id, $identity );
 	if ( is_wp_error( $record ) ) { return $record; }
-	if ( ! $record['configured'] ) { return new WP_Error( 'poll_not_ready', 'Voting is not open for this poll.', array( 'status' => 409 ) ); }
+	if ( ! $record['configured'] || $record['scheduled'] ) { return new WP_Error( 'poll_not_ready', 'Voting is not open for this poll.', array( 'status' => 409 ) ); }
 	if ( $record['closed'] ) { return dx_bus_poll_response( array_merge( $record, array( 'message' => 'Voting has closed. These are the final results.' ) ), 409 ); }
 	if ( $record['voted'] ) { return dx_bus_poll_response( array_merge( $record, array( 'message' => 'Your vote has already been counted.' ) ), 409 ); }
 	$choice = sanitize_key( (string) $request->get_param( 'choice' ) );
@@ -154,7 +172,7 @@ function dx_bus_poll_vote( WP_REST_Request $request ) {
 	if ( $rate >= 20 ) { return new WP_Error( 'poll_rate', 'Too many votes have been sent from this connection. Please try again later.', array( 'status' => 429 ) ); }
 	global $wpdb;
 	$table = $wpdb->prefix . 'dx_bus_poll_votes';
-	$inserted = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO $table (poll_id,option_key,voter_hash,created_at) SELECT %d,%s,%s,UTC_TIMESTAMP() WHERE %d > UNIX_TIMESTAMP()", $id, $choice, $identity, (int) get_post_meta( $id, '_dx_poll_closes', true ) ) );
+	$inserted = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO $table (poll_id,option_key,voter_hash,created_at) SELECT %d,%s,%s,UTC_TIMESTAMP() WHERE %d > UNIX_TIMESTAMP() AND %d <= UNIX_TIMESTAMP()", $id, $choice, $identity, (int) get_post_meta( $id, '_dx_poll_closes', true ), (int) get_post_meta( $id, '_dx_poll_opens', true ) ) );
 	if ( false === $inserted ) { return new WP_Error( 'poll_unavailable', 'Your vote could not be saved. Please try again.', array( 'status' => 503 ) ); }
 	if ( $inserted ) { set_transient( $rate_key, $rate + 1, HOUR_IN_SECONDS ); }
 	$record = dx_bus_poll_record( $id, $identity );
@@ -177,9 +195,9 @@ function dx_bus_poll_results( $record ) {
 		<h4 tabindex="-1" data-poll-results-title><?php echo $record['closed'] ? 'Final Results' : 'Results So Far'; ?></h4>
 		<?php foreach ( $record['options'] as $option ) : ?>
 		<div class="dx-poll-result" data-poll-result="<?php echo esc_attr( $option['key'] ); ?>">
-			<div><span><?php echo esc_html( $option['label'] ); ?></span><strong data-poll-percent><?php echo esc_html( $option['percent'] ); ?>%</strong></div>
-			<div class="dx-poll-bar" aria-hidden="true"><span style="--vote-share:<?php echo esc_attr( $option['percent'] ); ?>%"></span></div>
-			<small data-poll-count><?php echo esc_html( sprintf( _n( '%s vote', '%s votes', $option['votes'], 'dxndre' ), number_format_i18n( $option['votes'] ) ) ); ?></small>
+			<div><span><?php echo esc_html( $option['label'] ); ?></span><strong data-poll-percent><?php echo esc_html( ( $option['percent'] ?? 0 ) ); ?>%</strong></div>
+			<div class="dx-poll-bar" aria-hidden="true"><span style="--vote-share:<?php echo esc_attr( ( $option['percent'] ?? 0 ) ); ?>%"></span></div>
+			<small data-poll-count><?php echo esc_html( sprintf( _n( '%s vote', '%s votes', ( $option['votes'] ?? 0 ), 'dxndre' ), number_format_i18n( ( $option['votes'] ?? 0 ) ) ) ); ?></small>
 		</div>
 		<?php endforeach; ?>
 		<p class="dx-poll-total" data-poll-total><?php echo esc_html( sprintf( _n( '%s vote in total', '%s votes in total', $record['total'], 'dxndre' ), number_format_i18n( $record['total'] ) ) ); ?></p>
@@ -188,13 +206,12 @@ function dx_bus_poll_results( $record ) {
 }
 
 function dx_bus_poll_card( $post_id ) {
+	if ( function_exists( 'dx_pulse_feature' ) ) { dx_pulse_feature( $post_id ); return; }
 	$record = dx_bus_poll_record( $post_id );
 	if ( is_wp_error( $record ) ) { return; }
 	$ends = (int) get_post_meta( $post_id, '_dx_poll_closes', true );
 	?>
 	<article class="dx-poll-card" data-dx-poll data-poll-endpoint="<?php echo esc_url( rest_url( 'dx-buses/v1/poll/' . $post_id ) ); ?>" data-rest-nonce="<?php echo is_user_logged_in() ? esc_attr( wp_create_nonce( 'wp_rest' ) ) : ''; ?>" aria-labelledby="dx-poll-question-<?php echo (int) $post_id; ?>">
-		<?php if ( get_post_meta( $post_id, '_dx_poll_sample', true ) ) : ?><p class="dx-poll-sample"><span aria-hidden="true">✦</span> Sample Poll · For Testing</p><?php endif; ?>
-		<p class="dx-poll-eyebrow"><span data-poll-state><?php echo $record['closed'] ? 'The Final Word' : 'Your View'; ?></span><span aria-hidden="true">↗</span></p>
 		<h3 id="dx-poll-question-<?php echo (int) $post_id; ?>"><a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo esc_html( $record['question'] ); ?></a></h3>
 		<?php $excerpt = get_the_excerpt( $post_id ); if ( $excerpt && ! is_singular( 'dx_bus_poll' ) ) : ?><p><?php echo esc_html( wp_trim_words( $excerpt, 35 ) ); ?></p><?php endif; ?>
 		<p class="dx-poll-deadline"><span data-poll-deadline-label><?php echo $record['closed'] ? 'Voting Closed' : 'Voting Closes'; ?></span> <?php if ( $ends ) : ?><time datetime="<?php echo esc_attr( gmdate( 'c', $ends ) ); ?>"><?php echo esc_html( wp_date( 'j F Y · H:i T', $ends ) ); ?></time><?php else : ?>To be confirmed<?php endif; ?></p>
@@ -212,6 +229,7 @@ function dx_bus_poll_card( $post_id ) {
 }
 
 function dx_bus_polls_section() {
+	if ( function_exists( 'dx_pulse_teaser' ) ) { return dx_pulse_teaser(); }
 	$polls = get_posts( array( 'post_type' => 'dx_bus_poll', 'post_status' => 'publish', 'numberposts' => 6, 'orderby' => 'date', 'order' => 'DESC' ) );
 	ob_start(); ?>
 	<section id="bus-polls" class="dxb-section dx-polls" aria-labelledby="dx-polls-heading">
@@ -239,3 +257,5 @@ add_action( 'before_delete_post', function ( $post_id ) {
 	global $wpdb;
 	$wpdb->delete( $wpdb->prefix . 'dx_bus_poll_votes', array( 'poll_id' => $post_id ), array( '%d' ) );
 } );
+
+require_once __DIR__ . '/dx-pulse.php';

@@ -3,7 +3,7 @@
 defined('ABSPATH') || exit;
 
 // One lightweight transition per tab, with a shared page-animation release point.
-add_action('wp_body_open', function () {
+add_action('wp_head', function () {
  if(is_admin())return;
  ?>
  <style>.dx-splash{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#000;color:#fff;pointer-events:auto;transition:transform .95s cubic-bezier(.76,0,.24,1);}.dx-splash.is-leaving{opacity:1;transform:translateY(-100%)}.dx-splash__counter{position:absolute;font:300 clamp(100px,27vw,420px)/1 Arial,sans-serif;letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1px #333}.dx-splash__brand{position:relative;font:400 clamp(22px,3vw,48px)/1 Arial,sans-serif;letter-spacing:-.03em}.dx-splash-active body{overflow:hidden}.dx-splash-active body>*:not(.dx-splash),.dx-splash-active body>*:not(.dx-splash) *{animation-play-state:paused!important}@media(prefers-reduced-motion:reduce){.dx-splash{transition:none}}</style>
@@ -12,7 +12,7 @@ add_action('wp_body_open', function () {
  let seen=false;try{seen=!!sessionStorage.getItem('dx-splash-seen');sessionStorage.setItem('dx-splash-seen','1');}catch{seen=true;}
  if(seen){resolve();return;}
  document.documentElement.classList.add('dx-splash-active');
- const splash=document.createElement('div');splash.className='dx-splash';splash.setAttribute('aria-hidden','true');splash.innerHTML='<span class="dx-splash__counter">0%</span><span class="dx-splash__brand"><b>dxndre</b>.co.uk</span>';document.body.append(splash);
+ const splash=document.createElement('div');splash.className='dx-splash';splash.setAttribute('aria-hidden','true');splash.innerHTML='<span class="dx-splash__counter">0%</span><span class="dx-splash__brand"><b>dxndre</b>.co.uk</span>';document.documentElement.append(splash);
  const count=splash.firstChild,start=performance.now(),reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;let loaded=document.readyState==='complete',done=false;
  addEventListener('load',()=>loaded=true,{once:true});
  function finish(){if(done)return;done=true;count.textContent='100%';requestAnimationFrame(()=>{splash.classList.add('is-leaving');setTimeout(()=>{splash.remove();document.documentElement.classList.remove('dx-splash-active');resolve();},reduced?0:980);});}
@@ -60,3 +60,8 @@ add_filter('render_block_core/image', function ($html, $block) {
 
 // A direct visit has no challenge session; MailPoet replaces the token first on real verification visits.
 add_filter('the_content',function($content){if(is_page('prove-you-are-human'))return str_replace('[mailpoet_page]','<p>Open this page from your subscription form to begin verification. <a href="'.esc_url(home_url('/n118-fitness/')).'">Return to the waitlist</a>.</p>',$content);return $content;},99);
+
+// Keep the Gym League name consistent in the editorial call to action.
+add_filter('the_content', static function ($content) {
+ return str_replace('Explore the gym league', 'Explore the Gym League', $content);
+}, 30);

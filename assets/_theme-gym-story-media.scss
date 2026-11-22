@@ -1,0 +1,78 @@
+body.is-frontend #main .dx-fitness .dxf-story--longform {
+ .dxf-story-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 38px);
+  margin: clamp(36px, 5vw, 70px) 0;
+  clear: both;
+  figure { margin: 0; min-width: 0; }
+  img, video { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; object-position: center; border-radius: 0; }
+  img { background: #101211; }
+  video { background: #000; }
+  figcaption {
+   display: flex;
+   justify-content: space-between;
+   gap: 15px;
+   margin-top: 14px;
+   padding-top: 12px;
+   border-top: 1px solid var(--dxf-line);
+   font-family: Outfit, sans-serif;
+   font-size: 11px;
+   line-height: 1.5;
+   letter-spacing: .12em;
+   text-transform: uppercase;
+   color: #adb6af;
+   span:first-child { color: var(--dxf-gold); }
+  }
+  &--portrait { width: 100%; margin-inline: 0; }
+  .dxf-media-frame { aspect-ratio: 3 / 4; width: 100%; }
+  .dxf-media-frame video { height: 100%; aspect-ratio: auto; }
+  // Shared rows align their media heights; an unpaired tile fills the row.
+  &--pair, &--triptych {
+   --mosaic-gap: 10px;
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: var(--mosaic-gap);
+   align-items: start;
+   figure {
+    display: block;
+    break-inside: avoid;
+    width: 100%;
+    margin: 0;
+   }
+   figure :is(img, video), figure .dxf-media-frame { aspect-ratio: 3 / 4; }
+   figure:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    :is(img, video), .dxf-media-frame { aspect-ratio: 4 / 3; }
+   }
+   figcaption { margin-top: 0; padding: 8px 0; border: 0; font-size: 10px; }
+   @media (min-width: 992px) { --mosaic-gap: 14px; }
+  }
+ }
+ @media (max-width: 575px) {
+  .dxf-story-media figcaption { flex-direction: column; gap: 3px; font-size: 10px; }
+ }
+}
+
+body.is-frontend #main .dx-fitness .dxf-story--longform {
+ .dxf-story-article { position: relative; isolation: isolate; }
+ .dxf-story-media > figure {
+  position: relative;
+  overflow: visible;
+  &::before {
+   content: '';
+   position: absolute;
+   inset: -180px -240px;
+   z-index: -1;
+   pointer-events: none;
+   background-image: var(--story-media-glow);
+   background-size: cover;
+   background-position: center;
+   filter: blur(100px) saturate(1.6);
+   opacity: .45;
+   mask-image: radial-gradient(ellipse, #000 25%, transparent 72%);
+  }
+ }
+ .dxf-story-prose > p, .dxf-story-chapter-heading, .dxf-story-next-link { position: relative; z-index: 1; }
+ .dxf-story-media figcaption { border: 0; }
+}

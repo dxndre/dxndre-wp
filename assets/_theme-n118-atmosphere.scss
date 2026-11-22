@@ -1,0 +1,117 @@
+// N118: a continuous portfolio-style atmosphere and a focused waitlist scene.
+body.is-frontend #main .dx-n118-waitlist.dx-has-editorial-canvas {
+	background: #000;
+
+	> .dx-page-hero,
+	.dx-n118-section,
+	.dx-n118-section:nth-of-type(even),
+	.dx-waitlist-body {
+		background: transparent !important;
+	}
+
+	.dx-n118-section {
+		border-top-color: transparent;
+
+		&::before,
+		&::after {
+			content: none;
+		}
+	}
+
+	> .dx-page-hero {
+		isolation: isolate;
+
+		&::before,
+		&::after {
+			background: none;
+			border: 0;
+			box-shadow: none;
+		}
+
+		.dx-page-hero-art {
+			mask-image: linear-gradient(transparent, #000 15%, #000 65%, transparent);
+		}
+	}
+
+	.dx-editorial-canvas {
+		background: #000;
+
+		.dx-editorial-canvas__layer {
+			background: radial-gradient(ellipse at 8% 40%, var(--scene-first), transparent 63%), radial-gradient(ellipse at 94% 65%, var(--scene-second), transparent 62%);
+
+			&::before,
+			&::after {
+				content: none;
+			}
+
+			img {
+				display: none;
+			}
+		}
+	}
+
+	.dx-n118-form-glows {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transform: scale(.85);
+		transition: opacity 1s ease, transform 1.3s cubic-bezier(.22, 1, .36, 1);
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			top: 12%;
+			width: min(48vw, 620px);
+			height: 80%;
+			filter: blur(45px);
+		}
+
+		&::before {
+			left: -16%;
+			background: radial-gradient(ellipse, #44305b99, #234a5540 45%, transparent 70%);
+		}
+
+		&::after {
+			right: -16%;
+			background: radial-gradient(ellipse, #6b432d99, #354c3840 45%, transparent 70%);
+		}
+	}
+
+	&.is-waitlist-focused {
+		.dx-editorial-canvas .dx-editorial-canvas__layer {
+			opacity: 0;
+		}
+
+		.dx-n118-form-glows {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	#waitlist {
+		position: relative;
+		isolation: isolate;
+
+		> :has(> .dx-n118-form-intro),
+		form.mailpoet_form,
+		.dx-n118-form-intro {
+			background: transparent !important;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body.is-frontend #main .dx-n118-waitlist .dx-n118-form-glows {
+		transition: none;
+		transform: none;
+	}
+}
+
+// The Instagram section follows the isolated waitlist wrapper. Give it its own
+// foreground layer so the wrapper's fixed atmosphere cannot paint over its text.
+body.is-frontend.page-n118-fitness #main .dx-instagram {
+	position: relative;
+	z-index: 1;
+	background: transparent;
+}

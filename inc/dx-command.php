@@ -43,8 +43,8 @@ add_action( 'wp_body_open', function () {
 	<button id="dx-command-open" type="button" aria-haspopup="dialog" aria-controls="dx-command" hidden>DX. Command <kbd>⌘ / Ctrl K</kbd></button>
 	<dialog id="dx-command" aria-labelledby="dx-command-title">
 		<header><h2 id="dx-command-title">DX. Command</h2><button type="button" data-command-close aria-label="Close command palette">×</button></header>
-		<label for="dx-command-query">Find a page, project or bus route</label>
-		<input id="dx-command-query" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="dx-command-results">
+		<label class="visually-hidden" for="dx-command-query">Find a page, project or bus route</label>
+		<input id="dx-command-query" placeholder="Find a page, project or bus route" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="dx-command-results">
 		<div class="dx-command-grid">
 			<ul id="dx-command-results" role="listbox" aria-label="Results"></ul>
 			<div data-command-preview></div>

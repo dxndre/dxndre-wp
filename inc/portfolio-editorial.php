@@ -70,8 +70,9 @@ function dxndre_editorial_projects_archive($atts = []) {
       <section class="dx-project-reel" aria-label="Selected projects"><div class="dx-project-reel-sticky"><p class="dx-eyebrow">Selected work / Scroll to explore</p><h2>Ideas, brought to life.</h2><div class="dx-project-track">
 <?php foreach($projects as $project): $d=dxndre_portfolio_project_data($project); ?><a class="dx-project-poster" href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo dxndre_portfolio_image($project,$d,'large','dx-project-poster-image'); ?><div><p class="dx-eyebrow"><?php echo esc_html($d['year'].' / '.$d['context_label']); ?></p><h3><?php echo esc_html($d['title']); ?></h3><p><?php echo esc_html($d['excerpt']); ?></p><span class="dx-project-poster-action">Read the Case Study <span aria-hidden="true">↗︎</span></span></div></a><?php endforeach; ?>
 </div><p class="dx-project-touch-hint"><svg viewBox="0 0 24 32" aria-hidden="true"><path d="m6 10 6-6 6 6M12 5v15"/><circle cx="12" cy="26" r="3"/></svg><span>Swipe up to explore</span></p></div></section>
+      <?php $private_projects = dx_recruiter_edition() ? dx_recruiter_projects() : []; ?>
       <div class="portfolio-archive" data-projects-archive>
-        <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects); ?></span> <span data-projects-count-label>projects</span></p></div>
+        <div class="portfolio-archive-heading"><h2>Explore My Work</h2><p class="portfolio-eyebrow" role="status" aria-live="polite" aria-atomic="true"><span data-projects-count><?php echo count($projects) + count($private_projects); ?></span> <span data-projects-count-label>projects</span></p></div>
         <div class="filter-inputs">
           <div class="project-search"><span aria-hidden="true">⌕</span><input id="search-box" type="search" placeholder="Search projects…" aria-label="Search projects" data-project-search></div>
           <div class="project-filter-buttons" role="group" aria-label="Filter projects">
@@ -89,6 +90,15 @@ function dxndre_editorial_projects_archive($atts = []) {
             <h3 class="project-title"><a href="<?php echo esc_url(get_permalink($project)); ?>"><?php echo esc_html($d['title']); ?></a></h3>
             <div class="project-meta"><span><?php echo esc_html($d['year']); ?></span><span aria-hidden="true">/</span><span><?php echo esc_html($d['context_label']); ?></span><?php if ($d['status']) : ?><span aria-hidden="true">/</span><span><?php echo esc_html(ucwords(str_replace('_', ' ', $d['status']))); ?></span><?php endif; ?></div>
             <div class="project-card-footer"><ul class="project-types"><?php foreach ($d['types'] as $type) : ?><li><?php echo esc_html($type); ?></li><?php endforeach; ?></ul><a class="project-cta" href="<?php echo esc_url(get_permalink($project)); ?>">View case study <span aria-hidden="true">↗</span></a></div>
+          </li>
+        <?php endforeach; ?>
+        <?php foreach ($private_projects as $project) :
+          $title = get_the_title($project);
+          $href = '#' . dx_recruiter_project_anchor($project); ?>
+          <li class="project-card" data-type="" data-context="" data-search="<?php echo esc_attr($title . ' private portfolio'); ?>">
+            <h3 class="project-title"><a href="<?php echo esc_attr($href); ?>"><?php echo esc_html($title); ?></a></h3>
+            <div class="project-meta"><span>Private portfolio</span></div>
+            <div class="project-card-footer"><a class="project-cta" href="<?php echo esc_attr($href); ?>">View case study <span aria-hidden="true">↑</span></a></div>
           </li>
         <?php endforeach; ?>
         </ul>
