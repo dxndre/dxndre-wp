@@ -1,3 +1,8 @@
+const loadJourneyComponents = () => {
+ if (document.querySelector("[data-dx-journey]")) import("./journey-engine");
+ if (document.querySelector("[data-dxj-editor]")) import("./journey-engine-admin");
+};
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadJourneyComponents, {once:true}); else loadJourneyComponents();
 import "./editorial-refinements";
 import "./dx-pulse";
 import "regenerator-runtime/runtime.js";
@@ -57,7 +62,7 @@ if (document.body && !document.body.classList.contains("wp-admin")) {
 	const parent = selector?.parentElement;
 	if (!parent || parent.dataset.homeJourneyReady) return;
 	parent.dataset.homeJourneyReady = 'true';
-	const STORAGE_KEY = 'dx.home.journey';
+	const STORAGE_KEY = 'dx.home.journey.explicit.v2';
 	const labels = { client: 'I need a website', hiring: 'I\u2019m hiring', exploring: 'Just exploring', fitness: 'Fitness & coaching' };
 	// Configure personalised priorities only. Capture the original DOM below.
 	const priorities = {
@@ -463,7 +468,7 @@ function dxBusAnimateMapTooltip(marker) {
 		if (tip) {
 			watch(tip);
 			if (reduced()) tip.classList.add('is-visible');
-			else requestAnimationFrame(() => { if (opening === revision && element() === tip) tip.classList.add('is-visible'); });
+			else { tip.classList.remove('is-visible'); void tip.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => { if (opening === revision && element() === tip) tip.classList.add('is-visible'); })); }
 		}
 		return result;
 	};
@@ -476,6 +481,27 @@ function dxBusAnimateMapTooltip(marker) {
 		closing = setTimeout(() => { unwatch(); close(...args); }, 180);
 		return marker;
 	};
+	// Leaflet binds hover handlers before this helper runs; animate the layer
+	// lifecycle too so native hover/blur removal cannot bypass the transition.
+	const tooltip = marker.getTooltip();
+	if (tooltip && !tooltip.dxMotionBound) {
+		tooltip.dxMotionBound = true;
+		tooltip.on('add', () => {
+			const tip = element(); if (!tip) return;
+			watch(tip); tip.classList.remove('is-visible');
+			if (reduced()) tip.classList.add('is-visible');
+			else { void tip.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => { if (tip.isConnected) tip.classList.add('is-visible'); })); }
+		});
+		const nativeRemove = tooltip.onRemove;
+		tooltip.onRemove = function(map) {
+			const tip = this.getElement();
+			if (tip?.isConnected && !reduced() && getComputedStyle(tip).opacity > .01) {
+				const ghost = tip.cloneNode(true); ghost.classList.add('dxbus-tooltip-exit'); ghost.setAttribute('aria-hidden', 'true');
+				tip.parentNode.append(ghost); setTimeout(() => ghost.remove(), 220);
+			}
+			unwatch(); return nativeRemove.call(this, map);
+		};
+	}
 	marker.on('move', scheduleClamp);
 	marker.on('remove', () => { revision++; clearTimeout(closing); unwatch(); close(); });
 }
@@ -1702,15 +1728,15 @@ function initEditorialRefinements() {
 			if (validPoint(...start)) coordinates.push(start);
 			pins.forEach((pin) => coordinates.push([Number(pin.lat), Number(pin.lng)]));
 			if (validPoint(...end)) coordinates.push(end);
-			if (!coordinates.length) {
+			if (!coordinates.length && !element.dataset.route) {
 				const empty = document.createElement('p');
 				empty.className = 'dx-journey-map-empty'; empty.textContent = 'This journey’s map is waiting for its recorded locations. You can still explore the story.';
 				element.append(empty); return;
 			}
 			const L = window.L;
 			const map = L.map(element, {scrollWheelZoom: false, zoomControl: true});
-			dxMapTiles(L, 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', subdomains: 'abcd', maxZoom: 20,
+			dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>', maxZoom: 19,
 			}).addTo(map);
 			const markers = new Map();
 			const makeLabel = (title, subtitle) => {
@@ -1733,24 +1759,74 @@ function initEditorialRefinements() {
 					entry.querySelector('[data-view-toggle="timeline"]')?.click();
 					if (card) {
 						const pane = card.closest('.bus-pane-view');
-						if (pane) pane.scrollTo({top: Math.max(0, card.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop - 16), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+						if (pane) card.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 					}
 				} else {
 					const marker = markers.get(id);
-					if (marker) { map.panTo(marker.getLatLng(), {animate: !matchMedia('(prefers-reduced-motion: reduce)').matches}); marker.openPopup(); }
+					if (marker) { entry.querySelector('[data-view-toggle="map"]')?.click(); map.panTo(marker.getLatLng(), {animate: !matchMedia('(prefers-reduced-motion: reduce)').matches}); marker.openPopup(); }
 				}
 			};
 			pins.forEach((pin, index) => {
 				const icon = L.divIcon({className: 'dx-journey-marker dx-journey-marker--pin', html: `<span>${index + 1}</span>`, iconSize: [32,32], iconAnchor: [16,16]});
 				const popup = makeLabel(pin.title, pin.time || 'Journey note');
-				const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Open Timeline →';
+				const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Read this moment →';
 				button.addEventListener('click', () => selectPin(pin.id, true)); popup.append(button);
-				const marker = L.marker([pin.lat, pin.lng], {icon, title: `${index + 1}. ${pin.title}`, alt: pin.title}).addTo(map).bindPopup(popup);
-				marker.on('click', () => selectPin(pin.id, true)); markers.set(pin.id, marker);
+				const marker = L.marker([pin.lat, pin.lng], {icon, title: `${index + 1}. ${pin.title}`, alt: pin.title}).addTo(map).bindPopup(popup,{autoPanPaddingTopLeft:[20,110],autoPanPaddingBottomRight:[20,100]});
+				markers.set(pin.id, marker);
 			});
-			if (coordinates.length > 1) L.polyline(coordinates, {color: '#e22c3a', weight: 4, opacity: .92, lineCap: 'round'}).addTo(map);
+
+            // Published route geometry and stop sequences use the same local proxy as the dashboard.
+            const routes=[...new Set((element.dataset.route || '').toUpperCase().match(/[A-Z]*\d+[A-Z]*/g) || [])];
+            const routeLayer=L.layerGroup().addTo(map), busLayer=L.layerGroup().addTo(map);
+            const sequences=[], note=entry.querySelector('.dx-journey-outline-note');
+            const api=new URL('/wp-json/dx-buses/v1/',location.origin);
+            const get=async(path)=>{const response=await fetch(new URL(path,api),{credentials:'same-origin'});if(!response.ok)throw new Error('Route temporarily unavailable');return response.json();};
+            let busesOn=false,timer=0,busRequest=0;
+            const busToggle=entry.querySelector('[data-journey-buses]');
+            const refreshBuses=async()=>{
+                const revision=++busRequest;clearTimeout(timer);
+                if(!busesOn || document.hidden)return;
+                const results=await Promise.allSettled(routes.map(route=>get('line-positions/'+encodeURIComponent(route))));
+                if(revision!==busRequest || !busesOn)return;
+                busLayer.clearLayers();const seen=new Set();let count=0;
+                results.forEach((result,index)=>{if(result.status!=='fulfilled')return;(result.value.vehicles || []).forEach(bus=>{
+                    const key=bus.registration || bus.vehicleId;if(key && seen.has(key))return;if(key)seen.add(key);
+                    const sequence=sequences.find(item=>item.route===routes[index] && item.data.direction===bus.direction) || sequences.find(item=>item.route===routes[index]);
+                    const stop=sequence?.data.stops?.find(stop=>stop.id===bus.stopId);if(!stop)return;
+                    const label=makeLabel(bus.registration || routes[index], 'Next predicted stop: '+stop.name);
+                    const link=document.createElement('a');link.href='/buses/routes/'+routes[index].toLowerCase()+'/?view=tracking&stop='+encodeURIComponent(stop.id);link.textContent='Open Live Tracking →';label.append(link);
+                    L.marker([stop.lat,stop.lon],{icon:L.divIcon({className:'dx-journey-bus',html:'<span aria-hidden="true">▣</span>',iconSize:[28,28]}),title:routes[index]+' · '+(bus.registration || 'Bus')}).addTo(busLayer).bindPopup(label);count++;
+                });});
+                if(busToggle)busToggle.textContent=count?'Hide buses ('+count+')':'Hide buses';
+                if(note)note.textContent='Published route and all stops. Buses show their next predicted stop, not live GPS.';
+                timer=setTimeout(refreshBuses,30000);
+            };
+            busToggle?.addEventListener('click',()=>{busesOn=!busesOn;busToggle.setAttribute('aria-pressed',String(busesOn));busToggle.textContent=busesOn?'Hide buses':'Show buses';if(busesOn)refreshBuses();else{busRequest++;clearTimeout(timer);busLayer.clearLayers();}});
+            document.addEventListener('visibilitychange',()=>{if(document.hidden){busRequest++;clearTimeout(timer);}else if(busesOn)refreshBuses();});
+            window.addEventListener('pagehide',()=>{busesOn=false;busRequest++;clearTimeout(timer);},{once:true});
+            Promise.allSettled(routes.flatMap(route=>['inbound','outbound'].map(async direction=>({route,data:await get('route/'+encodeURIComponent(route)+'?direction='+direction)})))).then(results=>{
+                const bounds=[],stopsSeen=new Set();let pathCount=0;
+                results.forEach(result=>{if(result.status!=='fulfilled')return;const {route,data}=result.value;sequences.push({route,data});
+                    const color=/^N/i.test(route)?(data.direction==='outbound'?'#71b9db':'#c6e8f5'):(data.direction==='outbound'?'#ff8992':'#ed2939');
+                    const paths=(data.paths || []).filter(path=>Array.isArray(path) && path.length>1);
+                    if(paths.length)paths.forEach(path=>{L.polyline(path,{color,weight:4,opacity:.95,lineCap:'round',className:'dx-journey-route-line'}).addTo(routeLayer);bounds.push(...path);pathCount++;});
+                    else if(data.stops?.length>1){const points=data.stops.map(stop=>[stop.lat,stop.lon]);L.polyline(points,{color,weight:3,dashArray:'6 8',opacity:.7}).addTo(routeLayer);bounds.push(...points);}
+                    (data.stops || []).forEach(stop=>{if(!validPoint(Number(stop.lat),Number(stop.lon)) || stopsSeen.has(stop.id))return;stopsSeen.add(stop.id);
+                        const label=makeLabel(stop.name,'Route '+route);const link=document.createElement('a');link.href='/buses/routes/'+route.toLowerCase()+'/?view=tracking&direction='+data.direction+'&stop='+encodeURIComponent(stop.id);link.textContent='Live Tracking at this stop →';label.append(link);
+                        L.circleMarker([stop.lat,stop.lon],{radius:4,color,weight:2,fillColor:'#10191c',fillOpacity:1}).addTo(routeLayer).bindPopup(label);});
+                });
+                element.dataset.routeStops=String(stopsSeen.size);element.dataset.routePaths=String(pathCount);
+                if(bounds.length)map.fitBounds(bounds,{padding:[45,70],maxZoom:14});
+                if(note)note.textContent=stopsSeen.size?(pathCount?'Published route paths and all stops. Select a numbered pin to follow the diary.':'All route stops; dashed lines approximate the route where a published path is unavailable.'):'Route data is temporarily unavailable. The recorded diary locations remain available.';
+                if(busesOn)refreshBuses();
+            });
+            const full=L.control({position:'topright'});full.onAdd=()=>{const button=L.DomUtil.create('button','dx-journey-fullscreen');button.type='button';button.textContent='Full screen ⛶';L.DomEvent.disableClickPropagation(button);button.onclick=async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await element.closest('.bus-map-shell').requestFullscreen().catch(()=>{});};return button;};full.addTo(map);
+            document.addEventListener('fullscreenchange',()=>setTimeout(()=>map.invalidateSize(),100));
+            entry.querySelectorAll('[data-journey-focus]').forEach(button=>button.addEventListener('click',()=>{entry.querySelector('[data-view-toggle="map"]')?.click();element.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});selectPin(button.dataset.journeyFocus,false);}));
+
 			if (coordinates.length === 1) map.setView(coordinates[0], 13);
-			else map.fitBounds(coordinates, {padding: [45,45]});
+			else if(coordinates.length) map.fitBounds(coordinates, {padding: [45,45]});
+            else map.setView([51.5074,-.1278],11);
 			entry.querySelectorAll('[data-journey-point]').forEach((button) => button.addEventListener('click', () => selectPin(button.dataset.journeyPoint, false)));
 			window.addEventListener('resize', () => map.invalidateSize(), {passive: true});
 			if ('ResizeObserver' in window) new ResizeObserver(() => map.invalidateSize()).observe(element);
@@ -10746,14 +10822,14 @@ window.dxInitBusGallery = (root) => {
 				const content=text('div','','dxbus-stop-tooltip-content');content.append(text('strong',stop.name));
 				if(shared)content.append(text('small','Shared stop','dxbus-stop-tooltip-shared'));
 				const tiles=text('div','','dxbus-stop-route-tiles');
-				routes.sort().forEach(route=>{const tile=text('span',route,'dx-route-badge');tile.dataset.routeTile=route;dxBusPaintDirectoryTile(tile,route);tiles.append(tile);});
+				routes.sort().forEach(route=>{const tile=text('a',route,'dx-route-badge');tile.dataset.routeTile=route;const target=new URL(encodeURIComponent(route.toLowerCase())+'/',DXB.dashboardBase || new URL('/buses/routes/',location.origin));target.searchParams.set('view','tracking');target.searchParams.set('stop',stop.id);target.searchParams.set('direction',stop.directions?.[route] || 'inbound');tile.href=target.href;tile.setAttribute('aria-label',`Live Tracking: ${route} at ${stop.name}`);dxBusPaintDirectoryTile(tile,route);tiles.append(tile);});
 				content.append(tiles);return content;
 			};
 			marker.bindPopup(stopContent(),{className:'dxbus-stop-popup'});marker.bindTooltip(stopContent(),{direction:'top',className:'dxbus-stop-tooltip',opacity:1});
 			dxBusAnimateMapTooltip(marker);
 			const popup=marker.getPopup(), nativeRemove=popup.remove.bind(popup), nativeOpen=popup.openOn.bind(popup);let closingPopup;
 			const showPopup=()=>{const el=popup.getElement();if(el){el.classList.remove('is-stop-closing');el.classList.add('is-stop-visible');}};
-			popup.on('add',()=>{clearTimeout(closingPopup);if(pinnedMotion.matches)showPopup();else requestAnimationFrame(showPopup);});
+			popup.on('add',()=>{clearTimeout(closingPopup);if(pinnedMotion.matches)showPopup();else { const el=popup.getElement(); if(el){el.classList.remove('is-stop-visible');void el.offsetWidth;} requestAnimationFrame(()=>requestAnimationFrame(showPopup)); }});
 			popup.openOn=function(map){clearTimeout(closingPopup);const result=nativeOpen(map);if(popup.getElement()?.classList.contains('is-stop-closing'))showPopup();return result;};
 			popup.remove=function(){clearTimeout(closingPopup);const el=popup.getElement();if(!el || pinnedMotion.matches)return nativeRemove();el.classList.remove('is-stop-visible');el.classList.add('is-stop-closing');closingPopup=setTimeout(()=>{popup.getElement()?.classList.remove('is-stop-closing');nativeRemove();},240);return popup;};
 			marker.on('remove',()=>{clearTimeout(closingPopup);nativeRemove();});
@@ -10818,14 +10894,14 @@ window.dxInitBusGallery = (root) => {
 			const routes = new Map(), bounds = available.map(point => point.position);
 			const palette = ['#f0c66b','#61d7ec','#ed87bd','#98dc7b','#a7a0ff','#ff9369','#f2ec83','#76d7ba','#b6caff','#dcaaed','#decbac','#f58e94'];
 			available.map(point => point.bus.route.toUpperCase()).sort().forEach(route => {
-				if (!pinnedRouteColors.has(route)) pinnedRouteColors.set(route, palette[pinnedRouteColors.size % palette.length]);
+				if (!pinnedRouteColors.has(route)) pinnedRouteColors.set(route, /^N/i.test(route)?'#c6e8f5':palette[pinnedRouteColors.size % palette.length]);
 			});
 			available.forEach(({bus,routeData}) => {
 				if (routeData) routes.set(`${bus.route.toUpperCase()}:${routeData.direction}`, {route:bus.route.toUpperCase(), destination:bus.destination || routeData.stops.at(-1)?.name || '', data:routeData});
 			});
 			let gradientIndex=0;
 			for (const {route,destination,data} of [...routes.values()].flatMap(entry=>busRoutePaths(entry.data).map(path=>({...entry,data:{...entry.data,paths:[path]}})))) {
-				const color = pinnedRouteColors.get(route);
+				const color = /^N/i.test(route) ? (data.direction==='outbound'?'#71b9db':'#c6e8f5') : pinnedRouteColors.get(route);
 				const points = busRoutePaths(data).sort((a,b)=>b.length-a.length)[0] || [];
 				bounds.push(...points);
 				if (points.length < 2) continue;
@@ -10843,7 +10919,7 @@ window.dxInitBusGallery = (root) => {
 				}
 				data.stops.forEach(stop=>{
 					if(stop.lat==null || stop.lon==null || !Number.isFinite(+stop.lat) || !Number.isFinite(+stop.lon))return;
-					const key=stop.id || `${stop.lat},${stop.lon}`;if(!pinnedStops.has(key))pinnedStops.set(key,{...stop,routes:new Set()});pinnedStops.get(key).routes.add(route);
+					const key=stop.id || `${stop.lat},${stop.lon}`;if(!pinnedStops.has(key))pinnedStops.set(key,{...stop,routes:new Set(),directions:{}});pinnedStops.get(key).routes.add(route);pinnedStops.get(key).directions[route]=data.direction;
 				});
 				const arrowRoute={points,markers:[],travel:0,path,gradient:lineGradient};pinnedArrowRoutes.push(arrowRoute);
 				const stride = Math.max(1,Math.ceil((points.length-1)/10));
@@ -12511,6 +12587,8 @@ window.dxInitBusGallery = (root) => {
 		if (route === String(current?.name || '').toUpperCase()) return true;
 		cancelAppRouteRequest();
 		const token = appNavigationSequence, navController = new AbortController(); appNavigationController = navController;
+        const mapScroll=tab==='pinned' || (tab==='line' && appExplorerMode==='map') || (tab==='overview' && appMapMode==='map');
+        const retainedScroll={x:window.scrollX,y:window.scrollY};
 		const url = options.url ? new URL(options.url) : appURL();
 		if (!options.url) {
 			url.pathname = new URL(encodeURIComponent(route.toLowerCase()) + '/', DXB.dashboardBase).pathname;
@@ -12534,6 +12612,11 @@ window.dxInitBusGallery = (root) => {
 			page.querySelectorAll('script').forEach((script) => script.remove());
 			await search(route, direction, true, { page, config, data, url, historyMode: options.historyMode || 'push' });
 			if (token === appNavigationSequence && root.classList.contains('is-menu-open')) $('[data-dxbus-menu]')?.click();
+			if(token===appNavigationSequence && mapScroll){window.scrollTo({left:retainedScroll.x,top:retainedScroll.y,behavior:'instant'});requestAnimationFrame(()=>{if(token===appNavigationSequence)window.scrollTo({left:retainedScroll.x,top:retainedScroll.y,behavior:'instant'});});}
+			if(token===appNavigationSequence && !mapScroll) {
+				const pane=root.querySelector('.dxbus-main');const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+				if(pane?.scrollHeight>pane?.clientHeight && /auto|scroll/.test(getComputedStyle(pane).overflowY))pane.scrollTo({top:0,behavior});else window.scrollTo({top:0,behavior});
+			}
 			return token === appNavigationSequence;
 		} catch (error) {
 			if (error.name === 'AbortError' || token !== appNavigationSequence) return false;
@@ -12841,7 +12924,7 @@ window.dxInitBusGallery = (root) => {
 				addMapFullscreen(L,map,host);
 				dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' }).addTo(map);
 				const badgeControl=L.control({position:'topleft'});let routeBadge;
-				badgeControl.onAdd=()=>{const box=L.DomUtil.create('div','dxbus-map-route-control');routeBadge=document.createElement('span');routeBadge.className='dxbus-route-badge dxbus-map-route-badge';box.append(routeBadge);L.DomEvent.disableClickPropagation(box);return box;};badgeControl.addTo(map);
+				badgeControl.onAdd=()=>{const box=L.DomUtil.create('div','dxbus-map-route-control');routeBadge=document.createElement('span');box.hidden=host.id!=='dxbus-explorer-map';routeBadge.className='dxbus-route-badge dxbus-map-route-badge';box.append(routeBadge);L.DomEvent.disableClickPropagation(box);return box;};badgeControl.addTo(map);
 				state = { map, routeBadge, stops: L.layerGroup().addTo(map), buses: L.layerGroup().addTo(map), identity: '' }; appMaps.set(host, state);
 			}
 			const heroBadge=root.querySelector('#dxb-route-number');
@@ -12853,7 +12936,8 @@ window.dxInitBusGallery = (root) => {
 				state.stops.clearLayers();
 				directions.forEach((route,index)=>{
 					const routeStops=route.stops.filter(validStop),points=routeStops.map(stop=>[+stop.lat,+stop.lon]);
-					const directionColor=route.direction==='outbound'?'#ff8992':'#ed2939';
+					const night=/^N/i.test(route.name || current?.name || '') || root.dataset.serviceType==='night';
+					const directionColor=night?(route.direction==='outbound'?'#71b9db':'#c6e8f5'):(route.direction==='outbound'?'#ff8992':'#ed2939');
 					busRoutePaths(route).forEach(path=>{if(path.length>1){const line=L.polyline(path,{color:directionColor,weight:4,opacity:.95,lineCap:'round',lineJoin:'round',smoothFactor:.4,className:'dxbus-route-direction-line'}).addTo(state.stops).bindTooltip(route.direction==='outbound'?'Outbound':'Inbound',{className:'dxbus-stop-tooltip',opacity:1});dxBusAnimateMapTooltip(line);}});
 					routeStops.forEach((stop,i)=>{
 						const marker=L.circleMarker([+stop.lat,+stop.lon],{radius:i===0||i===routeStops.length-1?6:3,color:directionColor,weight:2,fillColor:'#101212',fillOpacity:1}).addTo(state.stops);
@@ -13068,6 +13152,7 @@ window.dxInitBusGallery = (root) => {
 			// Retry after the drawer reveal for browsers that defer focus during visibility transitions.
 			setTimeout(focusMenu, 350);
 		};
+		$$('[data-dxbus-switch]').forEach(button=>button.addEventListener('click',()=>{if(matchMedia('(max-width:991.98px)').matches)openMenu(input);else focusRouteInput();}));
 		toggle?.addEventListener('click', () => {
 			if (root.classList.contains('is-menu-open')) closeMenu();
 			else openMenu();
@@ -14267,8 +14352,11 @@ dxOnPageReady(() => {
 window.dxSetPhoto = async (image, photo) => {
 	const token = String((Number(image.dataset.swapToken) || 0) + 1);
 	image.dataset.swapToken = token;
+const surface=image.closest('.dxb-photo-viewport')||image.parentElement;
+	let loader=surface.querySelector('.dx-photo-loader');if(!loader){loader=document.createElement('div');loader.className='dx-photo-loader';loader.setAttribute('role','status');loader.innerHTML='<span class="dx-photo-loader__ring" aria-hidden="true"></span><span>Developing the view…</span>';surface.append(loader);}
+	loader.hidden=false;surface.classList.add('dx-photo-is-loading');surface.setAttribute('aria-busy','true');
 	const next = new Image();
-	next.src = photo.full;
+	next.src = photo.full||photo.image;
 	try {
 		await next.decode();
 	} catch {}
@@ -14284,7 +14372,8 @@ window.dxSetPhoto = async (image, photo) => {
 	}
 	if (image.dataset.swapToken !== token) return;
 	image.getAnimations().forEach((a) => a.cancel());
-	image.src = photo.full;
+	image.src = photo.full||photo.image;
+	loader.hidden=true;surface.classList.remove('dx-photo-is-loading');surface.setAttribute('aria-busy','false');
 	image.alt = photo.alt || photo.title;
 	if (!reduced)
 		image.animate(
@@ -16617,9 +16706,10 @@ if (document.body && document.body.classList.contains("wp-admin")) {
 	};
 	if (mapElement && window.L) {
 		map = L.map(mapElement, {scrollWheelZoom: false});
-		dxMapTiles(L, 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20}).addTo(map);
+		dxMapTiles(L, 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors', maxZoom: 19}).addTo(map);
 		const start = [Number.parseFloat(mapElement.dataset.startLat), Number.parseFloat(mapElement.dataset.startLng)];
 		map.setView(validPoint(start) ? start : [51.5074,-.1278], 12);
+		const route=mapElement.dataset.route;if(route)Promise.allSettled(['inbound','outbound'].map(direction=>fetch('/wp-json/dx-buses/v1/route/'+encodeURIComponent(route)+'?direction='+direction,{credentials:'same-origin'}).then(response=>response.ok?response.json():Promise.reject()))).then(results=>{const bounds=[];results.forEach(result=>{if(result.status!=='fulfilled')return;const data=result.value;const color=data.direction==='outbound'?'#ff8992':'#ed2939';(data.paths || []).forEach(path=>{L.polyline(path,{color,weight:3}).addTo(map);bounds.push(...path);});(data.stops || []).forEach(stop=>L.circleMarker([stop.lat,stop.lon],{radius:3,color}).addTo(map).bindTooltip(stop.name));});if(bounds.length)map.fitBounds(bounds,{padding:[25,25]});});
 		syncMarkers();
 		map.on('click', (event) => {
 			if (!activeRow || !editor.contains(activeRow)) { mapStatus.textContent = 'Add a pin or choose “Pick coordinates on the map” for the pin you want to place.'; return; }
@@ -16663,6 +16753,7 @@ if (document.body && document.body.classList.contains("wp-admin")) {
 			if (map) { if (validPoint(coordinates(row))) map.setView(coordinates(row), 14); mapElement.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center'}); }
 			mapStatus.textContent = 'Click the map to place this pin. You can then drag its marker to adjust it.';
 		}
+		if(event.target.closest('[data-pin-video]') && window.wp?.media){const media=wp.media({title:'Upload or choose a journey video',library:{type:'video'},multiple:false});media.on('select',()=>{row.querySelector('[data-pin-field="video"]').value=media.state().get('selection').first().get('url');});media.open();}
 		if (event.target.closest('[data-pin-image]') && window.wp?.media) {
 			const media = wp.media({title: 'Choose a journey photograph', library: {type: 'image'}, multiple: false});
 			media.on('select', () => { row.querySelector('[data-pin-field="image"]').value = media.state().get('selection').first().id; });
@@ -17623,4 +17714,103 @@ dxOnPageReady(()=>{
   const inner=menu.closest('.dx-menu__inner');const size=()=>{if(inner)inner.classList.toggle('dx-menu-can-center',inner.scrollHeight<=inner.clientHeight+2&&menu.scrollHeight<innerHeight-180);};
   new ResizeObserver(size).observe(menu);addEventListener('resize',size);size();
  }
+});
+
+dxOnPageReady(()=>{
+ const launcher=document.getElementById('dx-command-open');
+ if(!launcher)return;
+ launcher.setAttribute('aria-label','Open site search and commands');
+ const sync=()=>{
+  const banner=document.querySelector('.cmplz-cookiebanner');
+  const style=banner&&getComputedStyle(banner);
+  document.body.classList.toggle('dx-consent-banner-visible',!!banner&&style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)!==0&&banner.getBoundingClientRect().height>0);
+ };
+ const banner=document.querySelector('.cmplz-cookiebanner');if(banner)new MutationObserver(sync).observe(banner,{attributes:true,attributeFilter:['class','style','hidden']});
+ sync();document.addEventListener('cmplz_status_change',sync);
+});
+
+// Apply the same loading treatment to the other photo viewers.
+dxOnPageReady(()=>{
+ const selector='.dxf-media-dialog img,.gym-review-lightbox__image,.wp-lightbox-overlay .lightbox-image-container img';
+ const versions=new WeakMap();
+ const load=async image=>{
+  if(!image.matches(selector)||!image.getAttribute('src'))return;
+  const surface=image.closest('.dxf-media-dialog,.gym-review-lightbox,.wp-lightbox-overlay');if(!surface)return;
+  const revision=(versions.get(image)||0)+1;versions.set(image,revision);
+  let loader=surface.querySelector('.dx-photo-loader');if(!loader){loader=document.createElement('div');loader.className='dx-photo-loader';loader.setAttribute('role','status');loader.innerHTML='<span class="dx-photo-loader__ring" aria-hidden="true"></span><span>Developing the view…</span>';surface.append(loader);}
+  loader.hidden=false;surface.setAttribute('aria-busy','true');
+  try{await image.decode();}catch{}
+  if(versions.get(image)!==revision)return;
+  loader.hidden=true;surface.setAttribute('aria-busy','false');
+ };
+ document.querySelectorAll(selector).forEach(load);
+ new MutationObserver(records=>records.forEach(record=>{
+  if(record.type==='attributes'&&record.target instanceof HTMLImageElement)load(record.target);
+  record.addedNodes.forEach(node=>{if(node.nodeType!==1)return;if(node.matches(selector))load(node);node.querySelectorAll?.(selector).forEach(load);});
+ })).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['src','srcset']});
+});
+
+// Diary chapter and media entrances share the page's reduced-motion preference.
+(() => {
+ const start=()=>{const entry=document.querySelector('.bus-diary-entry');if(!entry)return;const nodes=entry.querySelectorAll('.dx-story-sample > p,.story-chapter > div > *, .dx-diary-moment,.bus-panel__topbar,.dx-journey-explore,.bus-map-meta');
+ const observer=new IntersectionObserver(items=>items.forEach(item=>{if(item.isIntersecting){item.target.classList.remove('is-waiting');observer.unobserve(item.target);}}),{threshold:.06});
+ nodes.forEach(node=>{node.classList.add('dx-diary-reveal');if(!matchMedia('(prefers-reduced-motion: reduce)').matches){node.classList.add('is-waiting');observer.observe(node);}});};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+
+// Draw directional UI symbols consistently on devices with emoji fonts.
+(() => {
+ const start=()=>{
+ const scope='.dxbus-app,#dxgym-app,.dxcp-shell,.pricing-calculator,.dx-journey';
+ const paths={'↗':'M4 20 20 4M5 4h15v15','→':'M3 12h18m-7-7 7 7-7 7','←':'M21 12H3m7-7-7 7 7 7','⇄':'M3 7h18m-5-4 5 4-5 4M21 17H3m5-4-5 4 5 4'};
+ const paint=root=>{if(!root)return;const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);nodes.forEach(node=>{if(!node.parentElement?.closest(scope)||node.parentElement.closest('svg,script,style,textarea,option,.dx-ui-symbol')||!/[↗→←⇄]/u.test(node.nodeValue))return;const parts=node.nodeValue.split(/([↗→←⇄][\uFE0E\uFE0F]?)/u);const fragment=document.createDocumentFragment();parts.forEach(part=>{if(!paths[part[0]])fragment.append(document.createTextNode(part));else{const span=document.createElement('span');span.className='dx-ui-symbol';span.setAttribute('aria-hidden','true');span.innerHTML='<svg viewBox="0 0 24 24"><path d="'+paths[part[0]]+'"/></svg>';fragment.append(span);}});node.replaceWith(fragment);});};
+ paint(document.body);new MutationObserver(records=>records.forEach(record=>{if(record.type==='characterData')paint(record.target.parentNode);else record.addedNodes.forEach(node=>{if(node.nodeType===1&&!node.closest('.dx-ui-symbol'))paint(node);else if(node.nodeType===3)paint(node.parentNode);});})).observe(document.body,{subtree:true,childList:true,characterData:true});
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+
+// A quiet loading surface for every gallery, including dynamically added photographs.
+(() => {
+ const start=()=>{
+ const selector='[class*="gallery"] img,[class*="photo-grid"] img,.dxf-media-grid img,.wp-block-gallery img,.gym-review-gallery img,[data-photo] img';
+ const versions=new WeakMap();
+ const bind=img=>{const source=img.currentSrc||img.src;if(versions.get(img)===source)return;versions.set(img,source);const parent=img.parentElement?.tagName==='PICTURE'?img.parentElement.parentElement:img.parentElement;if(!parent)return;
+ const finish=()=>{if(versions.get(img)!==source)return;img.classList.remove('dx-gallery-pending');if(!parent.querySelector('.dx-gallery-pending')){parent.classList.remove('dx-gallery-loading');parent.removeAttribute('aria-busy');}if(img.naturalWidth)img.classList.add('dx-gallery-ready');};
+ if(img.complete){if(img.naturalWidth)img.decode?.().catch(()=>{});return;}
+ parent.classList.add('dx-gallery-loading');parent.setAttribute('aria-busy','true');img.classList.add('dx-gallery-pending');
+ img.addEventListener('load',()=>{if(img.decode)img.decode().catch(()=>{}).then(finish);else finish();},{once:true});img.addEventListener('error',finish,{once:true});
+ };
+ document.querySelectorAll(selector).forEach(bind);new MutationObserver(records=>records.forEach(record=>{if(record.type==='attributes'){if(record.target.matches(selector))bind(record.target);}else record.addedNodes.forEach(node=>{if(node.nodeType!==1)return;if(node.matches(selector))bind(node);node.querySelectorAll(selector).forEach(bind);});})).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['src','srcset']});
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+// Editorial diary chapters use a fixed, crossfading scene and a compact chapter rail.
+dxOnPageReady(()=>{
+ const entry=document.querySelector('.bus-diary-entry'),story=entry?.querySelector('.dx-story-sample');if(!story)return;
+ const chapters=[...story.querySelectorAll('.story-chapter')],nav=story.querySelector('.dx-story-contents');
+ const dock=entry.querySelector('.bus-dock');if(dock)dock.closest('.bus-map-shell')?.append(dock);
+ chapters.forEach(chapter=>{const content=chapter.querySelector(':scope > div');if(!content || content.querySelector('.dx-diary-heading'))return;const heading=document.createElement('header');heading.className='dx-diary-heading';const body=document.createElement('div');body.className='dx-diary-body';const number=chapter.querySelector(':scope > span');if(number)heading.append(number);[...content.children].forEach(child=>{if(child.matches('.dx-eyebrow,h2'))heading.append(child);else body.append(child);});content.replaceChildren(heading,body);});
+ if(nav){nav.classList.add('dx-diary-chapter-nav');const mapLink=document.createElement('a');mapLink.href='#bus-stage';mapLink.textContent='Journey map';nav.append(mapLink);const intro=document.createElement('div');intro.className='dx-diary-intro';[...story.querySelectorAll(':scope > p')].forEach(item=>intro.append(item));const experience=story.closest('.dx-story-experience');entry.insertBefore(intro,experience);entry.insertBefore(nav,experience);}
+ const scene=document.createElement('div');scene.className='dx-diary-scene';scene.setAttribute('aria-hidden','true');const layers=[document.createElement('div'),document.createElement('div')];scene.append(...layers);entry.prepend(scene);
+ const palettes=[['#76312b88','#44352388'],['#234c6488','#35584988'],['#69432b88','#50293688'],['#3d355c88','#25484188']];let active=-1,layer=0,frame=0;
+ const update=()=>{frame=0;const bounds=story.getBoundingClientRect();entry.classList.toggle('has-diary-scene',bounds.top<innerHeight*.8 && bounds.bottom>0);const next=Math.max(0,chapters.findLastIndex(chapter=>chapter.getBoundingClientRect().top<innerHeight*.5));if(next!==active){active=next;layer=1-layer;const colors=palettes[next%palettes.length];layers[layer].style.background=`radial-gradient(ellipse at 12% 38%,${colors[0]},transparent 65%),radial-gradient(ellipse at 88% 72%,${colors[1]},transparent 65%),#090d0d`;layers.forEach((item,index)=>item.classList.toggle('is-active',index===layer));}nav?.querySelectorAll('a').forEach((link,index)=>{const mapVisible=(entry.querySelector('#bus-stage')?.getBoundingClientRect().top || Infinity)<innerHeight*.4;const selected=index===(mapVisible?chapters.length:next);if(selected)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});if(nav)entry.style.setProperty('--diary-nav-top',`${Math.max(0,document.querySelector('#header')?.getBoundingClientRect().bottom||0)}px`);};
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);update();
+ nav?.querySelectorAll('a').forEach(link=>link.addEventListener('click',event=>{const target=document.getElementById(link.hash.slice(1));if(!target)return;event.preventDefault();const offset=(document.querySelector('#header')?.clientHeight||0)+(nav.clientHeight||0)+24;window.scrollTo({top:Math.max(0,scrollY+target.getBoundingClientRect().top-offset),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}));
+});
+
+// Keep the first page heading clear of the real navigation at every breakpoint.
+dxOnPageReady(() => {
+ const nav=document.querySelector('#header'); if(!nav)return;
+ const headings=[...document.querySelectorAll('#wrapper h1,#wrapper h2,#wrapper .h1')].filter(el=>!el.closest('nav,dialog,[hidden],.dxbus-app,.dxgym-app') && el.getClientRects().length);
+ const heading=headings[0];if(!heading)return;
+ const hero=heading.closest('[class*="hero"],.wp-block-cover,section,.content');if(!hero)return;
+ let frame=0;
+ const update=()=>{frame=0;hero.style.removeProperty('--dx-hero-clearance');hero.classList.remove('dx-header-safe-hero');const top=heading.getBoundingClientRect().top+scrollY;const clearance=Math.max(0,nav.offsetHeight+48-top);document.documentElement.style.setProperty('--dx-page-header-height',nav.offsetHeight+'px');if(clearance>0 && top<innerHeight*1.5){hero.style.setProperty('--dx-hero-base-padding',getComputedStyle(hero).paddingTop);hero.style.setProperty('--dx-hero-clearance',Math.ceil(clearance)+'px');hero.classList.add('dx-header-safe-hero');for(let pass=0;pass<6;pass++){const remaining=nav.offsetHeight+48-(heading.getBoundingClientRect().top+scrollY);if(remaining<1)break;const current=parseFloat(hero.style.getPropertyValue('--dx-hero-clearance'))||0;hero.style.setProperty('--dx-hero-clearance',Math.ceil(current+remaining*2)+'px');}}};
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};new ResizeObserver(schedule).observe(nav);window.addEventListener('resize',schedule);document.fonts?.ready.then(schedule);setTimeout(schedule,600);setTimeout(schedule,1800);update();
+});
+// The closing atmosphere belongs to the viewport, never the content container.
+dxOnPageReady(()=>{
+ const section=document.querySelector('.dxj-memories');if(!section)return;
+ const glow=document.createElement('div');glow.className='dxj-memories-glow';glow.setAttribute('aria-hidden','true');document.body.append(glow);
+ const observer=new IntersectionObserver(entries=>{glow.classList.toggle('is-visible',entries[0].isIntersecting);},{rootMargin:'-12% 0px -12% 0px',threshold:0});observer.observe(section);
 });

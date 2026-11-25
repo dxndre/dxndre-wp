@@ -57,8 +57,9 @@ function dx_journey_pin_row( $index, $pin = array() ) {
 		</div>
 		<p><button class="button" type="button" data-pin-locate>Pick coordinates on the map</button></p>
 		<p><label>What happened here?<br><textarea class="widefat" data-pin-field="body" name="<?php echo esc_attr( $prefix ); ?>[body]" rows="4" maxlength="5000"><?php echo esc_textarea( $pin['body'] ?? '' ); ?></textarea></label></p>
-		<p><label>Photograph attachment ID<br><input type="number" min="0" data-pin-field="image" name="<?php echo esc_attr( $prefix ); ?>[image]" value="<?php echo esc_attr( $pin['image'] ?? 0 ); ?>"></label> <button class="button" type="button" data-pin-image>Choose photograph</button></p>
-		<p><label>Video URL (optional)<br><input class="widefat" type="url" data-pin-field="video" name="<?php echo esc_attr( $prefix ); ?>[video]" value="<?php echo esc_attr( $pin['video'] ?? '' ); ?>" placeholder="https://…"></label><span class="description">MP4, WebM and Ogg files play in the timeline. Other public video links open their original page.</span></p>
+		<p><label>Photograph attachment ID<br><input type="number" min="0" data-pin-field="image" name="<?php echo esc_attr( $prefix ); ?>[image]" value="<?php echo esc_attr( $pin['image'] ?? 0 ); ?>"></label> <button class="button" type="button" data-pin-image>Upload / choose photograph</button></p>
+		<p><label>Video URL (optional)<br><input class="widefat" type="url" data-pin-field="video" name="<?php echo esc_attr( $prefix ); ?>[video]" value="<?php echo esc_attr( $pin['video'] ?? '' ); ?>" placeholder="https://…"></label><button class="button" type="button" data-pin-video>Upload / choose video</button> <span class="description">MP4, WebM and Ogg files play in the timeline. Other public video links open their original page.</span></p>
+		<p class="description">Article reference: <code>[journey_pin id="<?php echo esc_attr($pin['id'] ?? ''); ?>"]Find this moment on the map[/journey_pin]</code></p>
 		<p><button class="button" type="button" data-pin-move="up">Move up</button> <button class="button" type="button" data-pin-move="down">Move down</button> <button class="button-link-delete" type="button" data-pin-remove>Remove pin</button></p>
 	</fieldset>
 	<?php
@@ -67,8 +68,8 @@ function dx_journey_pin_row( $index, $pin = array() ) {
 add_action( 'add_meta_boxes_bus-diary-entry', function () {
 	add_meta_box( 'dx-journey-pins', 'Journey map & timeline pins', function ( $post ) {
 		wp_nonce_field( 'dx_journey_pins_save', 'dx_journey_pins_nonce' );
-		echo '<p>Add places you actually visited, in journey order. Each pin appears on the map and in the Timeline view; photographs and videos are optional. Choose a pin’s “Pick coordinates” button, then click the map or drag its marker. Decimal coordinate fields provide a keyboard-accessible alternative. The connecting line is a journey outline, not turn-by-turn routing.</p>';
-		echo '<div data-pin-admin-map data-start-lat="' . esc_attr( get_post_meta( $post->ID, 'journey_start_lat', true ) ) . '" data-start-lng="' . esc_attr( get_post_meta( $post->ID, 'journey_start_lng', true ) ) . '" style="height:320px;max-width:100%;background:#11191d" aria-label="Choose journey pin locations"></div><p role="status" data-pin-map-status>Choose a pin below to place it on this map.</p><div data-pin-editor>';
+		echo '<p>Add places you actually visited, in journey order. Each pin appears on the map and in the Timeline view; photographs and videos are optional. Choose a pin’s “Pick coordinates” button, then click the map or drag its marker. Decimal coordinate fields provide a keyboard-accessible alternative. The public map loads the full published route and every stop. To reference a moment in the article, use the Journey Pin shortcode shown below each saved pin.</p>';
+		echo '<div data-pin-admin-map data-route="' . esc_attr( get_post_meta( $post->ID, 'primary_route', true ) ) . '" data-start-lat="' . esc_attr( get_post_meta( $post->ID, 'journey_start_lat', true ) ) . '" data-start-lng="' . esc_attr( get_post_meta( $post->ID, 'journey_start_lng', true ) ) . '" style="height:320px;max-width:100%;background:#11191d" aria-label="Choose journey pin locations"></div><p role="status" data-pin-map-status>Choose a pin below to place it on this map.</p><div data-pin-editor>';
 		foreach ( dx_journey_pins( $post->ID ) as $index => $pin ) { dx_journey_pin_row( $index, $pin ); }
 		echo '</div><button type="button" class="button button-secondary" data-pin-add>Add journey pin</button><p role="status" data-pin-editor-status></p><template data-pin-template>';
 		dx_journey_pin_row( '__INDEX__' );
@@ -133,3 +134,8 @@ function dx_journey_timeline( $post_id ) {
 	</div>
 	<?php
 }
+
+add_shortcode('journey_pin', function($attributes,$content='Find this moment on the map') {
+ $attributes=shortcode_atts(array('id'=>''),$attributes);$id=sanitize_key($attributes['id']);if(!$id)return '';
+ return '<button type="button" data-journey-focus="'.esc_attr($id).'">'.esc_html(wp_strip_all_tags($content)).'</button>';
+});
