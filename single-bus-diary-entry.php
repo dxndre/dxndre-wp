@@ -1,282 +1,82 @@
 <?php
 get_header();
-
 while (have_posts()) : the_post();
-
-	$primary_route = get_field('primary_route');
-	$operator      = get_field('operator');
-	$spotify_url   = get_field('spotify_url');
-	$mood_label    = get_field('mood_label');
-	$time_of_day   = get_field('time_of_day');
-
-	$start_name    = get_field('journey_start_name');
-	$end_name      = get_field('journey_end_name');
-
-	$start_lat = get_field('journey_start_lat');
-	$start_lng = get_field('journey_start_lng');
-	$end_lat   = get_field('journey_end_lat');
-	$end_lng   = get_field('journey_end_lng');
-
-	$journey_date  = get_the_date('F Y');
-	$featured_image_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
-
-	$spotify_embed_url = '';
-
-	if ($spotify_url) {
-		if (strpos($spotify_url, 'open.spotify.com/embed/') !== false) {
-			$spotify_embed_url = $spotify_url;
-		} elseif (preg_match('#open\.spotify\.com/track/([a-zA-Z0-9]+)#', $spotify_url, $matches)) {
-			$spotify_embed_url = 'https://open.spotify.com/embed/track/' . $matches[1];
-		}
-	}
-
-	$operator_labels = [
-		'metroline'    => 'Metroline',
-		'go-ahead'     => 'Go-Ahead London',
-		'first'        => 'First Bus',
-		'stagecoach'   => 'Stagecoach',
-		'uno'          => 'Uno',
-		'arriva'       => 'Arriva London',
-		'transport-uk' => 'Transport UK',
-		'falcon'       => 'Falcon Coaches',
-	];
-
-	$operator_label = $operator_labels[$operator] ?? $operator;
-	$route_title    = $primary_route ? 'Route ' . $primary_route : get_the_title();
-?>
-
-<section class="bus-diary-entry viewport-active">
-	<div class="wp-block-cover bus-diary-entry__hero hero-background" style="min-height:55vh;">
-		<div class="overlay">
-			<?php if (has_post_thumbnail()) : ?>
-				<?php the_post_thumbnail('full', [
-					'class' => 'wp-block-cover__image-background',
-					'data-object-fit' => 'cover'
-				]); ?>
-			<?php endif; ?>
-		</div>
-
-		<span aria-hidden="true" class="wp-block-cover__background"></span>
-
-		<div class="wp-block-cover__inner-container is-layout-constrained">
-			<div class="wp-block-group container">
-				<div class="bus-diary-entry__hero-inner">
-					<pre class="headline">Bus Diary</pre>
-					<h1><?php echo esc_html($route_title); ?></h1>
-
-					<div class="bus-diary-entry__hero-subtitle">
-						<?php if ($operator_label) : ?>
-							<span><?php echo esc_html($operator_label); ?></span>
-						<?php endif; ?>
-
-						<?php if ($time_of_day) : ?>
-							<span>•</span>
-							<span><?php echo esc_html($time_of_day); ?></span>
-						<?php endif; ?>
-
-						<?php if ($start_name || $end_name) : ?>
-							<span>•</span>
-							<span><?php echo esc_html(trim(($start_name ?: 'Unknown') . ' → ' . ($end_name ?: 'Unknown'))); ?></span>
-						<?php endif; ?>
-					</div>
-
-					<?php if (get_the_excerpt()) : ?>
-						<p class="bus-diary-entry__excerpt"><?php echo esc_html(get_the_excerpt()); ?></p>
-					<?php endif; ?>
-
-					<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex bus-diary-entry__hero-actions">
-						<div class="wp-block-button primary">
-							<a class="wp-block-button__link wp-element-button" href="<?php echo get_post_meta(get_the_ID(), '_dx_story_sample', true) ? '#journey-story' : '#bus-stage'; ?>">
-								View Journey Experience
-							</a>
-						</div>
-
-						<?php if ($spotify_url) : ?>
-							<div class="wp-block-button quaternary">
-								<a class="wp-block-button__link wp-element-button"
-								   href="<?php echo esc_url($spotify_url); ?>"
-								   target="_blank"
-								   rel="noopener noreferrer">
-									<i class="fa-brands fa-spotify"></i> Open Soundtrack
-								</a>
-							</div>
-						<?php endif; ?>
-					</div>
-				</div>
+	$data=dxj_data(get_the_ID()); $route=$data['route']; $hero=get_post_thumbnail_id();
+	$origin=get_post_meta(get_the_ID(),'journey_start_name',true);$destination=get_post_meta(get_the_ID(),'journey_end_name',true);
+	$operator=get_post_meta(get_the_ID(),'operator',true);$operator_labels=array('metroline'=>'Metroline','go-ahead'=>'Go-Ahead London','transport-uk'=>'Transport UK','arriva'=>'Arriva London','stagecoach'=>'Stagecoach','first'=>'First Bus','uno'=>'Uno');
+	$operator=$operator_labels[$operator]??$operator;
+	?>
+	<article class="dx-journey" data-dx-journey data-route-type="<?php echo preg_match('/^N\d+/',$route)?'night':'day'; ?>">
+		<script type="application/json" data-dxj-data><?php echo wp_json_encode($data,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?></script>
+		<header class="dxj-hero">
+			<?php if($hero)echo wp_get_attachment_image($hero,'full',false,array('class'=>'dxj-hero-image','loading'=>'eager','fetchpriority'=>'high')); ?>
+			<div class="dxj-hero-copy container">
+				<p class="dxj-eyebrow">DX. Buses <span>/ Bus Diary</span></p>
+				<h1><?php if($route): ?>Route <strong><?php echo esc_html($route); ?></strong><?php else: the_title(); endif; ?></h1>
+				<?php if($route): ?><p class="dxj-entry-title"><?php the_title(); ?></p><?php endif; ?>
+				<?php if(has_excerpt()): ?><p class="dxj-hero-intro"><?php echo esc_html(get_the_excerpt()); ?></p><?php endif; ?>
+				<div class="dxj-hero-actions"><a class="dxj-button" href="#journey-experience" data-dxj-begin>Begin the Journey <span aria-hidden="true">→︎</span></a><a class="dxj-button dxj-button-outline" href="#journey-experience" data-dxj-explore>Explore the Route <span aria-hidden="true">↗︎</span></a><?php $soundtrack=get_post_meta(get_the_ID(),'spotify_url',true);if($soundtrack): ?><a class="dxj-button dxj-button-outline" href="<?php echo esc_url($soundtrack); ?>" target="_blank" rel="noopener noreferrer">Open soundtrack</a><?php endif; ?></div>
+				<svg class="dxj-route-preview" viewBox="0 0 400 80" aria-hidden="true"><path data-dxj-route-preview/></svg>
 			</div>
-		</div>
-	</div>
-
-    <?php if(get_post_meta(get_the_ID(),'_dx_story_sample',true)): ?><div id="journey-story" class="dx-story-experience"><?php the_content(); ?></div><?php endif; ?>
-	<div class="wp-block-group bus-diary-entry__content">
-		<div class="wp-block-group">
-			<div class="bus-diary-entry__map-stage" id="bus-stage">
-				<div class="bus-panel bus-panel--map bus-panel--map-primary">
-					<div class="bus-panel__topbar">
-						<div>
-							<pre class="headline">Map Layer</pre>
-							<h2>Journey Map</h2>
-						</div>
-
-						<div class="bus-panel__route-meta">
-							<?php if ($primary_route) : ?>
-								<span class="bus-pill"><?php echo esc_html($primary_route); ?></span>
-							<?php endif; ?>
-
-							<?php if ($operator_label) : ?>
-								<span class="bus-pill"><?php echo esc_html($operator_label); ?></span>
-							<?php endif; ?>
-						</div>
-					</div>
-
-					<?php if ( function_exists( 'dx_journey_pins_json' ) ) { dx_journey_pins_json( get_the_ID() ); } ?>
-					<div class="bus-map-shell">
-						<div
-							class="bus-map"
-							data-dx-journey-map
-							data-route="<?php echo esc_attr($primary_route); ?>"
-							data-start-name="<?php echo esc_attr($start_name); ?>"
-							data-start-lat="<?php echo esc_attr($start_lat); ?>"
-							data-start-lng="<?php echo esc_attr($start_lng); ?>"
-							data-end-name="<?php echo esc_attr($end_name); ?>"
-							data-end-lat="<?php echo esc_attr($end_lat); ?>"
-							data-end-lng="<?php echo esc_attr($end_lng); ?>"
-						></div>
-
-						<div class="bus-map-stage-ui">
-							<div class="bus-floating-pane">
-								<div class="bus-pane-stage" data-bus-pane-stage>
-									<div class="bus-pane-view is-active" data-pane-view="map">
-										<?php if ($featured_image_url) : ?>
-											<div class="bus-diary-entry__split-image">
-												<img src="<?php echo esc_url($featured_image_url); ?>" alt="<?php echo esc_attr($route_title); ?>" />
-											</div>
-										<?php else : ?>
-											<div class="bus-diary-entry__split-image bus-diary-entry__split-image--empty">
-												<span>No featured image added yet.</span>
-											</div>
-										<?php endif; ?>
-									</div>
-
-									<div class="bus-pane-view" data-pane-view="story">
-										<div class="bus-panel bus-panel--story">
-											<pre class="headline">Story Layer</pre>
-											<h2>Journey Story</h2>
-											<div class="bus-diary-entry__body">
-												<?php if(!get_post_meta(get_the_ID(),'_dx_story_sample',true))the_content();else echo '<a href="#journey-story">Read the journey chapters</a>'; ?>
-											</div>
-										</div>
-									</div>
-
-									<div class="bus-pane-view" data-pane-view="timeline"><?php if ( function_exists( 'dx_journey_timeline' ) ) { dx_journey_timeline( get_the_ID() ); } ?></div>
-
-									<div class="bus-pane-view" data-pane-view="departures">
-										<div class="bus-panel bus-panel--departures">
-											<pre class="headline">Live Layer</pre>
-											<h2>Departures Near You</h2>
-											<div class="bus-departures" data-bus-departures>
-												<div class="bus-departures__actions">
-													<button type="button" class="bus-departures__locate" data-bus-locate>Use My Location</button>
-													<div class="bus-departures__status" data-bus-status>Tap the button to find nearby stops.</div>
-												</div>
-												<div class="bus-departures__grid">
-													<div class="bus-departures__stops" data-bus-stops></div>
-													<div class="bus-departures__results" data-bus-results></div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<?php if ($spotify_embed_url) : ?>
-										<div class="bus-pane-view" data-pane-view="mood">
-											<div class="bus-panel bus-panel--mood">
-												<pre class="headline">Mood Layer</pre>
-												<h2>Soundtrack</h2>
-												<?php if ($mood_label) : ?>
-													<div class="bus-badge-row">
-														<span class="bus-badge"><?php echo esc_html($mood_label); ?></span>
-													</div>
-												<?php endif; ?>
-												<div class="bus-spotify-mini">
-													<iframe
-														style="border-radius:12px"
-														src="<?php echo esc_url($spotify_embed_url); ?>"
-														width="100%"
-														height="352"
-														frameborder="0"
-														allowfullscreen=""
-														allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-														loading="lazy">
-													</iframe>
-												</div>
-											</div>
-										</div>
-									<?php endif; ?>
-								</div>
-							</div>
-
-							<div class="bus-map-overlay-card">
-								<span class="eyebrow">Journey Summary</span>
-								<h3><?php echo esc_html($route_title); ?></h3>
-
-								<ul class="bus-map-overlay-list">
-									<li>
-										<span>Start</span>
-										<strong><?php echo esc_html($start_name ?: 'Unknown'); ?></strong>
-									</li>
-									<li>
-										<span>End</span>
-										<strong><?php echo esc_html($end_name ?: 'Unknown'); ?></strong>
-									</li>
-									<li>
-										<span>Time</span>
-										<strong><?php echo esc_html($time_of_day ?: '—'); ?></strong>
-									</li>
-									<li>
-										<span>Mood</span>
-										<strong><?php echo esc_html($mood_label ?: '—'); ?></strong>
-									</li>
-								</ul>
-							</div>
-
-							<div class="bus-dock" data-bus-dock>
-								<div class="bus-dock__stats">
-									<?php if ($primary_route) : ?><span class="stat"><?php echo esc_html($primary_route); ?></span><?php endif; ?>
-									<?php if ($operator_label) : ?><span class="stat"><?php echo esc_html($operator_label); ?></span><?php endif; ?>
-									<?php if ($time_of_day) : ?><span class="stat"><?php echo esc_html($time_of_day); ?></span><?php endif; ?>
-									<?php if ($mood_label) : ?><span class="stat">🎧 <?php echo esc_html($mood_label); ?></span><?php endif; ?>
-								</div>
-
-								<div class="bus-dock__controls">
-									<button class="is-active" data-view-toggle="map" aria-label="Map view">🗺</button>
-									<button data-view-toggle="story" aria-label="Story view">📖</button>
-									<button type="button" data-view-toggle="timeline" aria-label="Timeline view" title="Timeline view">☷</button>
-									<button data-view-toggle="departures" aria-label="Departures view">🚌</button>
-									<?php if ($spotify_embed_url) : ?>
-										<button data-view-toggle="mood" aria-label="Mood view">🎧</button>
-									<?php endif; ?>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="bus-map-meta">
-						<p class="dx-journey-outline-note">The journey line joins recorded places; it is not a road-by-road route.</p>
-						<?php if ($start_name) : ?>
-							<span><strong>Start:</strong> <?php echo esc_html($start_name); ?></span>
-						<?php endif; ?>
-
-						<?php if ($end_name) : ?>
-							<span><strong>End:</strong> <?php echo esc_html($end_name); ?></span>
-						<?php endif; ?>
-					</div>
-				</div>
+			<div class="dxj-facts container">
+				<?php if($origin||$destination): ?><span><?php echo esc_html(trim($origin.' → '.$destination)); ?></span><?php endif; ?>
+				<?php if($operator): ?><span><?php echo esc_html($operator); ?></span><?php endif; ?>
+				<span><?php echo esc_html(get_the_date('F Y')); ?></span><?php foreach(array('time_of_day','mood_label') as $key):$value=get_post_meta(get_the_ID(),$key,true);if($value):?><span><?php echo esc_html($value); ?></span><?php endif;endforeach;?><span data-dxj-route-facts hidden></span>
+				<span><?php echo esc_html(count($data['chapters'])); ?> chapters</span><?php $bus_id=absint(get_post_meta(get_the_ID(),'bus_used',true));if($bus_id && get_post_status($bus_id)==='publish'):?><a href="<?php echo esc_url(get_permalink($bus_id)); ?>"><?php echo esc_html(get_the_title($bus_id)); ?></a><?php endif;?>
 			</div>
-		</div>
-	</div>
-</section>
-
-<?php
-endwhile;
-
+		</header>
+		<section class="dxj-experience" id="journey-experience" aria-label="Interactive journey and chapters">
+			<div class="dxj-stage">
+				<div class="dxj-map" data-dxj-map role="region" aria-label="<?php echo esc_attr('Route '.$route.' journey map'); ?>"><p class="dxj-map-status" role="status">Preparing the route. The complete story is available below.</p></div>
+				<div class="dxj-passenger" aria-hidden="true"><img alt="" data-dxj-passenger-image><div><p class="dxj-eyebrow">Passenger Perspective</p><p data-dxj-passenger-caption></p><button type="button" class="dxj-button" data-dxj-return-map>Return to Map</button></div></div>
+				<div class="dxj-map-toolbar" hidden data-dxj-enhancement>
+					<div class="dxj-mode-switch" role="group" aria-label="Journey mode"><button type="button" data-dxj-mode="guided" aria-pressed="true">Guided Story</button><button type="button" data-dxj-mode="explore" aria-pressed="false">Explore Freely</button></div>
+					<div><button type="button" data-dxj-overview>Whole route</button><button type="button" data-dxj-buses aria-pressed="false">Show buses</button><button type="button" data-dxj-present aria-pressed="false">Presentation</button><button type="button" data-dxj-fullscreen aria-label="Full screen journey"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button></div>
+				</div>
+				<div class="dxj-location-sheet" hidden data-dxj-location role="region" aria-label="Selected location"></div>
+				<div class="dxj-playback" hidden data-dxj-enhancement>
+					<div class="dxj-playback-buttons"><button type="button" data-dxj-prev aria-label="Previous chapter">←︎</button><button type="button" data-dxj-play aria-pressed="false">Play journey</button><button type="button" data-dxj-next aria-label="Next chapter">→︎</button></div>
+					<div class="dxj-route-diagram" role="group" aria-label="Narrative journey locations"><?php foreach($data['chapters'] as $index=>$chapter): if(!$chapter['diagram'])continue; ?><button type="button" data-dxj-go="<?php echo esc_attr($index); ?>" aria-label="<?php echo esc_attr('Chapter '.($index+1).': '.$chapter['title']); ?>"><span><?php echo esc_html($index+1); ?></span></button><?php endforeach; ?></div>
+					<span class="dxj-counter" data-dxj-counter>01 / <?php echo esc_html(str_pad(count($data['chapters']),2,'0',STR_PAD_LEFT)); ?></span>
+					<button type="button" data-dxj-follow aria-pressed="false">Follow camera</button><button type="button" data-dxj-restart>Restart</button><button type="button" data-dxj-exit-play hidden>Exit playback</button>
+				</div>
+				<nav class="dxj-filmstrip" aria-label="Journey chapters">
+				<?php foreach($data['chapters'] as $index=>$chapter): ?>
+					<a href="#<?php echo esc_attr($chapter['id']); ?>" data-dxj-go="<?php echo esc_attr($index); ?>"><?php if($chapter['image'])echo wp_get_attachment_image($chapter['image']['id'],'medium',false,array('loading'=>'lazy')); ?><span><small><?php echo esc_html(str_pad($index+1,2,'0',STR_PAD_LEFT)); ?></small><?php echo esc_html($chapter['title']); ?></span></a>
+				<?php endforeach; ?>
+				</nav>
+				<button type="button" class="dxj-exit-presentation" data-dxj-exit-present hidden>Exit presentation <span>Esc</span></button>
+			</div>
+			<div class="dxj-chapters">
+			<?php foreach($data['chapters'] as $index=>$chapter): ?>
+				<section class="dxj-step" id="<?php echo esc_attr($chapter['id']); ?>" data-dxj-step="<?php echo esc_attr($index); ?>" data-chapter-type="<?php echo esc_attr($chapter['type']); ?>" data-placement="<?php echo esc_attr($chapter['placement']); ?>">
+					<div class="dxj-panel">
+						<p class="dxj-eyebrow">Chapter <?php echo esc_html(str_pad($index+1,2,'0',STR_PAD_LEFT)); ?> / <?php echo esc_html(str_pad(count($data['chapters']),2,'0',STR_PAD_LEFT)); ?></p>
+						<h2><?php echo esc_html($chapter['title']); ?></h2>
+						<?php if($chapter['location']): ?><p class="dxj-location-name"><?php echo esc_html($chapter['location']); ?></p><?php endif; ?>
+						<p class="dxj-intro"><?php echo esc_html($chapter['intro']); ?></p>
+						<details class="dxj-longform"><summary>Read the chapter</summary><div><?php echo do_shortcode($chapter['body']); ?></div></details>
+						<?php if($chapter['quote']): ?><blockquote><?php echo esc_html($chapter['quote']); ?></blockquote><?php endif; ?>
+						<?php $images=array_merge($chapter['image']?array($chapter['image']):array(),$chapter['gallery']); if($images): ?><div class="dxj-gallery" aria-label="Chapter photographs"><?php foreach($images as $photo): ?><a href="<?php echo esc_url($photo['full']); ?>" data-dxj-photo data-photo-id="<?php echo esc_attr($photo['id']); ?>"><?php echo wp_get_attachment_image($photo['id'],'medium',false,array('loading'=>'lazy')); ?></a><?php endforeach; ?></div><?php endif; ?>
+						<?php if($chapter['video']): ?><div class="dxj-video"><?php if(preg_match('/\.(mp4|webm|og[gv])$/i',(string)wp_parse_url($chapter['video'],PHP_URL_PATH))): ?><video controls preload="none" src="<?php echo esc_url($chapter['video']); ?>" aria-label="<?php echo esc_attr($chapter['title'].' video'); ?>"></video><?php else: ?><a href="<?php echo esc_url($chapter['video']); ?>" target="_blank" rel="noopener noreferrer">Watch the attached video ↗︎</a><?php endif; ?></div><?php endif; ?>
+						<div class="dxj-chapter-actions" hidden data-dxj-enhancement><button type="button" data-dxj-share="<?php echo esc_attr($index); ?>">Share this moment</button><?php if($chapter['image']): ?><button type="button" data-dxj-perspective="<?php echo esc_attr($index); ?>">View photograph</button><?php endif; ?></div>
+					</div>
+				</section>
+			<?php endforeach; ?>
+			</div>
+		</section>
+		<section class="dxj-memories container" id="journey-memories">
+			<p class="dxj-eyebrow">Journey Memories</p><h2>Every route has a story.</h2><p><?php echo esc_html($origin); ?><?php if($origin&&$destination): ?> <span aria-hidden="true">→︎</span> <?php endif; ?><?php echo esc_html($destination); ?></p>
+			<div class="dxj-recap"><svg viewBox="0 0 600 200" role="img" aria-label="Simplified route geometry"><path data-dxj-recap-path/></svg><div><p><?php echo esc_html(count($data['chapters'])); ?> narrative chapters</p><p data-dxj-recap-status>Explore the chapters to build your own journey recap.</p><p data-dxj-recap-distance></p></div></div>
+			<div class="dxj-memory-spread"><div class="dxj-contact-sheet"><?php foreach($data['chapters'] as $index=>$chapter): if(!$chapter['recap']||!$chapter['image'])continue; ?><a href="#<?php echo esc_attr($chapter['id']); ?>" data-dxj-go="<?php echo esc_attr($index); ?>"><?php echo wp_get_attachment_image($chapter['image']['id'],'large',false,array('loading'=>'lazy')); ?><span><?php echo esc_html(($index+1).' / '.$chapter['title']); ?></span></a><?php endforeach; ?></div>
+			<?php $closing_quote="";foreach($data['chapters'] as $moment){if($moment['quote'])$closing_quote=$moment['quote'];}if($closing_quote):?><blockquote class="dxj-closing-quote"><?php echo esc_html($closing_quote); ?></blockquote><?php endif;?></div><div class="dxj-memory-actions"><button type="button" class="dxj-button" data-dxj-restart hidden data-dxj-enhancement>Replay the journey</button><a class="dxj-button dxj-button-outline" href="#journey-experience" data-dxj-explore>Explore freely</a><?php foreach($data['routes'] as $item): ?><a class="dxj-button dxj-button-outline" href="<?php echo esc_url(home_url('/buses/routes/'.strtolower($item).'/?view=explorer')); ?>"><?php echo esc_html($item); ?> route dashboard ↗︎</a><?php endforeach; ?><a class="dxj-button dxj-button-outline" href="<?php echo esc_url(home_url('/buses/?section=diary')); ?>">Discover another diary</a></div>
+			<p hidden data-dxj-resume-offer><button type="button" class="dxj-button dxj-button-outline" data-dxj-resume>Resume your last chapter</button></p>
+			<?php $related=new WP_Query(array('post_type'=>'bus-diary-entry','posts_per_page'=>3,'post__not_in'=>array(get_the_ID()),'no_found_rows'=>true));if($related->have_posts()): ?><nav class="dxj-related" aria-label="More bus diaries"><?php while($related->have_posts()):$related->the_post(); ?><a href="<?php the_permalink(); ?>"><?php the_title(); ?> <span aria-hidden="true">↗︎</span></a><?php endwhile;wp_reset_postdata(); ?></nav><?php endif; ?>
+			<?php if(function_exists('dx_journey_timeline') && dx_journey_pins($data['id'])):?><details class="dxj-original"><summary>All journey location notes and media</summary><?php dx_journey_timeline($data['id']); ?></details><?php endif;?>
+			<?php if(trim(get_post_field('post_content',$data['id']))): ?><details class="dxj-original"><summary>Original diary article</summary><?php $original=apply_filters('the_content',get_post_field('post_content',$data['id']));$original=str_replace(array('dx-story-sample','story-chapter'),array('dxj-source-article','dxj-source-chapter'),$original);$original=preg_replace('/\bid="([^"]+)"/','id="dxj-source-$1"',$original);echo $original; ?></details><?php endif; ?>
+		</section>
+		<dialog class="dxj-photo-dialog" aria-label="Journey photograph"><button type="button" data-dxj-photo-close aria-label="Close photograph">Close ×</button><p role="status" data-dxj-photo-status>Loading photograph…</p><img alt=""><p data-dxj-photo-caption></p></dialog>
+		<p class="screen-reader-text" role="status" aria-live="polite" data-dxj-status></p>
+	</article>
+<?php endwhile;
 get_footer();
