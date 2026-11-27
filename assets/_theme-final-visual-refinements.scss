@@ -763,3 +763,102 @@ body .dx-header-safe-hero { padding-top: calc(var(--dx-hero-base-padding, 0px) +
 .dxj-memories-glow { position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at 5% 40%, #a3293c24, transparent 65%), radial-gradient(ellipse at 90% 80%, #d7ad5712, transparent 60%); mix-blend-mode: screen; transition: opacity 900ms ease; }
 .dxj-memories-glow.is-visible { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .dxj-memories-glow { transition: none; } }
+
+// November refinements: readable policy tables, consistent controls and compact stages.
+html[data-legal-view="plain"] body .dx-legal-page #cmplz-document {
+ color:#192026!important;
+ details,summary,.cmplz-service,.cmplz-service-header,.cmplz-service-description,table,td,th,div { box-shadow:none!important; }
+ td,th,td p,td span,.cmplz-service-desc,.cmplz-service-description,.cmplz-service-description p { color:#263039!important; }
+ summary { color:#192026!important; border-radius:0!important; }
+ summary::after { border-color:#303a42!important; color:#303a42!important; }
+ .cmplz-category,.cmplz-service-header .cmplz-service-category { color:#303a42!important; background:#fff!important; border-color:#a7adb0!important; border-radius:0!important; }
+}
+body.is-frontend #main .dxb .dxb-video-interlude { height:66.6666vh!important; min-height:0!important; }
+body.page-buses .dx-menu__list > li.current-menu-item > a,body.page-buses .dx-menu__list > li > a[aria-current="page"] { border:0!important; box-shadow:none!important; outline:0; background:#ed29391a!important;color:#ff4354!important; }
+body.page-buses .dx-menu__list > li.current-menu-item > a::before,body.page-buses .dx-menu__list > li > a[aria-current="page"]::before { background:#ff4354!important; }
+body.page-buses .dx-menu__list > li.current-menu-item { border-left:0!important;box-shadow:none!important; }
+#dxgym-finder-title { margin-bottom:16px!important; }
+body .dxgym-checkbox:has([name="open24"]) { display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 16px;border:1px solid var(--gym-line,#ffffff30);background:var(--gym-panel,#101716);color:var(--gym-text,#eee);cursor:pointer; }
+body .dxgym-checkbox [name="open24"] { accent-color:#d7ad57;width:18px;height:18px; }
+body .dxgym-app .dxgym-match-card { display:grid;grid-template-columns:minmax(180px,30%) minmax(0,1fr);min-height:350px;align-items:stretch;overflow:hidden; }
+body .dxgym-app .dxgym-match-card > img { width:100%;height:100%;max-height:440px;min-height:350px;object-fit:cover; }
+body .dxgym-app .dxgym-match-card__copy { display:flex;flex-direction:column;padding:24px; }
+body .dxgym-app .dxgym-match-links { margin-top:auto;padding-top:20px; }
+body .dxgym-app .dxgym-match-links .dxgym-match-directions,body .dxgym-app .dxgym-match-links .dxgym-match-review { grid-column:auto;background:#d7ad5714;border-color:#d7ad5766; }
+body .dxgym-match-amenities { display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 20px; }
+body .dxgym-match-amenities > span { display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:11px;line-height:1.4;border:1px solid; }
+body .dxgym-match-amenities .is-available { color:#a4e4bd;background:#123b29;border-color:#35704e; }
+body .dxgym-match-amenities .is-unavailable { color:#bec4c7;background:#252c30;border-color:#596268; }
+body .dxgym-match-amenities svg { width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2; }
+body .dxgym-load-more { margin-top:24px;min-width:200px; }
+body .dxgym-load-more[aria-busy="true"] { background:linear-gradient(100deg,#d7ad57,#f5deb1,#d7ad57);background-size:200% 100%;animation:dxgym-loading 1s linear infinite; }
+@keyframes dxgym-loading { to { background-position:200% 0; } }
+@media(max-width:575px) { body .dxgym-app .dxgym-match-card { grid-template-columns:1fr; } body .dxgym-app .dxgym-match-card > img { height:190px;min-height:0; } body .dxgym-app .dxgym-match-card__copy { padding:20px; } }
+body .pricing-calculator .category-card__description { line-height:1!important;min-height:0!important; }
+body dialog[data-calculator-restart-dialog] { border:0!important;background:#101111!important;background-image:none!important; }
+body .calculator-session [data-restart-calculator] { display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:12px 18px;border:1px solid #d7ad5760;background:#191814;color:#ead7a8;font:500 12px/1.3 Outfit,sans-serif;text-transform:uppercase;letter-spacing:.08em; }
+body .calculator-session [data-restart-calculator]::before { content:'';width:20px;height:20px;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 10a8 8 0 1 1 0 5M4 4v6h6' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform .6s cubic-bezier(.22,1,.36,1); }
+body .calculator-session [data-restart-calculator]:hover::before { transform:rotate(-70deg); }
+body .dxbus-app .dxbus-toast { bottom:var(--dx-toast-bottom,110px)!important;right:24px!important;max-width:min(420px,calc(100vw - 32px)); }
+@media(max-width:991.98px) {
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema { height:calc(100svh - var(--dx-page-header-height,100px));min-height:0!important;position:relative; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema > .accordion-item { height:100%;min-height:0!important;padding:70px 6vw 100px!important;opacity:0;transition:none!important; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema > .accordion-item.is-current { opacity:1; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema .dx-service-card-title { font-size:clamp(23px,4.5vw,36px)!important;line-height:1.1!important;text-align:left!important; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema .accordion-body p { font-size:clamp(12px,1.8vh,16px)!important;line-height:1.45!important;margin:12px 0!important;max-width:60ch; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema :is(.text-container,.accordion-body) { text-align:left!important; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema :is(.button-container,.wp-block-buttons) { justify-content:flex-start!important; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema a { width:220px!important;max-width:100%;margin-inline:0!important;min-height:44px; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema .dx-services-swipe-hint { position:absolute;top:20px;left:6vw;right:6vw;z-index:5;margin:0!important;padding:10px 12px!important;background:#080d10a8;font-size:11px!important;line-height:1.4;text-align:left!important;pointer-events:none; }
+ body.is-frontend.home #main .what-i-do #servicesAccordion.is-cinema .dx-service-cinema-controls { justify-self:start!important;justify-content:flex-start!important;gap:12px;padding:0 6vw 24px; }
+}
+@media(prefers-reduced-motion:reduce) { .dxgym-load-more { animation:none!important; } .calculator-session [data-restart-calculator]::before { transition:none!important; } }
+body .dxbus-pinned-route-form { margin:20px 0;padding:20px;border:1px solid #ffffff25;background:#101719; }
+body .dxbus-pinned-route-form > div { display:flex;gap:10px;flex-wrap:wrap;margin:12px 0; }
+body .dxbus-pinned-route-form input { background:#0b1114;color:#eee;border:1px solid #d7ad5760;padding:12px;width:180px;max-width:100%;text-transform:uppercase; }
+body .dxbus-pinned-route-form p { color:#aebdc4;font-size:12px; }
+body .dxgym-app .dxgym-match-grid { grid-template-columns:1fr!important;gap:24px; }
+body .dxgym-app .dxgym-match-card { grid-template-columns:minmax(200px,30%) minmax(0,1fr); }
+body .dxgym-app .dxgym-match-heading { align-items:flex-start;gap:16px; }
+body .dxgym-app .dxgym-match-card .dxgym-match-links .dxgym-match-directions { grid-column:auto!important; }
+body.is-frontend #main .dxb .dxb-video-interlude > :is(img,video) { object-position:28% 58%!important; }
+body.is-frontend.page-buses #header #navbar.dx-menu.navbar-collapse .dx-menu__list>li>a.is-current-buses { border:0!important;box-shadow:none!important; }
+body.is-frontend.page-buses #header #navbar.dx-menu.navbar-collapse .dx-menu__list>li>a.is-current-buses::before { background:#f03948!important; }
+body.is-frontend.page-buses #header #navbar.dx-menu.navbar-collapse .dx-menu__list>li>a.is-current-buses:not(:focus-visible) { outline:0!important; }
+@media(max-width:575px) { body .dxgym-app .dxgym-match-card { grid-template-columns:1fr; } }
+@media(max-width:991.98px) { body.is-frontend.home #main .what-i-do #servicesAccordion.dx-mobile-services.is-cinema .accordion-item .accordion-body .text-container a.btn.cta { width:220px!important;min-width:0!important;max-width:100%;margin-left:0!important;margin-right:auto!important; } }
+html[data-legal-view="plain"] body.is-frontend #main .dx-legal-page #cmplz-document {
+ details.cmplz-dropdown-cookiepolicy, summary.cmplz-service-header, .cmplz-service-description { box-shadow:none!important;border-radius:0!important; }
+ summary.cmplz-service-header, summary.cmplz-service-header :is(h3,p,span,div), :is(td,th,td p,td span,.cmplz-description,.cmplz-service-description) { color:#263039!important; }
+ summary.cmplz-service-header > div::after { filter:brightness(.2)!important; }
+ .cmplz-purpose { background:#f8f7f3!important;color:#404951!important;border-radius:0!important;box-shadow:none!important; }
+}
+body.is-frontend.page-buses #header #navbar.dx-menu.navbar-collapse .dx-menu__list>li.buses>a.is-current-buses,
+body.is-frontend.page-buses #header #navbar.dx-menu.navbar-collapse .dx-menu__list>li.buses>a.is-current-buses * { color:#ff4354!important; }
+html body.is-frontend.page-pricing-calculator #main .pricing-calculator dialog.calculator-sheet[data-calculator-restart-dialog] { border:0!important;background:#101111!important;background-image:none!important;box-shadow:none!important; }
+html body.dxgym-page #dxgym-app .dxgym-match-card .dxgym-match-amenities > span { border-radius:999px!important; }
+body.dxbus-page .dxbus-app #dxb-status { bottom:var(--dx-toast-bottom,150px)!important;right:24px!important;transform:none!important;max-width:min(420px,calc(100vw - 32px))!important; }
+@media(min-width:576px) { html body.dxgym-page #dxgym-app .dxgym-match-card { height:440px;min-height:440px; } html body.dxgym-page #dxgym-app .dxgym-match-card > img { height:100%!important;min-height:0;max-height:none; } }
+@media(max-width:575px) { html body.dxgym-page #dxgym-app .dxgym-match-card { height:auto; } html body.dxgym-page #dxgym-app .dxgym-match-card > img { height:190px!important;min-height:0!important;max-height:190px; } }
+
+// Compact, readable combined estimates on phones.
+@media(max-width:767.98px) {
+ body.is-frontend #main .pricing-calculator .summary-price {
+  padding:20px 16px!important;margin:16px 0!important;min-width:0;background:#151612!important;border-top:1px solid #d7ad5740;
+  >p:first-child { margin:0 0 8px!important;font-size:10px!important;line-height:1.4!important;letter-spacing:.09em; }
+  .price { font-size:clamp(36px,10vw,48px)!important;line-height:1.1!important;margin:0 0 16px!important; }
+  [data-pay-today] { display:block;margin:14px 0 8px!important;font-size:12px!important;line-height:1.5!important;letter-spacing:.03em!important; }
+  [data-multi-price-note],[data-multi-monthly] { font-size:11px!important;line-height:1.5!important;letter-spacing:0!important;text-transform:none!important;margin:8px 0 0!important; }
+ }
+ body.is-frontend #main .pricing-calculator .summary-breakdown {
+  width:100%;padding:0!important;margin:12px 0!important;min-width:0;
+  >li.multi-service-group { padding:16px 0!important;min-width:0; }
+  .multi-service-heading { display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px 12px!important;align-items:center!important; }
+  .multi-service-heading>button.multi-service-toggle { grid-column:1/-1!important;grid-row:1!important;width:100%!important;min-height:44px!important;padding:4px 0!important; }
+  .multi-service-toggle strong { font-size:16px!important;line-height:1.3!important;text-align:left;overflow-wrap:anywhere; }
+  .multi-service-chevron { flex-shrink:0; }
+  .multi-service-subtotal { grid-column:1!important;grid-row:2!important;font-size:16px!important;line-height:1.3!important; }
+  .multi-service-heading>button:not(.multi-service-toggle) { grid-column:2!important;grid-row:2!important;min-width:76px!important;width:auto!important;min-height:44px!important;padding:8px 14px!important;margin:0!important;border:1px solid #d7ad5750!important;background:#d7ad570b!important;font-size:12px!important;line-height:1.2!important; }
+  .multi-service-project { margin:6px 0 0!important;font-size:11px!important;line-height:1.4!important; }
+ }
+}

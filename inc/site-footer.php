@@ -34,8 +34,8 @@ defined( 'ABSPATH' ) || exit;
 				<!-- Client Portal -->
 				<div class="site-footer-column site-footer-column--portal">
 					<?php
-					$footer_client = is_user_logged_in() && function_exists('dxcp_is_client_user') && dxcp_is_client_user();
-					$footer_owner = function_exists('dxcp_is_site_owner') && dxcp_is_site_owner();
+					$footer_client = empty($GLOBALS['dx_public_static_shell']) && is_user_logged_in() && function_exists('dxcp_is_client_user') && dxcp_is_client_user();
+					$footer_owner = empty($GLOBALS['dx_public_static_shell']) && function_exists('dxcp_is_site_owner') && dxcp_is_site_owner();
 					$footer_user = $footer_client ? wp_get_current_user() : null;
 					$footer_name = $footer_user ? explode(' ',trim($footer_user->first_name ?: $footer_user->display_name))[0] : '';
 					?>

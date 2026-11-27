@@ -1101,7 +1101,7 @@ function initEditorialRefinements() {
 
 // Consolidated gym-dashboard.
 /* Gym discovery: server-rendered views share the authoritative review scoring model. */
-(() => {
+(async () => {
 	'use strict';
 // DX_EARLY_SCRIPT_BEGIN:gym-theme
 (() => {
@@ -1134,20 +1134,17 @@ function initEditorialRefinements() {
 		}
 		async function search() {
 			request?.abort(); request = new AbortController(); const current = ++sequence;
-			const endpoint = new URL(preview.dataset.api); endpoint.searchParams.set('mode', 'quick');
-			endpoint.searchParams.set('q', input.value); endpoint.searchParams.set('chain', preview.dataset.chain || '');
+
 			status.textContent = 'Finding your next gym…'; results.setAttribute('aria-busy', 'true');
 			try {
-				const response = await fetch(endpoint, { signal: request.signal, credentials: 'same-origin' });
-				if (!response.ok) throw new Error('Search failed');
-				const data = await response.json(); if (current !== sequence) return;
-				if (typeof data.cardsHtml !== 'string') throw new Error('Invalid search response');
+                const module=await import(/* webpackIgnore: true */ preview.dataset.engineClient);const client=await module.createGymClient(preview.dataset.manifest,form.action);const state=client.normal(form.action);state.q=input.value.slice(0,80);state.chain=preview.dataset.chain||'';const records=client.filter(client.data.gyms,state);const ids=new Set(records.slice(0,3).map(g=>g.id));const data={total:records.length,cardsHtml:client.data.fragments.filter(f=>ids.has(f.id)).map(f=>f.quickCard).join('')};if(current!==sequence)return;
+
 				results.innerHTML = data.cardsHtml; revealCards();
 				status.textContent = input.value.trim() ? `${data.total} gym${data.total === 1 ? '' : 's'} found${data.total > 3 ? ' · Showing the top three' : ''}.` : '';
 				preview.dataset.searchFailed = 'false';
 				const full = new URL(form.action); full.searchParams.set('view', input.value.trim() ? 'explorer' : 'league'); if (input.value.trim()) full.searchParams.set('q', input.value.trim());
 				if (preview.dataset.chain) full.searchParams.set('chain', preview.dataset.chain);
-				preview.querySelector('[data-gym-full-results]').href = full.href;
+				preview.querySelector('[data-gym-full-results]').href = client.publicURL(full).href;
 			} catch (error) {
 				if (error.name !== 'AbortError' && current === sequence) { status.textContent = 'Search could not update. Use “Find Your Next Gym” to open the full results.'; preview.dataset.searchFailed = 'true'; }
 			} finally { if (current === sequence) results.removeAttribute('aria-busy'); }
@@ -1158,13 +1155,19 @@ function initEditorialRefinements() {
 	});
 	const app = document.querySelector('#dxgym-app');
 	if (!app) return;
+ let gymClient;
+ try { const module = await import(/* webpackIgnore: true */ app.dataset.engineClient); gymClient = await module.createGymClient(app.dataset.manifest,app.dataset.base); }
+ catch(error) { const notice=app.querySelector('.dxgym-notice');notice.hidden=false;notice.textContent='Live gym data could not load. The last published overview and review links remain available. ';const retry=document.createElement('button');retry.type='button';retry.className='dxgym-button';retry.textContent='Try again';retry.addEventListener('click',()=>location.reload());notice.append(retry);return; }
+ const gymLocation=()=>gymClient.canonical(location.href);
+ app.dataset.dataVersion=gymClient.envelope.version;
+ const freshness=document.createElement('p');freshness.className='dxgym-data-freshness';freshness.setAttribute('role','status');freshness.textContent=(gymClient.envelope.stale?'Offline copy · ':'Published data · ')+new Date(gymClient.envelope.generatedAt).toLocaleString('en-GB');app.querySelector('.dxgym-workspace').append(freshness);
 	const content = app.querySelector('[data-gym-content]');
 	const loading = app.querySelector('.dxgym-loading');
 	const notice = app.querySelector('.dxgym-notice');
 	const views = { overview: 'Overview', league: 'League Table', explorer: 'Gym Explorer', compare: 'Compare Gyms', finder: 'Find My Gym', map: 'Map View', reviews: 'Reviews', insights: 'Insights' };
 	let controller, requestId = 0, searchTimer, maps = [], moreController, moreObserver;
 	let moreBusy = false;
-	let compare = app.dataset.selected.split(',').map(Number).filter(Number.isSafeInteger).filter(id => id > 0).slice(0, 3);
+	let compare = gymClient.normal(location.href).compare;
 	const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
 	let reduce = motionPreference.matches;
 	let listingObserver, heroState, heroTimer, slideshowPaused = false, donutObserver, donutAnimations = [], themeTimer, lastShareTrigger, shareCloseTimer;
@@ -1205,7 +1208,7 @@ function initEditorialRefinements() {
 		}
 	}
 	function comparisonURL() {
-		const url = new URL(app.dataset.base); url.searchParams.set('view', 'compare'); url.searchParams.set('compare', compare.join(',')); return url.href;
+		const url = new URL(app.dataset.base); url.searchParams.set('view', 'compare'); url.searchParams.set('compare', compare.join(',')); return gymClient.publicURL(url).href;
 	}
 	function closeShare() {
 		if (!shareDialog || !shareDialog.open || shareDialog.classList.contains('is-closing')) return;
@@ -1313,18 +1316,13 @@ function initEditorialRefinements() {
 		app.dispatchEvent(new CustomEvent('dxgym:rendered', { bubbles: true }));
 	}
 
-	function canonicalURL(input) {
-		const url = new URL(input, location.href);
-		if (url.origin !== location.origin || url.pathname !== new URL(app.dataset.base).pathname) return null;
-		const view = url.searchParams.get('view') || 'overview';
-		if (!views[view]) url.searchParams.set('view', 'overview');
-		return url;
-	}
+	function canonicalURL(input) { return gymClient.canonical(input); }
+
 	function syncNavigation(url) {
 		const view = url.searchParams.get('view') || 'overview';
 		app.querySelectorAll('[data-gym-view]').forEach(link => {
 			if (link.dataset.gymView === view) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-			const target = new URL(link.href); target.searchParams.set('compare', compare.join(',')); link.href = target.href;
+			const target = canonicalURL(link.href || link.dataset.gymTarget); if(target){target.searchParams.set('compare',compare.join(','));link.href=gymClient.publicURL(target).href;}
 		});
 		app.querySelector('[data-gym-current]').textContent = views[view] || views.overview;
 		app.querySelectorAll('[data-compare-count]').forEach(count => { count.textContent = compare.length; });
@@ -1355,6 +1353,7 @@ function initEditorialRefinements() {
 		elements.forEach((item, index) => { item.style.setProperty('--enter-delay', `${Math.min(index * 45, 500)}ms`); item.classList.add('dxgym-aside-item'); });
 	}
 	function initialiseSlideshow() {
+ if(heroState?.element===content.querySelector('[data-gym-slideshow]')&&heroState.element.isConnected)return;
 		const previousBranch = heroState?.photos[heroState.index]?.branch;
 		clearTimeout(heroTimer); heroState = null;
 		const slideshow = content.querySelector('[data-gym-slideshow]'); if (!slideshow) return;
@@ -1435,10 +1434,7 @@ function initEditorialRefinements() {
 		const status = controls.querySelector('[data-gym-more-status]');
 		next.setAttribute('aria-disabled', 'true'); list.setAttribute('aria-busy', 'true'); status.textContent = 'Loading more gyms…';
 		try {
-			const endpoint = new URL(app.dataset.api); endpoint.search = url.search;
-			const response = await fetch(endpoint, { signal: moreController.signal, credentials: 'same-origin' });
-			if (!response.ok) throw new Error('More results could not load');
-			const data = await response.json();
+			const data = gymClient.render(url);
 			if (ownNavigation !== requestId || !list.isConnected) return;
 			const fragment = document.createElement('template'); fragment.innerHTML = data.html;
 			const rows = [...fragment.content.querySelectorAll(tableView ? '.dxgym-table tbody tr' : (compareOptions ? '.dxgym-compare-options > div' : '.dxgym-card-grid > .dxgym-gym-card'))];
@@ -1467,14 +1463,18 @@ function initEditorialRefinements() {
 			}
 		} finally { if (ownNavigation === requestId) { moreBusy = false; next.removeAttribute('aria-disabled'); list.removeAttribute('aria-busy'); } }
 	}
-	function initialiseMaps() {
-		maps.forEach(map => map.remove()); maps = [];
+ let leafletPromise;
+ function ensureGymLeaflet(){if(window.L)return Promise.resolve(window.L);if(!leafletPromise)leafletPromise=new Promise((resolve,reject)=>{const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.append(css);const script=document.createElement('script');script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';const timer=setTimeout(()=>reject(new Error('Map library unavailable')),8000);script.onload=()=>{clearTimeout(timer);window.L?resolve(window.L):reject(new Error('Map library unavailable'));};script.onerror=()=>{clearTimeout(timer);reject(new Error('Map library unavailable'));};document.head.append(script);});return leafletPromise;}
+ let mapObserver;
+ function initialiseMaps() {
+		mapObserver?.disconnect(); maps.forEach(map => map.remove()); maps = [];
 		content.querySelectorAll('[data-gym-map]').forEach(element => {
 			let records;
 			try { records = JSON.parse(element.querySelector('.dxgym-markers').textContent); } catch { return; }
 			const message = element.querySelector('.dxgym-map-message');
 			if (!records.length) return;
-			if (!window.L) { message.textContent = 'The map could not load. All gym locations remain available in the list.'; return; }
+            const build=async()=>{try{await ensureGymLeaflet();}catch(_){message.textContent='The map could not load. All gym locations remain available in the list.';return;}if(!element.isConnected)return;
+
 			message.hidden = true;
 			const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView([records[0].lat, records[0].lng], 11);
 			maps.push(map);
@@ -1515,11 +1515,12 @@ function initEditorialRefinements() {
 				bounds.push([gym.lat, gym.lng]);
 			});
 			if (bounds.length > 1) map.fitBounds(bounds, { padding: [26, 26], maxZoom: 13 });
+            };
+            if('IntersectionObserver' in window){mapObserver=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){mapObserver.unobserve(element);build();}},{rootMargin:'200px'});mapObserver.observe(element);}else build();
 		});
 	}
 	async function navigate(input, { historyMode = 'push', focus = false, retainSearchFocus = false, scrollToTop = false } = {}) {
 		const url = canonicalURL(input); if (!url) return;
-		if (!url.searchParams.has('compare')) url.searchParams.set('compare', compare.join(','));
 		stopIncremental(); controller?.abort(); controller = new AbortController(); const ownId = ++requestId;
 		const active = document.activeElement;
 		const focusedSummaryControl = retainSearchFocus && active?.matches('[data-gym-summary-sort], [data-gym-summary-count]') ? (active.hasAttribute('data-gym-summary-sort') ? '[data-gym-summary-sort]' : '[data-gym-summary-count]') : null;
@@ -1528,10 +1529,7 @@ function initEditorialRefinements() {
 		const selection = focusName && active instanceof HTMLInputElement && typeof active.selectionStart === 'number' ? [active.selectionStart, active.selectionEnd] : null;
 		loading.hidden = false; content.setAttribute('aria-busy', 'true'); app.classList.add('is-loading'); showNotice('');
 		try {
-			const endpoint = new URL(app.dataset.api); endpoint.search = url.search;
-			const response = await fetch(endpoint, { signal: controller.signal, credentials: 'same-origin', headers: { Accept: 'application/json' } });
-			if (!response.ok) throw new Error('Could not load gyms');
-			const result = await response.json(); if (ownId !== requestId) return;
+			const result = gymClient.render(url); if (ownId !== requestId) return;
 			compare = result.compare || [];
 			const oldHeroHeight = content.querySelector('.dxgym-hero')?.getBoundingClientRect().height;
 			const oldSummary = content.querySelector('[data-gym-list-summary]');
@@ -1542,7 +1540,12 @@ function initEditorialRefinements() {
 				const link = row.querySelector('a[href]');
 				if (link) oldRows.set(link.href, row.getBoundingClientRect().top);
 			});
-			content.innerHTML = result.html;
+            const sameView=(app.dataset.currentView||'overview')===result.view;
+            const next=document.createElement('template');next.innerHTML=result.html;
+            // Preserve the unchanged photographic hero and methodology instead of replaying them on every filter.
+            if(sameView){for(const selector of ['.dxgym-hero','.dxgym-method']){const old=content.querySelector(selector),replacement=next.content.querySelector(selector);if(old&&replacement)replacement.replaceWith(old);}}
+            content.replaceChildren(next.content);app.dataset.currentView=result.view;app.dataset.lastRenderMs=result.renderMs.toFixed(2);
+
 			if (league && !reduce) {
 				const rows = [...content.querySelectorAll('.dxgym-table tbody tr')];
 				const changes = rows.map(row => [row, oldRows.get(row.querySelector('a[href]')?.href), row.getBoundingClientRect().top]);
@@ -1553,9 +1556,9 @@ function initEditorialRefinements() {
 					], {duration:260, delay:before === undefined ? Math.min(index * 15, 90) : 0, easing:'ease-out', fill:'backwards'});
 				});
 			}
-			if (historyMode === 'push') history.pushState({}, '', url);
-			if (historyMode === 'replace') history.replaceState({}, '', url);
-			syncNavigation(url); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseStatPreviews(); initialiseDonuts(); announceDashboardRender(); closeDrawer();
+			if (historyMode === 'push') history.pushState({}, '', result.url);
+			if (historyMode === 'replace') history.replaceState({}, '', result.url);
+			syncNavigation(canonicalURL(result.url)); initialiseMaps(); initialiseListings(); initialiseSlideshow(); initialiseSummary(previousSummary); initialiseStatPreviews(); initialiseDonuts(); announceDashboardRender(); closeDrawer();
 			const hero = content.querySelector('.dxgym-hero');
 			if (!reduce && oldHeroHeight && hero?.animate) hero.animate([{ minHeight: `${oldHeroHeight}px` }, { minHeight: `${hero.getBoundingClientRect().height}px` }], { duration: 550, easing: 'cubic-bezier(.2,.7,.2,1)' });
 			if (!reduce && content.animate) content.animate([{ opacity: 0.65, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 230, easing: 'ease-out' });
@@ -1575,7 +1578,7 @@ function initEditorialRefinements() {
 			if (error.name !== 'AbortError' && ownId === requestId) {
 				restorePagination();
 				showNotice('The gym workspace could not update. Your current view is still here. ');
-				const fallback = document.createElement('a'); fallback.href = url.href; fallback.textContent = 'Open these results ↗'; notice.append(fallback);
+				const fallback = document.createElement('a'); fallback.href = gymClient.publicURL(url).href; fallback.textContent = 'Open these results ↗'; notice.append(fallback);
 			}
 		} finally {
 			if (ownId === requestId) { loading.hidden = true; content.removeAttribute('aria-busy'); app.classList.remove('is-loading'); }
@@ -1601,13 +1604,13 @@ function initEditorialRefinements() {
 			const key = event.target.hasAttribute('data-gym-summary-sort') ? 'sort' : 'chain';
 			const form = content.querySelector('[data-gym-filters]');
 			const field = form?.elements.namedItem(key); if (field) field.value = event.target.value;
-			const url = form ? formURL(form) : new URL(location.href); url.searchParams.delete('page');
+			const url = form ? formURL(form) : gymLocation(); url.searchParams.delete('page');
 			if (event.target.value) url.searchParams.set(key, event.target.value); else url.searchParams.delete(key);
 			navigate(url, { retainSearchFocus: true }); return;
 		}
 		if (event.target.matches('[data-compare-replace]')) {
 			const old = Number(event.target.dataset.compareReplace), next = Number(event.target.value);
-			const url = new URL(location.href); url.searchParams.set('compare', compare.map(id => id === old ? next : id).join(',')); navigate(url); return;
+			const url = gymLocation(); url.searchParams.set('compare', compare.map(id => id === old ? next : id).join(',')); navigate(url); return;
 		}
 		if (event.target.matches('[data-gym-filters] select, [data-gym-filters] input[type="checkbox"]')) navigate(formURL(event.target.form), { retainSearchFocus: true });
 	});
@@ -1668,20 +1671,20 @@ function initEditorialRefinements() {
 		const menu = event.target.closest('.dxgym-menu-toggle');
 		if (menu) { const open = menu.getAttribute('aria-expanded') !== 'true'; app.classList.toggle('is-navigation-open', open); menu.setAttribute('aria-expanded', String(open)); app.querySelector('.dxgym-drawer-shade').hidden = !open; syncDrawerAccessibility(); if (open) { animateSidebar(); app.querySelector('.dxgym-sidebar a').focus(); } return; }
 		if (event.target.closest('.dxgym-drawer-shade')) { closeDrawer(true); return; }
-		const link = event.target.closest('a[data-gym-nav], a[data-compare-id]');
+		const link = event.target.closest('[data-gym-nav], [data-compare-id]');
 		if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
-		const url = canonicalURL(link.href); if (!url) return;
+		const url = canonicalURL(link.href || link.dataset.gymTarget); if (!url) return;
 		event.preventDefault(); clearTimeout(searchTimer);
 		if (link.hasAttribute('data-compare-id')) {
 			const id = Number(link.dataset.compareId);
 			if (!compare.includes(id) && compare.length >= 3) { showNotice('Your comparison has three gyms. Remove or replace one to add another.', 'comparison'); return; }
-			const current = new URL(location.href); const view = current.searchParams.get('view') || 'overview';
+			const current = gymLocation(); const view = current.searchParams.get('view') || 'overview';
 			const next = compare.includes(id) ? compare.filter(item => item !== id) : [...compare, id];
 			current.searchParams.set('compare', next.join(','));
 			if (view === 'overview') current.searchParams.set('view', 'compare');
 			navigate(current, { focus: view === 'overview', scrollToTop: view === 'overview' }); return;
 		}
-		const changingView = (url.searchParams.get('view') || 'overview') !== (new URL(location.href).searchParams.get('view') || 'overview');
+		const changingView = (url.searchParams.get('view') || 'overview') !== (gymLocation().searchParams.get('view') || 'overview');
 		navigate(url, { focus: changingView || link.hasAttribute('data-gym-view'), scrollToTop: changingView || link.hasAttribute('data-gym-view') });
 	});
 	app.addEventListener('keydown', event => {
@@ -1700,7 +1703,7 @@ function initEditorialRefinements() {
 		}
 	});
 	window.addEventListener('popstate', () => navigate(location.href, { historyMode: 'none' }));
-	applyTheme(document.documentElement.dataset.dxgymTheme || 'dark'); initialiseSummary(); initialiseStatPreviews(); initialiseDonuts(); syncNavigation(new URL(location.href)); syncDrawerAccessibility(); initialiseMaps(); initialiseListings(); initialiseSlideshow(); announceDashboardRender(); if (desktop.matches) animateSidebar();
+	applyTheme(document.documentElement.dataset.dxgymTheme || 'dark'); initialiseSummary(); initialiseStatPreviews(); initialiseDonuts(); syncDrawerAccessibility(); await navigate(location.href,{historyMode:'replace'}); if (desktop.matches) animateSidebar();
 })();
 ;
 
@@ -9243,7 +9246,7 @@ window.dxInitBusGallery = (root) => {
 		else { $("#dxb-lightbox-image").src = p.full || p.image; $("#dxb-lightbox-image").alt = p.alt || p.title; }
 		$("#dxb-lightbox-route").textContent = p.route
 			? `Route ${p.route}`
-			: "Bus photography";
+			: p.subject === "buses" ? "Bus photography" : p.scenery ? "Scenery photography" : "Photography";
 		$("#dxb-lightbox-title").textContent = p.title;
 		$("#dxb-lightbox-caption").textContent = p.caption;
 		$("#dxb-lightbox-meta").textContent = [
@@ -10838,6 +10841,13 @@ window.dxInitBusGallery = (root) => {
 	document.addEventListener('visibilitychange',startPinnedArrows);
 	pinnedMotion.addEventListener('change',()=>{if(pinnedMotion.matches){cancelAnimationFrame(pinnedArrowFrame);pinnedArrowFrame=0;pinnedArrowLast=0;}else startPinnedArrows();});
 
+
+ let pinnedRoutesMode=false;
+ const plottedRoutes=new Set();try{JSON.parse(localStorage.getItem('dx.bus.pinned-routes.v1')||'[]').filter(r=>/^[A-Z0-9]{1,6}$/.test(r)).slice(0,8).forEach(r=>plottedRoutes.add(r));}catch(_){}
+ const routeForm=$('[data-pinned-route-form]');
+ const paintRoutePins=()=>{const list=$('[data-pinned-route-list]');if(!list)return;list.replaceChildren();plottedRoutes.forEach(route=>{const button=text('button',route+' ×','dxbus-button');button.type='button';button.setAttribute('aria-label','Remove route '+route);button.addEventListener('click',()=>{plottedRoutes.delete(route);try{localStorage.setItem('dx.bus.pinned-routes.v1',JSON.stringify([...plottedRoutes]));}catch(_){}paintRoutePins();pinnedMapRequest++;refreshPinnedMap();});list.append(button);});};
+ routeForm?.addEventListener('submit',async event=>{event.preventDefault();const input=routeForm.querySelector('input');const route=input.value.trim().toUpperCase();if(!/^[A-Z0-9]{1,6}$/.test(route)){input.setCustomValidity('Enter a valid route number.');input.reportValidity();return;}input.setCustomValidity('');if(plottedRoutes.size>=8&&!plottedRoutes.has(route)){input.setCustomValidity('Plot up to eight routes at a time.');input.reportValidity();return;}const button=routeForm.querySelector('button');button.disabled=true;try{const data=await request('route/'+encodeURIComponent(route)+'?direction=inbound');if(!data.stops?.length)throw Error();plottedRoutes.add(route);try{localStorage.setItem('dx.bus.pinned-routes.v1',JSON.stringify([...plottedRoutes]));}catch(_){}input.value='';paintRoutePins();pinnedMapRequest++;refreshPinnedMap();}catch(_){input.setCustomValidity('Route unavailable. Check the number and try again.');input.reportValidity();}finally{button.disabled=false;}});
+ routeForm?.querySelector('input')?.addEventListener('input',event=>event.target.setCustomValidity(''));paintRoutePins();
 	let pinnedMapRequest = 0;
 	const trackingParams = new URLSearchParams(location.search);
 	const trackingRegistration = dxBusRegistration(trackingParams.get('track'));
@@ -10861,7 +10871,7 @@ window.dxInitBusGallery = (root) => {
 		const status = $('#dxbus-pinned-map-status');
 		if (!pinnedMap) dxMapLoading(host, true);
 		try {
-			const registrations = trackingPhoto ? await photoTrackingRegistrations() : [...marked];
+			const registrations = pinnedRoutesMode ? [] : trackingPhoto ? await photoTrackingRegistrations() : [...marked];
 			const L = await ensureRouteMap();
 			const points = await Promise.allSettled(registrations.map(async registration => {
 				const data = await request(`vehicle/${encodeURIComponent(registration)}/arrivals`);
@@ -10876,6 +10886,9 @@ window.dxInitBusGallery = (root) => {
 				if (stop?.lat == null || stop.lon == null || !Number.isFinite(+stop.lat) || !Number.isFinite(+stop.lon)) return null;
 				return {position:[+stop.lat,+stop.lon], bus:{...next, registration}, stop, routeData};
 			}));
+
+            const plottedData=[];
+            if(pinnedRoutesMode){const settled=await Promise.allSettled([...plottedRoutes].map(async route=>{const [sequences,positions]=await Promise.all([Promise.allSettled(['inbound','outbound'].map(direction=>request('route/'+encodeURIComponent(route)+'?direction='+direction))),request('line-positions/'+encodeURIComponent(route)).catch(()=>({vehicles:[]}))]);const data=sequences.flatMap(result=>result.status==='fulfilled'?[result.value]:[]);plottedData.push(...data.map(data=>({route,data,destination:data.stops?.at(-1)?.name||''})));for(const bus of positions.vehicles||[]){const routeData=data.find(d=>d.direction===bus.direction&&d.stops?.some(s=>s.id===bus.stopId))||data.find(d=>d.stops?.some(s=>s.id===bus.stopId));const stop=routeData?.stops.find(s=>s.id===bus.stopId);if(stop&&Number.isFinite(+stop.lat)&&Number.isFinite(+stop.lon))points.push({value:{position:[+stop.lat,+stop.lon],bus:{...bus,route,destination:bus.destination||routeData.stops.at(-1)?.name},stop,routeData}});}}));host.dataset.routeFailures=String(settled.filter(r=>r.status==='rejected').length);}
 			if (revision !== pinnedMapRequest || tab !== 'pinned' || host.hidden) return;
 			const firstDraw = !pinnedMap;
 			if (firstDraw) {
@@ -10899,6 +10912,7 @@ window.dxInitBusGallery = (root) => {
 			available.forEach(({bus,routeData}) => {
 				if (routeData) routes.set(`${bus.route.toUpperCase()}:${routeData.direction}`, {route:bus.route.toUpperCase(), destination:bus.destination || routeData.stops.at(-1)?.name || '', data:routeData});
 			});
+            plottedData.forEach(entry=>{routes.set(entry.route+':'+entry.data.direction,entry);if(!pinnedRouteColors.has(entry.route))pinnedRouteColors.set(entry.route,/^N/i.test(entry.route)?'#c6e8f5':palette[pinnedRouteColors.size%palette.length]);});
 			let gradientIndex=0;
 			for (const {route,destination,data} of [...routes.values()].flatMap(entry=>busRoutePaths(entry.data).map(path=>({...entry,data:{...entry.data,paths:[path]}})))) {
 				const color = /^N/i.test(route) ? (data.direction==='outbound'?'#71b9db':'#c6e8f5') : pinnedRouteColors.get(route);
@@ -10946,9 +10960,9 @@ window.dxInitBusGallery = (root) => {
 				pinnedLegend.onAdd = () => { const legend = L.DomUtil.create('div','dxbus-pinned-map-legend'); legend.setAttribute('aria-label','Pinned bus routes'); L.DomEvent.disableClickPropagation(legend); L.DomEvent.disableScrollPropagation(legend); return legend; };
 				pinnedLegend.addTo(pinnedMap);
 			}
-			const legend = pinnedLegend.getContainer(); legend.replaceChildren(); legend.hidden = !available.length;
+			const legend = pinnedLegend.getContainer(); legend.replaceChildren(); legend.hidden = !routes.size;
 			legend.append(text('strong','Pinned routes'));
-			for (const route of [...new Set(available.map(point=>point.bus.route.toUpperCase()))].sort()) {
+			for (const route of [...new Set([...routes.values()].map(entry=>entry.route))].sort()) {
 				const row = text('div','','dxbus-pinned-legend-route'); const swatch = text('span','','dxbus-pinned-legend-swatch'); swatch.style.background = `linear-gradient(120deg,${pinnedTint(pinnedRouteColors.get(route),-.25)},${pinnedTint(pinnedRouteColors.get(route),.28)},${pinnedRouteColors.get(route)})`; swatch.setAttribute('aria-hidden','true');
 				const labels = [...routes.values()].filter(entry=>entry.route===route).map(entry=>'→ '+entry.destination);
 				row.append(swatch,text('span',`Route ${route}` + (labels.length?' · '+labels.join(' / '):' · Direction unavailable'))); legend.append(row);
@@ -10962,8 +10976,8 @@ window.dxInitBusGallery = (root) => {
 				fitPinnedRoutes();
 				host.dataset.routeBounds = identity;
 			}
-			host.dataset.hasPins = available.length ? 'true' : '';
-			status.textContent = trackingPhoto
+			host.dataset.hasPins = available.length||routes.size ? 'true' : '';
+			status.textContent = pinnedRoutesMode ? `${plottedRoutes.size} pinned routes · ${available.length} buses at next predicted stops. Predictions are not live GPS.${host.dataset.routeFailures!=='0'?' Some route data is unavailable.':''}` : trackingPhoto
 				? (available.length ? `Route ${available[0].bus.route} · ${available[0].bus.destination || 'In service'} · Next predicted stop: ${available[0].stop.name}`
 					: 'No current stop prediction for this bus.')
 				: `${available.length} of ${registrations.length} pinned buses plotted at their next predicted stop.`;
@@ -10976,7 +10990,7 @@ window.dxInitBusGallery = (root) => {
 	}
 	if (app) {
 		$$('[data-pinned-mode]').forEach(button => button.addEventListener('click', () => {
-			const map = button.dataset.pinnedMode === 'map';
+			const map = button.dataset.pinnedMode !== 'list';pinnedRoutesMode=button.dataset.pinnedMode==='routes';if(routeForm)routeForm.hidden=!pinnedRoutesMode;
 			$('#dxbus-pinned-map').hidden = !map;
 			$('#dxbus-pinned-map-status').hidden = !map;
 			$('#dxb-marked').parentElement.hidden = map;
@@ -15661,7 +15675,7 @@ dxOnPageReady(() => {
 		const hint = document.createElement("p");
 		hint.className = "dx-services-swipe-hint";
 		hint.textContent = "Swipe to explore services →";
-		deck.before(hint);
+		deck.prepend(hint);
 	}
 	const calc = document.querySelector(".pricing-calculator");
 	if (calc) {
@@ -16539,10 +16553,17 @@ dxOnPageReady(() => {
 		});
 		count.textContent = `${current + 1} / ${slides.length}`;
 	};
-	const advance = offset => {
-		current = (current + offset + slides.length) % slides.length;
-		paint();
-	};
+ const reducedCinema=matchMedia('(prefers-reduced-motion: reduce)');
+ const advance = offset => {
+  const old=slides[current];current=(current+offset+slides.length)%slides.length;paint();
+  if(mobile.matches&&!reducedCinema.matches){const direction=offset<0?-1:1;old.style.zIndex='2';old.inert=true;const exit=old.animate([{transform:'translateX(0)',opacity:1},{transform:`translateX(${-direction*100}%)`,opacity:1}],{duration:650,easing:'cubic-bezier(.22,1,.36,1)'});exit.onfinish=()=>{old.style.zIndex='';};slides[current].animate([{transform:`translateX(${direction*100}%)`,opacity:1},{transform:'translateX(0)',opacity:1}],{duration:650,easing:'cubic-bezier(.22,1,.36,1)'});}
+ };
+ let cinemaVisible=false,cinemaPaused=reducedCinema.matches;
+ const pause=document.createElement('button');pause.type='button';pause.textContent=cinemaPaused?'Play':'Pause';pause.setAttribute('aria-label','Pause automatic service slides');controls.append(pause);pause.addEventListener('click',()=>{cinemaPaused=!cinemaPaused;pause.textContent=cinemaPaused?'Play':'Pause';pause.setAttribute('aria-label',cinemaPaused?'Play automatic service slides':'Pause automatic service slides');});
+ new IntersectionObserver(([entry])=>{cinemaVisible=entry.isIntersecting;},{threshold:.4}).observe(deck);
+ setInterval(()=>{if(mobile.matches&&cinemaVisible&&!cinemaPaused&&!document.hidden&&!deck.matches(':focus-within')&&!(matchMedia('(hover:hover)').matches&&deck.matches(':hover')))advance(1);},7000);
+ reducedCinema.addEventListener('change',()=>{cinemaPaused=reducedCinema.matches;pause.textContent=cinemaPaused?'Play':'Pause';});
+
 	previous.addEventListener('click', () => advance(-1));
 	next.addEventListener('click', () => advance(1));
 	const beginSwipe = (point, pointerId = null) => {
@@ -17537,6 +17558,8 @@ function dxGymFinderStep(steps, index) {
 	const legend = steps[index].querySelector('legend');
 	legend.tabIndex = -1;
 	legend.focus({ preventScroll: true });
+ const form=steps[index].closest('form'), bar=document.querySelector('.dxgym-topbar'); let scroller=form.parentElement;while(scroller&&scroller!==document.body&&!(scroller.scrollHeight>scroller.clientHeight+1&&/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)))scroller=scroller.parentElement;const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';const targetTop=Math.max(0,bar?.getBoundingClientRect().bottom||0)+24;if(scroller&&scroller!==document.body)scroller.scrollTo({top:scroller.scrollTop+form.getBoundingClientRect().top-Math.max(scroller.getBoundingClientRect().top+24,targetTop),behavior});else window.scrollTo({top:scrollY+form.getBoundingClientRect().top-targetTop,behavior});
+
 	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		steps[index].animate([{ opacity: 0, translate: '0 8px' }, { opacity: 1, translate: '0 0' }], 220);
 	}
@@ -17582,7 +17605,7 @@ document.addEventListener('submit', (event) => {
 		: 'Ranked using all your selected priorities. Essential and very important amenities must have an assessed rating. Unavailable or unassessed priorities cannot boost a match; check today’s hours before travelling.';
 	results.append(note);
 	const grid = document.createElement('div'); grid.className = 'dxgym-match-grid'; results.append(grid);
- matches.slice(0, 3).forEach((gym, index) => {
+ let displayed=0; const renderBatch=()=>{const start=displayed; displayed=Math.min(matches.length,displayed+3); matches.slice(start,displayed).forEach((gym, localIndex) => { const index=start+localIndex;
   const card = document.createElement('article'); card.className = 'dxgym-match-card';
   const image = document.createElement('img');
   const placeholder = form.closest('[data-gym-finder]').dataset.placeholder;
@@ -17603,9 +17626,14 @@ document.addEventListener('submit', (event) => {
   const google=document.createElement('a'); google.href=gym.hours.google; google.target='_blank'; google.rel='noopener'; google.textContent='Check on Google ↗'; links.append(google);
   const directions=document.createElement('a'); directions.className='dxgym-match-directions'; directions.href='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(gym.name+' '+gym.location); directions.target='_blank'; directions.rel='noopener'; directions.textContent='Get Directions ↗'; links.prepend(directions);
   const heading=document.createElement('div'); heading.className='dxgym-match-heading'; heading.append(title,hours);
-  copy.append(rank,heading,location,links); card.append(copy); grid.append(card);
- });
-
+  const read=document.createElement('a');read.href=gym.url;read.textContent='Read Review ↗';read.className='dxgym-match-review';links.prepend(read);
+  const amenities=document.createElement('div');amenities.className='dxgym-match-amenities';
+  const names={gym:'Gym',swim:'Wetside',wet:'Wetside',spa:'Spa',cafe:'Café / Workspace',clean:'Cleanliness',parking:'Parking',padel:'Padel'};
+  for(const key of new Set([...required,...priorities.map(([key])=>key)])){const available=key==='padel'?gym.padel==='available':isAssessed(gym.scores[key]);const pill=document.createElement('span');pill.className=available?'is-available':'is-unavailable';pill.innerHTML=available?'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg>':'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>';pill.append(document.createTextNode(names[key]||key));pill.title=available?'Assessed amenity':'Unavailable or not assessed';amenities.append(pill);}
+  copy.append(rank,heading,location,amenities,links); card.append(copy); grid.append(card);if(start>0&&!matchMedia('(prefers-reduced-motion: reduce)').matches)card.animate([{opacity:0,translate:'0 14px'},{opacity:1,translate:'0 0'}],{duration:500,delay:localIndex*75,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+ }); more.hidden=displayed>=matches.length; };
+ const more=document.createElement('button');more.type='button';more.className='dxgym-button dxgym-load-more';more.textContent='Load 3 more gyms';results.append(more);
+ more.addEventListener('click',()=>{more.disabled=true;more.setAttribute('aria-busy','true');more.textContent='Loading gyms…';grid.classList.add('is-loading');setTimeout(()=>{if(!results.isConnected)return;renderBatch();grid.classList.remove('is-loading');more.disabled=false;more.removeAttribute('aria-busy');more.textContent='Load 3 more gyms';},350);});renderBatch();
 	dxGymFinderStep([...form.querySelectorAll('fieldset')], 2);
  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.querySelectorAll('article').forEach((card,index)=>card.animate([{opacity:0,translate:'0 18px'},{opacity:1,translate:'0 0'}],{duration:650,delay:90+index*100,fill:'backwards',easing:'cubic-bezier(.22,1,.36,1)'}));
 });
@@ -17814,3 +17842,5 @@ dxOnPageReady(()=>{
  const glow=document.createElement('div');glow.className='dxj-memories-glow';glow.setAttribute('aria-hidden','true');document.body.append(glow);
  const observer=new IntersectionObserver(entries=>{glow.classList.toggle('is-visible',entries[0].isIntersecting);},{rootMargin:'-12% 0px -12% 0px',threshold:0});observer.observe(section);
 });
+
+dxOnPageReady(()=>{const command=document.querySelector('#dx-command-open');if(!command)return;let frame;const place=()=>{frame=0;const box=command.getBoundingClientRect();document.querySelectorAll('.dxbus-toast,.dxbus-app #dxb-status').forEach(toast=>{toast.style.setProperty('--dx-toast-bottom',(innerHeight-box.top+16)+'px');toast.style.maxWidth='min(420px,calc(100vw - 32px))';});};const schedule=()=>{if(!frame)frame=requestAnimationFrame(place);};new ResizeObserver(schedule).observe(command);new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});addEventListener('resize',schedule);place();});

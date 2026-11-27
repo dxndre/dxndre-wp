@@ -3,7 +3,7 @@
  * Site-wide command palette and LogItDown introduction.
  */
 
-add_action( 'wp_body_open', function () {
+function dx_public_command_markup() {
 	$items = array();
 	$destinations = array(
 		array( 'Portfolio', '/portfolio/', 'work case studies projects', 'Explore selected design and development projects.' ),
@@ -53,5 +53,6 @@ add_action( 'wp_body_open', function () {
 	</dialog>
 	<script type="application/json" id="dx-command-index"><?php echo wp_json_encode( $items, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?></script>
 	<?php
-} );
+}
+add_action('wp_body_open','dx_public_command_markup');
 
