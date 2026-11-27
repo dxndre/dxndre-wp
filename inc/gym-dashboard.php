@@ -41,7 +41,10 @@ function dxgym_band($percentage) {
 }
 
 function dxgym_url($args = []) {
-	return add_query_arg($args, home_url('/fitness/gyms/'));
+	$base=home_url('/fitness/gyms/');if(!$args)return $base;
+	$defaults=['view'=>'overview','sort'=>'overall','page'=>1,'display'=>'map'];
+	foreach($args as$key=>$value){if($key==='compare'&&is_array($value))$value=implode(',',$value);if($value===''||$value===[]||isset($defaults[$key])&&(string)$value===(string)$defaults[$key])unset($args[$key]);else $args[$key]=$value;}
+	return $base.($args?'#'.http_build_query($args,'','&',PHP_QUERY_RFC3986):'');
 }
 
 function dxgym_is_dashboard() {
@@ -89,22 +92,10 @@ add_action('acf/init', function () {
 	]);
 });
 
-function dxgym_clear_cache($id = 0) {
-	if (!$id || in_array(get_post_type($id), ['gym-review','attachment'], true)) delete_transient('dxgym_records_v3');
-}
-add_action('save_post_gym-review', 'dxgym_clear_cache', 30);
-add_action('acf/save_post', 'dxgym_clear_cache', 30);
-add_action('before_delete_post', 'dxgym_clear_cache');
-add_action('edit_attachment', 'dxgym_clear_cache');
-add_action('updated_post_meta', function ($meta_id, $post_id) { if (get_post_type($post_id) === 'gym-review') dxgym_clear_cache($post_id); }, 10, 2);
-add_action('added_post_meta', function ($meta_id, $post_id) { if (get_post_type($post_id) === 'gym-review') dxgym_clear_cache($post_id); }, 10, 2);
-add_action('deleted_post_meta', function ($meta_id, $post_id) { if (get_post_type($post_id) === 'gym-review') dxgym_clear_cache($post_id); }, 10, 2);
-
 /** Compact summaries only: full editorial content remains at its original URL. */
-function dxgym_data() {
-	$cached = get_transient('dxgym_records_v3');
-	if (is_array($cached)) return $cached;
-	$posts = get_posts(['post_type'=>'gym-review','post_status'=>'publish','numberposts'=>-1,'orderby'=>'date','order'=>'DESC']);
+function dxgym_build_records() {
+	$posts = get_posts(['post_type'=>'gym-review','post_status'=>'publish','numberposts'=>2001,'has_password'=>false,'orderby'=>'date','order'=>'DESC']);
+	if (count($posts) > 2000) throw new RuntimeException('generation_record_budget');
 	$groups = [];
 	foreach ($posts as $post) $groups[dx_gym_visit_root($post->ID)][] = $post;
 	$records = []; $reviews = [];
@@ -129,6 +120,8 @@ function dxgym_data() {
 			$visit_time = strtotime($raw_date) ?: 0;
 			$thumb = get_post_thumbnail_id($id);
 			if (!$thumb) { $gallery = (array) get_field('gym_gallery', $id); $first = reset($gallery); $thumb = is_array($first) ? ($first['ID'] ?? 0) : absint($first); }
+			$attachment = $thumb ? get_post($thumb) : null;
+			if ($attachment && (!in_array($attachment->post_status, ['inherit','publish'], true) || $attachment->post_password)) $thumb = 0;
 			$image = $thumb ? wp_get_attachment_image_url($thumb, 'medium_large') : '';
 			$price = (string) get_field('gym_price_category', $id);
 			$record = [
@@ -155,21 +148,39 @@ function dxgym_data() {
 	unset($record);
 	usort($reviews, function ($a,$b) { return strcmp($b['dateISO'] ?: $b['publishedISO'], $a['dateISO'] ?: $a['publishedISO']) ?: ($b['id'] <=> $a['id']); });
 	$data = ['gyms'=>$records,'reviews'=>$reviews,'visits'=>count($posts)];
-	set_transient('dxgym_records_v3',$data,HOUR_IN_SECONDS);
 	return $data;
 }
 
+/** Read the approved static bundle once per request; missing data never triggers generation. */
+function dxgym_data() {
+	if(isset($GLOBALS['dxgym_export_data']))return $GLOBALS['dxgym_export_data'];
+	static $data;
+	if($data!==null)return $data;
+	$data=['gyms'=>[],'reviews'=>[],'visits'=>0];
+	if(!function_exists('dx_data_engine'))return $data;
+	$engine=dx_data_engine();$meta=$engine->metadata('gyms');$manifest=$meta['current']??[];
+	if(!preg_match('/^dataset\.[a-f0-9]{64}\.json$/D',$manifest['file']??'')||!($engine->controls('gyms')['consumption']??false))return $data;
+	$file=$engine->public.'/gyms/'.$manifest['file'];
+	if(is_file($file)&&filesize($file)<=4194304){$envelope=json_decode(file_get_contents($file),true);if(($envelope['schemaVersion']??null)===1&&isset($envelope['data']['gyms'],$envelope['data']['reviews']))$data=array_intersect_key($envelope['data'],array_flip(['gyms','reviews','visits']));}
+	return $data;
+}
+
+/** Legacy PHP callers receive only bounded state. The public shell ignores query variants. */
 function dxgym_state($request = null) {
-	$get = static function ($key, $fallback='') use ($request) {
-		$value = $request ? $request->get_param($key) : ($_GET[$key] ?? $fallback);
-		return is_scalar($value) ? sanitize_text_field(wp_unslash((string)$value)) : $fallback;
-	};
-	$views = ['overview','league','explorer','compare','finder','map','reviews','insights'];
-	$view = $get('view','overview'); if (!in_array($view,$views,true)) $view='overview';
-	$known_ids = array_fill_keys(array_column(dxgym_data()['gyms'],'id'),true);
-	$compare = array_slice(array_values(array_filter(array_unique(array_map('absint',explode(',',$get('compare')))),static function($id)use($known_ids){return isset($known_ids[$id]);})),0,3);
-	$sort = $get('sort','overall'); if (!in_array($sort,array_merge(['overall','name','recent'],array_keys(dxgym_categories())),true)) $sort='overall';
-	return ['view'=>$view,'q'=>$get('q'),'chain'=>$get('chain'),'location'=>$get('location'),'facility'=>$get('facility'),'price'=>$get('price'),'open24'=>$get('open24'),'sort'=>$sort,'page'=>max(1,absint($get('page','1'))),'compare'=>$compare, 'display'=>$get('display')==='list'?'list':'map'];
+	$state=['view'=>'overview','q'=>'','chain'=>'','location'=>'','facility'=>'','price'=>'','open24'=>'','sort'=>'overall','page'=>1,'compare'=>[],'display'=>'map'];
+	$input=$request?$request->get_params():$_GET;
+	if(!is_array($input)||count($input)>16||strlen($_SERVER['QUERY_STRING']??'')>2048)return $state;
+	$limits=['view'=>16,'q'=>80,'chain'=>64,'location'=>120,'facility'=>16,'price'=>16,'open24'=>1,'sort'=>16,'page'=>4,'compare'=>64,'display'=>8];
+	foreach($limits as$key=>$limit)if(isset($input[$key])&&is_string($input[$key])&&strlen($input[$key])<=$limit)$state[$key]=sanitize_text_field(wp_unslash($input[$key]));
+	if(!in_array($state['view'],['overview','league','explorer','compare','finder','map','reviews','insights'],true))$state['view']='overview';
+	if(!in_array($state['sort'],array_merge(['overall','name','recent'],array_keys(dxgym_categories())),true))$state['sort']='overall';
+	if(!in_array($state['price'],array_keys(dxgym_price_categories()),true))$state['price']='';
+	if(!in_array($state['facility'],array_keys(dxgym_facility_options()),true))$state['facility']='';
+	$state['open24']=$state['open24']==='1'?'1':'';$state['display']=$state['display']==='list'?'list':'map';
+	$state['page']=ctype_digit((string)$state['page'])?max(1,min(9999,(int)$state['page'])):1;
+	$compare=is_string($state['compare'])?$state['compare']:'';$state['compare']=[];
+	if($compare!==''&&preg_match('/^\d{1,9}(,\d{1,9}){0,20}$/D',$compare)){$known=array_column(dxgym_data()['gyms'],'id');$state['compare']=array_values(array_intersect(array_unique(array_map('intval',explode(',',$compare))),$known));sort($state['compare'],SORT_NUMERIC);$state['compare']=array_slice($state['compare'],0,3);}
+	return $state;
 }
 
 function dxgym_filtered($records,$state) {
@@ -377,7 +388,7 @@ function dxgym_incremental($total,$state,$size=10) {
 }
 
 function dxgym_map($records,$compact=false) {
-	$mapped=array_values(array_filter($records,static function($g){return $g['lat']!==''&&$g['lng']!=='';}));
+	$mapped=array_values(array_filter($records,static function($g){return is_numeric($g['lat'])&&is_numeric($g['lng']);}));
 	$markers=array_map(static function($g){return array_intersect_key($g,array_flip(['id','name','url','lat','lng','overall','band','image','imageSmall','location']));},$mapped);
 	return '<div class="dxgym-map'.($compact?' dxgym-map--compact':'').'" data-gym-map tabindex="0" aria-label="Reviewed gym locations"><p class="dxgym-map-message">'.($mapped?'Loading gym locations…':'No precise coordinates are recorded for these results. Use the gym list below.').'</p><script type="application/json" class="dxgym-markers">'.wp_json_encode($markers,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT).'</script></div><p class="dxgym-map-note">'.count($mapped).' of '.count($records).' gyms have confirmed map coordinates. Unlocated gyms remain in the list.</p>';
 }
@@ -406,7 +417,7 @@ function dxgym_view($data,$state) {
 	$gyms=$data['gyms'];$view=$state['view'];
 	$hero_photos=[];$seen_photos=[];
 	foreach($gyms as$gym){
-		$featured=get_post_thumbnail_id($gym['id']);
+		$featured=$gym['image'];
 		if(!$featured || !$gym['image'] || isset($seen_photos[$featured]))continue;
 		$seen_photos[$featured]=true;
 		$hero_photos[]=['image'=>$gym['image'],'name'=>$gym['name'],'url'=>$gym['url'],'branch'=>$gym['root']];
@@ -450,7 +461,7 @@ function dxgym_view($data,$state) {
 		if($view==='map'): ?>
 		<div class="dxgym-view-switch"><a data-gym-nav href="<?php $args=$state;$args['display']='map';$args['compare']=implode(',',$state['compare']);echo esc_url(dxgym_url($args)); ?>" <?php echo $state['display']==='map'?'aria-current="true"':''; ?>>Map</a><a data-gym-nav href="<?php $args['display']='list';echo esc_url(dxgym_url($args)); ?>" <?php echo $state['display']==='list'?'aria-current="true"':''; ?>>List</a></div>
 		<?php if($state['display']==='map')echo dxgym_map($filtered); endif;
-		$total=count($filtered);$size=$view==='league'?10:9;$max_page=max(1,(int)ceil($total/$size));$state['page']=min($state['page'],$max_page);$page=array_slice($filtered,($state['page']-1)*$size,$size);
+		$total=count($filtered);$size=!empty($GLOBALS['dxgym_export_all'])?max(1,count($filtered)):($view==='league'?10:9);$max_page=max(1,(int)ceil($total/$size));$state['page']=min($state['page'],$max_page);$page=array_slice($filtered,($state['page']-1)*$size,$size);
 		echo '<div class="dxgym-results-heading">' . dxgym_listing_summary($total,$state);
 		?><p class="dxgym-results-count" role="status"><?php echo $total?esc_html('Showing '.(($state['page']-1)*$size+1).'–'.min($total,$state['page']*$size).' of '.$total.($view==='reviews'?' recorded visits':' gyms')):'No matching gyms'; ?></p></div>
 		<?php if(!$total): echo dxgym_empty(); elseif($view==='league'): ?>
@@ -500,7 +511,7 @@ function dxgym_view($data,$state) {
 		<p class="dxgym-map-note">Latest dated visit per branch. Unassessed and unavailable facilities are excluded from the weighted overall score; a recorded zero is retained. Category order reflects your selected sort.</p>
 		<?php else: ?><div class="dxgym-card-grid"><?php foreach($page as$gym)echo dxgym_card($gym,$state,$view==='reviews'); ?></div><?php endif; echo dxgym_incremental($total,$state,$size); echo dxgym_pagination($total,$state,$size); ?>
 	<?php elseif($view==='compare'):
-		$compare_total=count($filtered);$compare_size=12;$state['page']=min($state['page'],max(1,(int)ceil($compare_total/$compare_size)));
+		$compare_total=count($filtered);$compare_size=!empty($GLOBALS['dxgym_export_all'])?max(1,count($filtered)):12;$state['page']=min($state['page'],max(1,(int)ceil($compare_total/$compare_size)));
 		$selected=array_values(array_filter($gyms,static function($gym)use($state){return in_array($gym['id'],$state['compare'],true);}));usort($selected,static function($a,$b)use($state){return array_search($a['id'],$state['compare'],true)<=>array_search($b['id'],$state['compare'],true);});
 		?>
 		<div class="dxgym-compare-toolbar"><p><?php echo count($selected); ?> of 3 gyms selected</p><div class="dxgym-comparison-actions"><button class="dxgym-button dxgym-share-comparison" type="button" data-gym-share <?php disabled(!$selected); ?>><?php echo dxgym_icon('share'); ?> Share Comparison</button><a class="dxgym-button dxgym-clear-comparison" data-gym-nav href="<?php echo esc_url(dxgym_url(['view'=>'compare','compare'=>''])); ?>"><?php echo dxgym_icon('close'); ?> Clear Comparison</a></div></div>
@@ -524,12 +535,7 @@ add_action('rest_api_init', function () {
 	register_rest_route('dxndre/v1','/gym-dashboard',[
 		'methods'=>'GET','permission_callback'=>'__return_true',
 		'callback'=>static function($request){
-			$state=dxgym_state($request);$data=dxgym_data();
-			if($request->get_param('mode')==='quick'){
-				$records=dxgym_filtered($data['gyms'],$state);
-				return rest_ensure_response(['cardsHtml'=>dxgym_quick_cards(array_slice($records,0,3)),'total'=>count($records)]);
-			}
-			return rest_ensure_response(['html'=>dxgym_view($data,$state),'view'=>$state['view'],'compare'=>$state['compare']]);
+			return new WP_Error('dx_gym_static_migration','The dashboard now uses public static data. Reload the Gym League.', ['status'=>410]);
 		},
 	]);
 });
@@ -542,7 +548,7 @@ function dxgym_quick_cards($gyms) {
 function dxgym_quick_rankings($atts=[]) {
 	$atts=shortcode_atts(['chain'=>'','integrated'=>''] ,$atts,'dx_gym_table');$data=dxgym_data();$gyms=$data['gyms'];if($atts['chain'])$gyms=array_values(array_filter($gyms,static function($g)use($atts){return$g['chainKey']===$atts['chain'];}));
 	$integrated = $atts['integrated'] === '1';
-	ob_start(); ?><section class="dxgym-quick" aria-label="Quick gym rankings" data-gym-preview data-api="<?php echo esc_url(rest_url('dxndre/v1/gym-dashboard')); ?>" data-chain="<?php echo esc_attr($atts['chain']); ?>"><?php if (!$integrated): ?><div class="dxgym-quick-heading"><div><p class="dxgym-eyebrow">Quick Gym Rankings</p><h2>The Gym League.</h2><p>Every gym. Every visit. Ranked.</p></div><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?><form method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-quick-form><input type="hidden" name="view" value="explorer"><?php if($atts['chain']): ?><input type="hidden" name="chain" value="<?php echo esc_attr($atts['chain']); ?>"><?php endif; ?><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a reviewed gym</span><input type="search" name="q" autocomplete="off" placeholder="Find a gym, location or chain…"></label><button class="dxgym-button">Find Your Next Gym <?php echo dxgym_icon('arrow'); ?></button></form><p class="dxgym-quick-status" data-gym-quick-status role="status"></p><div data-gym-quick-results><?php echo dxgym_quick_cards(array_slice($gyms,0,3)); ?></div><?php if ($integrated): ?><div class="dxgym-quick-footer"><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?></section><?php return ob_get_clean();
+	ob_start(); ?><section class="dxgym-quick" aria-label="Quick gym rankings" data-gym-preview data-manifest="<?php echo esc_url(function_exists('dx_data_engine')?dx_data_engine()->url.'/gyms/manifest.json':''); ?>" data-engine-client="<?php echo esc_url(plugins_url('dx-data-engine/Frontend/gyms.js')); ?>" data-chain="<?php echo esc_attr($atts['chain']); ?>"><?php if (!$integrated): ?><div class="dxgym-quick-heading"><div><p class="dxgym-eyebrow">Quick Gym Rankings</p><h2>The Gym League.</h2><p>Every gym. Every visit. Ranked.</p></div><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?><form method="get" action="<?php echo esc_url(dxgym_url()); ?>" data-gym-quick-form><input type="hidden" name="view" value="explorer"><?php if($atts['chain']): ?><input type="hidden" name="chain" value="<?php echo esc_attr($atts['chain']); ?>"><?php endif; ?><label class="dxgym-search"><?php echo dxgym_icon('explorer'); ?><span class="screen-reader-text">Find a reviewed gym</span><input type="search" name="q" autocomplete="off" placeholder="Find a gym, location or chain…"></label><button class="dxgym-button">Find Your Next Gym <?php echo dxgym_icon('arrow'); ?></button></form><p class="dxgym-quick-status" data-gym-quick-status role="status"></p><div data-gym-quick-results><?php echo dxgym_quick_cards(array_slice($gyms,0,3)); ?></div><?php if ($integrated): ?><div class="dxgym-quick-footer"><a class="dxgym-button" data-gym-full-results href="<?php echo esc_url(dxgym_url(['view'=>'league'])); ?>">Explore Full Rankings <?php echo dxgym_icon('arrow'); ?></a></div><?php endif; ?></section><?php return ob_get_clean();
 }
 add_action('init',function(){add_shortcode('dx_gym_table','dxgym_quick_rankings');},20);
 

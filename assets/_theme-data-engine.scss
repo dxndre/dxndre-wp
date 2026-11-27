@@ -1,0 +1,49 @@
+// Preserve the established dashboard aesthetics for semantic local-state buttons.
+.dxgym-app {
+	.dxgym-state-control {
+		font: inherit;
+		color: inherit;
+		background: transparent;
+		border: 0;
+		text-align: left;
+		cursor: pointer;
+	}
+	.dxgym-state-control:focus-visible {
+		outline: 2px solid #d7ad57;
+		outline-offset: 4px;
+	}
+	.dxgym-data-freshness {
+		padding: 16px 28px;
+		font-size: 11px;
+		color: var(--gym-muted, #aeb9bd);
+	}
+	.dxgym-table th .dxgym-state-control {
+		display: inline-flex;
+		flex-direction: column;
+		gap: 5px;
+		padding: 0;
+	}
+}
+
+// The static shell intentionally omits WordPress's injected global styles.
+// Keep its accessibility labels available to assistive technology without showing them visually.
+.dxgym-page .screen-reader-text {
+	border: 0;
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+}
+.dxgym-page button.screen-reader-text:focus {
+	clip-path: none;
+	height: auto;
+	width: auto;
+	position: relative;
+	padding: 10px 16px;
+	background: #d7ad57;
+	color: #111;
+}

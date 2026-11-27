@@ -22,7 +22,8 @@ $hq_groups = array(
 		'reports' => array( 'Reports & Analytics', 'admin' ),
 	),
 );
-$hq_sections = array( 'overview' => array( 'Dashboard', 'overview' ) ) + $hq_groups['Work'] + $hq_groups['Finance'] + array( 'settings' => array( 'Settings', 'admin' ) );
+if (function_exists('dx_data_admin') && current_user_can('manage_options')) $hq_groups['Infrastructure'] = array('data-engine'=>array('DX. Data Engine','admin'));
+$hq_sections = array( 'overview' => array( 'Dashboard', 'overview' ) ) + $hq_groups['Work'] + $hq_groups['Finance'] + ($hq_groups['Infrastructure'] ?? array()) + array( 'settings' => array( 'Settings', 'admin' ) );
 $view = sanitize_key( dxcp_business_query( 'business_view', 'overview' ) );
 if ( 'admin' === $section && array_intersect( array( 'q', 'client_id', 'service', 'phase' ), array_keys( $_GET ) ) ) {
 	$view = 'projects';
@@ -113,6 +114,9 @@ get_header( 'client-portal' );
 						} else {
 							printf( '<a class="dxcp-btn" href="%s">Manage client to-dos</a>', esc_url( admin_url( 'edit.php?post_type=dxcp_task' ) ) );
 						}
+						break;
+					case 'data-engine':
+						if (function_exists('dx_data_admin') && current_user_can('manage_options')) dx_data_admin(true);
 						break;
 					case 'settings':
 						dxcp_business_settings();
